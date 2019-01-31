@@ -883,6 +883,134 @@ INSERT INTO m_amenagement.lt_sa_etat(
     ('40','Déclassé'),
     ('50','Projet de déclassement');
 
+-- Table: m_amenagement.lt_sa_stadeamng
+
+-- DROP TABLE m_amenagement.lt_sa_stadeamng;
+
+CREATE TABLE m_amenagement.lt_sa_stadeamng
+(
+  code character varying(2) NOT NULL, -- Code du stade d'aménagement du lot
+  valeur character varying(15), -- Libellé du stade d'aménagement du lot
+  CONSTRAINT lt_sa_stadeamng_pkkey PRIMARY KEY (code) -- Clé primaire de la table lt_sa_stadeamng
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE m_amenagement.lt_sa_stadeamng
+  OWNER TO sig_create;
+
+COMMENT ON TABLE m_amenagement.lt_sa_stadeamng
+  IS 'Liste de valeurs du stade d''aménagement du lot';
+COMMENT ON COLUMN m_amenagement.lt_sa_stadeamng.code IS 'Code du stade d''aménagement du lot';
+COMMENT ON COLUMN m_amenagement.lt_sa_stadeamng.valeur IS 'Libellé du stade d''aménagement du lot';
+
+COMMENT ON CONSTRAINT lt_sa_stadeamng_pkkey ON m_amenagement.lt_sa_stadeamng IS 'Clé primaire de la table lt_sa_stadeamng';
+
+INSERT INTO m_amenagement.lt_sa_stadeamng(
+            code, valeur)
+    VALUES
+    ('00','Non renseigné'),
+    ('10','Aucun'),
+    ('20','Non acquis'),
+    ('30','Acquis'),
+    ('40','Viabilisé');
+
+-- Table: m_amenagement.lt_sa_stadeamng2
+
+-- DROP TABLE m_amenagement.lt_sa_stadeamng2;
+
+CREATE TABLE m_amenagement.lt_sa_stadeamng2
+(
+  code character varying(2) NOT NULL, -- Code de l'état de disponibilité des lots selon le stade d'aménagement (spécifique à l'ARC)
+  valeur character varying(50), -- Libellé de l'état de disponibilité des lots selon le stade d'aménagement (spécifique à l'ARC)
+  CONSTRAINT lt_sa_stadeamng2_pkkey PRIMARY KEY (code) -- Clé primaire de la table lt_sa_stadeamng2
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE m_amenagement.lt_sa_stadeamng2
+  OWNER TO sig_create;
+
+COMMENT ON TABLE m_amenagement.lt_sa_stadeamng2
+  IS 'Liste de valeurs du stade d''aménagement du lot spécifique à l''ARC';
+COMMENT ON COLUMN m_amenagement.lt_sa_stadeamng2.code IS 'Code de l''état de disponibilité des lots selon le stade d''aménagement (spécifique à l''ARC)';
+COMMENT ON COLUMN m_amenagement.lt_sa_stadeamng2.valeur IS 'Libellé de l''état de disponibilité des lots selon le stade d''aménagement (spécifique à l''ARC)';
+
+COMMENT ON CONSTRAINT lt_sa_stadeamng2_pkkey ON m_amenagement.lt_sa_stadeamng2 IS 'Clé primaire de la table lt_sa_stadeamng2';
+
+INSERT INTO m_amenagement.lt_sa_stadeamng2(
+            code, valeur)
+    VALUES
+    ('00','Non renseigné'),
+    ('10','Disponible (aménagé ou aménageable rapidement)'),
+    ('20','Indisponible (terrain non acheté)'),
+    ('30','Indisponible (terrain non aménagé)');
+
+-- Table: m_amenagement.lt_sa_stadecomm
+
+-- DROP TABLE m_amenagement.lt_sa_stadecomm;
+
+CREATE TABLE m_amenagement.lt_sa_stadecomm
+(
+  code character varying(2) NOT NULL, -- Code de le typologie d'aménageur
+  valeur character varying(20), -- Libellé de le typologie d'aménageur
+  CONSTRAINT lt_sa_stadecomm_pkkey PRIMARY KEY (code) -- Clé primaire de la table lt_sa_stadecomm
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE m_amenagement.lt_sa_stadecomm
+  OWNER TO sig_create;
+
+COMMENT ON TABLE m_amenagement.lt_sa_stadecomm
+  IS 'Liste de valeurs du stade de commercialisation';
+COMMENT ON COLUMN m_amenagement.lt_sa_stadecomm.code IS 'Code de le typologie d''aménageur';
+COMMENT ON COLUMN m_amenagement.lt_sa_stadecomm.valeur IS 'Libellé de le typologie d''aménageur';
+
+COMMENT ON CONSTRAINT lt_sa_stadecomm_pkkey ON m_amenagement.lt_sa_stadecomm IS 'Clé primaire de la table lt_sa_stadecomm';
+
+INSERT INTO m_amenagement.lt_sa_stadecomm(
+            code, valeur)
+    VALUES
+    ('00','Non renseigné'),
+    ('10','Aucun'),
+    ('20','Commercialisable');
+    
+-- Table: m_amenagement.lt_sa_stadecomm2
+
+-- DROP TABLE m_amenagement.lt_sa_stadecomm2;
+
+CREATE TABLE m_amenagement.lt_sa_stadecomm2
+(
+  code character varying(2) NOT NULL, -- Code du stade de commercialisation spécifique à l'ARC
+  valeur character varying(80), -- Libellé du stade de commercialisation spécifique à l'ARC
+  CONSTRAINT lt_sa_stadecomm2_pkkey PRIMARY KEY (code) -- Clé primaire de la table lt_sa_stadecomm2 spécifique à l'ARC
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE m_amenagement.lt_sa_stadecomm2
+  OWNER TO sig_create;
+
+COMMENT ON TABLE m_amenagement.lt_sa_stadecomm2
+  IS 'Liste de valeurs du stade de commercialisation spécifique à l''ARC';
+COMMENT ON COLUMN m_amenagement.lt_sa_stadecomm2.code IS 'Code du stade de commercialisation spécifique à l''ARC';
+COMMENT ON COLUMN m_amenagement.lt_sa_stadecomm2.valeur IS 'Libellé du stade de commercialisation spécifique à l''ARC';
+
+COMMENT ON CONSTRAINT lt_sa_stadecomm2_pkkey ON m_amenagement.lt_sa_stadecomm2 IS 'Clé primaire de la table lt_sa_stadecomm2 spécifique à l''ARC';
+
+INSERT INTO m_amenagement.lt_sa_stadecomm2(
+            code, valeur)
+    VALUES
+    ('00','Non renseigné'),
+    ('11','En vente'),
+    ('12','En vente (avec contrainte)'),
+    ('20','Vendu'),
+    ('31','Réservé (par une délibération du Conseil d''Agglomération)'),
+    ('32','Réservé (option)'),
+    ('99','Non commercialisé par un acteur public');
+
+
 
 -- ####################################################################################################################################################
 -- ###                                                                                                                                              ###
