@@ -192,6 +192,8 @@ ALTER TABLE public.idgeo_seq
 
 -- ################################################# du schéma objet Objet ##################################
 
+-- ################################################################# Domaine valeur - vocafon  ###############################################
+
 -- Table: r_objet.lt_objet_vocafon
 
 -- DROP TABLE r_objet.lt_objet_vocafon;
@@ -228,6 +230,10 @@ INSERT INTO r_objet.lt_objet_vocafon(
 
 -- ################################################# Du schéma m_foncier ##################################
 
+
+-- ################################################################# Domaine valeur - condition de cession  ###############################################
+
+
 -- Table: m_foncier.lt_ces_cond
 
 -- DROP TABLE m_foncier.lt_ces_cond;
@@ -258,6 +264,9 @@ INSERT INTO m_foncier.lt_ces_cond(
     ('10','Amiable'),
     ('20','Préemption'),
     ('30','Judiciaire');
+
+-- ################################################################# Domaine valeur - type de document de cession  ###############################################
+
 
 -- Table: m_foncier.lt_ces_doc
 
@@ -292,6 +301,9 @@ INSERT INTO m_foncier.lt_ces_doc(
     ('51','Document d''arpentage'),
     ('60','Acte de vente'),
     ('99','Autre');
+
+-- ################################################################# Domaine valeur - état de cession  ###############################################
+
 
 -- Table: m_foncier.lt_ces_etat
 
@@ -329,7 +341,10 @@ INSERT INTO m_foncier.lt_ces_etat(
     ('50','Réméré'),
     ('60','Acquis'),
     ('99','Non cédé par un public');
-    
+ 
+ 
+ -- ################################################################# Domaine valeur - notaire  ###############################################
+
  -- Table: m_foncier.lt_ces_nota
 
 -- DROP TABLE m_foncier.lt_ces_nota;
@@ -354,6 +369,9 @@ COMMENT ON COLUMN m_foncier.lt_ces_nota.notaire_lib IS 'Libellé du notaire';
 COMMENT ON CONSTRAINT lt_ces_nota_pkey ON m_foncier.lt_ces_nota IS 'Clé primaire de la table lt_ces_nota';
 
 -- La liste des valeurs n'est pas mentionnée ici pour des raisons de protection de la vie privée (table nominative)
+
+-- ################################################################# Domaine valeur - organisme cédant ou acquérant  ###############################################
+
 
 -- Table: m_foncier.lt_ces_orga
 
@@ -401,6 +419,8 @@ INSERT INTO m_foncier.lt_ces_orga(
     ('35','Commune de Vieux-Moulin'),
     ('36','EPFLO');
 
+-- ################################################################# Domaine valeur - type d'acte  ###############################################
+
 
 -- Table: m_foncier.lt_ces_tact
 
@@ -432,7 +452,10 @@ INSERT INTO m_foncier.lt_ces_tact(
     ('10','Notarié'),
     ('20','Administratif'),
     ('30','Judiciaire');
- 
+    
+ -- ################################################################# Domaine valeur - Vocation de la cession  ###############################################
+
+
 -- Table: m_foncier.lt_ces_voca
 
 -- DROP TABLE m_foncier.lt_ces_voca;
@@ -505,7 +528,10 @@ INSERT INTO m_foncier.lt_ces_tact(
     ('52','ZAE ZI NORD - PONT DES RETS'),
     ('ZZ','Non concerné');
     
- 
+    
+-- ################################################################# Domaine valeur - relation lot-cession  ###############################################
+
+
 -- Table: m_foncier.lt_rel_lot
 
 -- DROP TABLE m_foncier.lt_rel_lot;
@@ -538,6 +564,8 @@ INSERT INTO m_foncier.lt_rel_lot(
 
 -- ################################################# Du schéma m_economie ##################################
 
+-- ################################################################# Domaine valeur - type d'aide  ###############################################
+
 -- Table: m_economie.lt_sa_aidepb
 
 -- DROP TABLE m_economie.lt_sa_aidepb;
@@ -569,6 +597,9 @@ INSERT INTO m_economie.lt_sa_aidepb(
     ('20','AFU'),
     ('30','Autre');
 
+-- ################################################################# Domaine valeur - Décalage SIRENE - terrain  ###############################################
+
+
 -- Table: m_economie.lt_sa_decalage
 
 -- DROP TABLE m_economie.lt_sa_decalage;
@@ -599,6 +630,8 @@ INSERT INTO m_economie.lt_sa_decalage(
     ('00','Non renseigné'),
     ('10','Disparu'),
     ('20','Inconnu');
+
+-- ################################################################# Domaine valeur - Destination économique  ###############################################
 
 
 -- Table: m_economie.lt_sa_dest
@@ -636,6 +669,9 @@ INSERT INTO m_economie.lt_sa_dest(
     ('60','Agriculture'),
     ('70','Service/Négoce');
     
+-- ################################################################# Domaine valeur - Stade d'occupation  ###############################################
+
+
 -- Table: m_economie.lt_sa_etatoccup
 
 -- DROP TABLE m_economie.lt_sa_etatoccup;
@@ -669,6 +705,9 @@ INSERT INTO m_economie.lt_sa_etatoccup(
     ('40','Occupé'),
     ('50','Vacant');
 
+-- ################################################################# Domaine valeur - Type de filiale  ###############################################
+
+
 -- Table: m_economie.lt_sa_filiale
 
 -- DROP TABLE m_economie.lt_sa_filiale;
@@ -698,6 +737,9 @@ INSERT INTO m_economie.lt_sa_filiale(
     ('0','Filiale'),
     ('1','Entreprise indépendante'),
     ('2','Sans objet');
+
+
+-- ################################################################# Domaine valeur - Type d'activité  ###############################################
 
 -- Table: m_economie.lt_sa_tact
 
@@ -733,7 +775,10 @@ INSERT INTO m_economie.lt_sa_tact(
     ('50','Service/Négoce'),
     ('60','Tertiaire'),
     ('99','Autre');
-    
+
+-- ################################################################# Domaine valeur - Typologie des sites  ###############################################
+
+
 -- Table: m_economie.lt_sa_typo
 
 -- DROP TABLE m_economie.lt_sa_typo;
@@ -768,6 +813,9 @@ INSERT INTO m_economie.lt_sa_typo(
     ('20','Site plurifonctionnel en périphérie'),
     ('30','Site plurifonctionnel en centre-ville'),
     ('40','Etablissement isolé');
+
+-- ################################################################# Domaine valeur - Vocation des sites  ###############################################
+
 
 -- Table: m_economie.lt_sa_voca
 
@@ -804,6 +852,9 @@ INSERT INTO m_economie.lt_sa_voca(
 
 
 -- ################################################# Du schéma m_amenagement ##################################
+
+-- ################################################################# Domaine valeur - Type d'espace public  ###############################################
+
 
 -- Table: m_amenagement.lt_amt_empesp_pu
 
@@ -849,6 +900,8 @@ INSERT INTO m_amenagement.lt_amt_empesp_pu(
     ('50','Bâtiment public'),
     ('99','Autre');
 
+-- ################################################################# Domaine valeur - Etat d'aménagement  ###############################################
+
 
 -- Table: m_amenagement.lt_sa_etat
 
@@ -883,6 +936,9 @@ INSERT INTO m_amenagement.lt_sa_etat(
     ('40','Déclassé'),
     ('50','Projet de déclassement');
 
+-- ################################################################# Domaine valeur - Stade d'aménagement  ###############################################
+
+
 -- Table: m_amenagement.lt_sa_stadeamng
 
 -- DROP TABLE m_amenagement.lt_sa_stadeamng;
@@ -915,6 +971,9 @@ INSERT INTO m_amenagement.lt_sa_stadeamng(
     ('30','Acquis'),
     ('40','Viabilisé');
 
+
+-- ################################################################# Domaine valeur - Stade d'aménagement (ARC)  ###############################################
+
 -- Table: m_amenagement.lt_sa_stadeamng2
 
 -- DROP TABLE m_amenagement.lt_sa_stadeamng2;
@@ -946,6 +1005,8 @@ INSERT INTO m_amenagement.lt_sa_stadeamng2(
     ('20','Indisponible (terrain non acheté)'),
     ('30','Indisponible (terrain non aménagé)');
 
+-- ################################################################# Domaine valeur - Stade de commercialisation  ###############################################
+
 -- Table: m_amenagement.lt_sa_stadecomm
 
 -- DROP TABLE m_amenagement.lt_sa_stadecomm;
@@ -975,7 +1036,10 @@ INSERT INTO m_amenagement.lt_sa_stadecomm(
     ('00','Non renseigné'),
     ('10','Aucun'),
     ('20','Commercialisable');
-    
+
+-- ################################################################# Domaine valeur - Stade de commercialisation (ARC)  ###############################################
+
+
 -- Table: m_amenagement.lt_sa_stadecomm2
 
 -- DROP TABLE m_amenagement.lt_sa_stadecomm2;
@@ -1010,7 +1074,108 @@ INSERT INTO m_amenagement.lt_sa_stadecomm2(
     ('32','Réservé (option)'),
     ('99','Non commercialisé par un acteur public');
 
+-- ################################################################# Domaine valeur - Etat de commercialisation du local  ###############################################
 
+-- Table: m_economie.lt_bal_ecomm
+
+-- DROP TABLE m_economie.lt_bal_ecomm;
+
+CREATE TABLE m_economie.lt_bal_ecomm
+(
+  etat_comm character varying(2) NOT NULL, -- Code de l'état de commercialisation du local
+  lib_etat_comm character varying(50), -- Libellé de l'état de commercialisation du local
+  CONSTRAINT lt_bal_ecomm_pkey PRIMARY KEY (etat_comm) -- Clé primaire de la table lt_bal_ecomm
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE m_economie.lt_bal_ecomm
+  OWNER TO sig_create;
+
+COMMENT ON TABLE m_economie.lt_bal_ecomm
+  IS 'Liste de valeurs de l''état de commercialisation du local';
+COMMENT ON COLUMN m_economie.lt_bal_ecomm.etat_comm IS 'Code de l''état de commercialisation du local';
+COMMENT ON COLUMN m_economie.lt_bal_ecomm.lib_etat_comm IS 'Libellé de l''état de commercialisation du local';
+
+COMMENT ON CONSTRAINT lt_bal_ecomm_pkey ON m_economie.lt_bal_ecomm IS 'Clé primaire de la table lt_bal_ecomm';
+
+INSERT INTO m_amenagement.lt_bal_ecomm(
+            etat_comm, lib_etat_comm)
+    VALUES
+    ('00','Non renseigné'),
+    ('10','Disponible immédiatement'),
+    ('20','Disponibilité à venir (ajouter une périodicité)'),
+    ('30','En négociations avancées'),
+    ('40','Négociations abouties (succès BAL)'),
+    ('50','Négociations abouties (sans intervention BAL)'),
+    ('99','Autre');
+    
+ -- ################################################################# Domaine valeur - Commercialisateur du local  ###############################################
+
+-- Table: m_economie.lt_bal_ncomm
+
+-- DROP TABLE m_economie.lt_bal_ncomm;
+
+CREATE TABLE m_economie.lt_bal_ncomm
+(
+  code_comm character varying(2) NOT NULL, -- Code du commercialisateur des locaux
+  lib_comm character varying(20), -- Libellé du commercialisateur des locaux
+  CONSTRAINT lt_bal_ncomm_pkey PRIMARY KEY (code_comm) -- Clé primaire de la table lt_bal_ncomm
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE m_economie.lt_bal_ncomm
+  OWNER TO sig_create;
+GRANT ALL ON TABLE m_economie.lt_bal_ncomm TO sig_create;
+GRANT ALL ON TABLE m_economie.lt_bal_ncomm TO create_sig;
+GRANT SELECT ON TABLE m_economie.lt_bal_ncomm TO read_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE m_economie.lt_bal_ncomm TO edit_sig;
+COMMENT ON TABLE m_economie.lt_bal_ncomm
+  IS 'Liste de valeurs du commercialisateur des locaux';
+COMMENT ON COLUMN m_economie.lt_bal_ncomm.code_comm IS 'Code du commercialisateur des locaux';
+COMMENT ON COLUMN m_economie.lt_bal_ncomm.lib_comm IS 'Libellé du commercialisateur des locaux';
+
+COMMENT ON CONSTRAINT lt_bal_ncomm_pkey ON m_economie.lt_bal_ncomm IS 'Clé primaire de la table lt_bal_ncomm';
+
+-- pas de liste de valeur ici. Table nominative
+
+ -- ################################################################# Domaine valeur - Source de la mise à jour du local  ###############################################
+
+-- Table: m_economie.lt_bal_source
+
+-- DROP TABLE m_economie.lt_bal_source;
+
+CREATE TABLE m_economie.lt_bal_source
+(
+  source_maj character varying(2) NOT NULL, -- Code du moyen de mise à jour
+  lib_source_maj character varying(30), -- Libellé du moyen de mise à jour
+  CONSTRAINT lt_bal_source_pkey PRIMARY KEY (source_maj) -- Clé primaire de la table lt_bal_source
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE m_economie.lt_bal_source
+  OWNER TO sig_create;
+GRANT ALL ON TABLE m_economie.lt_bal_source TO sig_create;
+GRANT ALL ON TABLE m_economie.lt_bal_source TO create_sig;
+GRANT SELECT ON TABLE m_economie.lt_bal_source TO read_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE m_economie.lt_bal_source TO edit_sig;
+COMMENT ON TABLE m_economie.lt_bal_source
+  IS 'Liste de valeurs du moyen de mise à jour';
+COMMENT ON COLUMN m_economie.lt_bal_source.source_maj IS 'Code du moyen de mise à jour';
+COMMENT ON COLUMN m_economie.lt_bal_source.lib_source_maj IS 'Libellé du moyen de mise à jour';
+
+COMMENT ON CONSTRAINT lt_bal_source_pkey ON m_economie.lt_bal_source IS 'Clé primaire de la table lt_bal_source';
+
+INSERT INTO m_amenagement.lt_bal_source(
+            source_maj, lib_source_maj)
+    VALUES
+    ('00','Non renseigné'),
+    ('10',''),
+    ('20',''),
+    ('30',''),
+    ('99','Autre');
 
 -- ####################################################################################################################################################
 -- ###                                                                                                                                              ###
