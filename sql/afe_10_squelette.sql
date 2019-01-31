@@ -190,6 +190,25 @@ ALTER TABLE public.idgeo_seq
 -- ###                                                                                                                                              ###
 -- ####################################################################################################################################################
 
+-- ################################################# De la table Objet ##################################
+
+-- Table: r_objet.lt_objet_vocafon
+
+-- DROP TABLE r_objet.lt_objet_vocafon;
+
+CREATE TABLE r_objet.lt_objet_vocafon
+(
+  l_voca character varying(2) NOT NULL, -- Code de la vocation
+  voca_lib character varying(25), -- Libellé de la vocation
+  CONSTRAINT lt_objet_vocafon_pkkey PRIMARY KEY (l_voca) -- Clé primaire de la table lt_objet_vocafon
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE r_objet.lt_objet_vocafon
+  OWNER TO sig_create;
+  
+  
 
 
 -- ####################################################################################################################################################
