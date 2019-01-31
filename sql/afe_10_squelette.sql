@@ -1018,7 +1018,96 @@ INSERT INTO m_amenagement.lt_sa_stadecomm2(
 -- ###                                                                                                                                              ###
 -- ####################################################################################################################################################
 
--- ################################################# Table de relation lot - cession ##################################
+-- ################################################# Du schéma r_objet ##################################
+
+-- Table: r_objet.geo_objet_fon_lot
+
+-- DROP TABLE r_objet.geo_objet_fon_lot;
+
+CREATE TABLE r_objet.geo_objet_fon_lot
+(
+  idgeolf integer NOT NULL, -- Identifiant unique de l'objet
+  op_sai character varying(80), -- Opérateur de saisir d'objet à l'ARC
+  src_geom character varying(2) DEFAULT '00'::character varying, -- Référentiel spatial de saisie
+  sup_m2 double precision, -- Surface totale de l'objet en m²
+  l_voca character varying(2) DEFAULT '00'::character varying, -- Vocation du foncier
+  geom geometry(MultiPolygon,2154) NOT NULL, -- Champ contenant la géométrie
+  date_sai timestamp without time zone, -- Date de saisie de l'objet
+  date_maj timestamp without time zone, -- Date de mise à jour
+  l_nom character varying(80), -- Nom de lot donné au moment du plan d'aménagement (ex : lot 1)
+  CONSTRAINT geo_objet_fon_lot_pkey PRIMARY KEY (idgeolf)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE r_objet.geo_objet_fon_lot
+  OWNER TO sig_create;
+
+COMMENT ON TABLE r_objet.geo_objet_fon_lot
+  IS 'Données géographiques contenant les lots fonciers des sites';
+COMMENT ON COLUMN r_objet.geo_objet_fon_lot.idgeolf IS 'Identifiant unique de l''objet';
+COMMENT ON COLUMN r_objet.geo_objet_fon_lot.op_sai IS 'Opérateur de saisir d''objet à l''ARC';
+COMMENT ON COLUMN r_objet.geo_objet_fon_lot.src_geom IS 'Référentiel spatial de saisie';
+COMMENT ON COLUMN r_objet.geo_objet_fon_lot.sup_m2 IS 'Surface totale de l''objet en m²';
+COMMENT ON COLUMN r_objet.geo_objet_fon_lot.l_voca IS 'Vocation du foncier';
+COMMENT ON COLUMN r_objet.geo_objet_fon_lot.geom IS 'Champ contenant la géométrie';
+COMMENT ON COLUMN r_objet.geo_objet_fon_lot.date_sai IS 'Date de saisie de l''objet';
+COMMENT ON COLUMN r_objet.geo_objet_fon_lot.date_maj IS 'Date de mise à jour';
+COMMENT ON COLUMN r_objet.geo_objet_fon_lot.l_nom IS 'Nom de lot donné au moment du plan d''aménagement (ex : lot 1)';
+
+
+-- Trigger: t_t1_foncier_insert_date_maj on r_objet.geo_objet_fon_lot
+
+-- DROP TRIGGER t_t1_foncier_insert_date_maj ON r_objet.geo_objet_fon_lot;
+
+CREATE TRIGGER t_t1_foncier_insert_date_maj
+  BEFORE INSERT OR UPDATE
+  ON r_objet.geo_objet_fon_lot
+  FOR EACH ROW
+  EXECUTE PROCEDURE public.r_timestamp_maj();
+
+-- Trigger: t_t2_foncier_insert_surf on r_objet.geo_objet_fon_lot
+
+-- DROP TRIGGER t_t2_foncier_insert_surf ON r_objet.geo_objet_fon_lot;
+
+CREATE TRIGGER t_t2_foncier_insert_surf
+  BEFORE INSERT OR UPDATE OF geom
+  ON r_objet.geo_objet_fon_lot
+  FOR EACH ROW
+  EXECUTE PROCEDURE public.r_sup_m2_maj();
+
+-- Trigger: t_t3_foncier_l_nom on r_objet.geo_objet_fon_lot
+
+-- DROP TRIGGER t_t3_foncier_l_nom ON r_objet.geo_objet_fon_lot;
+
+CREATE TRIGGER t_t3_foncier_l_nom
+  BEFORE INSERT OR UPDATE OF l_nom
+  ON r_objet.geo_objet_fon_lot
+  FOR EACH ROW
+  EXECUTE PROCEDURE r_objet.t_t3_foncier_l_nom();
+
+-- Trigger: t_t3_modif_surfbrt on r_objet.geo_objet_fon_lot
+
+-- DROP TRIGGER t_t3_modif_surfbrt ON r_objet.geo_objet_fon_lot;
+
+CREATE TRIGGER t_t3_modif_surfbrt
+  BEFORE UPDATE OF geom
+  ON r_objet.geo_objet_fon_lot
+  FOR EACH ROW
+  EXECUTE PROCEDURE public.r_sup_m2_maj();
+ALTER TABLE r_objet.geo_objet_fon_lot DISABLE TRIGGER t_t3_modif_surfbrt;
+COMMENT ON TRIGGER t_t3_modif_surfbrt ON r_objet.geo_objet_fon_lot IS 'En doublon avec le le t2 ?';
+
+-- Trigger: t_t4_suivi on r_objet.geo_objet_fon_lot
+
+-- DROP TRIGGER t_t4_suivi ON r_objet.geo_objet_fon_lot;
+
+CREATE TRIGGER t_t4_suivi
+  AFTER INSERT OR UPDATE OR DELETE
+  ON r_objet.geo_objet_fon_lot
+  FOR EACH ROW
+  EXECUTE PROCEDURE m_economie.r_suivi_audit();
+ALTER TABLE r_objet.geo_objet_fon_lot DISABLE TRIGGER t_t4_suivi;
 
 
 
@@ -1030,17 +1119,33 @@ INSERT INTO m_amenagement.lt_sa_stadecomm2(
 -- ###                                                                                                                                              ###
 -- ####################################################################################################################################################
 
+-- ################################################# Du schéma r_objet ##################################
 
-
+  CONSTRAINT geo_objet_fon_lot_scrgeom_fkey FOREIGN KEY (src_geom)
+      REFERENCES r_objet.lt_src_geom (code) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT lt_objet_vocafon_fkey FOREIGN KEY (l_voca)
+      REFERENCES r_objet.lt_objet_vocafon (l_voca) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION;
+      
+      
 -- ####################################################################################################################################################
 -- ###                                                                                                                                              ###
 -- ###                                                                INDEX                                                           ###
 -- ###                                                                                                                                              ###
 -- ####################################################################################################################################################
 
+-- ################################################# Du schéma r_objet ##################################
 
 
+-- Index: r_objet.geo_objet_fon_lot_geom_idx
 
+-- DROP INDEX r_objet.geo_objet_fon_lot_geom_idx;
+
+CREATE INDEX geo_objet_fon_lot_geom_idx
+  ON r_objet.geo_objet_fon_lot
+  USING gist
+  (geom);
 
 
 
