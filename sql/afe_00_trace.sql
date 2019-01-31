@@ -16,6 +16,7 @@
 
 /*
 #################################################################### SUIVI CODE SQL ####################################################################
-2019-01-21 : GB / initialisation du code
+-- Le développement originel a débuté en 2015. Le développement a évolué et a été optimisé depuis sans qu'il n'y est de documentation.
+-- 2019-01-21 : GB / initialisation du code
 
 */
