@@ -1076,6 +1076,31 @@ CREATE TRIGGER t_t2_foncier_insert_surf
   FOR EACH ROW
   EXECUTE PROCEDURE public.r_sup_m2_maj();
 
+
+-- Function: r_objet.t_t3_foncier_l_nom()
+
+-- DROP FUNCTION r_objet.t_t3_foncier_l_nom();
+
+CREATE OR REPLACE FUNCTION r_objet.t_t3_foncier_l_nom()
+  RETURNS trigger AS
+$BODY$BEGIN
+
+IF new.l_nom = '' THEN
+new.l_nom = null;
+END IF;
+
+RETURN NEW;
+END;$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION r_objet.t_t3_foncier_l_nom()
+  OWNER TO sig_create;
+GRANT EXECUTE ON FUNCTION r_objet.t_t3_foncier_l_nom() TO public;
+GRANT EXECUTE ON FUNCTION r_objet.t_t3_foncier_l_nom() TO sig_create;
+GRANT EXECUTE ON FUNCTION r_objet.t_t3_foncier_l_nom() TO create_sig;
+COMMENT ON FUNCTION r_objet.t_t3_foncier_l_nom() IS 'Fonction dont l''objet de forcer à null le champ l_nom après effacement par exemple pour éviter les doubles cotes';
+
+
 -- Trigger: t_t3_foncier_l_nom on r_objet.geo_objet_fon_lot
 
 -- DROP TRIGGER t_t3_foncier_l_nom ON r_objet.geo_objet_fon_lot;
