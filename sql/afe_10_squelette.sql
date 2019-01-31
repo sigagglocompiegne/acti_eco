@@ -538,8 +538,350 @@ INSERT INTO m_foncier.lt_rel_lot(
 
 -- ################################################# Du schéma m_economie ##################################
 
+-- Table: m_economie.lt_sa_aidepb
+
+-- DROP TABLE m_economie.lt_sa_aidepb;
+
+CREATE TABLE m_economie.lt_sa_aidepb
+(
+  z_aide_pb character varying(2) NOT NULL, -- Code de la typologie d'aide publique mobilisable sur les sites
+  aide_pb_lib character varying(20), -- Libellé de l'aide publique
+  CONSTRAINT lt_sa_aidepb_pkkey PRIMARY KEY (z_aide_pb) -- Libellé de la typologie d'aide publique mobilisable sur les sites
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE m_economie.lt_sa_aidepb
+  OWNER TO sig_create;
+
+COMMENT ON TABLE m_economie.lt_sa_aidepb
+  IS 'Liste de valeurs des aides publiques';
+COMMENT ON COLUMN m_economie.lt_sa_aidepb.z_aide_pb IS 'Code de la typologie d''aide publique mobilisable sur les sites';
+COMMENT ON COLUMN m_economie.lt_sa_aidepb.aide_pb_lib IS 'Libellé de l''aide publique';
+
+COMMENT ON CONSTRAINT lt_sa_aidepb_pkkey ON m_economie.lt_sa_aidepb IS 'Libellé de la typologie d''aide publique mobilisable sur les sites';
+
+INSERT INTO m_economie.lt_sa_aidepb(
+            z_aide_pb, aide_pb_lib)
+    VALUES
+    ('00','Non renseigné'),
+    ('10','AFR'),
+    ('20','AFU'),
+    ('30','Autre');
+
+-- Table: m_economie.lt_sa_decalage
+
+-- DROP TABLE m_economie.lt_sa_decalage;
+
+CREATE TABLE m_economie.lt_sa_decalage
+(
+  decalage character varying(2) NOT NULL, -- Code du décalage GéoPic
+  decalage_lib character varying(30), -- Libellé du décalage GéoPic
+  CONSTRAINT lt_sa_decalage_pkkey PRIMARY KEY (decalage) -- Clé primaire de la table lt_sa_decalage
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE m_economie.lt_sa_decalage
+  OWNER TO sig_create;
+
+COMMENT ON TABLE m_economie.lt_sa_decalage
+  IS 'Liste de valeurs du champ décalage (modèle GéoPic)';
+COMMENT ON COLUMN m_economie.lt_sa_decalage.decalage IS 'Code du décalage GéoPic';
+COMMENT ON COLUMN m_economie.lt_sa_decalage.decalage_lib IS 'Libellé du décalage GéoPic';
+
+COMMENT ON CONSTRAINT lt_sa_decalage_pkkey ON m_economie.lt_sa_decalage IS 'Clé primaire de la table lt_sa_decalage';
 
 
+INSERT INTO m_economie.lt_sa_decalage(
+            decalage, decalage_lib)
+    VALUES
+    ('00','Non renseigné'),
+    ('10','Disparu'),
+    ('20','Inconnu');
+
+
+-- Table: m_economie.lt_sa_dest
+
+-- DROP TABLE m_economie.lt_sa_dest;
+
+CREATE TABLE m_economie.lt_sa_dest
+(
+  dest character varying(2) NOT NULL, -- Code de la destination principale du site ou du Pôle
+  dest_lib character varying(30), -- Libellé de la destination principale du site ou du Pôle
+  CONSTRAINT lt_sa_dest_pkkey PRIMARY KEY (dest) -- Clé primaire de la table lt_sa_dest
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE m_economie.lt_sa_dest
+  OWNER TO sig_create;
+
+COMMENT ON TABLE m_economie.lt_sa_dest
+  IS 'Liste de valeurs de destination (table pôle et site)';
+COMMENT ON COLUMN m_economie.lt_sa_dest.dest IS 'Code de la destination principale du site ou du Pôle';
+COMMENT ON COLUMN m_economie.lt_sa_dest.dest_lib IS 'Libellé de la destination principale du site ou du Pôle';
+
+COMMENT ON CONSTRAINT lt_sa_dest_pkkey ON m_economie.lt_sa_dest IS 'Clé primaire de la table lt_sa_dest';
+
+INSERT INTO m_economie.lt_sa_dest(
+            dest, dest_lib)
+    VALUES
+    ('00','Non renseigné'),
+    ('10','Artisanat'),
+    ('20','Industrie ou R&D'),
+    ('30','Tertiaire'),
+    ('40','Transport et logistique'),
+    ('50','Commerce'),
+    ('60','Agriculture'),
+    ('70','Service/Négoce');
+    
+-- Table: m_economie.lt_sa_etatoccup
+
+-- DROP TABLE m_economie.lt_sa_etatoccup;
+
+CREATE TABLE m_economie.lt_sa_etatoccup
+(
+  etat_occup character varying(2) NOT NULL, -- Code du stade d'occupation (non renseigné pour l'ARC)
+  occup_lib character varying(20), -- Libellé du stade d'occupation (non renseigné pour l'ARC)
+  CONSTRAINT lt_sa_etatoccup_pkkey PRIMARY KEY (etat_occup) -- Clé primaire de la table lt_sa_stadecomm2 spécifique à l'ARC
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE m_economie.lt_sa_etatoccup
+  OWNER TO sig_create;
+
+COMMENT ON TABLE m_economie.lt_sa_etatoccup
+  IS 'Liste de valeurs du stade d''occupation (non renseigné pour l''ARC)';
+COMMENT ON COLUMN m_economie.lt_sa_etatoccup.etat_occup IS 'Code du stade d''occupation (non renseigné pour l''ARC)';
+COMMENT ON COLUMN m_economie.lt_sa_etatoccup.occup_lib IS 'Libellé du stade d''occupation (non renseigné pour l''ARC)';
+
+COMMENT ON CONSTRAINT lt_sa_etatoccup_pkkey ON m_economie.lt_sa_etatoccup IS 'Clé primaire de la table lt_sa_stadecomm2 spécifique à l''ARC';
+
+INSERT INTO m_economie.lt_sa_etatoccup(
+            etat_occup, occup_lib)
+    VALUES
+    ('00','Non renseigné'),
+    ('10','Aucun'),
+    ('20','Potentiel'),
+    ('30','Réservé'),
+    ('40','Occupé'),
+    ('50','Vacant');
+
+-- Table: m_economie.lt_sa_filiale
+
+-- DROP TABLE m_economie.lt_sa_filiale;
+
+CREATE TABLE m_economie.lt_sa_filiale
+(
+  filiale integer NOT NULL, -- Code de filiale GéoPic
+  filiale_lib character varying(30), -- Libellé de filiale GéoPic
+  CONSTRAINT lt_sa_filiale_pkkey PRIMARY KEY (filiale) -- Clé primaire de la table lt_sa_filiale
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE m_economie.lt_sa_filiale
+  OWNER TO sig_create;
+
+COMMENT ON TABLE m_economie.lt_sa_filiale
+  IS 'Liste de valeurs du champ filiale (modèle GéoPic)';
+COMMENT ON COLUMN m_economie.lt_sa_filiale.filiale IS 'Code de filiale GéoPic';
+COMMENT ON COLUMN m_economie.lt_sa_filiale.filiale_lib IS 'Libellé de filiale GéoPic';
+
+COMMENT ON CONSTRAINT lt_sa_filiale_pkkey ON m_economie.lt_sa_filiale IS 'Clé primaire de la table lt_sa_filiale';
+
+INSERT INTO m_economie.lt_sa_filiale(
+            filiale, filiale_lib)
+    VALUES
+    ('0','Filiale'),
+    ('1','Entreprise indépendante'),
+    ('2','Sans objet');
+
+-- Table: m_economie.lt_sa_tact
+
+-- DROP TABLE m_economie.lt_sa_tact;
+
+CREATE TABLE m_economie.lt_sa_tact
+(
+  l_tact character varying(2) NOT NULL, -- Code de l'activité du projet d'implantation sur les lots (spécifique à l'ARC)
+  l_tact_lib character varying(30), -- Libellé de l'activité du projet d'implantation sur les lots (spécifique à l'ARC)
+  CONSTRAINT lt_sa_tact_pkkey PRIMARY KEY (l_tact) -- Clé primaire de la table lt_sa_tact
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE m_economie.lt_sa_tact
+  OWNER TO sig_create;
+
+COMMENT ON TABLE m_economie.lt_sa_tact
+  IS 'Liste de valeurs de l''activité du projet d''implantation sur les lots (spécifique à l''ARC)';
+COMMENT ON COLUMN m_economie.lt_sa_tact.l_tact IS 'Code de l''activité du projet d''implantation sur les lots (spécifique à l''ARC)';
+COMMENT ON COLUMN m_economie.lt_sa_tact.l_tact_lib IS 'Libellé de l''activité du projet d''implantation sur les lots (spécifique à l''ARC)';
+
+COMMENT ON CONSTRAINT lt_sa_tact_pkkey ON m_economie.lt_sa_tact IS 'Clé primaire de la table lt_sa_tact';
+
+INSERT INTO m_economie.lt_sa_tact(
+            l_tact, l_tact_lib)
+    VALUES
+    ('00','Non renseigné'),
+    ('10','Artisanat'),
+    ('20','Commerce'),
+    ('30','Industrie'),
+    ('40','R & D'),
+    ('50','Service/Négoce'),
+    ('60','Tertiaire'),
+    ('99','Autre');
+    
+-- Table: m_economie.lt_sa_typo
+
+-- DROP TABLE m_economie.lt_sa_typo;
+
+CREATE TABLE m_economie.lt_sa_typo
+(
+  typo character varying(2) NOT NULL, -- Code de la typologie GéoPicardie du site
+  typo_lib character varying(40), -- Libellé de la typologie GéoPicardie du site
+  CONSTRAINT lt_sa_typo_pkkey PRIMARY KEY (typo) -- Clé primaire de la table lt_sa_typo
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE m_economie.lt_sa_typo
+  OWNER TO sig_create;
+GRANT ALL ON TABLE m_economie.lt_sa_typo TO sig_create;
+GRANT ALL ON TABLE m_economie.lt_sa_typo TO create_sig;
+GRANT SELECT ON TABLE m_economie.lt_sa_typo TO read_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE m_economie.lt_sa_typo TO edit_sig;
+COMMENT ON TABLE m_economie.lt_sa_typo
+  IS 'Liste de valeurs de la typologie de la zone (table site)';
+COMMENT ON COLUMN m_economie.lt_sa_typo.typo IS 'Code de la typologie GéoPicardie du site';
+COMMENT ON COLUMN m_economie.lt_sa_typo.typo_lib IS 'Libellé de la typologie GéoPicardie du site';
+
+COMMENT ON CONSTRAINT lt_sa_typo_pkkey ON m_economie.lt_sa_typo IS 'Clé primaire de la table lt_sa_typo';
+
+INSERT INTO m_economie.lt_sa_typo(
+            typo, typo_lib)
+    VALUES
+    ('00','Non renseigné'),
+    ('10','Site monofonctionnel'),
+    ('20','Site plurifonctionnel en périphérie'),
+    ('30','Site plurifonctionnel en centre-ville'),
+    ('40','Etablissement isolé');
+
+-- Table: m_economie.lt_sa_voca
+
+-- DROP TABLE m_economie.lt_sa_voca;
+
+CREATE TABLE m_economie.lt_sa_voca
+(
+  site_voca character varying(2) NOT NULL, -- Code de la vocation du site
+  voca_lib character varying(25), -- Libellé de la vocation du site
+  CONSTRAINT lt_sa_voca_pkkey PRIMARY KEY (site_voca) -- Clé primaire de la table lt_sa_voca
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE m_economie.lt_sa_voca
+  OWNER TO sig_create;
+
+COMMENT ON TABLE m_economie.lt_sa_voca
+  IS 'Liste de valeurs de vocation simplifiée de la zone (table site)';
+COMMENT ON COLUMN m_economie.lt_sa_voca.site_voca IS 'Code de la vocation du site';
+COMMENT ON COLUMN m_economie.lt_sa_voca.voca_lib IS 'Libellé de la vocation du site';
+
+COMMENT ON CONSTRAINT lt_sa_voca_pkkey ON m_economie.lt_sa_voca IS 'Clé primaire de la table lt_sa_voca';
+
+INSERT INTO m_economie.lt_sa_voca(
+            site_voca, voca_lib)
+    VALUES
+    ('00','Non renseigné'),
+    ('10','ZI - zone industrielle'),
+    ('20','ZA - zone artisanale'),
+    ('30','ZC - zone commerciale'),
+    ('40','ZM - zone mixte');
+
+
+
+-- ################################################# Du schéma m_amenagement ##################################
+
+-- Table: m_amenagement.lt_amt_empesp_pu
+
+-- DROP TABLE m_amenagement.lt_amt_empesp_pu;
+
+CREATE TABLE m_amenagement.lt_amt_empesp_pu
+(
+  vocaep character varying(2) NOT NULL, -- Code de la vocation de l'espace public
+  vocaep_lib character varying(35), -- Libellé de la vocation de l'espace public
+  CONSTRAINT lt_amt_empesp_pu_pkkey PRIMARY KEY (vocaep) -- Clé primaire de la table lt_amt_empesp_pu
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE m_amenagement.lt_amt_empesp_pu
+  OWNER TO sig_create;
+
+COMMENT ON TABLE m_amenagement.lt_amt_empesp_pu
+  IS 'Vocation des espaces publics';
+COMMENT ON COLUMN m_amenagement.lt_amt_empesp_pu.vocaep IS 'Code de la vocation de l''espace public';
+COMMENT ON COLUMN m_amenagement.lt_amt_empesp_pu.vocaep_lib IS 'Libellé de la vocation de l''espace public';
+
+COMMENT ON CONSTRAINT lt_amt_empesp_pu_pkkey ON m_amenagement.lt_amt_empesp_pu IS 'Clé primaire de la table lt_amt_empesp_pu';
+
+INSERT INTO m_amenagement.lt_amt_empesp_pu(
+            vocaep, vocaep_lib)
+    VALUES
+    ('00','Non renseigné'),
+    ('11','Route'),
+    ('12','Trottoir brut'),
+    ('13','Trottoir paysagé'),
+    ('14','Stationnement'),
+    ('15','Terre plein central ou giratoire'),
+    ('16','Voie réservée'),
+    ('17','Esplanade'),
+    ('21','Chemin'),
+    ('22','Circulation douce'),
+    ('31','Bassin d''orage'),
+    ('32','Equipement réseau'),
+    ('33','Equipement public'),
+    ('41','Espace vert'),
+    ('42','Bois'),
+    ('50','Bâtiment public'),
+    ('99','Autre');
+
+
+-- Table: m_amenagement.lt_sa_etat
+
+-- DROP TABLE m_amenagement.lt_sa_etat;
+
+CREATE TABLE m_amenagement.lt_sa_etat
+(
+  code character varying(2) NOT NULL, -- Code de la typologie de la situation du site au regard de l'aménagement
+  valeur character varying(25), -- Code de la typologie de la situation du site au regard de l'aménagement
+  CONSTRAINT lt_sa_etat_pkkey PRIMARY KEY (code) -- Clé primaire de la table lt_sa_etat
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE m_amenagement.lt_sa_etat
+  OWNER TO sig_create;
+
+COMMENT ON TABLE m_amenagement.lt_sa_etat
+  IS 'Liste des valeurs de l''état du site';
+COMMENT ON COLUMN m_amenagement.lt_sa_etat.code IS 'Code de la typologie de la situation du site au regard de l''aménagement';
+COMMENT ON COLUMN m_amenagement.lt_sa_etat.valeur IS 'Code de la typologie de la situation du site au regard de l''aménagement';
+
+COMMENT ON CONSTRAINT lt_sa_etat_pkkey ON m_amenagement.lt_sa_etat IS 'Clé primaire de la table lt_sa_etat';
+
+INSERT INTO m_amenagement.lt_sa_etat(
+            code, valeur)
+    VALUES
+    ('00','Non renseigné'),
+    ('10','Existant'),
+    ('20','Extension'),
+    ('30','Création'),
+    ('40','Déclassé'),
+    ('50','Projet de déclassement');
 
 
 -- ####################################################################################################################################################
