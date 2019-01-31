@@ -207,8 +207,23 @@ WITH (
 );
 ALTER TABLE r_objet.lt_objet_vocafon
   OWNER TO sig_create;
-  
-  
+COMMENT ON TABLE r_objet.lt_objet_vocafon
+  IS 'Liste de valeurs de vocation simplifiée de la zone (table site)';
+COMMENT ON COLUMN r_objet.lt_objet_vocafon.l_voca IS 'Code de la vocation';
+COMMENT ON COLUMN r_objet.lt_objet_vocafon.voca_lib IS 'Libellé de la vocation';
+
+INSERT INTO m_defense_incendie.lt_pei_type_pei(
+            code, valeur, affich)
+    VALUES
+    ('00','Non renseigné'),
+    ('10','Equipement public'),
+    ('20','Lot Economique'),
+    ('30','Lot Habitat'),
+    ('40','Lot divers'),
+    ('50','Lot espace public'),
+    ('60','Lot Mixte');
+
+-- r_objet.lt_src_geom est une table générique sur les référentiels spatiaux utilisés (cf autre projey Github détaillant ce domaine de valeur
 
 
 -- ####################################################################################################################################################
