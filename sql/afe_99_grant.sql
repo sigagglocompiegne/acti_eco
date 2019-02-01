@@ -7,7 +7,6 @@
 /* Auteur : Grégory Bodet */
 
 
-
 -- ####################################################################################################################################################
 -- ###                                                                                                                                              ###
 -- ###                                                                        GRANT                                                                  ###
@@ -307,6 +306,49 @@ GRANT SELECT ON TABLE m_amenagement.lt_sa_stadecomm2 TO read_sig;
 
 -- #################################################################### SEQUENCE  ####################################################################
 
+GRANT ALL ON SEQUENCE s_sirene.an_etablissement_gid_seq TO sig_create;
+GRANT ALL ON SEQUENCE s_sirene.an_etablissement_gid_seq TO public;
+GRANT ALL ON SEQUENCE s_sirene.an_etablissement_gid_seq TO create_sig;
+
+GRANT ALL ON SEQUENCE public.idgeo_seq TO postgres;
+GRANT ALL ON SEQUENCE public.idgeo_seq TO public;
+GRANT ALL ON SEQUENCE public.idgeo_seq TO create_sig;
+
+GRANT ALL ON SEQUENCE m_foncier.an_fon_doc_media_gid_seq TO sig_create;
+GRANT ALL ON SEQUENCE m_foncier.an_fon_doc_media_gid_seq TO public;
+GRANT ALL ON SEQUENCE m_foncier.an_fon_doc_media_gid_seq TO create_sig;
+
+GRANT ALL ON SEQUENCE m_foncier.ces_seq TO sig_create;
+GRANT ALL ON SEQUENCE m_foncier.ces_seq TO postgres;
+GRANT ALL ON SEQUENCE m_foncier.ces_seq TO create_sig;
+GRANT ALL ON SEQUENCE m_foncier.ces_seq TO public;
+
+GRANT ALL ON SEQUENCE m_economie.an_lot_doc_media_gid_seq TO sig_create;
+GRANT ALL ON SEQUENCE m_economie.an_lot_doc_media_gid_seq TO public;
+GRANT ALL ON SEQUENCE m_economie.an_lot_doc_media_gid_seq TO create_sig;
+
+GRANT ALL ON SEQUENCE m_economie.an_sa_dia_gid_seq TO sig_create;
+GRANT ALL ON SEQUENCE m_economie.an_sa_dia_gid_seq TO public;
+GRANT ALL ON SEQUENCE m_economie.an_sa_dia_gid_seq TO create_sig;
+
+GRANT ALL ON SEQUENCE m_economie.an_sa_etab_id_seq TO sig_create;
+GRANT ALL ON SEQUENCE m_economie.an_sa_etab_id_seq TO public;
+GRANT ALL ON SEQUENCE m_economie.an_sa_etab_id_seq TO create_sig;
+
+GRANT ALL ON SEQUENCE m_economie.an_site_doc_media_gig_seq TO sig_create;
+GRANT ALL ON SEQUENCE m_economie.an_site_doc_media_gig_seq TO public;
+GRANT ALL ON SEQUENCE m_economie.an_site_doc_media_gig_seq TO create_sig;
+
+GRANT ALL ON SEQUENCE m_economie.h_an_sa_etab_gid_seq TO sig_create;
+GRANT ALL ON SEQUENCE m_economie.h_an_sa_etab_gid_seq TO public;
+GRANT ALL ON SEQUENCE m_economie.h_an_sa_etab_gid_seq TO create_s
+
+GRANT ALL ON SEQUENCE m_economie.h_an_sa_site_id_seq TO sig_create;
+GRANT ALL ON SEQUENCE m_economie.h_an_sa_site_id_seq TO public;
+GRANT ALL ON SEQUENCE m_economie.h_an_sa_site_id_seq TO create_sig;
+
+GRANT ALL ON SEQUENCE m_amenagement.h_an_amt_site_mixte_gid_seq TO sig_create;
+GRANT ALL ON SEQUENCE m_amenagement.h_an_amt_site_mixte_gid_seq TO public;
 
 
 -- #################################################################### TABLE  ####################################################################
