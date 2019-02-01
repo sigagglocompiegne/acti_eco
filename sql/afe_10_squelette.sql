@@ -4237,6 +4237,50 @@ ALTER TABLE m_amenagement.h_an_amt_site_mixte
   OWNER TO sig_create;
 
 				  
+-- ################################################# Classe des objets ZAE transférées ##################################
+
+				  -- Table: m_amenagement.geo_amt_zae_transfere
+
+-- DROP TABLE m_amenagement.geo_amt_zae_transfere;
+
+CREATE TABLE m_amenagement.geo_amt_zae_transfere
+(
+  idzae character varying(10) NOT NULL, -- Identifiant unique de la zae (dans le cas d'une ZAE commune à un site prend l'identifiant du site d'activité ou mixte)
+  insee character varying(50), -- Code(s) insee des communes recoupées par une ZAE
+  commune character varying(100), -- Libellé(s) des communes recoupées par une ZAE
+  op_sai character varying(80), -- Opérateur qui à saisie la donnée
+  org_sai character varying(150), -- Organisme dont l'opérateur de saisie appartient
+  observ character varying(254), -- Commentaires diverses
+  src_geom character varying(2), -- Référentiel géographique utilisé pour la saisie des données (liste de valeur)
+  date_sai timestamp without time zone, -- Date de saisie de la données
+  date_maj timestamp without time zone, -- Date de mise à jour de la donnée
+  sup_m2 integer, -- Superficie en m²
+  l_zae character varying(250), -- Libellé de la ZAE inscrite dans la délibération du 21 décembre 2017
+  geom geometry(MultiPolygon,2154),
+  CONSTRAINT geo_amt_zae_pkey PRIMARY KEY (idzae);
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE m_amenagement.geo_amt_zae_transfere
+  OWNER TO sig_create;
+
+COMMENT ON TABLE m_amenagement.geo_amt_zae_transfere
+  IS 'Table géographique contenant uniquement les zones d''activités de compétence communale qui ont été transférées sous compétence intercommunale (ZAE). Approuvés par le CA du 21 décembre 2017 dans le cadre de la prise de compétence économique sur les zones d''activités communales. La vue complète des ZAE se trouve dans le schéma x_apps.xapps_geo_v_zae (pour les ZAE uniquement) et m_economie.geo_v_site_eco (pour l''ensemble des sites d''activités dont les ZAE)';
+COMMENT ON COLUMN m_amenagement.geo_amt_zae_transfere.idzae IS 'Identifiant unique de la zae (dans le cas d''une ZAE commune à un site prend l''identifiant du site d''activité ou mixte)';
+COMMENT ON COLUMN m_amenagement.geo_amt_zae_transfere.insee IS 'Code(s) insee des communes recoupées par une ZAE';
+COMMENT ON COLUMN m_amenagement.geo_amt_zae_transfere.commune IS 'Libellé(s) des communes recoupées par une ZAE';
+COMMENT ON COLUMN m_amenagement.geo_amt_zae_transfere.op_sai IS 'Opérateur qui à saisie la donnée';
+COMMENT ON COLUMN m_amenagement.geo_amt_zae_transfere.org_sai IS 'Organisme dont l''opérateur de saisie appartient';
+COMMENT ON COLUMN m_amenagement.geo_amt_zae_transfere.observ IS 'Commentaires diverses';
+COMMENT ON COLUMN m_amenagement.geo_amt_zae_transfere.src_geom IS 'Référentiel géographique utilisé pour la saisie des données (liste de valeur)';
+COMMENT ON COLUMN m_amenagement.geo_amt_zae_transfere.date_sai IS 'Date de saisie de la données';
+COMMENT ON COLUMN m_amenagement.geo_amt_zae_transfere.date_maj IS 'Date de mise à jour de la donnée';
+COMMENT ON COLUMN m_amenagement.geo_amt_zae_transfere.sup_m2 IS 'Superficie en m²';
+COMMENT ON COLUMN m_amenagement.geo_amt_zae_transfere.l_zae IS 'Libellé de la ZAE inscrite dans la délibération du 21 décembre 2017';
+
+
+				  
 -- ################################################# Du schéma m_foncier ##################################
 
 -- ################################################# Classe des objets cessions ##################################
@@ -5029,7 +5073,11 @@ CONSTRAINT an_proced_consotype_fkey FOREIGN KEY (l_conso_type)
       ON UPDATE NO ACTION ON DELETE NO ACTION,
   CONSTRAINT lt_destdomi_fkey FOREIGN KEY (dest)
       REFERENCES m_urbanisme_doc_cnig2014.lt_destdomi (destdomi) MATCH SIMPLE
-      ON UPDATE NO ACTION ON DELETE NO ACTION;				  
+      ON UPDATE NO ACTION ON DELETE NO ACTION;		
+				  
+  CONSTRAINT geo_amt_zae_scr_geom_fkey FOREIGN KEY (src_geom)
+      REFERENCES r_objet.lt_src_geom (code) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION;
 				  
 -- ####################################################################################################################################################
 -- ###                                                                                                                                              ###
