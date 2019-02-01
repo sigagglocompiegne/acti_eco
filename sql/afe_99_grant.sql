@@ -501,23 +501,161 @@ GRANT ALL ON TABLE m_amenagement.an_amt_site_mixte TO sig_create;
 GRANT SELECT ON TABLE m_amenagement.an_amt_site_mixte TO read_sig;
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE m_amenagement.an_amt_site_mixte TO edit_sig;
 
-
-
-
-
+GRANT ALL ON TABLE m_amenagement.geo_amt_zae_transfere TO sig_create;
+GRANT SELECT ON TABLE m_amenagement.geo_amt_zae_transfere TO read_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE m_amenagement.geo_amt_zae_transfere TO edit_sig;
 
 
 -- #################################################################### VUE DE GESTION  ####################################################################
 
+GRANT ALL ON TABLE r_objet.geo_v_empesp_pu TO create_sig;
+GRANT SELECT ON TABLE r_objet.geo_v_empesp_pu TO read_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE r_objet.geo_v_empesp_pu TO edit_sig;
+GRANT ALL ON TABLE r_objet.geo_v_empesp_pu TO sig_create;
 
+GRANT ALL ON TABLE r_objet.geo_v_lot TO sig_create;
+GRANT ALL ON TABLE r_objet.geo_v_lot TO create_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE r_objet.geo_v_lot TO edit_sig;
+GRANT SELECT ON TABLE r_objet.geo_v_lot TO read_sig;
 
--- #################################################################### FUNCTION TRIGGER  ####################################################################
+GRANT ALL ON TABLE r_objet.geo_v_proc TO create_sig;
+GRANT SELECT ON TABLE r_objet.geo_v_proc TO read_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE r_objet.geo_v_proc TO edit_sig;
+GRANT ALL ON TABLE r_objet.geo_v_proc TO sig_create;
+
+GRANT ALL ON TABLE m_urbanisme_reg.geo_v_proc TO sig_create WITH GRANT OPTION;
+GRANT ALL ON TABLE m_urbanisme_reg.geo_v_proc TO create_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE m_urbanisme_reg.geo_v_proc TO edit_sig;
+GRANT SELECT ON TABLE m_urbanisme_reg.geo_v_proc TO read_sig;
+
+GRANT ALL ON TABLE m_economie.an_v_sa_etab_cree_majsirene TO sig_create;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE m_economie.an_v_sa_etab_cree_majsirene TO edit_sig;
+GRANT ALL ON TABLE m_economie.an_v_sa_etab_cree_majsirene TO create_sig;
+GRANT SELECT ON TABLE m_economie.an_v_sa_etab_cree_majsirene TO read_sig;
+
+GRANT ALL ON TABLE m_economie.an_v_sa_etab_sup_majsirene TO sig_create;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE m_economie.an_v_sa_etab_sup_majsirene TO edit_sig;
+GRANT ALL ON TABLE m_economie.an_v_sa_etab_sup_majsirene TO create_sig;
+GRANT SELECT ON TABLE m_economie.an_v_sa_etab_sup_majsirene TO read_sig;
+
+GRANT ALL ON TABLE m_economie.geo_v_etab TO sig_create;
+GRANT ALL ON TABLE m_economie.geo_v_etab TO create_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE m_economie.geo_v_etab TO edit_sig;
+GRANT SELECT ON TABLE m_economie.geo_v_etab TO read_sig;
+
+GRANT ALL ON TABLE m_economie.geo_v_lot_eco TO sig_create;
+GRANT ALL ON TABLE m_economie.geo_v_lot_eco TO create_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE m_economie.geo_v_lot_eco TO edit_sig;
+GRANT SELECT ON TABLE m_economie.geo_v_lot_eco TO read_sig;
+
+GRANT ALL ON TABLE m_economie.geo_v_site_eco TO sig_create;
+GRANT ALL ON TABLE m_economie.geo_v_site_eco TO create_sig;
+GRANT SELECT ON TABLE m_economie.geo_v_site_eco TO read_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE m_economie.geo_v_site_eco TO edit_sig;
+
+GRANT ALL ON TABLE m_amenagement.geo_v_empesp_pu TO sig_create;
+GRANT SELECT ON TABLE m_amenagement.geo_v_empesp_pu TO read_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE m_amenagement.geo_v_empesp_pu TO edit_sig;
+
+GRANT ALL ON TABLE m_amenagement.geo_v_lot_divers TO sig_create;
+GRANT ALL ON TABLE m_amenagement.geo_v_lot_divers TO create_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE m_amenagement.geo_v_lot_divers TO edit_sig;
+GRANT SELECT ON TABLE m_amenagement.geo_v_lot_divers TO read_sig;
+
+GRANT ALL ON TABLE m_amenagement.geo_v_lot_equ TO sig_create;
+GRANT ALL ON TABLE m_amenagement.geo_v_lot_equ TO create_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE m_amenagement.geo_v_lot_equ TO edit_sig;
+GRANT SELECT ON TABLE m_amenagement.geo_v_lot_equ TO read_sig;
+
+GRANT ALL ON TABLE m_amenagement.geo_v_lot_esppu TO sig_create;
+GRANT ALL ON TABLE m_amenagement.geo_v_lot_esppu TO create_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE m_amenagement.geo_v_lot_esppu TO edit_sig;
+GRANT SELECT ON TABLE m_amenagement.geo_v_lot_esppu TO read_sig;
+
+GRANT ALL ON TABLE m_amenagement.geo_v_lot_hab TO sig_create;
+GRANT ALL ON TABLE m_amenagement.geo_v_lot_hab TO create_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE m_amenagement.geo_v_lot_hab TO edit_sig;
+GRANT SELECT ON TABLE m_amenagement.geo_v_lot_hab TO read_sig;
+
+GRANT ALL ON TABLE m_amenagement.geo_v_lot_mixte TO sig_create;
+GRANT ALL ON TABLE m_amenagement.geo_v_lot_mixte TO create_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE m_amenagement.geo_v_lot_mixte TO edit_sig;
+GRANT SELECT ON TABLE m_amenagement.geo_v_lot_mixte TO read_sig;
+
+GRANT ALL ON TABLE m_amenagement.geo_v_site_equipement TO sig_create;
+GRANT SELECT ON TABLE m_amenagement.geo_v_site_equipement TO read_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE m_amenagement.geo_v_site_equipement TO edit_sig;
+
+GRANT ALL ON TABLE m_amenagement.geo_v_site_habitat TO sig_create;
+GRANT SELECT ON TABLE m_amenagement.geo_v_site_habitat TO read_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE m_amenagement.geo_v_site_habitat TO edit_sig;
+
+GRANT ALL ON TABLE m_amenagement.geo_v_site_mixte TO sig_create;
+GRANT SELECT ON TABLE m_amenagement.geo_v_site_mixte TO read_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE m_amenagement.geo_v_site_mixte TO edit_sig;
 
 
 
 -- #################################################################### VUE APPLICATIVE  ####################################################################
 
+GRANT ALL ON TABLE x_apps.xapps_an_v_synt_proc TO sig_create;
+GRANT ALL ON TABLE x_apps.xapps_an_v_synt_proc TO create_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE x_apps.xapps_an_v_synt_proc TO edit_sig;
+GRANT SELECT ON TABLE x_apps.xapps_an_v_synt_proc TO read_sig;
 
+GRANT ALL ON TABLE x_apps.xapps_an_vmr_bilan_procedure TO sig_create;
+GRANT ALL ON TABLE x_apps.xapps_an_vmr_bilan_procedure TO create_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE x_apps.xapps_an_vmr_bilan_procedure TO edit_sig;
+GRANT SELECT ON TABLE x_apps.xapps_an_vmr_bilan_procedure TO read_sig;
+
+GRANT ALL ON TABLE x_apps.xapps_an_vmr_synt_pole TO sig_create;
+GRANT ALL ON TABLE x_apps.xapps_an_vmr_synt_pole TO create_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE x_apps.xapps_an_vmr_synt_pole TO edit_sig;
+GRANT SELECT ON TABLE x_apps.xapps_an_vmr_synt_pole TO read_sig;
+
+GRANT ALL ON TABLE x_apps.xapps_an_vmr_synt_site_act TO sig_create;
+GRANT ALL ON TABLE x_apps.xapps_an_vmr_synt_site_act TO create_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE x_apps.xapps_an_vmr_synt_site_act TO edit_sig;
+GRANT SELECT ON TABLE x_apps.xapps_an_vmr_synt_site_act TO read_sig;
+
+GRANT ALL ON TABLE x_apps.xapps_an_vmr_synt_site_mixte TO sig_create;
+GRANT ALL ON TABLE x_apps.xapps_an_vmr_synt_site_mixte TO create_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE x_apps.xapps_an_vmr_synt_site_mixte TO edit_sig;
+GRANT SELECT ON TABLE x_apps.xapps_an_vmr_synt_site_mixte TO read_sig;
+
+GRANT ALL ON TABLE x_apps.xapps_geo_v_lot_com TO sig_create;
+GRANT ALL ON TABLE x_apps.xapps_geo_v_lot_com TO create_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE x_apps.xapps_geo_v_lot_com TO edit_sig;
+GRANT SELECT ON TABLE x_apps.xapps_geo_v_lot_com TO read_sig;
+
+GRANT ALL ON TABLE x_apps.xapps_geo_v_lot_nr TO sig_create;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE x_apps.xapps_geo_v_lot_nr TO edit_sig;
+GRANT SELECT ON TABLE x_apps.xapps_geo_v_lot_nr TO read_sig;
+
+GRANT ALL ON TABLE x_apps.xapps_geo_v_lotmixte_etiq TO sig_create;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE x_apps.xapps_geo_v_lotmixte_etiq TO edit_sig;
+GRANT SELECT ON TABLE x_apps.xapps_geo_v_lotmixte_etiq TO read_sig;
+
+GRANT ALL ON TABLE x_apps.xapps_geo_v_site_lot_hab TO sig_create;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE x_apps.xapps_geo_v_site_lot_hab TO edit_sig;
+GRANT ALL ON TABLE x_apps.xapps_geo_v_site_lot_hab TO create_sig;
+GRANT SELECT ON TABLE x_apps.xapps_geo_v_site_lot_hab TO read_sig;
+
+GRANT ALL ON TABLE x_apps.xapps_geo_v_zae TO sig_create;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE x_apps.xapps_geo_v_zae TO edit_sig;
+GRANT ALL ON TABLE x_apps.xapps_geo_v_zae TO create_sig;
+GRANT SELECT ON TABLE x_apps.xapps_geo_v_zae TO read_sig;
+
+GRANT ALL ON TABLE x_apps.xapps_geo_vmr_etab TO sig_create;
+GRANT ALL ON TABLE x_apps.xapps_geo_vmr_etab TO create_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE x_apps.xapps_geo_vmr_etab TO edit_sig;
+GRANT SELECT ON TABLE x_apps.xapps_geo_vmr_etab TO read_sig;
+
+GRANT ALL ON TABLE x_apps.xapps_geo_vmr_proc TO sig_create WITH GRANT OPTION;
+GRANT ALL ON TABLE x_apps.xapps_geo_vmr_proc TO create_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE x_apps.xapps_geo_vmr_proc TO edit_sig;
+GRANT SELECT ON TABLE x_apps.xapps_geo_vmr_proc TO read_sig;
+GRANT UPDATE ON TABLE x_apps.xapps_geo_vmr_proc TO public;
 
 
 -- #################################################################### VUE GRAND PUBLIC  ####################################################################
@@ -527,3 +665,6 @@ GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE m_amenagement.an_amt_site_mixte TO
 -- #################################################################### VUE OPENDATA  ####################################################################
 
 -- sans objet
+
+-- #################################################################### FUNCTION TRIGGER  ####################################################################
+
