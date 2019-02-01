@@ -10,6 +10,7 @@ Les données métiers gérées par le pôle aménagement-grand projet (acquisiti
  
  * **résumé fonctionnel** :
 
+Pour rappel des grands principes :
 
 
 
