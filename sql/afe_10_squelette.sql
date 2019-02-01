@@ -69,6 +69,20 @@ COMMENT ON SCHEMA s_sirene
   IS 'Données du référentiel SIRENE de l''INSEE sur les établissements (la table sirene_liste_juil2015 sera remplacée lors de la migration de la base et de la réinjection des historiques de SIRENE réalisée dans le cadre du test sur l''urbanisation des données)';
 */
 
+/*
+-- Schema: m_urbanisme_reg
+
+-- DROP SCHEMA m_urbanisme_reg;
+
+CREATE SCHEMA m_urbanisme_reg
+  AUTHORIZATION sig_create;
+
+
+COMMENT ON SCHEMA m_urbanisme_reg
+  IS 'Données géographiques métiers sur l''urbanisme réglementaire';
+
+*/
+
 
 
 -- ####################################################################################################################################################
@@ -1395,6 +1409,149 @@ COMMENT ON COLUMN s_sirene.naf_n5.code_apet700 IS 'Code des APET700 simplifié s
 
 -- la liste des valeurs correspondant à la liste officielle de l'Insee (se reporter à cette liste pour visualiser toutes les valeurs
 
+
+-- ################################################# Du schéma m_urbanisme_reg ##################################
+
+-- ################################################################# Domaine valeur - type de consommation  ###############################################
+
+-- Table: m_urbanisme_reg.lt_conso_type
+
+-- DROP TABLE m_urbanisme_reg.lt_conso_type;
+
+CREATE TABLE m_urbanisme_reg.lt_conso_type
+(
+  l_conso_type character varying(2) NOT NULL, -- Code du type de consommation de surface
+  l_conso_type_lib character varying(50), -- Libellé du type de consommation de surface
+  CONSTRAINT lt_conso_type_pkkey PRIMARY KEY (l_conso_type) -- Clé primaire de la table l_conso_type
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE m_urbanisme_reg.lt_conso_type
+  OWNER TO sig_create;
+
+COMMENT ON TABLE m_urbanisme_reg.lt_conso_type
+  IS 'Liste de valeurs de la procédure d''aménagement de la zone (table site)';
+COMMENT ON COLUMN m_urbanisme_reg.lt_conso_type.l_conso_type IS 'Code du type de consommation de surface';
+COMMENT ON COLUMN m_urbanisme_reg.lt_conso_type.l_conso_type_lib IS 'Libellé du type de consommation de surface';
+
+COMMENT ON CONSTRAINT lt_conso_type_pkkey ON m_urbanisme_reg.lt_conso_type IS 'Clé primaire de la table l_conso_type';
+
+INSERT INTO m_urbanisme_reg.lt_conso_type(
+            l_conso_type, l_conso_type_lib)
+    VALUES
+    ('00','Non renseigné'),
+    ('10','Renouvellement'),
+    ('20','Extension'),
+    ('30','Mixte');
+
+-- ################################################################# Domaine valeur - phasage opérationnelle  ###############################################
+
+-- Table: m_urbanisme_reg.lt_ope_phase
+
+-- DROP TABLE m_urbanisme_reg.lt_ope_phase;
+
+CREATE TABLE m_urbanisme_reg.lt_ope_phase
+(
+  l_ope_phase character varying(2) NOT NULL, -- Code de la phase de l'opération
+  l_ope_phase_lib character varying(50), -- Libellé de la phase de l'opération
+  CONSTRAINT lt_ope_phase_pkkey PRIMARY KEY (l_ope_phase) -- Clé primaire de la table lt_ope_phase
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE m_urbanisme_reg.lt_ope_phase
+  OWNER TO sig_create;
+
+COMMENT ON TABLE m_urbanisme_reg.lt_ope_phase
+  IS 'Liste de valeurs de la procédure d''aménagement de la zone (table site)';
+COMMENT ON COLUMN m_urbanisme_reg.lt_ope_phase.l_ope_phase IS 'Code de la phase de l''opération';
+COMMENT ON COLUMN m_urbanisme_reg.lt_ope_phase.l_ope_phase_lib IS 'Libellé de la phase de l''opération';
+
+COMMENT ON CONSTRAINT lt_ope_phase_pkkey ON m_urbanisme_reg.lt_ope_phase IS 'Clé primaire de la table lt_ope_phase';
+
+INSERT INTO m_urbanisme_reg.lt_ope_phase(
+            l_ope_phase, l_ope_phase_lib)
+    VALUES
+    ('00','Non renseigné'),
+    ('10','Etude de faisabilité'),
+    ('20','Acquisitions engagées - étude préopérationnelle'),
+    ('30','Opérationnelle'),
+    ('40','Achevée');
+
+
+-- ################################################################# Domaine valeur - procédure foncière  ###############################################
+
+-- Table: m_urbanisme_reg.lt_pr_fon_typ
+
+-- DROP TABLE m_urbanisme_reg.lt_pr_fon_typ;
+
+CREATE TABLE m_urbanisme_reg.lt_pr_fon_typ
+(
+  l_pr_fon_type character varying(2) NOT NULL, -- Code de la procédure foncière
+  l_pr_fon_type_lib character varying(50), -- Libellé de la procédure foncière
+  CONSTRAINT lt_pr_fon_typ_pkkey PRIMARY KEY (l_pr_fon_type) -- Clé primaire de la table lt_pr_fon_typ
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE m_urbanisme_reg.lt_pr_fon_typ
+  OWNER TO sig_create;
+
+COMMENT ON TABLE m_urbanisme_reg.lt_pr_fon_typ
+  IS 'Liste de valeurs de la procédure d''aménagement de la zone (table site)';
+COMMENT ON COLUMN m_urbanisme_reg.lt_pr_fon_typ.l_pr_fon_type IS 'Code de la procédure foncière';
+COMMENT ON COLUMN m_urbanisme_reg.lt_pr_fon_typ.l_pr_fon_type_lib IS 'Libellé de la procédure foncière';
+
+COMMENT ON CONSTRAINT lt_pr_fon_typ_pkkey ON m_urbanisme_reg.lt_pr_fon_typ IS 'Clé primaire de la table lt_pr_fon_typ';
+
+INSERT INTO m_urbanisme_reg.lt_pr_fon_typ(
+            l_pr_fon_type, l_pr_fon_type_lib)
+    VALUES
+    ('00','Non renseigné'),
+    ('10','DUP'),
+    ('20','Convention EPFLO'),
+    ('30','Acquisitions amiables'),
+    ('40','Opérateur privé');
+
+-- ################################################################# Domaine valeur - type de procédure  ###############################################
+
+-- Table: m_urbanisme_reg.lt_proced
+
+-- DROP TABLE m_urbanisme_reg.lt_proced;
+
+CREATE TABLE m_urbanisme_reg.lt_proced
+(
+  z_proced character varying(2) NOT NULL, -- Code de la procédure
+  proced_lib character varying(20), -- Libellé de la procédure
+  CONSTRAINT lt_proced_pkkey PRIMARY KEY (z_proced) -- Clé primaire de la table lt_proced
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE m_urbanisme_reg.lt_proced
+  OWNER TO sig_create;
+
+COMMENT ON TABLE m_urbanisme_reg.lt_proced
+  IS 'Liste de valeurs de la procédure d''aménagement de la zone (table site)';
+COMMENT ON COLUMN m_urbanisme_reg.lt_proced.z_proced IS 'Code de la procédure';
+COMMENT ON COLUMN m_urbanisme_reg.lt_proced.proced_lib IS 'Libellé de la procédure';
+
+COMMENT ON CONSTRAINT lt_proced_pkkey ON m_urbanisme_reg.lt_proced IS 'Clé primaire de la table lt_proced';
+
+INSERT INTO m_urbanisme_reg.lt_proced(
+            z_proced, proced_lib)
+    VALUES
+    ('00','Non renseigné'),
+    ('10','ZAC'),
+    ('21','Lotissement PA'),
+    ('22','Lotissement DP'),
+    ('30','PC valant division'),
+    ('40','AFU');
+
+-- ################################################################# Domaine valeur - destination  ###############################################
+
+-- cette liste de valeur est inclue dans le projet document d'urbanisme (lt_destdomi)
 
 -- ####################################################################################################################################################
 -- ###                                                                                                                                              ###
@@ -4527,7 +4684,102 @@ COMMENT ON COLUMN s_sirene.an_etablissement.gid IS 'Compteur (identifiant unique
 
 
 
-	  
+-- ################################################# Du schéma m_urbanisme_reg ##################################
+
+-- ################################################# Classe des objets des procédures ##################################
+
+-- Table: m_urbanisme_reg.an_proced
+
+-- DROP TABLE m_urbanisme_reg.an_proced;
+
+CREATE TABLE m_urbanisme_reg.an_proced
+(
+  idgeopo integer NOT NULL, -- Identifiant unique de l'entité géographique lot
+  idsite character varying(10) NOT NULL, -- Identifiant du site d'appartenance
+  l_ope_nom character varying(255), -- Libellé de l'opération
+  l_ope_alias character varying(255), -- Alias du nom de l'opération
+  dest character varying(2) DEFAULT '00'::character varying, -- Code de la destination du Site (issu de la liste des valeurs du modèle CNIG sur les PLU)
+  z_proced character varying(2) DEFAULT '00'::character varying, -- Code de la procédure d'aménagement
+  op_sai character varying(80), -- Libellé de la personne ayant saisie l'objet
+  l_ope_phase character varying(2), -- Phase de l'opération
+  l_ope_moa character varying(80), -- Maitrise d'ouvrage de l'opération
+  l_conso_type character varying(2), -- Type de consommation foncière
+  l_pr_urb boolean NOT NULL DEFAULT false, -- Procédure d'urbanisme
+  date_crea date, -- Date de réalisation
+  l_pr_fon boolean NOT NULL DEFAULT false, -- Procédure foncière
+  l_pr_fon_date date, -- Date de la procédure foncière
+  l_surf_ha double precision, -- Superficie totale programmée de l'opération en ha
+  l_existe boolean NOT NULL DEFAULT true, -- Existance du site
+  l_pr_fon_type character varying(2), -- Procédure foncière engagée
+  l_ref_compta character varying(5), -- Référence comptable du projet
+  l_observ character varying(255), -- Commentaire
+  date_sai timestamp without time zone, -- Date de saisie des données attributaires
+  date_maj timestamp without time zone, -- Date de mise à jour des données attributaires
+  l_surf_cess_ha numeric(10,2), -- Surface cessible programmée en ha
+  l_date_clo timestamp without time zone, -- Date de cloture de l'opération
+  l_nb_log integer, -- Nombre total de logements programmés
+  l_nb_logind integer, -- Nombre de logements individuels programmés
+  l_nb_logindgr integer, -- Nombre de logements individuels groupés programmés
+  l_nb_logcol integer, -- Nombre de logements collectifs programmés
+  l_nb_logaide integer, -- Nombre total de logements aidés programmés
+  l_nb_logaide_loc integer, -- Nombre total de logements aidés en location programmés
+  l_nb_logaide_acc integer, -- Nombre total de logements en accession en location programmés
+  l_nom_cp character varying(80), -- Nom du chef de projet suivant la procédure
+  CONSTRAINT an_proced_pkey PRIMARY KEY (idgeopo)
+  
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE m_urbanisme_reg.an_proced
+  OWNER TO sig_create;
+
+COMMENT ON TABLE m_urbanisme_reg.an_proced
+  IS 'Table alphanumérique contenant les données des sites opérationnels gérés par l''ARC';
+COMMENT ON COLUMN m_urbanisme_reg.an_proced.idgeopo IS 'Identifiant unique de l''entité géographique lot';
+COMMENT ON COLUMN m_urbanisme_reg.an_proced.idsite IS 'Identifiant du site d''appartenance';
+COMMENT ON COLUMN m_urbanisme_reg.an_proced.l_ope_nom IS 'Libellé de l''opération';
+COMMENT ON COLUMN m_urbanisme_reg.an_proced.l_ope_alias IS 'Alias du nom de l''opération';
+COMMENT ON COLUMN m_urbanisme_reg.an_proced.dest IS 'Code de la destination du Site (issu de la liste des valeurs du modèle CNIG sur les PLU)';
+COMMENT ON COLUMN m_urbanisme_reg.an_proced.z_proced IS 'Code de la procédure d''aménagement';
+COMMENT ON COLUMN m_urbanisme_reg.an_proced.op_sai IS 'Libellé de la personne ayant saisie l''objet';
+COMMENT ON COLUMN m_urbanisme_reg.an_proced.l_ope_phase IS 'Phase de l''opération';
+COMMENT ON COLUMN m_urbanisme_reg.an_proced.l_ope_moa IS 'Maitrise d''ouvrage de l''opération';
+COMMENT ON COLUMN m_urbanisme_reg.an_proced.l_conso_type IS 'Type de consommation foncière';
+COMMENT ON COLUMN m_urbanisme_reg.an_proced.l_pr_urb IS 'Procédure d''urbanisme';
+COMMENT ON COLUMN m_urbanisme_reg.an_proced.date_crea IS 'Date de réalisation';
+COMMENT ON COLUMN m_urbanisme_reg.an_proced.l_pr_fon IS 'Procédure foncière';
+COMMENT ON COLUMN m_urbanisme_reg.an_proced.l_pr_fon_date IS 'Date de la procédure foncière';
+COMMENT ON COLUMN m_urbanisme_reg.an_proced.l_surf_ha IS 'Superficie totale programmée de l''opération en ha';
+COMMENT ON COLUMN m_urbanisme_reg.an_proced.l_existe IS 'Existance du site';
+COMMENT ON COLUMN m_urbanisme_reg.an_proced.l_pr_fon_type IS 'Procédure foncière engagée';
+COMMENT ON COLUMN m_urbanisme_reg.an_proced.l_ref_compta IS 'Référence comptable du projet';
+COMMENT ON COLUMN m_urbanisme_reg.an_proced.l_observ IS 'Commentaire';
+COMMENT ON COLUMN m_urbanisme_reg.an_proced.date_sai IS 'Date de saisie des données attributaires';
+COMMENT ON COLUMN m_urbanisme_reg.an_proced.date_maj IS 'Date de mise à jour des données attributaires';
+COMMENT ON COLUMN m_urbanisme_reg.an_proced.l_surf_cess_ha IS 'Surface cessible programmée en ha';
+COMMENT ON COLUMN m_urbanisme_reg.an_proced.l_date_clo IS 'Date de cloture de l''opération';
+COMMENT ON COLUMN m_urbanisme_reg.an_proced.l_nb_log IS 'Nombre total de logements programmés';
+COMMENT ON COLUMN m_urbanisme_reg.an_proced.l_nb_logind IS 'Nombre de logements individuels programmés';
+COMMENT ON COLUMN m_urbanisme_reg.an_proced.l_nb_logindgr IS 'Nombre de logements individuels groupés programmés';
+COMMENT ON COLUMN m_urbanisme_reg.an_proced.l_nb_logcol IS 'Nombre de logements collectifs programmés';
+COMMENT ON COLUMN m_urbanisme_reg.an_proced.l_nb_logaide IS 'Nombre total de logements aidés programmés';
+COMMENT ON COLUMN m_urbanisme_reg.an_proced.l_nb_logaide_loc IS 'Nombre total de logements aidés en location programmés';
+COMMENT ON COLUMN m_urbanisme_reg.an_proced.l_nb_logaide_acc IS 'Nombre total de logements en accession en location programmés';
+COMMENT ON COLUMN m_urbanisme_reg.an_proced.l_nom_cp IS 'Nom du chef de projet suivant la procédure';
+
+
+-- Trigger: t_t1_an_proced_date_maj on m_urbanisme_reg.an_proced
+
+-- DROP TRIGGER t_t1_an_proced_date_maj ON m_urbanisme_reg.an_proced;
+
+CREATE TRIGGER t_t1_an_proced_date_maj
+  BEFORE INSERT OR UPDATE
+  ON m_urbanisme_reg.an_proced
+  FOR EACH ROW
+  EXECUTE PROCEDURE public.r_timestamp_maj();
+
+
 				  
 -- ####################################################################################################################################################
 -- ###                                                                                                                                              ###
@@ -4710,6 +4962,22 @@ CONSTRAINT geo_fon_acqui_condi_fkey FOREIGN KEY (l_condi)
   CONSTRAINT lt_vetab_fkey FOREIGN KEY (l_vetab)
       REFERENCES s_sirene.lt_vetab (l_vetab) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+CONSTRAINT an_proced_consotype_fkey FOREIGN KEY (l_conso_type)
+      REFERENCES m_urbanisme_reg.lt_conso_type (l_conso_type) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT an_proced_phase_fkey FOREIGN KEY (l_ope_phase)
+      REFERENCES m_urbanisme_reg.lt_ope_phase (l_ope_phase) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT an_proced_prfontype_fkey FOREIGN KEY (l_pr_fon_type)
+      REFERENCES m_urbanisme_reg.lt_pr_fon_typ (l_pr_fon_type) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT lt_amt_peri_ope_z_proced_fkey FOREIGN KEY (z_proced)
+      REFERENCES m_urbanisme_reg.lt_proced (z_proced) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT lt_destdomi_fkey FOREIGN KEY (dest)
+      REFERENCES m_urbanisme_doc_cnig2014.lt_destdomi (destdomi) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION;				  
 				  
 -- ####################################################################################################################################################
 -- ###                                                                                                                                              ###
