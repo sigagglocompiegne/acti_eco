@@ -2786,8 +2786,543 @@ CREATE TRIGGER t_t5_suivi
   FOR EACH ROW
   EXECUTE PROCEDURE m_economie.r_suivi_audit();
 
+				 
+-- ################################################# Classe des objets des établissements spécifiques ##################################
 
-                   
+-- Table: m_economie.geo_sa_etabp
+
+-- DROP TABLE m_economie.geo_sa_etabp;
+
+CREATE TABLE m_economie.geo_sa_etabp
+(
+  idgeoet integer NOT NULL, -- Identifiant géographique unique
+  idsiren character varying(9), -- Numéro SIRENE de l'établissement (si connu)
+  idsiret character varying(14), -- Numéro SIRET de l'établissement (si connu)
+  idsite character varying(10), -- Identifiant du site d'activité d'appartenance
+  date_sai timestamp without time zone DEFAULT now(), -- Date de saisie par le producteur
+  op_sai character varying(80), -- Libellé de l'opérateur de Saisie
+  org_sai character varying(80), -- Libellé de l'organisme dont dépend l'opérateur de saisie
+  l_nom character varying(255), -- Libellé du nom de l'établissement spécifique
+  eff_etab integer, -- Effectif total de l'établissement
+  source_eff character varying(50), -- Source de l'effectif de l'établissement
+  date_eff date, -- Date de l'effectif
+  l_ape character varying(5), -- Code APE de l'établissement
+  l_nom_dir character varying(50), -- Libellé du nom du dirigeant de l'établissement par l'ARC
+  date_maj_dir date, -- Date de mise à jour du dirigeant
+  source_maj_dir character varying(50), -- Source de la mise à jour du dirigeant
+  l_tel character varying(15), -- Numéro de téléphone de l'établissement
+  l_mail character varying(80), -- Adresse mail du dirigeant de l'établissement
+  l_observ character varying(255), -- Commentaires
+  geom geometry(Point,2154) NOT NULL, -- Champ contenant la géométrie des objets
+  date_maj timestamp without time zone, -- Date de mise à jour
+  l_compte boolean DEFAULT true, -- Prise en compte de l'établissement pour le calcul des statistiques (nombre d'établissements et effectifs) dans les informations de synthèse....
+  l_tel_dir character varying(15), -- Numéro de téléphone direct du dirigeant
+  l_telp_dir character varying(15), -- Numéro de téléphone portable direct du dirigeant
+  l_mail_dir character varying(80), -- Adresse email du dirigeant
+  l_nom_drh character varying(255), -- Nom du DRH
+  l_tel_drh character varying(15), -- Numéro de téléphone direct du DRH
+  l_mail_drh character varying(80), -- Adresse email du DRH
+  l_nom_ad character varying(255), -- Nom de l'assistante de direction
+  l_tel_ad character varying(15), -- Numéro de téléphone direct de l'assistante de direction
+  l_mail_ad character varying(80), -- Adresse email de l'assistante de direction
+  l_url character varying(500), -- Lien du site internet de l'entreprise
+  l_url_bil character varying(500), -- Lien vers le bilan en ligne de l'entreprise
+  l_comp_ad character varying(100), -- Complément d'adresse (ex : nom du bâtiment)
+  src_geom character varying(2) DEFAULT '20'::character varying, -- Référentiel spatial utilisé pour la saisie
+  insee character varying(5),
+  commune character varying(80),
+  l_titre character varying(100), -- Titre du contact
+  eff_etab_d character varying(200), -- Précision (en détail) du nombre de CDD, CDI, intérim, ....
+  l_nom_aut character varying(255), -- Nom d'un autre responsable
+  l_titre_aut character varying(255), -- Titre de l'autre responsable
+  l_tel_aut character varying(15), -- Téléphone de l'autre responsable
+  l_mail_aut character varying(80), -- Email de l'autre responsable
+  date_maj_drh timestamp without time zone, -- Date de mise à jour du nom du DRH
+  date_maj_ad timestamp without time zone, -- Date de mise à jour de l'assistant(e) de direction
+  date_maj_aut timestamp without time zone, -- Date de mise à jour du nom de l'autre contact
+  l_titre_drh character varying(100), -- Titre du DRH
+  l_titre_ad character varying(100), -- Titre de l'assistant(e) de direction
+  l_drh_ss boolean DEFAULT true, -- Information sur le fait que la DRH soit sur le site (par défaut oui)
+  l_drh_ad character varying(150), -- Adresse extérieure de la DRH si pas sur le site
+  l_telp_aut character varying(15), -- Téléphone portable de l'autre responsable
+  CONSTRAINT geo_sa_etabp_pkey PRIMARY KEY (idgeoet)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE m_economie.geo_sa_etabp
+  OWNER TO sig_create;
+
+COMMENT ON TABLE m_economie.geo_sa_etabp
+  IS 'Données métiers sur les établissements non présent dans SIRENE (transition dans l''attente de leur intégration dans ce même fichier)';
+COMMENT ON COLUMN m_economie.geo_sa_etabp.idgeoet IS 'Identifiant géographique unique';
+COMMENT ON COLUMN m_economie.geo_sa_etabp.idsiren IS 'Numéro SIRENE de l''établissement (si connu)';
+COMMENT ON COLUMN m_economie.geo_sa_etabp.idsiret IS 'Numéro SIRET de l''établissement (si connu)';
+COMMENT ON COLUMN m_economie.geo_sa_etabp.idsite IS 'Identifiant du site d''activité d''appartenance';
+COMMENT ON COLUMN m_economie.geo_sa_etabp.date_sai IS 'Date de saisie par le producteur';
+COMMENT ON COLUMN m_economie.geo_sa_etabp.op_sai IS 'Libellé de l''opérateur de Saisie';
+COMMENT ON COLUMN m_economie.geo_sa_etabp.org_sai IS 'Libellé de l''organisme dont dépend l''opérateur de saisie';
+COMMENT ON COLUMN m_economie.geo_sa_etabp.l_nom IS 'Libellé du nom de l''établissement spécifique';
+COMMENT ON COLUMN m_economie.geo_sa_etabp.eff_etab IS 'Effectif total de l''établissement';
+COMMENT ON COLUMN m_economie.geo_sa_etabp.source_eff IS 'Source de l''effectif de l''établissement';
+COMMENT ON COLUMN m_economie.geo_sa_etabp.date_eff IS 'Date de l''effectif';
+COMMENT ON COLUMN m_economie.geo_sa_etabp.l_ape IS 'Code APE de l''établissement';
+COMMENT ON COLUMN m_economie.geo_sa_etabp.l_nom_dir IS 'Libellé du nom du dirigeant de l''établissement par l''ARC';
+COMMENT ON COLUMN m_economie.geo_sa_etabp.date_maj_dir IS 'Date de mise à jour du dirigeant';
+COMMENT ON COLUMN m_economie.geo_sa_etabp.source_maj_dir IS 'Source de la mise à jour du dirigeant';
+COMMENT ON COLUMN m_economie.geo_sa_etabp.l_tel IS 'Numéro de téléphone de l''établissement';
+COMMENT ON COLUMN m_economie.geo_sa_etabp.l_mail IS 'Adresse mail du dirigeant de l''établissement';
+COMMENT ON COLUMN m_economie.geo_sa_etabp.l_observ IS 'Commentaires';
+COMMENT ON COLUMN m_economie.geo_sa_etabp.geom IS 'Champ contenant la géométrie des objets';
+COMMENT ON COLUMN m_economie.geo_sa_etabp.date_maj IS 'Date de mise à jour';
+COMMENT ON COLUMN m_economie.geo_sa_etabp.l_compte IS 'Prise en compte de l''établissement pour le calcul des statistiques (nombre d''établissements et effectifs) dans les informations de synthèse.
+Par défaut TRUE et laisse le choix à l''administrateur de la donnée de modifier cette valeur.';
+COMMENT ON COLUMN m_economie.geo_sa_etabp.l_tel_dir IS 'Numéro de téléphone direct du dirigeant';
+COMMENT ON COLUMN m_economie.geo_sa_etabp.l_telp_dir IS 'Numéro de téléphone portable direct du dirigeant';
+COMMENT ON COLUMN m_economie.geo_sa_etabp.l_mail_dir IS 'Adresse email du dirigeant';
+COMMENT ON COLUMN m_economie.geo_sa_etabp.l_nom_drh IS 'Nom du DRH';
+COMMENT ON COLUMN m_economie.geo_sa_etabp.l_tel_drh IS 'Numéro de téléphone direct du DRH';
+COMMENT ON COLUMN m_economie.geo_sa_etabp.l_mail_drh IS 'Adresse email du DRH';
+COMMENT ON COLUMN m_economie.geo_sa_etabp.l_nom_ad IS 'Nom de l''assistante de direction';
+COMMENT ON COLUMN m_economie.geo_sa_etabp.l_tel_ad IS 'Numéro de téléphone direct de l''assistante de direction';
+COMMENT ON COLUMN m_economie.geo_sa_etabp.l_mail_ad IS 'Adresse email de l''assistante de direction';
+COMMENT ON COLUMN m_economie.geo_sa_etabp.l_url IS 'Lien du site internet de l''entreprise';
+COMMENT ON COLUMN m_economie.geo_sa_etabp.l_url_bil IS 'Lien vers le bilan en ligne de l''entreprise';
+COMMENT ON COLUMN m_economie.geo_sa_etabp.l_comp_ad IS 'Complément d''adresse (ex : nom du bâtiment)';
+COMMENT ON COLUMN m_economie.geo_sa_etabp.src_geom IS 'Référentiel spatial utilisé pour la saisie';
+COMMENT ON COLUMN m_economie.geo_sa_etabp.l_titre IS 'Titre du contact';
+COMMENT ON COLUMN m_economie.geo_sa_etabp.eff_etab_d IS 'Précision (en détail) du nombre de CDD, CDI, intérim, ....';
+COMMENT ON COLUMN m_economie.geo_sa_etabp.l_nom_aut IS 'Nom d''un autre responsable';
+COMMENT ON COLUMN m_economie.geo_sa_etabp.l_titre_aut IS 'Titre de l''autre responsable';
+COMMENT ON COLUMN m_economie.geo_sa_etabp.l_tel_aut IS 'Téléphone de l''autre responsable';
+COMMENT ON COLUMN m_economie.geo_sa_etabp.l_mail_aut IS 'Email de l''autre responsable';
+COMMENT ON COLUMN m_economie.geo_sa_etabp.date_maj_drh IS 'Date de mise à jour du nom du DRH';
+COMMENT ON COLUMN m_economie.geo_sa_etabp.date_maj_ad IS 'Date de mise à jour de l''assistant(e) de direction';
+COMMENT ON COLUMN m_economie.geo_sa_etabp.date_maj_aut IS 'Date de mise à jour du nom de l''autre contact';
+COMMENT ON COLUMN m_economie.geo_sa_etabp.l_titre_drh IS 'Titre du DRH';
+COMMENT ON COLUMN m_economie.geo_sa_etabp.l_titre_ad IS 'Titre de l''assistant(e) de direction';
+COMMENT ON COLUMN m_economie.geo_sa_etabp.l_drh_ss IS 'Information sur le fait que la DRH soit sur le site (par défaut oui)';
+COMMENT ON COLUMN m_economie.geo_sa_etabp.l_drh_ad IS 'Adresse extérieure de la DRH si pas sur le site';
+COMMENT ON COLUMN m_economie.geo_sa_etabp.l_telp_aut IS 'Téléphone portable de l''autre responsable';
+
+				 
+-- Function: m_economie.m_etabp_insert()
+
+-- DROP FUNCTION m_economie.m_etabp_insert();
+
+CREATE OR REPLACE FUNCTION m_economie.m_etabp_insert()
+  RETURNS trigger AS
+$BODY$
+
+BEGIN
+    new.idgeoet = (SELECT nextval('idgeo_seq'::regclass));
+    -- insertion du numéro du site
+    new.idsite = (SELECT DISTINCT
+				an_sa_site.idsite 
+		  FROM 
+				m_economie.an_sa_site, r_objet.geo_objet_ope
+		  WHERE
+				geo_objet_ope.idsite=an_sa_site.idsite
+		  AND
+				st_intersects(geo_objet_ope.geom,new.geom) = true
+		  );
+	
+    return new ;
+END;
+
+
+
+
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION m_economie.m_etabp_insert()
+  OWNER TO sig_create;
+
+
+
+-- Trigger: t_t1_etabp_insert on m_economie.geo_sa_etabp
+
+-- DROP TRIGGER t_t1_etabp_insert ON m_economie.geo_sa_etabp;
+
+CREATE TRIGGER t_t1_etabp_insert
+  BEFORE INSERT
+  ON m_economie.geo_sa_etabp
+  FOR EACH ROW
+  EXECUTE PROCEDURE m_economie.m_etabp_insert();
+
+-- Trigger: t_t2_etabp_insert_date_maj on m_economie.geo_sa_etabp
+
+-- DROP TRIGGER t_t2_etabp_insert_date_maj ON m_economie.geo_sa_etabp;
+
+CREATE TRIGGER t_t2_etabp_insert_date_maj
+  BEFORE INSERT
+  ON m_economie.geo_sa_etabp
+  FOR EACH ROW
+  EXECUTE PROCEDURE public.r_timestamp_maj();
+
+-- Trigger: t_t3_etabp_insert_date_sai on m_economie.geo_sa_etabp
+
+-- DROP TRIGGER t_t3_etabp_insert_date_sai ON m_economie.geo_sa_etabp;
+
+CREATE TRIGGER t_t3_etabp_insert_date_sai
+  BEFORE INSERT
+  ON m_economie.geo_sa_etabp
+  FOR EACH ROW
+  EXECUTE PROCEDURE public.r_timestamp_sai();
+
+-- Function: m_economie.m_etabp_null()
+
+-- DROP FUNCTION m_economie.m_etabp_null();
+
+CREATE OR REPLACE FUNCTION m_economie.m_etabp_null()
+  RETURNS trigger AS
+$BODY$
+
+BEGIN
+
+    -- insertion du numéro du site
+    UPDATE m_economie.geo_sa_etabp SET idsiren = null WHERE idsiren='';
+    UPDATE m_economie.geo_sa_etabp SET idsiret = null WHERE idsiret='';
+    UPDATE m_economie.geo_sa_etabp SET op_sai = null WHERE op_sai='';
+    UPDATE m_economie.geo_sa_etabp SET org_sai = null WHERE org_sai='';
+    UPDATE m_economie.geo_sa_etabp SET l_nom = null WHERE l_nom='';
+    UPDATE m_economie.geo_sa_etabp SET source_eff = null WHERE source_eff='';
+    UPDATE m_economie.geo_sa_etabp SET l_ape = null WHERE l_ape='';
+    UPDATE m_economie.geo_sa_etabp SET l_nom_dir = null WHERE l_nom_dir='';
+    UPDATE m_economie.geo_sa_etabp SET source_maj_dir = null WHERE source_maj_dir='';
+    UPDATE m_economie.geo_sa_etabp SET l_tel = null WHERE l_tel='';
+    UPDATE m_economie.geo_sa_etabp SET l_mail = null WHERE l_mail='';
+    UPDATE m_economie.geo_sa_etabp SET l_observ = null WHERE l_observ='';
+    return new ;
+END;
+
+
+
+
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION m_economie.m_etabp_null()
+  OWNER TO sig_create;
+
+
+				  				  
+-- Trigger: t_t4_etabp_null on m_economie.geo_sa_etabp
+
+-- DROP TRIGGER t_t4_etabp_null ON m_economie.geo_sa_etabp;
+
+CREATE TRIGGER t_t4_etabp_null
+  AFTER INSERT OR UPDATE
+  ON m_economie.geo_sa_etabp
+  FOR EACH ROW
+  EXECUTE PROCEDURE m_economie.m_etabp_null();
+
+-- Function: m_economie.m_etabp_update()
+
+-- DROP FUNCTION m_economie.m_etabp_update();
+
+CREATE OR REPLACE FUNCTION m_economie.m_etabp_update()
+  RETURNS trigger AS
+$BODY$
+
+BEGIN
+
+    -- insertion du numéro du site
+    new.idsite = (SELECT DISTINCT
+				an_sa_site.idsite 
+		  FROM 
+				m_economie.an_sa_site, r_objet.geo_objet_ope
+		  WHERE
+				geo_objet_ope.idsite=an_sa_site.idsite
+		  AND
+				st_intersects(geo_objet_ope.geom,new.geom) = true
+		  );
+	
+    return new ;
+END;
+
+
+
+
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION m_economie.m_etabp_update()
+  OWNER TO sig_create;
+
+
+				  
+-- Trigger: t_t5_etabp_update on m_economie.geo_sa_etabp
+
+-- DROP TRIGGER t_t5_etabp_update ON m_economie.geo_sa_etabp;
+
+CREATE TRIGGER t_t5_etabp_update
+  BEFORE UPDATE
+  ON m_economie.geo_sa_etabp
+  FOR EACH ROW
+  EXECUTE PROCEDURE m_economie.m_etabp_update();
+
+-- Trigger: t_t6_etabp_update_datemaj on m_economie.geo_sa_etabp
+
+-- DROP TRIGGER t_t6_etabp_update_datemaj ON m_economie.geo_sa_etabp;
+
+CREATE TRIGGER t_t6_etabp_update_datemaj
+  BEFORE UPDATE
+  ON m_economie.geo_sa_etabp
+  FOR EACH ROW
+  EXECUTE PROCEDURE public.r_timestamp_maj();
+
+-- Trigger: t_t7_geo_sa_etabp_insee on m_economie.geo_sa_etabp
+
+-- DROP TRIGGER t_t7_geo_sa_etabp_insee ON m_economie.geo_sa_etabp;
+
+CREATE TRIGGER t_t7_geo_sa_etabp_insee
+  BEFORE INSERT OR UPDATE OF geom
+  ON m_economie.geo_sa_etabp
+  FOR EACH ROW
+  EXECUTE PROCEDURE public.r_commune_pl();
+
+-- Trigger: t_t8_suivi on m_economie.geo_sa_etabp
+
+-- DROP TRIGGER t_t8_suivi ON m_economie.geo_sa_etabp;
+
+CREATE TRIGGER t_t8_suivi
+  AFTER INSERT OR UPDATE OR DELETE
+  ON m_economie.geo_sa_etabp
+  FOR EACH ROW
+  EXECUTE PROCEDURE m_economie.r_suivi_audit();
+
+-- ################################################# Classe des objets des poles ############################
+
+-- Table: m_economie.geo_sa_pole
+
+-- DROP TABLE m_economie.geo_sa_pole;
+
+CREATE TABLE m_economie.geo_sa_pole
+(
+  idpole character varying(7) NOT NULL, -- Identifiant unique du pôle d'activité
+  nom_pole character varying(100), -- Libellé du pôle d'activités
+  date_sai timestamp without time zone DEFAULT now(), -- Date de saisie
+  date_maj timestamp without time zone, -- Date de mise à jour
+  date_int date, -- Date renseignée par GéoPicardie lors de l'intégration du fichier dans la base (correspond aux dernières données reçues)
+  op_sai character varying(50), -- Opérateur de saisie
+  org_sai character varying(100), -- Organisme de saisie
+  dest character varying(2) DEFAULT '00'::character varying, -- Destination du pôle (issue de la destination des sites)
+  geom geometry(Polygon,2154), -- Champ contenant la géométrie des objets
+  src_geom character varying(2) DEFAULT '00'::character varying, -- Référentiel spatial pour la saisie des données
+  CONSTRAINT geo_sa_pole_pkey PRIMARY KEY (idpole)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE m_economie.geo_sa_pole
+  OWNER TO sig_create;
+
+COMMENT ON TABLE m_economie.geo_sa_pole
+  IS 'Pôle d''activités économiques (regroupement de site). Usage statistique au niveau Régional';
+COMMENT ON COLUMN m_economie.geo_sa_pole.idpole IS 'Identifiant unique du pôle d''activité';
+COMMENT ON COLUMN m_economie.geo_sa_pole.nom_pole IS 'Libellé du pôle d''activités';
+COMMENT ON COLUMN m_economie.geo_sa_pole.date_sai IS 'Date de saisie';
+COMMENT ON COLUMN m_economie.geo_sa_pole.date_maj IS 'Date de mise à jour';
+COMMENT ON COLUMN m_economie.geo_sa_pole.date_int IS 'Date renseignée par GéoPicardie lors de l''intégration du fichier dans la base (correspond aux dernières données reçues)';
+COMMENT ON COLUMN m_economie.geo_sa_pole.op_sai IS 'Opérateur de saisie';
+COMMENT ON COLUMN m_economie.geo_sa_pole.org_sai IS 'Organisme de saisie';
+COMMENT ON COLUMN m_economie.geo_sa_pole.dest IS 'Destination du pôle (issue de la destination des sites)';
+COMMENT ON COLUMN m_economie.geo_sa_pole.geom IS 'Champ contenant la géométrie des objets';
+COMMENT ON COLUMN m_economie.geo_sa_pole.src_geom IS 'Référentiel spatial pour la saisie des données';
+
+
+-- Trigger: t_t1_pole_insert_date_maj on m_economie.geo_sa_pole
+
+-- DROP TRIGGER t_t1_pole_insert_date_maj ON m_economie.geo_sa_pole;
+
+CREATE TRIGGER t_t1_pole_insert_date_maj
+  BEFORE INSERT
+  ON m_economie.geo_sa_pole
+  FOR EACH ROW
+  EXECUTE PROCEDURE public.r_timestamp_maj();
+
+-- Trigger: t_t2_pole_insert_date_sai on m_economie.geo_sa_pole
+
+-- DROP TRIGGER t_t2_pole_insert_date_sai ON m_economie.geo_sa_pole;
+
+CREATE TRIGGER t_t2_pole_insert_date_sai
+  BEFORE INSERT
+  ON m_economie.geo_sa_pole
+  FOR EACH ROW
+  EXECUTE PROCEDURE public.r_timestamp_sai();
+
+-- Trigger: t_t3_pole_modif_att on m_economie.geo_sa_pole
+
+-- DROP TRIGGER t_t3_pole_modif_att ON m_economie.geo_sa_pole;
+
+CREATE TRIGGER t_t3_pole_modif_att
+  BEFORE UPDATE OF op_sai, org_sai, dest, nom_pole
+  ON m_economie.geo_sa_pole
+  FOR EACH ROW
+  EXECUTE PROCEDURE public.r_timestamp_maj();
+
+-- Trigger: t_t4_pole_modif_geom on m_economie.geo_sa_pole
+
+-- DROP TRIGGER t_t4_pole_modif_geom ON m_economie.geo_sa_pole;
+
+CREATE TRIGGER t_t4_pole_modif_geom
+  BEFORE UPDATE OF geom
+  ON m_economie.geo_sa_pole
+  FOR EACH ROW
+  EXECUTE PROCEDURE public.r_timestamp_maj();
+
+-- ################################################# Classe des objets des sites en zone urbaine (données externes GéoPicardie) ############################
+				  
+-- Table: m_economie.geo_sa_site_zu
+
+-- DROP TABLE m_economie.geo_sa_site_zu;
+
+CREATE TABLE m_economie.geo_sa_site_zu
+(
+  idsite character varying(254) NOT NULL,
+  idpole character varying(254),
+  site_nom character varying(254),
+  site_etat character varying(254),
+  surf_brt bigint,
+  surf_net bigint,
+  date_sai character varying(254),
+  date_maj character varying(254),
+  op_sai character varying(254),
+  org_sai character varying(254),
+  ref_spa character varying(254),
+  prec_qtv bigint,
+  typo character varying(254),
+  geom geometry(MultiPolygon,2154),
+  CONSTRAINT geo_sa_site_zu_pkey PRIMARY KEY (idsite)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE m_economie.geo_sa_site_zu
+  OWNER TO sig_create;
+
+COMMENT ON TABLE m_economie.geo_sa_site_zu
+  IS 'Délimitation des sites des secteurs de centre-ville (zone urbaine) issue d''un traitement GéoPicardie.
+Couche extraite du portail GéoPicardie le 2 mai 2017';
+
+-- ################################################# Classe des objets historiques des établissements ############################
+
+-- Table: m_economie.h_an_sa_etab
+
+-- DROP TABLE m_economie.h_an_sa_etab;
+
+CREATE TABLE m_economie.h_an_sa_etab
+(
+  idgeoet integer, -- Identifiant unique géographique
+  idsiren character varying(9), -- Numéro SIRENE de l'établissement
+  idsiret character varying(14), -- Numéro SIRET de l'établissement
+  idsite character varying(10), -- Identifiant du site d'activité d'appartenance
+  date_maj timestamp without time zone, -- Date de mise à jour par le producteur
+  date_h timestamp without time zone, -- Date de mise en historique
+  l_nom character varying(255), -- Enseigne dans SIRENE
+  l1_nomen character varying(255), -- Raison sociale de l'établissement dans SIRENE
+  enseigne character varying(255),
+  eff_etab integer, -- Effectif total de l'établissement
+  eff_etab_etp double precision, -- Effectif de l'établissement en etp
+  source_eff character varying(100), -- Source de l'effectif de l'établissement
+  annee_eff integer, -- Année de l'effectif (issu de SIRENE)
+  l_date_eff date, -- Date de l'effectif saisie par l'ARC
+  l_nom_dir character varying(100), -- Libellé du nom du dirigeant de l'établissement par l'ARC
+  l_observ character varying(255), -- Commentaires
+  t_source character varying(30), -- Nom de la table source
+  geom geometry(Point,2154) NOT NULL,
+  gid serial NOT NULL,
+  CONSTRAINT h_an_sa_etab_pkey PRIMARY KEY (gid)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE m_economie.h_an_sa_etab
+  OWNER TO sig_create;
+
+COMMENT ON TABLE m_economie.h_an_sa_etab
+  IS E'Table contenant les données historisées des établissements.
+Cette table est incrémentée chaque année par un Workflow FME (Y:\\Ressources\\4-Partage\\3-Procedures\\FME\\prod\\ECO\\historisation_annuelle_site_etab.fmw)';
+COMMENT ON COLUMN m_economie.h_an_sa_etab.idgeoet IS 'Identifiant unique géographique';
+COMMENT ON COLUMN m_economie.h_an_sa_etab.idsiren IS 'Numéro SIRENE de l''établissement';
+COMMENT ON COLUMN m_economie.h_an_sa_etab.idsiret IS 'Numéro SIRET de l''établissement';
+COMMENT ON COLUMN m_economie.h_an_sa_etab.idsite IS 'Identifiant du site d''activité d''appartenance';
+COMMENT ON COLUMN m_economie.h_an_sa_etab.date_maj IS 'Date de mise à jour par le producteur';
+COMMENT ON COLUMN m_economie.h_an_sa_etab.date_h IS 'Date de mise en historique';
+COMMENT ON COLUMN m_economie.h_an_sa_etab.l_nom IS 'Enseigne dans SIRENE';
+COMMENT ON COLUMN m_economie.h_an_sa_etab.l1_nomen IS 'Raison sociale de l''établissement dans SIRENE';
+COMMENT ON COLUMN m_economie.h_an_sa_etab.eff_etab IS 'Effectif total de l''établissement';
+COMMENT ON COLUMN m_economie.h_an_sa_etab.eff_etab_etp IS 'Effectif de l''établissement en etp';
+COMMENT ON COLUMN m_economie.h_an_sa_etab.source_eff IS 'Source de l''effectif de l''établissement';
+COMMENT ON COLUMN m_economie.h_an_sa_etab.annee_eff IS 'Année de l''effectif (issu de SIRENE)';
+COMMENT ON COLUMN m_economie.h_an_sa_etab.l_date_eff IS 'Date de l''effectif saisie par l''ARC';
+COMMENT ON COLUMN m_economie.h_an_sa_etab.l_nom_dir IS 'Libellé du nom du dirigeant de l''établissement par l''ARC';
+COMMENT ON COLUMN m_economie.h_an_sa_etab.l_observ IS 'Commentaires';
+COMMENT ON COLUMN m_economie.h_an_sa_etab.t_source IS 'Nom de la table source';
+
+
+-- ################################################# Classe des objets historiques des sites d'activités ############################
+
+-- Table: m_economie.h_an_sa_site
+
+-- DROP TABLE m_economie.h_an_sa_site;
+
+CREATE TABLE m_economie.h_an_sa_site
+(
+  idsite character varying(10),
+  site_nom character varying(80),
+  dest text,
+  voca text,
+  date_h timestamp with time zone,
+  annee_h integer,
+  nb_etab text,
+  eff_etab text,
+  surf_dispo_vente character varying,
+  surf_dedie_act character varying,
+  surf_reserve_projet character varying,
+  id serial NOT NULL, -- Identifiant unique interne
+  CONSTRAINT h_an_sa_site_pkey PRIMARY KEY (id)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE m_economie.h_an_sa_site
+  OWNER TO sig_create;
+
+COMMENT ON TABLE m_economie.h_an_sa_site
+  IS E'Table contenant les données historisées des sites à vocation économique (1er historisation 1er janvier 2018). Le millésime correspond au 1er janvier de l''année.
+Cette table est incrémentée chaque année par un Workflow FME (Y:\\Ressources\\4-Partage\\3-Procedures\\FME\\prod\\ECO\\historisation_annuelle_site_etab.fmw)';
+COMMENT ON COLUMN m_economie.h_an_sa_site.id IS 'Identifiant unique interne';
+
+-- ################################################# Classe des objets des logs ############################
+
+				  -- Table: m_economie.log_suivi_audit
+
+-- DROP TABLE m_economie.log_suivi_audit;
+
+CREATE TABLE m_economie.log_suivi_audit
+(
+  objet character varying(10),
+  d_maj timestamp without time zone,
+  "user" character varying(50),
+  relid character varying(255),
+  l_schema character varying(100),
+  l_table character varying(100),
+  idgeo integer,
+  modif character varying(5000),
+  geom geometry(MultiPolygon,2154),
+  geom1 geometry(Point,2154)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE m_economie.log_suivi_audit
+  OWNER TO sig_create;
+
+
+				  
 -- ####################################################################################################################################################
 -- ###                                                                                                                                              ###
 -- ###                                                                        FKEY                                                                  ###
@@ -2863,7 +3398,18 @@ CONSTRAINT geo_sa_bal_srcgeom_fkey FOREIGN KEY (src_geom)
   CONSTRAINT lt_bal_tlocal_fkey FOREIGN KEY (type_loc)
       REFERENCES m_economie.lt_bal_tlocal (type_loc) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION;
-			 
+
+  CONSTRAINT geo_sa_etabp_srcgeom_fkey FOREIGN KEY (src_geom)
+      REFERENCES r_objet.lt_src_geom (code) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION;
+				  
+  CONSTRAINT geo_sa_pole_srcgeom_fkey FOREIGN KEY (src_geom)
+      REFERENCES r_objet.lt_src_geom (code) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT lt_sa_dest_fkey FOREIGN KEY (dest)
+      REFERENCES m_economie.lt_sa_dest (dest) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION;
+				  
 -- ####################################################################################################################################################
 -- ###                                                                                                                                              ###
 -- ###                                                                INDEX                                                           ###
@@ -3000,3 +3546,33 @@ CREATE INDEX idx_geo_sa_bal_type_loc
   ON m_economie.geo_sa_bal
   USING btree
   (type_loc COLLATE pg_catalog."default");
+				 
+
+-- Index: m_economie.geo_sa_etabp_geom_idx
+
+-- DROP INDEX m_economie.geo_sa_etabp_geom_idx;
+
+CREATE INDEX geo_sa_etabp_geom_idx
+  ON m_economie.geo_sa_etabp
+  USING gist
+  (geom);
+
+
+-- Index: m_economie.geo_sa_pole_geom_idx
+
+-- DROP INDEX m_economie.geo_sa_pole_geom_idx;
+
+CREATE INDEX geo_sa_pole_geom_idx
+  ON m_economie.geo_sa_pole
+  USING gist
+  (geom);
+
+				  
+-- Index: m_economie.geo_sa_site_zu_geom_idx
+
+-- DROP INDEX m_economie.geo_sa_site_zu_geom_idx;
+
+CREATE INDEX geo_sa_site_zu_geom_idx
+  ON m_economie.geo_sa_site_zu
+  USING gist
+  (geom);
