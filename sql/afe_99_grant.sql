@@ -353,6 +353,158 @@ GRANT ALL ON SEQUENCE m_amenagement.h_an_amt_site_mixte_gid_seq TO public;
 
 -- #################################################################### TABLE  ####################################################################
 
+GRANT ALL ON TABLE s_sirene.an_etablissement TO sig_create;
+GRANT ALL ON TABLE s_sirene.an_etablissement TO create_sig;
+GRANT SELECT ON TABLE s_sirene.an_etablissement TO read_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE s_sirene.an_etablissement TO edit_sig;
+
+GRANT ALL ON TABLE r_objet.geo_objet_empesp_pu TO create_sig;
+GRANT SELECT ON TABLE r_objet.geo_objet_empesp_pu TO read_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE r_objet.geo_objet_empesp_pu TO edit_sig;
+GRANT ALL ON TABLE r_objet.geo_objet_empesp_pu TO sig_create;
+
+GRANT ALL ON TABLE r_objet.geo_objet_etab TO create_sig;
+GRANT SELECT ON TABLE r_objet.geo_objet_etab TO read_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE r_objet.geo_objet_etab TO edit_sig;
+GRANT ALL ON TABLE r_objet.geo_objet_etab TO sig_create;
+
+GRANT ALL ON TABLE r_objet.geo_objet_fon_lot TO create_sig;
+GRANT SELECT ON TABLE r_objet.geo_objet_fon_lot TO read_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE r_objet.geo_objet_fon_lot TO edit_sig;
+GRANT ALL ON TABLE r_objet.geo_objet_fon_lot TO sig_create;
+
+GRANT ALL ON TABLE r_objet.geo_objet_ope TO create_sig;
+GRANT SELECT ON TABLE r_objet.geo_objet_ope TO read_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE r_objet.geo_objet_ope TO edit_sig;
+GRANT ALL ON TABLE r_objet.geo_objet_ope TO sig_create;
+
+GRANT ALL ON TABLE r_objet.geo_objet_site TO create_sig;
+GRANT SELECT ON TABLE r_objet.geo_objet_site TO read_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE r_objet.geo_objet_site TO edit_sig;
+GRANT ALL ON TABLE r_objet.geo_objet_site TO sig_create;
+
+GRANT ALL ON TABLE m_urbanisme_reg.an_proced TO sig_create;
+GRANT ALL ON TABLE m_urbanisme_reg.an_proced TO create_sig;
+GRANT SELECT ON TABLE m_urbanisme_reg.an_proced TO read_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE m_urbanisme_reg.an_proced TO edit_sig;
+
+GRANT ALL ON TABLE m_foncier.an_cession TO sig_create;
+GRANT ALL ON TABLE m_foncier.an_cession TO create_sig;
+GRANT SELECT ON TABLE m_foncier.an_cession TO read_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE m_foncier.an_cession TO edit_sig;
+
+GRANT ALL ON TABLE m_foncier.lk_cession_lot TO sig_create;
+GRANT ALL ON TABLE m_foncier.lk_cession_lot TO create_sig;
+GRANT SELECT ON TABLE m_foncier.lk_cession_lot TO read_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE m_foncier.lk_cession_lot TO edit_sig;
+
+GRANT ALL ON TABLE m_economie.an_lot_doc_media TO sig_create;
+GRANT ALL ON TABLE m_economie.an_lot_doc_media TO create_sig;
+GRANT SELECT ON TABLE m_economie.an_lot_doc_media TO read_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE m_economie.an_lot_doc_media TO edit_sig;
+
+GRANT ALL ON TABLE m_economie.an_sa_dia TO sig_create;
+GRANT ALL ON TABLE m_economie.an_sa_dia TO create_sig;
+GRANT SELECT ON TABLE m_economie.an_sa_dia TO read_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE m_economie.an_sa_dia TO edit_sig;
+
+GRANT ALL ON TABLE m_economie.an_sa_etab TO sig_create;
+GRANT ALL ON TABLE m_economie.an_sa_etab TO create_sig;
+GRANT SELECT ON TABLE m_economie.an_sa_etab TO read_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE m_economie.an_sa_etab TO edit_sig;
+
+GRANT ALL ON TABLE m_economie.an_sa_lot TO sig_create;
+GRANT ALL ON TABLE m_economie.an_sa_lot TO create_sig;
+GRANT SELECT ON TABLE m_economie.an_sa_lot TO read_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE m_economie.an_sa_lot TO edit_sig;
+
+GRANT ALL ON TABLE m_economie.an_sa_site TO sig_create;
+GRANT ALL ON TABLE m_economie.an_sa_site TO create_sig;
+GRANT SELECT ON TABLE m_economie.an_sa_site TO read_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE m_economie.an_sa_site TO edit_sig;
+
+GRANT ALL ON TABLE m_economie.an_site_doc_media TO sig_create;
+GRANT ALL ON TABLE m_economie.an_site_doc_media TO create_sig;
+GRANT SELECT ON TABLE m_economie.an_site_doc_media TO read_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE m_economie.an_site_doc_media TO edit_sig;
+
+GRANT ALL ON TABLE m_economie.geo_sa_bal TO sig_create;
+GRANT ALL ON TABLE m_economie.geo_sa_bal TO create_sig;
+GRANT SELECT ON TABLE m_economie.geo_sa_bal TO read_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE m_economie.geo_sa_bal TO edit_sig;
+
+GRANT ALL ON TABLE m_economie.geo_sa_etabp TO sig_create;
+GRANT ALL ON TABLE m_economie.geo_sa_etabp TO create_sig;
+GRANT SELECT ON TABLE m_economie.geo_sa_etabp TO read_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE m_economie.geo_sa_etabp TO edit_sig;
+
+GRANT ALL ON TABLE m_economie.geo_sa_pole TO sig_create;
+GRANT ALL ON TABLE m_economie.geo_sa_pole TO create_sig;
+GRANT SELECT ON TABLE m_economie.geo_sa_pole TO read_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE m_economie.geo_sa_pole TO edit_sig;
+
+GRANT ALL ON TABLE m_economie.geo_sa_site_zu TO sig_create;
+GRANT ALL ON TABLE m_economie.geo_sa_site_zu TO create_sig;
+GRANT SELECT ON TABLE m_economie.geo_sa_site_zu TO read_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE m_economie.geo_sa_site_zu TO edit_sig;
+
+GRANT ALL ON TABLE m_economie.h_an_sa_etab TO sig_create;
+GRANT ALL ON TABLE m_economie.h_an_sa_etab TO create_sig;
+GRANT SELECT ON TABLE m_economie.h_an_sa_etab TO read_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE m_economie.h_an_sa_etab TO edit_sig;
+
+GRANT ALL ON TABLE m_economie.h_an_sa_site TO sig_create;
+GRANT ALL ON TABLE m_economie.h_an_sa_site TO create_sig;
+GRANT SELECT ON TABLE m_economie.h_an_sa_site TO read_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE m_economie.h_an_sa_site TO edit_sig;
+
+GRANT ALL ON TABLE m_economie.log_suivi_audit TO sig_create;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE m_economie.log_suivi_audit TO edit_sig;
+GRANT ALL ON TABLE m_economie.log_suivi_audit TO create_sig;
+GRANT SELECT ON TABLE m_economie.log_suivi_audit TO read_sig;
+
+GRANT ALL ON TABLE m_amenagement.an_amt_esppu TO sig_create;
+GRANT SELECT ON TABLE m_amenagement.an_amt_esppu TO read_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE m_amenagement.an_amt_esppu TO edit_sig;
+
+GRANT ALL ON TABLE m_amenagement.an_amt_lot_divers TO sig_create;
+GRANT ALL ON TABLE m_amenagement.an_amt_lot_divers TO create_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE m_amenagement.an_amt_lot_divers TO edit_sig;
+GRANT SELECT ON TABLE m_amenagement.an_amt_lot_divers TO read_sig;
+
+GRANT ALL ON TABLE m_amenagement.an_amt_lot_equ TO sig_create;
+GRANT SELECT ON TABLE m_amenagement.an_amt_lot_equ TO read_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE m_amenagement.an_amt_lot_equ TO edit_sig;
+
+GRANT ALL ON TABLE m_amenagement.an_amt_lot_hab TO sig_create;
+GRANT SELECT ON TABLE m_amenagement.an_amt_lot_hab TO read_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE m_amenagement.an_amt_lot_hab TO edit_sig;
+
+GRANT ALL ON TABLE m_amenagement.an_amt_lot_mixte TO sig_create;
+GRANT SELECT ON TABLE m_amenagement.an_amt_lot_mixte TO read_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE m_amenagement.an_amt_lot_mixte TO edit_sig;
+
+GRANT ALL ON TABLE m_amenagement.an_amt_lot_stade TO sig_create;
+GRANT ALL ON TABLE m_amenagement.an_amt_lot_stade TO create_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE m_amenagement.an_amt_lot_stade TO edit_sig;
+GRANT SELECT ON TABLE m_amenagement.an_amt_lot_stade TO read_sig;
+
+GRANT ALL ON TABLE m_amenagement.an_amt_site_equ TO sig_create;
+GRANT SELECT ON TABLE m_amenagement.an_amt_site_equ TO read_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE m_amenagement.an_amt_site_equ TO edit_si
+
+GRANT ALL ON TABLE m_amenagement.an_amt_site_habitat TO sig_create;
+GRANT SELECT ON TABLE m_amenagement.an_amt_site_habitat TO read_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE m_amenagement.an_amt_site_habitat TO edit_sig;
+
+GRANT ALL ON TABLE m_amenagement.an_amt_site_mixte TO sig_create;
+GRANT SELECT ON TABLE m_amenagement.an_amt_site_mixte TO read_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE m_amenagement.an_amt_site_mixte TO edit_sig;
+
+
+
+
+
 
 
 -- #################################################################### VUE DE GESTION  ####################################################################
