@@ -4407,6 +4407,136 @@ COMMENT ON COLUMN m_foncier.lk_cession_lot.idgeolf IS 'Identifiant géographique
 COMMENT ON COLUMN m_foncier.lk_cession_lot.idces IS 'Identifiant du dossier de cession';
 
 
+-- ################################################# Du schéma s_sirene ##################################
+
+-- ################################################# Classe des objets des établissements issus de la données SIRENE de l'INSEE ##################################
+
+-- Table: s_sirene.an_etablissement
+
+-- DROP TABLE s_sirene.an_etablissement;
+
+CREATE TABLE s_sirene.an_etablissement
+(
+  siret character varying(14),
+  siren character varying(9),
+  nic integer,
+  l1_nomen character varying(255),
+  l2_comp character varying(255),
+  l3_cadr character varying(255),
+  l4_voie character varying(255),
+  l5_disp character varying(255),
+  l6_post character varying(255),
+  l7_etrg character varying(255),
+  rpet smallint,
+  depet smallint,
+  arronet smallint,
+  ctonet smallint,
+  comet smallint,
+  libcom character varying(255),
+  du smallint,
+  tu smallint,
+  uu smallint,
+  epci numeric(255,0),
+  tcd smallint,
+  zemet smallint,
+  codevoie character varying(255),
+  numvoie integer,
+  indrep character varying(255),
+  typvoie character varying(255),
+  libvoie character varying(255),
+  codpos integer,
+  cedex integer,
+  zr1 character varying(255),
+  siege smallint,
+  enseigne character varying(255),
+  nom_com character varying(255),
+  natetab smallint,
+  libnatetab character varying(255),
+  apet700 character varying(255),
+  libapet character varying(255),
+  dapet integer,
+  tefet character varying(255),
+  efetcent character varying(255),
+  defet integer,
+  origine character varying(255),
+  dcret integer,
+  amintret integer,
+  activnat character varying(255),
+  lieuact character varying(255),
+  actisurf smallint,
+  saisonat character varying(255),
+  modet character varying(255),
+  prodet character varying(255),
+  prodpart character varying(3),
+  auxilt smallint,
+  zr2 character varying(255),
+  nomen_long character varying(255),
+  sigle character varying(255),
+  civilite smallint,
+  nj integer,
+  libnj character varying(255),
+  apen700 character varying(255),
+  libapen character varying(255),
+  dapen integer,
+  aprm character varying(255),
+  tefen character varying(255),
+  efencent character varying(255),
+  defen integer,
+  categorie character varying(255),
+  dcren integer,
+  amintren integer,
+  monoact smallint,
+  moden character varying(255),
+  proden character varying(255),
+  esaann integer,
+  tca smallint,
+  esaapen character varying(255),
+  esasec1n character varying(255),
+  esasec2n character varying(255),
+  esasec3n character varying(255),
+  esasec4n character varying(255),
+  regimp smallint,
+  monoreg smallint,
+  zr3 character varying(255),
+  rpen smallint,
+  vmaj character varying(255),
+  vmaj1 character varying(255),
+  vmaj2 character varying(255),
+  vmaj3 character varying(255),
+  ind_publipo smallint,
+  l_vetab character varying(2),
+  dsortie date,
+  dentree date,
+  idgeoet integer,
+  depcomen character varying(6),
+  date_maj timestamp without time zone, -- Date de mise à jour des données (dernière intégration des mises à jour SIRENE)
+  gid serial NOT NULL, -- Compteur (identifiant unique)
+  CONSTRAINT an_etablissement_pkey PRIMARY KEY (gid)
+
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE s_sirene.an_etablissement
+  OWNER TO sig_create;
+
+COMMENT ON TABLE s_sirene.an_etablissement
+  IS 'Liste des établissements de la base de données SIRENE depuis le fichier de livraison de juillet 2012. Les champs l_vetab, dsortie, dentree et idgeoet sont des champs de gestion interne pour le suivi des établissements actifs dans le fichier.';
+COMMENT ON COLUMN s_sirene.an_etablissement.date_maj IS 'Date de mise à jour des données (dernière intégration des mises à jour SIRENE)';
+COMMENT ON COLUMN s_sirene.an_etablissement.gid IS 'Compteur (identifiant unique)';
+
+
+
+-- Trigger: modif_etab on s_sirene.an_etablissement
+
+-- DROP TRIGGER modif_etab ON s_sirene.an_etablissement;
+
+CREATE TRIGGER modif_etab
+  AFTER UPDATE
+  ON s_sirene.an_etablissement
+  FOR EACH ROW
+  EXECUTE PROCEDURE s_sirene.m_modif_an_etablissement();
+ALTER TABLE s_sirene.an_etablissement DISABLE TRIGGER modif_etab;
 
 				  
 				  
@@ -4586,6 +4716,10 @@ CONSTRAINT geo_fon_acqui_condi_fkey FOREIGN KEY (l_condi)
       ON UPDATE NO ACTION ON DELETE NO ACTION,
   CONSTRAINT geo_fon_acquis_voca_fkey FOREIGN KEY (l_voca)
       REFERENCES m_foncier.lt_ces_voca (l_voca) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION;
+				  
+  CONSTRAINT lt_vetab_fkey FOREIGN KEY (l_vetab)
+      REFERENCES s_sirene.lt_vetab (l_vetab) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION;
 				  
 -- ####################################################################################################################################################
@@ -4791,3 +4925,20 @@ CREATE INDEX idx_lk_cession_lot_idces
   USING btree
   (idces COLLATE pg_catalog."default");
 				 
+-- Index: s_sirene.idx_an_etablissement_apet700
+
+-- DROP INDEX s_sirene.idx_an_etablissement_apet700;
+
+CREATE INDEX idx_an_etablissement_apet700
+  ON s_sirene.an_etablissement
+  USING btree
+  (apet700 COLLATE pg_catalog."default");
+
+-- Index: s_sirene.idx_an_etablissement_siret
+
+-- DROP INDEX s_sirene.idx_an_etablissement_siret;
+
+CREATE INDEX idx_an_etablissement_siret
+  ON s_sirene.an_etablissement
+  USING btree
+  (siret COLLATE pg_catalog."default");
