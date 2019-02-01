@@ -4098,4 +4098,1895 @@ CREATE TRIGGER t_t1_modif_site_eco
   FOR EACH ROW
   EXECUTE PROCEDURE m_economie.m_modif_site_eco();
 
-				  
+
+-- ########################################################### SCHEMA m_amenagement #########################
+
+-- ########################################################### Vue de visualisation des espaces publics #########################
+
+-- View: m_amenagement.geo_v_empesp_pu
+
+-- DROP VIEW m_amenagement.geo_v_empesp_pu;
+
+CREATE OR REPLACE VIEW m_amenagement.geo_v_empesp_pu AS 
+ SELECT o.idgeopu,
+    ep.idsite,
+    ep.date_sai AS date_sai_att,
+    ep.date_maj AS date_maj_att,
+    ep.date_int,
+    ep.op_sai AS op_sai_att,
+    ep.org_sai AS org_sai_att,
+    ep.vocaep,
+    o.geom
+   FROM m_amenagement.an_amt_esppu ep,
+    r_objet.geo_objet_empesp_pu o
+  WHERE ep.idgeopu = o.idgeopu;
+
+ALTER TABLE m_amenagement.geo_v_empesp_pu
+  OWNER TO sig_create;
+
+COMMENT ON VIEW m_amenagement.geo_v_empesp_pu
+  IS 'Vue géographique des emprises des espaces publics sur les sites (en faire une vue éditable)';
+
+										     
+-- ########################################################### Vue de gestion des lots à vocation divers #########################
+										     
+-- View: m_amenagement.geo_v_lot_divers
+
+-- DROP VIEW m_amenagement.geo_v_lot_divers;
+
+CREATE OR REPLACE VIEW m_amenagement.geo_v_lot_divers AS 
+ SELECT o.idgeolf,
+    s.stade_amng,
+    s.l_amng2,
+    s.stade_comm,
+    s.l_comm2,
+    s.l_comm2_12,
+    s.etat_occup,
+    d.date_sai,
+    d.date_maj,
+    d.op_sai,
+    d.org_sai,
+    o.src_geom AS ref_spa,
+    d.surf,
+    d.l_surf_l,
+    o.l_voca,
+    d.l_nom,
+    o.l_nom AS l_nom_lot,
+    d.l_phase,
+    o.geom
+   FROM r_objet.geo_objet_fon_lot o,
+    m_amenagement.an_amt_lot_divers d,
+    m_amenagement.an_amt_lot_stade s
+  WHERE d.idgeolf = o.idgeolf AND o.l_voca::text = '40'::text AND o.idgeolf = s.idgeolf;
+
+ALTER TABLE m_amenagement.geo_v_lot_divers
+  OWNER TO sig_create;
+
+COMMENT ON VIEW m_amenagement.geo_v_lot_divers
+  IS 'Vue éditable géographique des lots à vocation divers';
+
+-- Function: m_amenagement.m_delete_lot_divers()
+
+-- DROP FUNCTION m_amenagement.m_delete_lot_divers();
+
+CREATE OR REPLACE FUNCTION m_amenagement.m_delete_lot_divers()
+  RETURNS trigger AS
+$BODY$
+
+
+BEGIN
+
+    DELETE FROM m_foncier.an_cession WHERE idces=(SELECT lf.idces FROM m_foncier.an_cession f, m_foncier.lk_cession_lot lf WHERE f.idces=lf.idces AND lf.idgeolf=old.idgeolf);
+    DELETE FROM m_foncier.lk_cession_lot WHERE idgeolf=old.idgeolf;
+    DELETE FROM m_amenagement.an_amt_lot_divers WHERE idgeolf=old.idgeolf;
+    DELETE FROM m_amenagement.an_amt_lot_stade WHERE idgeolf=old.idgeolf;
+    DELETE FROM r_objet.geo_objet_fon_lot WHERE idgeolf=old.idgeolf;
+    return new ;
+
+END;
+
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION m_amenagement.m_delete_lot_divers()
+  OWNER TO sig_create;
+
+COMMENT ON FUNCTION m_amenagement.m_delete_lot_divers() IS 'Fonction gérant la suppression des données liées aux lots à vocation divers lors de la suppression de l''objet';
+									     
+										     
+-- Trigger: t_t1_delete_lot_divers on m_amenagement.geo_v_lot_divers
+
+-- DROP TRIGGER t_t1_delete_lot_divers ON m_amenagement.geo_v_lot_divers;
+
+CREATE TRIGGER t_t1_delete_lot_divers
+  INSTEAD OF DELETE
+  ON m_amenagement.geo_v_lot_divers
+  FOR EACH ROW
+  EXECUTE PROCEDURE m_amenagement.m_delete_lot_divers();
+	     
+-- Function: m_amenagement.m_insert_lot_divers()
+
+-- DROP FUNCTION m_amenagement.m_insert_lot_divers();
+
+CREATE OR REPLACE FUNCTION m_amenagement.m_insert_lot_divers()
+  RETURNS trigger AS
+$BODY$
+
+DECLARE v_idces integer;
+DECLARE v_idgeolf integer;
+DECLARE lot_surf integer;
+
+BEGIN
+
+     v_idgeolf := (SELECT nextval('idgeo_seq'::regclass));
+
+     INSERT INTO r_objet.geo_objet_fon_lot SELECT v_idgeolf,new.op_sai,new.ref_spa,null,'40',new.geom,null,null,new.l_nom_lot;
+
+     INSERT INTO m_amenagement.an_amt_lot_stade SELECT v_idgeolf,
+						 (
+							SELECT DISTINCT
+								idsite 
+							FROM 
+								r_objet.geo_objet_ope
+							WHERE
+								st_intersects(geo_objet_ope.geom,ST_PointOnSurface(new.geom)) = true
+								
+						  ),
+						  new.stade_amng,
+						  new.l_amng2,
+						  new.stade_comm,
+						  new.l_comm2,
+						  new.l_comm2_12,
+						  new.etat_occup;
+
+     lot_surf:=round(cast(st_area(new.geom) as numeric),0);
+
+    -- insertion des lots uniquements mixte 
+    -- recherche si le lot dessiner est dans un site : si oui copie une ligne dans le métier site et foncier, si non copie uniquement dans le métier foncier
+    
+
+						INSERT INTO m_amenagement.an_amt_lot_divers SELECT v_idgeolf,
+							(
+							SELECT DISTINCT
+								idsite 
+							FROM 
+								r_objet.geo_objet_ope
+							WHERE
+								st_intersects(geo_objet_ope.geom,new.geom) = true
+								
+							),-- recherche auto de l'IDSITE
+							new.op_sai,
+							new.org_sai,
+							new.l_nom,
+							lot_surf,
+							now(),
+							null,
+							new.l_phase,
+							CASE WHEN length(cast (lot_surf as character varying)) >= 1 and length(cast (lot_surf as character varying)) <= 3 THEN new.surf || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 4 THEN replace(to_char(lot_surf,'FM9G999'),',',' ') || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 5 THEN replace(to_char(lot_surf,'FM99G999'),',',' ') || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 6 THEN replace(to_char(lot_surf,'FM999G999'),',',' ') || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 7 THEN replace(to_char(lot_surf,'FM9G999G999'),',',' ') || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 8 THEN replace(to_char(lot_surf,'FM99G999G999'),',',' ') || 'm²'
+								   END
+							;
+					  			 			
+     
+     
+
+     -- calcul de l'identifiant du dossier de cession
+     v_idces := (SELECT nextval('m_foncier.ces_seq'::regclass));
+
+     -- insertion de tous lots fonciers dans la table métier foncier
+     INSERT INTO m_foncier.lk_cession_lot SELECT v_idgeolf, v_idces;	
+
+
+     -- insertion d'une ligne dans an_cession en créant un idces qui est lui même réinjecté dans lk_cession_lot
+
+     /* ATTENTION : LEUR DE LA MISE EN PRODUCTION REMETTRE DANS L'ORDRE LES CHAMPS SUIVANTS IDCES, L_COMPO, L_OBSERV ==> cd table an_cession pour vérification */
+     
+     INSERT INTO m_foncier.an_cession VALUES 	(
+						v_idces, -- idces
+						'10',
+						false, -- relation
+						'00',
+						'00',
+						null,
+						null,
+						null,
+						(SELECT insee FROM r_osm.geo_osm_commune WHERE st_intersects(st_pointonsurface(new.geom),geom)),
+						null,
+						'00',
+						null,
+						null,
+						null,
+						null,
+						null,
+						null,
+						null,
+						null,
+						'00',
+						'00',
+						null,
+						null,
+						'00',
+						null,
+						null,
+						null,
+						false,
+						false,
+						false,
+						false,
+						false,
+						null,
+						null,
+						null,
+						false,
+						false,
+						false,
+						null,
+						null,
+						null,
+						null,
+						null,
+						(SELECT DISTINCT
+								idsite 
+							FROM 
+								r_objet.geo_objet_ope
+							WHERE
+								st_intersects(geo_objet_ope.geom,new.geom) = true
+								
+							),
+							null
+						);
+
+     return new ;
+
+END;
+
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION m_amenagement.m_insert_lot_divers()
+  OWNER TO sig_create;
+
+COMMENT ON FUNCTION m_amenagement.m_insert_lot_divers() IS 'Fonction gérant l''insertion des données liées aux lots à vocation divers lors de l''insertion de l''objet';
+
+						 
+-- Trigger: t_t2_insert_lot_divers on m_amenagement.geo_v_lot_divers
+
+-- DROP TRIGGER t_t2_insert_lot_divers ON m_amenagement.geo_v_lot_divers;
+
+CREATE TRIGGER t_t2_insert_lot_divers
+  INSTEAD OF INSERT
+  ON m_amenagement.geo_v_lot_divers
+  FOR EACH ROW
+  EXECUTE PROCEDURE m_amenagement.m_insert_lot_divers();
+
+						 
+-- Function: m_amenagement.m_modif_lot_divers()
+
+-- DROP FUNCTION m_amenagement.m_modif_lot_divers();
+
+CREATE OR REPLACE FUNCTION m_amenagement.m_modif_lot_divers()
+  RETURNS trigger AS
+$BODY$
+
+BEGIN
+
+		UPDATE r_objet.geo_objet_fon_lot SET geom = new.geom, date_maj = now(), src_geom = new.ref_spa, op_sai=new.op_sai,l_nom = new.l_nom_lot WHERE idgeolf = new.idgeolf;
+
+	        UPDATE m_amenagement.an_amt_lot_stade SET stade_amng = new.stade_amng, l_amng2 = new.l_amng2, stade_comm = new.stade_comm, l_comm2 = new.l_comm2, l_comm2_12 = new.l_comm2_12, etat_occup =  new.etat_occup WHERE idgeolf = new.idgeolf;
+
+		UPDATE m_amenagement.an_amt_lot_divers SET
+
+							surf = new.surf,
+							l_surf_l = 
+								   CASE WHEN length(cast (new.surf as character varying)) >= 1 and length(cast (new.surf as character varying)) <= 3 THEN new.surf || 'm²'
+								   WHEN length(cast (new.surf as character varying)) = 4 THEN replace(to_char(new.surf,'FM9G999'),',',' ') || 'm²'
+								   WHEN length(cast (new.surf as character varying)) = 5 THEN replace(to_char(new.surf,'FM99G999'),',',' ') || 'm²'
+								   WHEN length(cast (new.surf as character varying)) = 6 THEN replace(to_char(new.surf,'FM999G999'),',',' ') || 'm²'
+								   WHEN length(cast (new.surf as character varying)) = 7 THEN replace(to_char(new.surf,'FM9G999G999'),',',' ') || 'm²'
+								   WHEN length(cast (new.surf as character varying)) = 8 THEN replace(to_char(new.surf,'FM99G999G999'),',',' ') || 'm²'
+								   END,
+							op_sai = new.op_sai,
+							org_sai = new.org_sai,
+							l_nom = new.l_nom,
+							date_maj = now(),
+							l_phase = new.l_phase
+		WHERE an_amt_lot_divers.idgeolf=new.idgeolf;
+
+     return new;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION m_amenagement.m_modif_lot_divers()
+  OWNER TO sig_create;
+
+COMMENT ON FUNCTION m_amenagement.m_modif_lot_divers() IS 'Fonction gérant la mise à jour des données liées aux lots à vocation divers lors de la mise à jour de l''objet';
+						 
+						 
+-- Trigger: t_t3_modif_lot_divers on m_amenagement.geo_v_lot_divers
+
+-- DROP TRIGGER t_t3_modif_lot_divers ON m_amenagement.geo_v_lot_divers;
+
+CREATE TRIGGER t_t3_modif_lot_divers
+  INSTEAD OF UPDATE
+  ON m_amenagement.geo_v_lot_divers
+  FOR EACH ROW
+  EXECUTE PROCEDURE m_amenagement.m_modif_lot_divers();
+
+-- ########################################################### Vue de gestion des lots à vocation équipement #########################
+
+-- View: m_amenagement.geo_v_lot_equ
+
+-- DROP VIEW m_amenagement.geo_v_lot_equ;
+
+CREATE OR REPLACE VIEW m_amenagement.geo_v_lot_equ AS 
+ SELECT o.idgeolf,
+    s.stade_amng,
+    s.l_amng2,
+    s.stade_comm,
+    s.l_comm2,
+    s.l_comm2_12,
+    s.etat_occup,
+    eu.date_sai,
+    eu.date_maj,
+    eu.op_sai,
+    eu.org_sai,
+    o.src_geom AS ref_spa,
+    eu.surf,
+    eu.l_surf_l,
+    o.l_voca,
+    eu.l_nom,
+    o.l_nom AS l_nom_lot,
+    eu.l_phase,
+    o.geom
+   FROM r_objet.geo_objet_fon_lot o,
+    m_amenagement.an_amt_lot_equ eu,
+    m_amenagement.an_amt_lot_stade s
+  WHERE eu.idgeolf = o.idgeolf AND o.l_voca::text = '10'::text AND o.idgeolf = s.idgeolf;
+
+ALTER TABLE m_amenagement.geo_v_lot_equ
+  OWNER TO sig_create;
+
+COMMENT ON VIEW m_amenagement.geo_v_lot_equ
+  IS 'Vue éditable géographique des lots à vocation d''équipement';
+
+-- Function: m_amenagement.ft_delete_lot_equ()
+
+-- DROP FUNCTION m_amenagement.ft_delete_lot_equ();
+
+CREATE OR REPLACE FUNCTION m_amenagement.ft_delete_lot_equ()
+  RETURNS trigger AS
+$BODY$
+
+
+BEGIN
+
+    DELETE FROM m_foncier.an_cession WHERE idces=(SELECT lf.idces FROM m_foncier.an_cession f, m_foncier.lk_cession_lot lf WHERE f.idces=lf.idces AND lf.idgeolf=old.idgeolf);
+    DELETE FROM m_foncier.lk_cession_lot WHERE idgeolf=old.idgeolf;
+    DELETE FROM m_amenagement.an_amt_lot_equ WHERE idgeolf=old.idgeolf;
+    DELETE FROM m_amenagement.an_amt_lot_stade WHERE idgeolf=old.idgeolf;
+    DELETE FROM r_objet.geo_objet_fon_lot WHERE idgeolf=old.idgeolf;
+    return new ;
+
+END;
+
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION m_amenagement.ft_delete_lot_equ()
+  OWNER TO sig_create;
+
+COMMENT ON FUNCTION m_amenagement.ft_delete_lot_equ() IS 'Fonction gérant la suppression des données liées aux lots à vocation équipement lors de la suppression de l''objet';
+
+										     
+-- Trigger: t_t1_delete_lot_equ on m_amenagement.geo_v_lot_equ
+
+-- DROP TRIGGER t_t1_delete_lot_equ ON m_amenagement.geo_v_lot_equ;
+
+CREATE TRIGGER t_t1_delete_lot_equ
+  INSTEAD OF DELETE
+  ON m_amenagement.geo_v_lot_equ
+  FOR EACH ROW
+  EXECUTE PROCEDURE m_amenagement.ft_delete_lot_equ();
+
+
+-- Function: m_amenagement.ft_insert_lot_equ()
+
+-- DROP FUNCTION m_amenagement.ft_insert_lot_equ();
+
+CREATE OR REPLACE FUNCTION m_amenagement.ft_insert_lot_equ()
+  RETURNS trigger AS
+$BODY$
+
+DECLARE v_idces integer;
+DECLARE v_idgeolf integer;
+DECLARE lot_surf integer;
+
+BEGIN
+
+     v_idgeolf := (SELECT nextval('idgeo_seq'::regclass));
+
+     INSERT INTO r_objet.geo_objet_fon_lot SELECT v_idgeolf,new.op_sai,new.ref_spa,null,'10',new.geom,null,null,new.l_nom_lot;
+
+     INSERT INTO m_amenagement.an_amt_lot_stade SELECT v_idgeolf,
+						 (
+							SELECT DISTINCT
+								idsite 
+							FROM 
+								r_objet.geo_objet_ope
+							WHERE
+								st_intersects(geo_objet_ope.geom,ST_PointOnSurface(new.geom)) = true
+								
+						  ),
+						  new.stade_amng,
+						  new.l_amng2,
+						  new.stade_comm,
+						  new.l_comm2,
+						  new.l_comm2_12,
+						  new.etat_occup;
+
+     lot_surf:=round(cast(st_area(new.geom) as numeric),0);
+
+    -- insertion des lots uniquements mixte 
+    -- recherche si le lot dessiner est dans un site : si oui copie une ligne dans le métier site et foncier, si non copie uniquement dans le métier foncier
+    
+
+						INSERT INTO m_amenagement.an_amt_lot_equ SELECT v_idgeolf,
+							(
+							SELECT DISTINCT
+								idsite 
+							FROM 
+								r_objet.geo_objet_ope
+							WHERE
+								st_intersects(geo_objet_ope.geom,new.geom) = true
+								
+							),-- recherche auto de l'IDSITE
+							new.op_sai,
+							new.org_sai,
+							new.l_nom,
+							lot_surf,
+							now(),
+							null,
+							new.l_phase,
+							CASE WHEN length(cast (lot_surf as character varying)) >= 1 and length(cast (lot_surf as character varying)) <= 3 THEN new.surf || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 4 THEN replace(to_char(lot_surf,'FM9G999'),',',' ') || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 5 THEN replace(to_char(lot_surf,'FM99G999'),',',' ') || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 6 THEN replace(to_char(lot_surf,'FM999G999'),',',' ') || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 7 THEN replace(to_char(lot_surf,'FM9G999G999'),',',' ') || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 8 THEN replace(to_char(lot_surf,'FM99G999G999'),',',' ') || 'm²'
+								   END
+							;
+					  			 			
+     
+     
+
+     -- calcul de l'identifiant du dossier de cession
+     v_idces := (SELECT nextval('m_foncier.ces_seq'::regclass));
+
+     -- insertion de tous lots fonciers dans la table métier foncier
+     INSERT INTO m_foncier.lk_cession_lot SELECT v_idgeolf, v_idces;	
+
+
+     -- insertion d'une ligne dans an_cession en créant un idces qui est lui même réinjecté dans lk_cession_lot
+
+     /* ATTENTION : LEUR DE LA MISE EN PRODUCTION REMETTRE DANS L'ORDRE LES CHAMPS SUIVANTS IDCES, L_COMPO, L_OBSERV ==> cd table an_cession pour vérification */
+     
+     INSERT INTO m_foncier.an_cession VALUES 	(
+						v_idces, -- idces
+						'10',
+						false, -- relation
+						'00',
+						'00',
+						null,
+						null,
+						null,
+						(SELECT insee FROM r_osm.geo_osm_commune WHERE st_intersects(st_pointonsurface(new.geom),geom)),
+						null,
+						'00',
+						null,
+						null,
+						null,
+						null,
+						null,
+						null,
+						null,
+						null,
+						'00',
+						'00',
+						null,
+						null,
+						'00',
+						null,
+						null,
+						null,
+						false,
+						false,
+						false,
+						false,
+						false,
+						null,
+						null,
+						null,
+						false,
+						false,
+						false,
+						null,
+						null,
+						null,
+						null,
+						null,
+						(SELECT DISTINCT
+								idsite 
+							FROM 
+								r_objet.geo_objet_ope
+							WHERE
+								st_intersects(geo_objet_ope.geom,new.geom) = true
+								
+							),
+							null
+						);
+
+     return new ;
+
+END;
+
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION m_amenagement.ft_insert_lot_equ()
+  OWNER TO sig_create;
+
+COMMENT ON FUNCTION m_amenagement.ft_insert_lot_equ() IS 'Fonction gérant l''insertion des données liées aux lots à vocation équipement lors de l''insertion de l''objet';
+
+-- Trigger: t_t2_insert_lot_equ on m_amenagement.geo_v_lot_equ
+
+-- DROP TRIGGER t_t2_insert_lot_equ ON m_amenagement.geo_v_lot_equ;
+
+CREATE TRIGGER t_t2_insert_lot_equ
+  INSTEAD OF INSERT
+  ON m_amenagement.geo_v_lot_equ
+  FOR EACH ROW
+  EXECUTE PROCEDURE m_amenagement.ft_insert_lot_equ();
+
+						 
+-- Function: m_amenagement.ft_modif_lot_equ()
+
+-- DROP FUNCTION m_amenagement.ft_modif_lot_equ();
+
+CREATE OR REPLACE FUNCTION m_amenagement.ft_modif_lot_equ()
+  RETURNS trigger AS
+$BODY$
+
+BEGIN
+
+		UPDATE r_objet.geo_objet_fon_lot SET geom = new.geom, date_maj = now(), src_geom = new.ref_spa, op_sai=new.op_sai,l_nom = new.l_nom_lot WHERE idgeolf = new.idgeolf;
+
+	        UPDATE m_amenagement.an_amt_lot_stade SET stade_amng = new.stade_amng, l_amng2 = new.l_amng2, stade_comm = new.stade_comm, l_comm2 = new.l_comm2, l_comm2_12 = new.l_comm2_12, etat_occup =  new.etat_occup WHERE idgeolf = new.idgeolf;
+
+		UPDATE m_amenagement.an_amt_lot_equ SET
+
+							surf = new.surf,
+							l_surf_l = 
+								   CASE WHEN length(cast (new.surf as character varying)) >= 1 and length(cast (new.surf as character varying)) <= 3 THEN new.surf || 'm²'
+								   WHEN length(cast (new.surf as character varying)) = 4 THEN replace(to_char(new.surf,'FM9G999'),',',' ') || 'm²'
+								   WHEN length(cast (new.surf as character varying)) = 5 THEN replace(to_char(new.surf,'FM99G999'),',',' ') || 'm²'
+								   WHEN length(cast (new.surf as character varying)) = 6 THEN replace(to_char(new.surf,'FM999G999'),',',' ') || 'm²'
+								   WHEN length(cast (new.surf as character varying)) = 7 THEN replace(to_char(new.surf,'FM9G999G999'),',',' ') || 'm²'
+								   WHEN length(cast (new.surf as character varying)) = 8 THEN replace(to_char(new.surf,'FM99G999G999'),',',' ') || 'm²'
+								   END,
+							op_sai = new.op_sai,
+							org_sai = new.org_sai,
+							l_nom = new.l_nom,
+							date_maj = now(),
+							l_phase = new.l_phase
+		WHERE an_amt_lot_equ.idgeolf=new.idgeolf;
+
+     return new;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION m_amenagement.ft_modif_lot_equ()
+  OWNER TO sig_create;
+
+COMMENT ON FUNCTION m_amenagement.ft_modif_lot_equ() IS 'Fonction gérant la mise à jour des données liées aux lots à vocation équipement lors de la mise à jour de l''objet';
+				 
+						 
+-- Trigger: t_t3_modif_lot_equ on m_amenagement.geo_v_lot_equ
+
+-- DROP TRIGGER t_t3_modif_lot_equ ON m_amenagement.geo_v_lot_equ;
+
+CREATE TRIGGER t_t3_modif_lot_equ
+  INSTEAD OF UPDATE
+  ON m_amenagement.geo_v_lot_equ
+  FOR EACH ROW
+  EXECUTE PROCEDURE m_amenagement.m_modif_lot_equ();
+
+-- ########################################################### Vue de gestion des lots à vocation espace public #########################
+
+-- View: m_amenagement.geo_v_lot_esppu
+
+-- DROP VIEW m_amenagement.geo_v_lot_esppu;
+
+CREATE OR REPLACE VIEW m_amenagement.geo_v_lot_esppu AS 
+ SELECT o.idgeolf,
+    s.stade_amng,
+    s.l_amng2,
+    s.stade_comm,
+    s.l_comm2,
+    s.l_comm2_12,
+    s.etat_occup,
+    o.src_geom AS ref_spa,
+    o.op_sai,
+    o.l_voca,
+    o.l_nom AS l_nom_lot,
+    o.geom
+   FROM r_objet.geo_objet_fon_lot o,
+    m_amenagement.an_amt_lot_stade s
+  WHERE o.idgeolf = s.idgeolf AND o.l_voca::text = '50'::text;
+
+ALTER TABLE m_amenagement.geo_v_lot_esppu
+  OWNER TO sig_create;
+
+COMMENT ON VIEW m_amenagement.geo_v_lot_esppu
+  IS 'Vue éditable géographique des lots dont la vocation est un espace public';
+
+										     
+-- Function: m_amenagement.ft_delete_lot_esppu()
+
+-- DROP FUNCTION m_amenagement.ft_delete_lot_esppu();
+
+CREATE OR REPLACE FUNCTION m_amenagement.ft_delete_lot_esppu()
+  RETURNS trigger AS
+$BODY$
+
+
+BEGIN
+
+    DELETE FROM m_foncier.an_cession WHERE idces=(SELECT lf.idces FROM m_foncier.an_cession f, m_foncier.lk_cession_lot lf WHERE f.idces=lf.idces AND lf.idgeolf=old.idgeolf);
+    DELETE FROM m_foncier.lk_cession_lot WHERE idgeolf=old.idgeolf;
+    DELETE FROM m_amenagement.an_amt_lot_stade WHERE idgeolf=old.idgeolf;
+    DELETE FROM r_objet.geo_objet_fon_lot WHERE idgeolf=old.idgeolf;
+    return new ;
+
+END;
+
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION m_amenagement.ft_delete_lot_esppu()
+  OWNER TO sig_create;
+
+COMMENT ON FUNCTION m_amenagement.ft_delete_lot_esppu() IS 'Fonction gérant la suppression des données liées aux lots à vocation espace public lors de la suppression de l''objet';
+					     
+										     
+-- Trigger: t_t1_delete_lot_esppu on m_amenagement.geo_v_lot_esppu
+
+-- DROP TRIGGER t_t1_delete_lot_esppu ON m_amenagement.geo_v_lot_esppu;
+
+CREATE TRIGGER t_t1_delete_lot_esppu
+  INSTEAD OF DELETE
+  ON m_amenagement.geo_v_lot_esppu
+  FOR EACH ROW
+  EXECUTE PROCEDURE m_amenagement.ft_delete_lot_esppu();
+
+-- Function: m_amenagement.ft_insert_lot_esppu()
+
+-- DROP FUNCTION m_amenagement.ft_insert_lot_esppu();
+
+CREATE OR REPLACE FUNCTION m_amenagement.ft_insert_lot_esppu()
+  RETURNS trigger AS
+$BODY$
+
+DECLARE v_idces integer;
+DECLARE v_idgeolf integer;
+DECLARE lot_surf integer;
+
+BEGIN
+
+     v_idgeolf := (SELECT nextval('idgeo_seq'::regclass));
+
+     INSERT INTO r_objet.geo_objet_fon_lot SELECT v_idgeolf,new.op_sai,new.ref_spa,null,'50',new.geom,null,null,new.l_nom_lot;
+
+     INSERT INTO m_amenagement.an_amt_lot_stade SELECT v_idgeolf,
+						 (
+							SELECT DISTINCT
+								idsite 
+							FROM 
+								r_objet.geo_objet_ope
+							WHERE
+								st_intersects(geo_objet_ope.geom,ST_PointOnSurface(new.geom)) = true
+								
+						  ),
+						  new.stade_amng,
+						  new.l_amng2,
+						  new.stade_comm,
+						  new.l_comm2,
+						  new.l_comm2_12,
+						  new.etat_occup;
+
+     
+     -- calcul de l'identifiant du dossier de cession
+     v_idces := (SELECT nextval('m_foncier.ces_seq'::regclass));
+
+     -- insertion de tous lots fonciers dans la table métier foncier
+     INSERT INTO m_foncier.lk_cession_lot SELECT v_idgeolf, v_idces;	
+
+
+     -- insertion d'une ligne dans an_cession en créant un idces qui est lui même réinjecté dans lk_cession_lot
+
+     /* ATTENTION : LEUR DE LA MISE EN PRODUCTION REMETTRE DANS L'ORDRE LES CHAMPS SUIVANTS IDCES, L_COMPO, L_OBSERV ==> cd table an_cession pour vérification */
+     
+     INSERT INTO m_foncier.an_cession VALUES 	(
+						v_idces, -- idces
+						'10',
+						false, -- relation
+						'00',
+						'00',
+						null,
+						null,
+						null,
+						(SELECT insee FROM r_osm.geo_osm_commune WHERE st_intersects(st_pointonsurface(new.geom),geom)),
+						null,
+						'00',
+						null,
+						null,
+						null,
+						null,
+						null,
+						null,
+						null,
+						null,
+						'00',
+						'00',
+						null,
+						null,
+						'00',
+						null,
+						null,
+						null,
+						false,
+						false,
+						false,
+						false,
+						false,
+						null,
+						null,
+						null,
+						false,
+						false,
+						false,
+						null,
+						null,
+						null,
+						null,
+						null,
+						(SELECT DISTINCT
+								idsite 
+							FROM 
+								r_objet.geo_objet_ope
+							WHERE
+								st_intersects(geo_objet_ope.geom,new.geom) = true
+								
+							),
+							null
+						);
+
+     return new ;
+
+END;
+
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION m_amenagement.ft_insert_lot_esppu()
+  OWNER TO sig_create;
+
+COMMENT ON FUNCTION m_amenagement.ft_insert_lot_esppu() IS 'Fonction gérant l''insertion des données liées aux lots à vocation espace public lors de l''insertion de l''objet';
+
+										     
+										     
+-- Trigger: t_t2_insert_lot_esppu on m_amenagement.geo_v_lot_esppu
+
+-- DROP TRIGGER t_t2_insert_lot_esppu ON m_amenagement.geo_v_lot_esppu;
+
+CREATE TRIGGER t_t2_insert_lot_esppu
+  INSTEAD OF INSERT
+  ON m_amenagement.geo_v_lot_esppu
+  FOR EACH ROW
+  EXECUTE PROCEDURE m_amenagement.ft_insert_lot_esppu();
+
+-- Function: m_amenagement.ft_modif_lot_esppu()
+
+-- DROP FUNCTION m_amenagement.ft_modif_lot_esppu();
+
+CREATE OR REPLACE FUNCTION m_amenagement.ft_modif_lot_esppu()
+  RETURNS trigger AS
+$BODY$
+
+BEGIN
+
+		UPDATE r_objet.geo_objet_fon_lot SET geom = new.geom, date_maj = now(), src_geom = new.ref_spa, op_sai=new.op_sai,l_nom=new.l_nom_lot WHERE idgeolf = new.idgeolf;
+
+	        UPDATE m_amenagement.an_amt_lot_stade SET stade_amng = new.stade_amng, l_amng2 = new.l_amng2, stade_comm = new.stade_comm, l_comm2 = new.l_comm2, l_comm2_12 = new.l_comm2_12, etat_occup =  new.etat_occup WHERE idgeolf = new.idgeolf;
+
+		
+
+     return new;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION m_amenagement.ft_modif_lot_esppu()
+  OWNER TO sig_create;
+
+COMMENT ON FUNCTION m_amenagement.ft_modif_lot_esppu() IS 'Fonction gérant la mise à jour des données liées aux lots à vocation espace public lors de la mise à jour de l''objet';
+						 
+						 
+-- Trigger: t_t3_modif_lot_esppu on m_amenagement.geo_v_lot_esppu
+
+-- DROP TRIGGER t_t3_modif_lot_esppu ON m_amenagement.geo_v_lot_esppu;
+
+CREATE TRIGGER t_t3_modif_lot_esppu
+  INSTEAD OF UPDATE
+  ON m_amenagement.geo_v_lot_esppu
+  FOR EACH ROW
+  EXECUTE PROCEDURE m_amenagement.ft_modif_lot_esppu();
+
+						 
+-- ########################################################### Vue de gestion des lots à vocation habitat #########################
+				 
+-- View: m_amenagement.geo_v_lot_hab
+
+-- DROP VIEW m_amenagement.geo_v_lot_hab;
+
+CREATE OR REPLACE VIEW m_amenagement.geo_v_lot_hab AS 
+ SELECT o.idgeolf,
+    o.src_geom AS ref_spa,
+    o.op_sai,
+    o.l_voca,
+    o.l_nom,
+    f.idsite,
+    s.stade_amng,
+    s.l_amng2,
+    s.stade_comm,
+    s.l_comm2,
+    s.l_comm2_12,
+    s.etat_occup,
+    f.surf,
+    f.l_surf_l,
+    f.date_sai AS date_sai_att,
+    f.date_maj AS date_maj_att,
+    f.op_sai AS op_sai_att,
+    f.org_sai AS org_sai_att,
+    f.l_pvente,
+    f.l_pvente_l,
+    f.l_pvente_lot,
+    f.nb_log,
+    f.nb_logind,
+    f.nb_logindgr,
+    f.nb_logcol,
+    f.nb_logaide,
+    f.nb_log_r,
+    f.nb_logind_r,
+    f.nb_logindgr_r,
+    f.nb_logcol_r,
+    f.nb_logaide_r,
+    f.l_observ,
+    f.l_phase,
+    f.nb_logaide_loc_r,
+    f.nb_logaide_acc_r,
+    o.geom
+   FROM m_amenagement.an_amt_lot_hab f,
+    r_objet.geo_objet_fon_lot o,
+    m_amenagement.an_amt_lot_stade s
+  WHERE o.l_voca::text = '30'::text AND f.idgeolf = o.idgeolf AND f.idgeolf = s.idgeolf;
+
+ALTER TABLE m_amenagement.geo_v_lot_hab
+  OWNER TO sig_create;
+
+COMMENT ON VIEW m_amenagement.geo_v_lot_hab
+  IS 'Vue éditable des lots à vocation habitat';
+
+
+-- Function: m_amenagement.ft_delete_lot_hab()
+
+-- DROP FUNCTION m_amenagement.ft_delete_lot_hab();
+
+CREATE OR REPLACE FUNCTION m_amenagement.ft_delete_lot_hab()
+  RETURNS trigger AS
+$BODY$
+
+
+BEGIN
+
+    DELETE FROM m_foncier.an_cession WHERE idces=(SELECT lf.idces FROM m_foncier.an_cession f, m_foncier.lk_cession_lot lf WHERE f.idces=lf.idces AND lf.idgeolf=old.idgeolf);
+    DELETE FROM m_foncier.lk_cession_lot WHERE idgeolf=old.idgeolf;
+    DELETE FROM m_amenagement.an_amt_lot_hab WHERE idgeolf=old.idgeolf;
+    DELETE FROM m_amenagement.an_amt_lot_stade WHERE idgeolf=old.idgeolf;
+    DELETE FROM r_objet.geo_objet_fon_lot WHERE idgeolf=old.idgeolf;
+    return new ;
+
+END;
+
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION m_amenagement.ft_delete_lot_hab()
+  OWNER TO sig_create;
+
+COMMENT ON FUNCTION m_amenagement.ft_delete_lot_hab() IS 'Fonction gérant la suppression des données liées aux lots à vocation habitat lors de la suppression de l''objet';
+
+						 
+-- Trigger: t_t1_delete_lot_hab on m_amenagement.geo_v_lot_hab
+
+-- DROP TRIGGER t_t1_delete_lot_hab ON m_amenagement.geo_v_lot_hab;
+
+CREATE TRIGGER t_t1_delete_lot_hab
+  INSTEAD OF DELETE
+  ON m_amenagement.geo_v_lot_hab
+  FOR EACH ROW
+  EXECUTE PROCEDURE m_amenagement.ft_delete_lot_hab();
+
+						 
+-- Function: m_amenagement.ft_insert_lot_hab()
+
+-- DROP FUNCTION m_amenagement.ft_insert_lot_hab();
+
+CREATE OR REPLACE FUNCTION m_amenagement.ft_insert_lot_hab()
+  RETURNS trigger AS
+$BODY$
+
+DECLARE v_idces integer;
+DECLARE v_idgeolf integer;
+DECLARE lot_surf integer;
+
+BEGIN
+
+     v_idgeolf := (SELECT nextval('idgeo_seq'::regclass));
+
+     INSERT INTO r_objet.geo_objet_fon_lot SELECT v_idgeolf,new.op_sai,new.ref_spa,null,'30',new.geom,null,null,new.l_nom;
+
+     INSERT INTO m_amenagement.an_amt_lot_stade SELECT v_idgeolf,
+						 (
+							SELECT DISTINCT
+								idsite 
+							FROM 
+								r_objet.geo_objet_ope
+							WHERE
+								st_intersects(geo_objet_ope.geom,ST_PointOnSurface(new.geom)) = true
+								
+						  ),
+						  new.stade_amng,
+						  new.l_amng2,
+						  new.stade_comm,
+						  new.l_comm2,
+						  new.l_comm2_12,
+						  new.etat_occup;
+     
+     lot_surf:=round(cast(st_area(new.geom) as numeric),0);
+
+    -- insertion des lots uniquements économiques (pour la vente) dans la table métier économie
+    -- recherche si le lot dessiner est dans un site activité : si oui copie une ligne dans le métier eco et foncier, si non copie uniquement dans le métier foncier
+    
+
+						INSERT INTO m_amenagement.an_amt_lot_hab SELECT v_idgeolf,
+						 (
+							SELECT DISTINCT
+								idsite 
+							FROM 
+								r_objet.geo_objet_ope
+							WHERE
+								st_intersects(geo_objet_ope.geom,ST_PointOnSurface(new.geom)) = true
+								
+						  ), -- recherche idsite
+						  lot_surf,
+						
+								   CASE WHEN length(cast (lot_surf as character varying)) >= 1 and length(cast (lot_surf as character varying)) <= 3 THEN lot_surf || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 4 THEN replace(to_char(lot_surf,'FM9G999'),',',' ') || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 5 THEN replace(to_char(lot_surf,'FM99G999'),',',' ') || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 6 THEN replace(to_char(lot_surf,'FM999G999'),',',' ') || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 7 THEN replace(to_char(lot_surf,'FM9G999G999'),',',' ') || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 8 THEN replace(to_char(lot_surf,'FM99G999G999'),',',' ') || 'm²'
+								   END,
+						  new.op_sai_att,
+						  new.org_sai_att,
+						  new.l_pvente,
+						  new.l_pvente_l,
+						  new.nb_log,
+						  new.nb_logind,
+						  new.nb_logindgr,
+						  new.nb_logcol,
+						  new.nb_logaide,
+						  new.l_observ,
+						  now(),
+						  now(),
+						  new.l_phase,
+						  new.nb_log_r,
+						  new.nb_logind_r,
+						  new.nb_logindgr_r,
+						  new.nb_logcol_r,
+						  new.nb_logaide_r,
+						  new.l_pvente_lot,
+						  new.nb_logaide_loc_r,
+						  new.nb_logaide_acc_r
+						  ;
+						  
+						  			 			
+     
+     
+
+     -- calcul de l'identifiant du dossier de cession
+     v_idces := (SELECT nextval('m_foncier.ces_seq'::regclass));
+
+     -- insertion de tous lots fonciers dans la table métier foncier
+     INSERT INTO m_foncier.lk_cession_lot SELECT v_idgeolf, v_idces;	
+
+
+     -- insertion d'une ligne dans an_cession en créant un idces qui est lui même réinjecté dans lk_cession_lot
+
+     /* ATTENTION : LEUR DE LA MISE EN PRODUCTION REMETTRE DANS L'ORDRE LES CHAMPS SUIVANTS IDCES, L_COMPO, L_OBSERV ==> cd table an_cession pour vérification */
+     
+     INSERT INTO m_foncier.an_cession VALUES 	(
+						v_idces, -- idces
+						'10',
+						false, -- relation
+						'00',
+						'00',
+						null,
+						null,
+						null,
+						(SELECT insee FROM r_osm.geo_osm_commune WHERE st_intersects(st_pointonsurface(new.geom),geom)),
+						null,
+						'00',
+						null,
+						null,
+						null,
+						null,
+						null,
+						null,
+						null,
+						null,
+						'00',
+						'00',
+						null,
+						null,
+						'00',
+						null,
+						null,
+						null,
+						false,
+						false,
+						false,
+						false,
+						false,
+						null,
+						null,
+						null,
+						false,
+						false,
+						false,
+						null,
+						null,
+						null,
+						null,
+						null,
+						(SELECT DISTINCT
+								idsite 
+							FROM 
+								r_objet.geo_objet_ope
+							WHERE
+								st_intersects(geo_objet_ope.geom,new.geom) = true
+								
+							),
+							null
+						);
+
+     return new ;
+
+END;
+
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION m_amenagement.ft_insert_lot_hab()
+  OWNER TO sig_create;
+
+COMMENT ON FUNCTION m_amenagement.ft_insert_lot_hab() IS 'Fonction gérant l''insertion des données liées aux lots à vocation habitat lors de la création de l''objet';
+
+						 
+-- Trigger: t_t2_insert_lot_hab on m_amenagement.geo_v_lot_hab
+
+-- DROP TRIGGER t_t2_insert_lot_hab ON m_amenagement.geo_v_lot_hab;
+
+CREATE TRIGGER t_t2_insert_lot_hab
+  INSTEAD OF INSERT
+  ON m_amenagement.geo_v_lot_hab
+  FOR EACH ROW
+  EXECUTE PROCEDURE m_amenagement.ft_insert_lot_hab();
+
+-- Function: m_amenagement.ft_modif_lot_hab()
+
+-- DROP FUNCTION m_amenagement.ft_modif_lot_hab();
+
+CREATE OR REPLACE FUNCTION m_amenagement.ft_modif_lot_hab()
+  RETURNS trigger AS
+$BODY$
+
+BEGIN
+
+		UPDATE r_objet.geo_objet_fon_lot SET geom = new.geom, date_maj = now(), src_geom = new.ref_spa, op_sai=new.op_sai,l_nom=new.l_nom WHERE idgeolf = new.idgeolf;
+
+		UPDATE m_amenagement.an_amt_lot_stade SET stade_amng = new.stade_amng, l_amng2 = new.l_amng2, stade_comm = new.stade_comm, l_comm2 = new.l_comm2, l_comm2_12 = new.l_comm2_12, etat_occup =  new.etat_occup WHERE idgeolf = new.idgeolf;
+
+		UPDATE m_amenagement.an_amt_lot_hab SET
+
+							surf = new.surf,
+							l_surf_l = 
+								   CASE WHEN length(cast (new.surf as character varying)) >= 1 and length(cast (new.surf as character varying)) <= 3 THEN new.surf || 'm²'
+								   WHEN length(cast (new.surf as character varying)) = 4 THEN replace(to_char(new.surf,'FM9G999'),',',' ') || 'm²'
+								   WHEN length(cast (new.surf as character varying)) = 5 THEN replace(to_char(new.surf,'FM99G999'),',',' ') || 'm²'
+								   WHEN length(cast (new.surf as character varying)) = 6 THEN replace(to_char(new.surf,'FM999G999'),',',' ') || 'm²'
+								   WHEN length(cast (new.surf as character varying)) = 7 THEN replace(to_char(new.surf,'FM9G999G999'),',',' ') || 'm²'
+								   WHEN length(cast (new.surf as character varying)) = 8 THEN replace(to_char(new.surf,'FM99G999G999'),',',' ') || 'm²'
+								   END,
+							date_maj = now(),
+							op_sai = new.op_sai_att,
+							org_sai = new.org_sai_att,
+							l_pvente = new.l_pvente,
+							l_pvente_l = new.l_pvente || '€/m²',
+							l_pvente_lot = new.l_pvente_lot,
+							nb_log=new.nb_log,
+							nb_logind=new.nb_logind,
+							nb_logindgr=new.nb_logindgr,
+							nb_logcol=new.nb_logcol,
+							nb_logaide=new.nb_logaide,
+							nb_log_r=new.nb_log_r,
+							nb_logind_r=new.nb_logind_r,
+							nb_logindgr_r=new.nb_logindgr_r,
+							nb_logcol_r=new.nb_logcol_r,
+							nb_logaide_r=new.nb_logaide_r,
+							l_observ = new.l_observ,
+							l_phase = new.l_phase,
+							nb_logaide_loc_r = new.nb_logaide_loc_r,
+							nb_logaide_acc_r = new.nb_logaide_acc_r
+		WHERE an_amt_lot_hab.idgeolf=new.idgeolf;
+
+     return new;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION m_amenagement.ft_modif_lot_hab()
+  OWNER TO sig_create;
+
+COMMENT ON FUNCTION m_amenagement.ft_modif_lot_hab() IS 'Fonction gérant la mise à jour des données liées aux lots à vocation habitat lors de la modification de l''objet';
+					 
+						 
+-- Trigger: t_t3_modif_lot_hab on m_amenagement.geo_v_lot_hab
+
+-- DROP TRIGGER t_t3_modif_lot_hab ON m_amenagement.geo_v_lot_hab;
+
+CREATE TRIGGER t_t3_modif_lot_hab
+  INSTEAD OF UPDATE
+  ON m_amenagement.geo_v_lot_hab
+  FOR EACH ROW
+  EXECUTE PROCEDURE m_amenagement.ft_modif_lot_hab();
+
+
+-- ########################################################### Vue de gestion des lots à vocation mixte #########################
+	
+-- View: m_amenagement.geo_v_lot_mixte
+
+-- DROP VIEW m_amenagement.geo_v_lot_mixte;
+
+CREATE OR REPLACE VIEW m_amenagement.geo_v_lot_mixte AS 
+ SELECT o.idgeolf,
+    f.l_lnom,
+    o.src_geom AS ref_spa,
+    o.op_sai,
+    o.l_voca,
+    o.l_nom,
+    f.idsite,
+    s.stade_amng,
+    s.l_amng2,
+    s.stade_comm,
+    s.l_comm2,
+    s.l_comm2_12,
+    s.etat_occup,
+    f.surf,
+    f.l_surf_l,
+    f.date_sai AS date_sai_att,
+    f.date_maj AS date_maj_att,
+    f.op_sai AS op_sai_att,
+    f.org_sai AS org_sai_att,
+    f.l_pvente,
+    f.l_pvente_l,
+    f.l_pvente_lot,
+    f.nb_log,
+    f.nb_logind,
+    f.nb_logindgr,
+    f.nb_logcol,
+    f.nb_logaide,
+    f.nb_log_r,
+    f.nb_logind_r,
+    f.nb_logindgr_r,
+    f.nb_logcol_r,
+    f.nb_logaide_r,
+    f.l_observ,
+    f.l_phase,
+    f.l_tact,
+    f.l_tact_99,
+    f.l_nom_equ,
+    f.nb_logaide_loc_r,
+    f.nb_logaide_acc_r,
+    o.geom
+   FROM m_amenagement.an_amt_lot_mixte f,
+    r_objet.geo_objet_fon_lot o,
+    m_amenagement.an_amt_lot_stade s
+  WHERE o.l_voca::text = '60'::text AND f.idgeolf = o.idgeolf AND o.idgeolf = s.idgeolf;
+
+ALTER TABLE m_amenagement.geo_v_lot_mixte
+  OWNER TO sig_create;
+
+COMMENT ON VIEW m_amenagement.geo_v_lot_mixte
+  IS 'Vue éditable des lots à vocation mixte';
+
+										     
+-- Function: m_amenagement.ft_delete_lot_mixte()
+
+-- DROP FUNCTION m_amenagement.ft_delete_lot_mixte();
+
+CREATE OR REPLACE FUNCTION m_amenagement.ft_delete_lot_mixte()
+  RETURNS trigger AS
+$BODY$
+
+
+BEGIN
+
+    DELETE FROM m_foncier.an_cession WHERE idces=(SELECT lf.idces FROM m_foncier.an_cession f, m_foncier.lk_cession_lot lf WHERE f.idces=lf.idces AND lf.idgeolf=old.idgeolf);
+    DELETE FROM m_foncier.lk_cession_lot WHERE idgeolf=old.idgeolf;
+    DELETE FROM m_amenagement.an_amt_lot_mixte WHERE idgeolf=old.idgeolf;
+    DELETE FROM m_amenagement.an_amt_lot_stade WHERE idgeolf=old.idgeolf;
+    DELETE FROM r_objet.geo_objet_fon_lot WHERE idgeolf=old.idgeolf;
+    return new ;
+
+END;
+
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION m_amenagement.ft_delete_lot_mixte()
+  OWNER TO sig_create;
+
+COMMENT ON FUNCTION m_amenagement.ft_delete_lot_mixte() IS 'Fonction gérant la suppression des données liées aux lots à vocation mixte lors de la supression de l''objet';
+
+										     
+-- Trigger: t_t1_delete_lot_mixte on m_amenagement.geo_v_lot_mixte
+
+-- DROP TRIGGER t_t1_delete_lot_mixte ON m_amenagement.geo_v_lot_mixte;
+
+CREATE TRIGGER t_t1_delete_lot_mixte
+  INSTEAD OF DELETE
+  ON m_amenagement.geo_v_lot_mixte
+  FOR EACH ROW
+  EXECUTE PROCEDURE m_amenagement.ft_delete_lot_mixte();
+
+										     
+-- Function: m_amenagement.ft_insert_lot_mixte()
+
+-- DROP FUNCTION m_amenagement.ft_insert_lot_mixte();
+
+CREATE OR REPLACE FUNCTION m_amenagement.ft_insert_lot_mixte()
+  RETURNS trigger AS
+$BODY$
+
+DECLARE v_idces integer;
+DECLARE v_idgeolf integer;
+DECLARE lot_surf integer;
+
+BEGIN
+
+     v_idgeolf := (SELECT nextval('idgeo_seq'::regclass));
+
+     INSERT INTO r_objet.geo_objet_fon_lot SELECT v_idgeolf,new.op_sai,new.ref_spa,null,'60',new.geom,null,null,new.l_nom;
+
+     INSERT INTO m_amenagement.an_amt_lot_stade SELECT v_idgeolf,
+						 (
+							SELECT DISTINCT
+								idsite 
+							FROM 
+								r_objet.geo_objet_ope
+							WHERE
+								st_intersects(geo_objet_ope.geom,ST_PointOnSurface(new.geom)) = true
+								
+						  ),
+						  new.stade_amng,
+						  new.l_amng2,
+						  new.stade_comm,
+						  new.l_comm2,
+						  new.l_comm2_12,
+						  new.etat_occup;
+
+     lot_surf:=round(cast(st_area(new.geom) as numeric),0);
+
+    -- insertion des lots uniquements mixte 
+    -- recherche si le lot dessiner est dans un site : si oui copie une ligne dans le métier site et foncier, si non copie uniquement dans le métier foncier
+    
+
+						INSERT INTO m_amenagement.an_amt_lot_mixte SELECT v_idgeolf,
+						 (
+							SELECT DISTINCT
+								idsite 
+							FROM 
+								r_objet.geo_objet_ope
+							WHERE
+								st_intersects(geo_objet_ope.geom,ST_PointOnSurface(new.geom)) = true
+								
+						  ), -- recherche idsite
+						  lot_surf,
+						
+								   CASE WHEN length(cast (lot_surf as character varying)) >= 1 and length(cast (lot_surf as character varying)) <= 3 THEN lot_surf || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 4 THEN replace(to_char(lot_surf,'FM9G999'),',',' ') || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 5 THEN replace(to_char(lot_surf,'FM99G999'),',',' ') || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 6 THEN replace(to_char(lot_surf,'FM999G999'),',',' ') || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 7 THEN replace(to_char(lot_surf,'FM9G999G999'),',',' ') || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 8 THEN replace(to_char(lot_surf,'FM99G999G999'),',',' ') || 'm²'
+								   END,
+						  new.op_sai_att,
+						  new.org_sai_att,
+						  new.l_pvente,
+						  new.l_pvente_l,
+						  new.nb_log,
+						  new.nb_logind,
+						  new.nb_logindgr,
+						  new.nb_logcol,
+						  new.nb_logaide,
+						  new.l_observ,
+						  now(),
+						  now(),
+						  new.l_phase,
+						  new.nb_log_r,
+						  new.nb_logind_r,
+						  new.nb_logindgr_r,
+						  new.nb_logcol_r,
+						  new.nb_logaide_r,
+						  new.l_pvente_lot,
+						  new.l_tact,
+						  new.l_tact_99,
+						  new.l_nom_equ,
+                                                  new.nb_logaide_loc_r,
+                                                  new.nb_logaide_acc_r,
+                                                  new.l_lnom						  
+						  ;
+						  
+					  			 			
+     
+     
+
+     -- calcul de l'identifiant du dossier de cession
+     v_idces := (SELECT nextval('m_foncier.ces_seq'::regclass));
+
+     -- insertion de tous lots fonciers dans la table métier foncier
+     INSERT INTO m_foncier.lk_cession_lot SELECT v_idgeolf, v_idces;	
+
+
+     -- insertion d'une ligne dans an_cession en créant un idces qui est lui même réinjecté dans lk_cession_lot
+
+     /* ATTENTION : LEUR DE LA MISE EN PRODUCTION REMETTRE DANS L'ORDRE LES CHAMPS SUIVANTS IDCES, L_COMPO, L_OBSERV ==> cd table an_cession pour vérification */
+     
+     INSERT INTO m_foncier.an_cession VALUES 	(
+						v_idces, -- idces
+						'10',
+						false, -- relation
+						'00',
+						'00',
+						null,
+						null,
+						null,
+						(SELECT insee FROM r_osm.geo_osm_commune WHERE st_intersects(st_pointonsurface(new.geom),geom)),
+						null,
+						'00',
+						null,
+						null,
+						null,
+						null,
+						null,
+						null,
+						null,
+						null,
+						'00',
+						'00',
+						null,
+						null,
+						'00',
+						null,
+						null,
+						null,
+						false,
+						false,
+						false,
+						false,
+						false,
+						null,
+						null,
+						null,
+						false,
+						false,
+						false,
+						null,
+						null,
+						null,
+						null,
+						null,
+						(SELECT DISTINCT
+								idsite 
+							FROM 
+								r_objet.geo_objet_ope
+							WHERE
+								st_intersects(geo_objet_ope.geom,new.geom) = true
+								
+							),
+							null
+						);
+
+     return new ;
+
+END;
+
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION m_amenagement.ft_insert_lot_mixte()
+  OWNER TO sig_create;
+
+COMMENT ON FUNCTION m_amenagement.ft_insert_lot_mixte() IS 'Fonction gérant l''insertion des données liées aux lots à vocation mixte lors de l''insertion de l''objet';
+										     
+										     
+-- Trigger: t_t2_insert_lot_mixte on m_amenagement.geo_v_lot_mixte
+
+-- DROP TRIGGER t_t2_insert_lot_mixte ON m_amenagement.geo_v_lot_mixte;
+
+CREATE TRIGGER t_t2_insert_lot_mixte
+  INSTEAD OF INSERT
+  ON m_amenagement.geo_v_lot_mixte
+  FOR EACH ROW
+  EXECUTE PROCEDURE m_amenagement.ft_insert_lot_mixte();
+
+-- Function: m_amenagement.ft_modif_lot_mixte()
+
+-- DROP FUNCTION m_amenagement.ft_modif_lot_mixte();
+
+CREATE OR REPLACE FUNCTION m_amenagement.ft_modif_lot_mixte()
+  RETURNS trigger AS
+$BODY$
+
+BEGIN
+
+		UPDATE r_objet.geo_objet_fon_lot SET geom = new.geom, date_maj = now(), src_geom = new.ref_spa, op_sai=new.op_sai,l_nom=new.l_nom WHERE idgeolf = new.idgeolf;
+
+	        UPDATE m_amenagement.an_amt_lot_stade SET stade_amng = new.stade_amng, l_amng2 = new.l_amng2, stade_comm = new.stade_comm, l_comm2 = new.l_comm2, l_comm2_12 = new.l_comm2_12, etat_occup =  new.etat_occup WHERE idgeolf = new.idgeolf;
+
+		UPDATE m_amenagement.an_amt_lot_mixte SET
+
+							surf = new.surf,
+							l_surf_l = 
+								   CASE WHEN length(cast (new.surf as character varying)) >= 1 and length(cast (new.surf as character varying)) <= 3 THEN new.surf || 'm²'
+								   WHEN length(cast (new.surf as character varying)) = 4 THEN replace(to_char(new.surf,'FM9G999'),',',' ') || 'm²'
+								   WHEN length(cast (new.surf as character varying)) = 5 THEN replace(to_char(new.surf,'FM99G999'),',',' ') || 'm²'
+								   WHEN length(cast (new.surf as character varying)) = 6 THEN replace(to_char(new.surf,'FM999G999'),',',' ') || 'm²'
+								   WHEN length(cast (new.surf as character varying)) = 7 THEN replace(to_char(new.surf,'FM9G999G999'),',',' ') || 'm²'
+								   WHEN length(cast (new.surf as character varying)) = 8 THEN replace(to_char(new.surf,'FM99G999G999'),',',' ') || 'm²'
+								   END,
+							date_maj = now(),
+							op_sai = new.op_sai_att,
+							org_sai = new.org_sai_att,
+							l_pvente = new.l_pvente,
+							l_pvente_l = new.l_pvente || '€/m²',
+							l_pvente_lot = new.l_pvente_lot,
+							nb_log=new.nb_log,
+							nb_logind=new.nb_logind,
+							nb_logindgr=new.nb_logindgr,
+							nb_logcol=new.nb_logcol,
+							nb_logaide=new.nb_logaide,
+							nb_log_r=new.nb_log_r,
+							nb_logind_r=new.nb_logind_r,
+							nb_logindgr_r=new.nb_logindgr_r,
+							nb_logcol_r=new.nb_logcol_r,
+							nb_logaide_r=new.nb_logaide_r,
+							l_observ = new.l_observ,
+							l_phase = new.l_phase,
+							l_tact = new.l_tact,
+							l_tact_99 = new.l_tact_99,
+							l_nom_equ = new.l_nom_equ,
+							nb_logaide_loc_r = new.nb_logaide_loc_r,
+							nb_logaide_acc_r = new.nb_logaide_acc_r,
+							l_lnom = new.l_lnom
+		WHERE an_amt_lot_mixte.idgeolf=new.idgeolf;
+
+     return new;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION m_amenagement.ft_modif_lot_mixte()
+  OWNER TO sig_create;
+
+COMMENT ON FUNCTION m_amenagement.ft_modif_lot_mixte() IS 'Fonction gérant la mise à jour des données liées aux lots à vocation mixte lors de la mise à jour de l''objet';
+						 
+						 
+-- Trigger: t_t3_modif_lot_mixte on m_amenagement.geo_v_lot_mixte
+
+-- DROP TRIGGER t_t3_modif_lot_mixte ON m_amenagement.geo_v_lot_mixte;
+
+CREATE TRIGGER t_t3_modif_lot_mixte
+  INSTEAD OF UPDATE
+  ON m_amenagement.geo_v_lot_mixte
+  FOR EACH ROW
+  EXECUTE PROCEDURE m_amenagement.ft_modif_lot_mixte();
+
+										     
+-- ########################################################### Vue de gestion des sites à vocation équipement #########################
+
+-- View: m_amenagement.geo_v_site_equipement
+
+-- DROP VIEW m_amenagement.geo_v_site_equipement;
+
+CREATE OR REPLACE VIEW m_amenagement.geo_v_site_equipement AS 
+ SELECT o.gid,
+    sa.idsite,
+    sa.site_nom,
+    sa.site_etat,
+    sa.date_sai AS date_sai_att,
+    sa.date_maj AS date_maj_att,
+    sa.op_sai AS op_sai_att,
+    sa.org_sai AS org_sai_att,
+    sa.z_mai_ouvr,
+    sa.z_compet,
+    sa.z_amng,
+    sa.z_gest,
+    sa.z_anim,
+    sa.z_comm,
+    sa.contact,
+    o.geom
+   FROM m_amenagement.an_amt_site_equ sa,
+    r_objet.geo_objet_site o
+  WHERE sa.idsite::text = o.idsite::text;
+
+ALTER TABLE m_amenagement.geo_v_site_equipement
+  OWNER TO sig_create;
+
+COMMENT ON VIEW m_amenagement.geo_v_site_equipement
+  IS 'Vue éditable des sites à destination équipement gérés ou non par l''ARC. Ce filtre est possible par sélection de l''attribut en question';
+
+-- Function: m_amenagement.ft_modif_site_equ()
+
+-- DROP FUNCTION m_amenagement.ft_modif_site_equ();
+
+CREATE OR REPLACE FUNCTION m_amenagement.ft_modif_site_equ()
+  RETURNS trigger AS
+$BODY$
+
+BEGIN
+
+UPDATE m_amenagement.an_amt_site_equ SET
+  site_nom=new.site_nom,
+  site_etat=new.site_etat,
+  op_sai=new.op_sai,
+  org_sai=new.org_sai,
+  z_mai_ouvr=new.z_mai_ouv,
+  z_compet=new.z_compet,
+  z_amng=new.z_amng,
+  z_gest=new.z_gest,
+  z_anim=new.z_anim,
+  z_comm=new.z_comm,
+  contact=new.contact,
+  date_maj=now()
+  WHERE an_amt_site_equ.idsite = new.idsite;
+
+     return new;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION m_amenagement.ft_modif_site_equ()
+  OWNER TO sig_create;
+
+										     
+										     
+-- Trigger: t_t1_modif_site_equ on m_amenagement.geo_v_site_equipement
+
+-- DROP TRIGGER t_t1_modif_site_equ ON m_amenagement.geo_v_site_equipement;
+
+CREATE TRIGGER t_t1_modif_site_equ
+  INSTEAD OF UPDATE
+  ON m_amenagement.geo_v_site_equipement
+  FOR EACH ROW
+  EXECUTE PROCEDURE m_amenagement.ft_modif_site_equ();
+
+-- ########################################################### Vue de gestion des sites à vocation habitat #########################
+
+-- View: m_amenagement.geo_v_site_habitat
+
+-- DROP VIEW m_amenagement.geo_v_site_habitat;
+
+CREATE OR REPLACE VIEW m_amenagement.geo_v_site_habitat AS 
+ SELECT o.gid,
+    sa.idgeopo,
+    sa.idsite,
+    sa.site_nom,
+    sa.site_etat,
+    sa.date_sai AS date_sai_att,
+    sa.date_maj AS date_maj_att,
+    sa.op_sai AS op_sai_att,
+    sa.org_sai AS org_sai_att,
+    sa.nb_log,
+    sa.z_mai_ouvr,
+    sa.z_compet,
+    sa.z_amng,
+    sa.z_gest,
+    sa.z_anim,
+    sa.z_comm,
+    sa.contact,
+    o.geom
+   FROM m_amenagement.an_amt_site_habitat sa,
+    r_objet.geo_objet_site o
+  WHERE sa.idsite::text = o.idsite::text;
+
+ALTER TABLE m_amenagement.geo_v_site_habitat
+  OWNER TO sig_create;
+
+COMMENT ON VIEW m_amenagement.geo_v_site_habitat
+  IS 'Vue éditable des sites à destination habitat gérés ou non par l''ARC. Ce filtre est possible par sélection de l''attribut en question';
+
+-- Function: m_amenagement.ft_modif_site_hab()
+
+-- DROP FUNCTION m_amenagement.ft_modif_site_hab();
+
+CREATE OR REPLACE FUNCTION m_amenagement.ft_modif_site_hab()
+  RETURNS trigger AS
+$BODY$
+
+BEGIN
+
+UPDATE m_amenagement.an_amt_site_habitat SET
+  idsite=new.idsite,
+  site_nom=new.site_nom,
+  site_etat=new.site_etat,
+  op_sai=new.op_sai_att,
+  org_sai=new.org_sai_att, 
+  nb_log=new.nb_log,
+  z_mai_ouvr=new.z_mai_ouvr,
+  z_compet=new.z_compet,
+  z_amng=new.z_amng,
+  z_gest=new.z_gest,
+  z_anim=new.z_anim,
+  z_comm=new.z_comm,
+  contact=new.contact,
+  date_maj=now()
+  WHERE an_amt_site_habitat.idsite = new.idsite;
+
+     return new;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION m_amenagement.ft_modif_site_hab()
+  OWNER TO sig_create;
+										     
+										     
+-- Trigger: t_t1_modif_site_hab on m_amenagement.geo_v_site_habitat
+
+-- DROP TRIGGER t_t1_modif_site_hab ON m_amenagement.geo_v_site_habitat;
+
+CREATE TRIGGER t_t1_modif_site_hab
+  INSTEAD OF UPDATE
+  ON m_amenagement.geo_v_site_habitat
+  FOR EACH ROW
+  EXECUTE PROCEDURE m_amenagement.ft_modif_site_hab();
+
+
+-- ########################################################### Vue de gestion des sites à vocation mixte #########################
+	
+-- View: m_amenagement.geo_v_site_mixte
+
+-- DROP VIEW m_amenagement.geo_v_site_mixte;
+
+CREATE OR REPLACE VIEW m_amenagement.geo_v_site_mixte AS 
+ SELECT o.gid,
+    o.idsite,
+    sa.idpole,
+    sa.site_voca,
+    sa.site_nom,
+    sa.site_etat,
+    sa.zae,
+    sa.date_sai AS date_sai_att,
+    sa.date_maj AS date_maj_att,
+    sa.date_int,
+    sa.op_sai AS op_sai_att,
+    sa.org_sai AS org_sai_att,
+    sa.typo,
+    sa.dest,
+    sa.p_implant,
+    sa.z_mai_ouvr,
+    sa.z_compet,
+    sa.z_amng,
+    sa.z_gest,
+    sa.z_anim,
+    sa.z_comm,
+    sa.contact,
+    sa.z_cession_eco,
+    sa.z_cession_hab,
+    sa.z_env,
+    sa.z_paysage,
+    sa.z_rehab,
+    sa.z_epu,
+    sa.z_dechet,
+    sa.z_tr_slect,
+    sa.res_ass,
+    sa.res_pluvia,
+    sa.res_eau,
+    sa.res_gaz,
+    sa.res_elect,
+    sa.res_net,
+    sa.res_db_net,
+    sa.z_auto,
+    sa.z_dst_auto,
+    sa.z_tps_auto,
+    sa.z_ar_f,
+    sa.z_dst_ar_f,
+    sa.z_ar_v,
+    sa.z_dst_ar_v,
+    sa.z_fr_f,
+    sa.z_dst_fr_f,
+    sa.z_fr_v,
+    sa.z_dst_fr_v,
+    sa.z_pmm,
+    sa.z_dst_pmm,
+    sa.serv_tc,
+    sa.circ_douce,
+    sa.serv_rest,
+    sa.serv_crech,
+    sa.serv_autre,
+    sa.serv_collt,
+    sa.z_aide_pb,
+    sa.l_dated_aide_pb,
+    sa.l_datef_aide_pb,
+    sa.d_paris,
+    sa.t_paris,
+    sa.d_lille,
+    sa.t_lille,
+    sa.l_dauto,
+    sa.l_dtgvhp,
+    sa.l_ttgvhp,
+    sa.l_dtgvcdg,
+    sa.l_ttgvcdg,
+    sa.l_tgcomp,
+    sa.l_dtille,
+    sa.l_ttille,
+    sa.l_dcdg,
+    sa.l_tcdg,
+    sa.l_dlesquin,
+    sa.l_tlesquin,
+    sa.nb_log,
+    o.geom
+   FROM m_amenagement.an_amt_site_mixte sa,
+    r_objet.geo_objet_site o
+  WHERE sa.site_voca::text <> '00'::text AND sa.idsite::text = o.idsite::text;
+
+ALTER TABLE m_amenagement.geo_v_site_mixte
+  OWNER TO sig_create;
+
+COMMENT ON VIEW m_amenagement.geo_v_site_mixte
+  IS 'Vue éditable des sites à destination mixte (économie et habitat) gérés ou non par l''ARC. Ce filtre est possible par sélection de l''attribut en question';
+
+-- Function: m_amenagement.ft_modif_site_mixte()
+
+-- DROP FUNCTION m_amenagement.ft_modif_site_mixte();
+
+CREATE OR REPLACE FUNCTION m_amenagement.ft_modif_site_mixte()
+  RETURNS trigger AS
+$BODY$
+
+BEGIN
+
+	UPDATE m_amenagement.an_amt_site_mixte SET
+	idsite = new.idsite,
+	site_voca = new.site_voca,
+	site_nom = new.site_nom,
+	site_etat = new.site_etat,
+	date_maj = now(), -- modification de la date de mise à jour (différente ici de la date de saisie contrairement à la première saisie ou date_sai = date_maj)
+	op_sai = new.op_sai_att, -- rempli par l'opérateur dans l'application
+	org_sai = new.org_sai_att, -- rempli par l'opérateur dans l'application
+	typo = new.typo, -- rempli par l'opérateur dans l'application
+	dest = new.dest, -- rempli par l'opérateur dans l'application
+	p_implant = new.p_implant, -- rempli par l'opérateur dans l'application
+	z_mai_ouvr = new.z_mai_ouvr, -- rempli par l'opérateur dans l'application
+	z_compet = new.z_compet, -- rempli par l'opérateur dans l'application
+	z_amng = new.z_amng, -- rempli par l'opérateur dans l'application
+	z_gest = new.z_gest, -- rempli par l'opérateur dans l'application
+	z_anim = new.z_anim, -- rempli par l'opérateur dans l'application
+	z_comm = new.z_comm, -- rempli par l'opérateur dans l'application
+	contact = new.contact, -- rempli par l'opérateur dans l'application
+	z_cession_eco = new.z_cession_eco, -- rempli par l'opérateur de saisie
+	z_cession_hab = new.z_cession_hab, -- rempli par l'opérateur de saisie
+	z_env = new.z_env, -- rempli par l'opérateur dans l'application
+	z_paysage = new.z_paysage, -- rempli par l'opérateur dans l'application
+	z_rehab = new.z_rehab, -- rempli par l'opérateur dans l'application
+	z_epu = new.z_epu, -- rempli par l'opérateur dans l'application
+	z_dechet = new.z_dechet, -- rempli par l'opérateur dans l'application
+	z_tr_slect = new.z_tr_slect, -- rempli par l'opérateur dans l'application
+	res_ass = new.res_ass, -- rempli par l'opérateur dans l'application
+	res_pluvia = new.res_pluvia, -- rempli par l'opérateur dans l'application
+	res_eau = new.res_eau, -- rempli par l'opérateur dans l'application
+	res_gaz = new.res_gaz, -- rempli par l'opérateur dans l'application
+	res_elect = new.res_elect, -- rempli par l'opérateur dans l'application
+	res_net = new.res_net, -- rempli par l'opérateur dans l'application
+	res_db_net = new.res_db_net, -- rempli par l'opérateur dans l'application
+	z_auto = new.z_auto, -- rempli par l'opérateur dans l'application
+	z_dst_auto = new.z_dst_auto, -- rempli par l'opérateur dans l'application
+	z_tps_auto = new.z_tps_auto, -- rempli par l'opérateur dans l'application
+	z_ar_f = new.z_ar_f, -- rempli par l'opérateur dans l'application
+	z_dst_ar_f = new.z_dst_ar_f, -- rempli par l'opérateur dans l'application
+	z_ar_v = new.z_ar_v, -- rempli par l'opérateur dans l'application
+	z_dst_ar_v = new.z_dst_ar_v, -- rempli par l'opérateur dans l'application
+	z_fr_f = new.z_fr_f, -- rempli par l'opérateur dans l'application
+	z_dst_fr_f = new.z_dst_fr_f, -- rempli par l'opérateur dans l'application
+	z_fr_v = new.z_fr_v, -- rempli par l'opérateur dans l'application
+	z_dst_fr_v = new.z_dst_fr_v, -- rempli par l'opérateur dans l'application
+	z_pmm = new.z_pmm, -- rempli par l'opérateur dans l'application
+	z_dst_pmm = new.z_dst_pmm, -- rempli par l'opérateur dans l'application
+	serv_tc = new.serv_tc, -- rempli par l'opérateur dans l'application
+	circ_douce = new.circ_douce, -- rempli par l'opérateur dans l'application
+	serv_rest = new.serv_rest, -- rempli par l'opérateur dans l'application
+	serv_crech = new.serv_crech, -- rempli par l'opérateur dans l'application
+	serv_autre = new.serv_autre, -- rempli par l'opérateur dans l'application
+	serv_collt = new.serv_collt, -- rempli par l'opérateur dans l'application
+	z_aide_pb = new.z_aide_pb, -- rempli par l'opérateur dans l'application
+	l_dated_aide_pb = new.l_dated_aide_pb, -- rempli par l'opérateur dans l'application
+	l_datef_aide_pb = new.l_datef_aide_pb, -- rempli par l'opérateur dans l'application
+	d_paris=new.d_paris,
+	t_paris=new.t_paris,
+	d_lille=new.d_lille,
+	t_lille=new.t_lille,
+	l_dauto=new.l_dauto,
+	l_dtgvhp=new.l_dtgvhp,
+	l_ttgvhp=new.l_ttgvhp,
+	l_dtgvcdg=new.l_dtgvcdg,
+	l_ttgvcdg=new.l_ttgvcdg,
+	l_tgcomp=new.l_tgcomp,
+	l_dtille=new.l_dtille,
+	l_ttille=new.l_ttille,
+	l_dcdg=new.l_dcdg,
+	l_tcdg=new.l_tcdg,
+	l_dlesquin=new.l_dlesquin,
+	l_tlesquin=new.l_tlesquin,
+	nb_log=new.nb_log
+	
+	WHERE an_amt_site_mixte.idsite = new.idsite;
+
+     return new;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION m_amenagement.ft_modif_site_mixte()
+  OWNER TO sig_create;
+									     
+										     
+-- Trigger: t_t1_modif_site_mixte on m_amenagement.geo_v_site_mixte
+
+-- DROP TRIGGER t_t1_modif_site_mixte ON m_amenagement.geo_v_site_mixte;
+
+CREATE TRIGGER t_t1_modif_site_mixte
+  INSTEAD OF UPDATE
+  ON m_amenagement.geo_v_site_mixte
+  FOR EACH ROW
+  EXECUTE PROCEDURE m_amenagement.ft_modif_site_mixte();
+
+										     
+										     
