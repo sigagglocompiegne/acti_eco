@@ -108,6 +108,23 @@ ALTER TABLE m_foncier.ces_seq
   OWNER TO sig_create;
 */
 
+-- ################################################# Séquence des identifiants des documents de cessions ##################################
+
+-- Sequence: m_foncier.an_fon_doc_media_gid_seq
+
+-- DROP SEQUENCE m_foncier.an_fon_doc_media_gid_seq;
+/*
+CREATE SEQUENCE m_foncier.an_fon_doc_media_gid_seq
+  INCREMENT 1
+  MINVALUE 1
+  MAXVALUE 9223372036854775807
+  START 1278
+  CACHE 1;
+ALTER TABLE m_foncier.an_fon_doc_media_gid_seq
+  OWNER TO sig_create;
+
+*/
+
 -- ################################################# Séquence des identifiants des documents intégrés pour établissements (rattaché au lot) ##################################
 
 -- Sequence: m_economie.an_lot_doc_media_gid_seq
@@ -140,6 +157,23 @@ ALTER TABLE m_economie.an_site_doc_media_gig_seq
   OWNER TO sig_create;
   */
   
+-- ################################################# Séquence des identifiants des DIA ##################################
+
+-- Sequence: m_economie.an_sa_dia_gid_seq
+
+-- DROP SEQUENCE m_economie.an_sa_dia_gid_seq;
+/*
+CREATE SEQUENCE m_economie.an_sa_dia_gid_seq
+  INCREMENT 1
+  MINVALUE 1
+  MAXVALUE 9223372036854775807
+  START 4
+  CACHE 1;
+ALTER TABLE m_economie.an_sa_dia_gid_seq
+  OWNER TO sig_create;
+*/
+
+
 -- ################################################# Séquence des identifiants pour les données historiques des établissements ##################################
 
 
@@ -171,23 +205,6 @@ CREATE SEQUENCE m_economie.h_an_sa_site_id_seq
   MINVALUE 1
   MAXVALUE 9223372036854775807
   START 462
-  CACHE 1;
-ALTER TABLE m_economie.h_an_sa_site_id_seq
-  OWNER TO sig_create;
-*/
-
--- ################################################# Séquence des identifiants pour les données historiques des sites mixtes ##################################
-
--- Sequence: m_economie.h_an_sa_site_id_seq
-
--- DROP SEQUENCE m_economie.h_an_sa_site_id_seq;
-
-/*
-CREATE SEQUENCE m_economie.h_an_sa_site_id_seq
-  INCREMENT 1
-  MINVALUE 1
-  MAXVALUE 9223372036854775807
-  START 1
   CACHE 1;
 ALTER TABLE m_economie.h_an_sa_site_id_seq
   OWNER TO sig_create;
@@ -228,6 +245,25 @@ CREATE SEQUENCE s_sirene.an_etablissement_gid_seq
 ALTER TABLE s_sirene.an_etablissement_gid_seq
   OWNER TO sig_create;
 */
+
+
+-- ################################################# Séquence des identifiants pour les sites mixte historiques ##################################
+
+-- Sequence: m_amenagement.h_an_amt_site_mixte_gid_seq
+
+-- DROP SEQUENCE m_amenagement.h_an_amt_site_mixte_gid_seq;
+/*
+CREATE SEQUENCE m_amenagement.h_an_amt_site_mixte_gid_seq
+  INCREMENT 1
+  MINVALUE 1
+  MAXVALUE 9223372036854775807
+  START 65
+  CACHE 1;
+ALTER TABLE m_amenagement.h_an_amt_site_mixte_gid_seq
+  OWNER TO sig_create;
+
+*/
+
 
 
 -- ####################################################################################################################################################
