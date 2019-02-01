@@ -4527,18 +4527,7 @@ COMMENT ON COLUMN s_sirene.an_etablissement.gid IS 'Compteur (identifiant unique
 
 
 
--- Trigger: modif_etab on s_sirene.an_etablissement
-
--- DROP TRIGGER modif_etab ON s_sirene.an_etablissement;
-
-CREATE TRIGGER modif_etab
-  AFTER UPDATE
-  ON s_sirene.an_etablissement
-  FOR EACH ROW
-  EXECUTE PROCEDURE s_sirene.m_modif_an_etablissement();
-ALTER TABLE s_sirene.an_etablissement DISABLE TRIGGER modif_etab;
-
-				  
+	  
 				  
 -- ####################################################################################################################################################
 -- ###                                                                                                                                              ###
