@@ -210,6 +210,22 @@ ALTER TABLE m_economie.h_an_sa_site_id_seq
   OWNER TO sig_create;
 */
 
+-- ################################################# Séquence des identifiants pour les données historiques des établissements ##################################
+
+-- Sequence: m_economie.h_an_sa_etab_gid_seq
+
+-- DROP SEQUENCE m_economie.h_an_sa_etab_gid_seq;
+/*
+CREATE SEQUENCE m_economie.h_an_sa_etab_gid_seq
+  INCREMENT 1
+  MINVALUE 1
+  MAXVALUE 9223372036854775807
+  START 37621
+  CACHE 1;
+ALTER TABLE m_economie.h_an_sa_etab_gid_seq
+  OWNER TO sig_create;
+*/
+
 
 -- ################################################# Séquence des identifiants pour les lots ##################################
 
