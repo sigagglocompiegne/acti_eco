@@ -5989,4 +5989,151 @@ CREATE TRIGGER t_t1_modif_site_mixte
   EXECUTE PROCEDURE m_amenagement.ft_modif_site_mixte();
 
 										     
-										     
+-- ########################################################### SCHEMA m_urbanisme_reg #########################
+
+-- ########################################################### Vue de gestion des procédures #########################
+
+										     -- View: m_urbanisme_reg.geo_v_proc
+
+-- DROP VIEW m_urbanisme_reg.geo_v_proc;
+
+CREATE OR REPLACE VIEW m_urbanisme_reg.geo_v_proc AS 
+ SELECT so.idgeopo,
+    so.idsite,
+    so.l_ope_nom,
+    so.l_ope_alias,
+    so.dest,
+    so.z_proced,
+    so.date_sai,
+    so.date_maj,
+    so.op_sai,
+    so.l_ope_phase,
+    so.l_ope_moa,
+    so.l_conso_type,
+    so.l_pr_urb,
+    so.date_crea,
+    so.l_pr_fon,
+    so.l_pr_fon_date,
+    so.l_surf_ha,
+    so.l_existe,
+    so.l_pr_fon_type,
+    so.l_ref_compta,
+    so.l_observ,
+    o.sup_m2,
+    so.l_surf_cess_ha,
+    so.l_date_clo,
+    so.l_nb_log,
+    so.l_nb_logind,
+    so.l_nb_logindgr,
+    so.l_nb_logcol,
+    so.l_nb_logaide,
+    so.l_nb_logaide_loc,
+    so.l_nb_logaide_acc,
+    so.l_nom_cp,
+    o.src_geom,
+    o.geom,
+    st_multi(st_buffer(o.geom, (-0.5)::double precision))::geometry(MultiPolygon,2154) AS geom1
+   FROM m_urbanisme_reg.an_proced so,
+    r_objet.geo_objet_ope o
+  WHERE so.idgeopo = o.idgeopo AND o.proced = true;
+
+ALTER TABLE m_urbanisme_reg.geo_v_proc
+  OWNER TO sig_create;
+
+COMMENT ON VIEW m_urbanisme_reg.geo_v_proc
+  IS 'Vue éditable des procédures d''aménagement (uniquement des données attributaires pas les géométries)';
+
+		       
+-- Function: m_urbanisme_reg.ft_modif_proc()
+
+-- DROP FUNCTION m_urbanisme_reg.ft_modif_proc();
+
+CREATE OR REPLACE FUNCTION m_urbanisme_reg.ft_modif_proc()
+  RETURNS trigger AS
+$BODY$
+
+BEGIN
+
+	UPDATE m_urbanisme_reg.an_proced SET
+		
+		l_ope_nom = new.l_ope_nom,
+		l_ope_alias = new.l_ope_alias,
+		z_proced = new.z_proced,
+		date_maj = now(),
+		op_sai = new.op_sai,
+		l_ope_phase = new.l_ope_phase,
+		l_ope_moa = new.l_ope_moa,
+		l_conso_type = new.l_conso_type,
+		l_pr_urb = new.l_pr_urb,
+		date_crea = new.date_crea,
+		l_pr_fon = new.l_pr_fon,
+		l_pr_fon_date = new.l_pr_fon_date,
+		l_existe = new.l_existe,
+		l_pr_fon_type = new.l_pr_fon_type,
+		l_ref_compta = new.l_ref_compta,
+		l_observ = new.l_observ,
+		l_surf_cess_ha=new.l_surf_cess_ha,
+		l_date_clo=new.l_date_clo,
+		l_nb_log=new.l_nb_log,
+		l_nb_logind=new.l_nb_logind,
+		l_nb_logindgr=new.l_nb_logindgr,
+		l_nb_logcol=new.l_nb_logcol,
+		l_nb_logaide=new.l_nb_logaide,
+		l_nb_logaide_loc=new.l_nb_logaide_loc,
+		l_nb_logaide_acc=new.l_nb_logaide_acc,
+		l_nom_cp=new.l_nom_cp
+		
+	WHERE an_proced.idgeopo = new.idgeopo;
+ 
+     return new;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION m_urbanisme_reg.ft_modif_proc()
+  OWNER TO sig_create;
+
+		       
+-- Trigger: t_t1_modif_proc on m_urbanisme_reg.geo_v_proc
+
+-- DROP TRIGGER t_t1_modif_proc ON m_urbanisme_reg.geo_v_proc;
+
+CREATE TRIGGER t_t1_modif_proc
+  INSTEAD OF UPDATE
+  ON m_urbanisme_reg.geo_v_proc
+  FOR EACH ROW
+  EXECUTE PROCEDURE m_urbanisme_reg.ft_modif_proc();
+
+-- Function: m_urbanisme_reg.ft_refresh_proc()
+
+-- DROP FUNCTION m_urbanisme_reg.ft_refresh_proc();
+
+CREATE OR REPLACE FUNCTION m_urbanisme_reg.ft_refresh_proc()
+  RETURNS trigger AS
+$BODY$
+
+BEGIN
+
+REFRESH MATERIALIZED VIEW x_apps.xapps_geo_vmr_proc;
+
+     return new;
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION m_urbanisme_reg.ft_refresh_proc()
+  OWNER TO sig_create;
+
+		       
+		       
+-- Trigger: t_t2_refresh_xapps_geo_vmr_proc on m_urbanisme_reg.geo_v_proc
+
+-- DROP TRIGGER t_t2_refresh_xapps_geo_vmr_proc ON m_urbanisme_reg.geo_v_proc;
+
+CREATE TRIGGER t_t2_refresh_xapps_geo_vmr_proc
+  INSTEAD OF UPDATE
+  ON m_urbanisme_reg.geo_v_proc
+  FOR EACH ROW
+  EXECUTE PROCEDURE m_urbanisme_reg.ft_refresh_proc();
+
+
