@@ -4,10 +4,13 @@
 
 ## Principes
   * **généralité** :
-(en cours)
+
+Les données métiers gérées par le pôle aménagement-grand projet (acquisition, cession, procédure, lot, ...) et le service développement économique (établissement, commercialisation de lots, ...) ont été urbanisées dans la base de données car elles s'intéragissent entre elles.
+
  
  * **résumé fonctionnel** :
-(en cours)
+
+
 
 ## Schéma fonctionnel
 
