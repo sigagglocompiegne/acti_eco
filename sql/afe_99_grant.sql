@@ -668,3 +668,273 @@ GRANT UPDATE ON TABLE x_apps.xapps_geo_vmr_proc TO public;
 
 -- #################################################################### FUNCTION TRIGGER  ####################################################################
 
+GRANT EXECUTE ON FUNCTION s_sirene.m_modif_an_etablissement() TO public;
+GRANT EXECUTE ON FUNCTION s_sirene.m_modif_an_etablissement() TO sig_create;
+GRANT EXECUTE ON FUNCTION s_sirene.m_modif_an_etablissement() TO create_sig;
+
+GRANT EXECUTE ON FUNCTION r_objet.ft_geo_etab_objet_idsite() TO create_sig;
+GRANT EXECUTE ON FUNCTION r_objet.ft_geo_etab_objet_idsite() TO sig_create;
+GRANT EXECUTE ON FUNCTION r_objet.ft_geo_etab_objet_idsite() TO public;
+
+GRANT EXECUTE ON FUNCTION r_objet.m_delete_proc() TO create_sig;
+GRANT EXECUTE ON FUNCTION r_objet.m_delete_proc() TO sig_create;
+GRANT EXECUTE ON FUNCTION r_objet.m_delete_proc() TO public;
+
+GRANT EXECUTE ON FUNCTION r_objet.m_empesp_pu_update() TO create_sig;
+GRANT EXECUTE ON FUNCTION r_objet.m_empesp_pu_update() TO sig_create;
+GRANT EXECUTE ON FUNCTION r_objet.m_empesp_pu_update() TO public;
+
+GRANT EXECUTE ON FUNCTION r_objet.m_empesppu_delete() TO create_sig;
+GRANT EXECUTE ON FUNCTION r_objet.m_empesppu_delete() TO sig_create;
+GRANT EXECUTE ON FUNCTION r_objet.m_empesppu_delete() TO public;
+
+GRANT EXECUTE ON FUNCTION r_objet.m_empesppu_insert() TO create_sig;
+GRANT EXECUTE ON FUNCTION r_objet.m_empesppu_insert() TO sig_create;
+GRANT EXECUTE ON FUNCTION r_objet.m_empesppu_insert() TO public;
+
+GRANT EXECUTE ON FUNCTION r_objet.m_etab_insert() TO create_sig;
+GRANT EXECUTE ON FUNCTION r_objet.m_etab_insert() TO sig_create;
+GRANT EXECUTE ON FUNCTION r_objet.m_etab_insert() TO public;
+
+GRANT EXECUTE ON FUNCTION r_objet.m_foncier_delete() TO create_sig;
+GRANT EXECUTE ON FUNCTION r_objet.m_foncier_delete() TO sig_create;
+GRANT EXECUTE ON FUNCTION r_objet.m_foncier_delete() TO public;
+GRANT EXECUTE ON FUNCTION r_objet.m_foncier_delete() TO edit_sig;
+
+
+GRANT EXECUTE ON FUNCTION r_objet.m_foncier_insert() TO create_sig;
+GRANT EXECUTE ON FUNCTION r_objet.m_foncier_insert() TO sig_create;
+GRANT EXECUTE ON FUNCTION r_objet.m_foncier_insert() TO public;
+GRANT EXECUTE ON FUNCTION r_objet.m_foncier_insert() TO edit_sig;
+
+GRANT EXECUTE ON FUNCTION r_objet.m_foncier_update() TO create_sig;
+GRANT EXECUTE ON FUNCTION r_objet.m_foncier_update() TO sig_create;
+GRANT EXECUTE ON FUNCTION r_objet.m_foncier_update() TO public;
+GRANT EXECUTE ON FUNCTION r_objet.m_foncier_update() TO edit_sig;
+
+GRANT EXECUTE ON FUNCTION r_objet.m_insert_proc() TO create_sig;
+GRANT EXECUTE ON FUNCTION r_objet.m_insert_proc() TO sig_create;
+GRANT EXECUTE ON FUNCTION r_objet.m_insert_proc() TO public;
+
+GRANT EXECUTE ON FUNCTION r_objet.m_update_proc() TO create_sig;
+GRANT EXECUTE ON FUNCTION r_objet.m_update_proc() TO sig_create;
+GRANT EXECUTE ON FUNCTION r_objet.m_update_proc() TO public
+
+GRANT EXECUTE ON FUNCTION r_objet.m_vm_site() TO create_sig;
+GRANT EXECUTE ON FUNCTION r_objet.m_vm_site() TO sig_create;
+GRANT EXECUTE ON FUNCTION r_objet.m_vm_site() TO public;
+
+GRANT EXECUTE ON FUNCTION r_objet.t_t3_foncier_l_nom() TO public;
+GRANT EXECUTE ON FUNCTION r_objet.t_t3_foncier_l_nom() TO sig_create;
+GRANT EXECUTE ON FUNCTION r_objet.t_t3_foncier_l_nom() TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_urbanisme_reg.m_modif_proc() TO public;
+GRANT EXECUTE ON FUNCTION m_urbanisme_reg.m_modif_proc() TO sig_create;
+GRANT EXECUTE ON FUNCTION m_urbanisme_reg.m_modif_proc() TO create_sig;
+
+
+GRANT EXECUTE ON FUNCTION m_foncier.m_ces_acq_idgeoaf() TO public;
+GRANT EXECUTE ON FUNCTION m_foncier.m_ces_acq_idgeoaf() TO sig_create;
+GRANT EXECUTE ON FUNCTION m_foncier.m_ces_acq_idgeoaf() TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_foncier.m_ces_acq_idsite() TO public;
+GRANT EXECUTE ON FUNCTION m_foncier.m_ces_acq_idsite() TO sig_create;
+GRANT EXECUTE ON FUNCTION m_foncier.m_ces_acq_idsite() TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_foncier.r_acqui_ndoc() TO public;
+GRANT EXECUTE ON FUNCTION m_foncier.r_acqui_ndoc() TO sig_create;
+GRANT EXECUTE ON FUNCTION m_foncier.r_acqui_ndoc() TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_foncier.r_cess_nlot() TO public;
+GRANT EXECUTE ON FUNCTION m_foncier.r_cess_nlot() TO sig_create;
+GRANT EXECUTE ON FUNCTION m_foncier.r_cess_nlot() TO create_sig;
+GRANT EXECUTE ON FUNCTION m_foncier.r_cess_nlot() TO edit_sig;
+
+GRANT EXECUTE ON FUNCTION m_economie.ft1_geo_v_etab_objet() TO public;
+GRANT EXECUTE ON FUNCTION m_economie.ft1_geo_v_etab_objet() TO sig_create;
+GRANT EXECUTE ON FUNCTION m_economie.ft1_geo_v_etab_objet() TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_economie.ft_geo_v_etab_att() TO public;
+GRANT EXECUTE ON FUNCTION m_economie.ft_geo_v_etab_att() TO sig_create;
+GRANT EXECUTE ON FUNCTION m_economie.ft_geo_v_etab_att() TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_economie.ft_geo_v_etab_objet() TO public;
+GRANT EXECUTE ON FUNCTION m_economie.ft_geo_v_etab_objet() TO sig_create;
+GRANT EXECUTE ON FUNCTION m_economie.ft_geo_v_etab_objet() TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_economie.ft_geo_v_etab_oldsirene() TO public;
+GRANT EXECUTE ON FUNCTION m_economie.ft_geo_v_etab_oldsirene() TO sig_create;
+GRANT EXECUTE ON FUNCTION m_economie.ft_geo_v_etab_oldsirene() TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_economie.m_an_sa_etab_date_null() TO public;
+GRANT EXECUTE ON FUNCTION m_economie.m_an_sa_etab_date_null() TO sig_create;
+GRANT EXECUTE ON FUNCTION m_economie.m_an_sa_etab_date_null() TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_economie.m_bal_insert() TO public;
+GRANT EXECUTE ON FUNCTION m_economie.m_bal_insert() TO sig_create;
+GRANT EXECUTE ON FUNCTION m_economie.m_bal_insert() TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_economie.m_bal_update() TO public;
+GRANT EXECUTE ON FUNCTION m_economie.m_bal_update() TO sig_create;
+GRANT EXECUTE ON FUNCTION m_economie.m_bal_update() TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_economie.m_delete_lot_eco() TO public;
+GRANT EXECUTE ON FUNCTION m_economie.m_delete_lot_eco() TO sig_create;
+GRANT EXECUTE ON FUNCTION m_economie.m_delete_lot_eco() TO create_sig;
+GRANT EXECUTE ON FUNCTION m_economie.m_delete_lot_eco() TO edit_sig;
+
+GRANT EXECUTE ON FUNCTION m_economie.m_etabp_insert() TO public;
+GRANT EXECUTE ON FUNCTION m_economie.m_etabp_insert() TO sig_create;
+GRANT EXECUTE ON FUNCTION m_economie.m_etabp_insert() TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_economie.m_etabp_null() TO public;
+GRANT EXECUTE ON FUNCTION m_economie.m_etabp_null() TO sig_create;
+GRANT EXECUTE ON FUNCTION m_economie.m_etabp_null() TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_economie.m_etabp_update() TO public;
+GRANT EXECUTE ON FUNCTION m_economie.m_etabp_update() TO sig_create;
+GRANT EXECUTE ON FUNCTION m_economie.m_etabp_update() TO create_sig
+
+GRANT EXECUTE ON FUNCTION m_economie.m_insert_lot_eco() TO public;
+GRANT EXECUTE ON FUNCTION m_economie.m_insert_lot_eco() TO sig_create;
+GRANT EXECUTE ON FUNCTION m_economie.m_insert_lot_eco() TO create_sig;
+GRANT EXECUTE ON FUNCTION m_economie.m_insert_lot_eco() TO edit_sig;
+
+GRANT EXECUTE ON FUNCTION m_economie.m_modif_lot_eco() TO public;
+GRANT EXECUTE ON FUNCTION m_economie.m_modif_lot_eco() TO sig_create;
+GRANT EXECUTE ON FUNCTION m_economie.m_modif_lot_eco() TO create_sig;
+GRANT EXECUTE ON FUNCTION m_economie.m_modif_lot_eco() TO edit_sig
+
+GRANT EXECUTE ON FUNCTION m_economie.m_modif_site_eco() TO public;
+GRANT EXECUTE ON FUNCTION m_economie.m_modif_site_eco() TO sig_create;
+GRANT EXECUTE ON FUNCTION m_economie.m_modif_site_eco() TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_economie.m_source_eff_etab() TO sig_create;
+GRANT EXECUTE ON FUNCTION m_economie.m_source_eff_etab() TO public;
+GRANT EXECUTE ON FUNCTION m_economie.m_source_eff_etab() TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_economie.r_suivi_audit() TO public;
+GRANT EXECUTE ON FUNCTION m_economie.r_suivi_audit() TO sig_create;
+GRANT EXECUTE ON FUNCTION m_economie.r_suivi_audit() TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_amenagement.ft_delete_lot_equ() TO public;
+GRANT EXECUTE ON FUNCTION m_amenagement.ft_delete_lot_equ() TO sig_create;
+GRANT EXECUTE ON FUNCTION m_amenagement.ft_delete_lot_equ() TO create_sig;
+GRANT EXECUTE ON FUNCTION m_amenagement.ft_delete_lot_equ() TO edit_sig;
+
+GRANT EXECUTE ON FUNCTION m_amenagement.ft_delete_lot_esppu() TO public;
+GRANT EXECUTE ON FUNCTION m_amenagement.ft_delete_lot_esppu() TO sig_create;
+GRANT EXECUTE ON FUNCTION m_amenagement.ft_delete_lot_esppu() TO create_sig;
+GRANT EXECUTE ON FUNCTION m_amenagement.ft_delete_lot_esppu() TO edit_sig;
+
+GRANT EXECUTE ON FUNCTION m_amenagement.ft_delete_lot_hab() TO public;
+GRANT EXECUTE ON FUNCTION m_amenagement.ft_delete_lot_hab() TO sig_create;
+GRANT EXECUTE ON FUNCTION m_amenagement.ft_delete_lot_hab() TO create_sig;
+GRANT EXECUTE ON FUNCTION m_amenagement.ft_delete_lot_hab() TO edit_sig;
+
+GRANT EXECUTE ON FUNCTION m_amenagement.ft_delete_lot_mixte() TO public;
+GRANT EXECUTE ON FUNCTION m_amenagement.ft_delete_lot_mixte() TO sig_create;
+GRANT EXECUTE ON FUNCTION m_amenagement.ft_delete_lot_mixte() TO create_sig;
+GRANT EXECUTE ON FUNCTION m_amenagement.ft_delete_lot_mixte() TO edit_sig;
+
+GRANT EXECUTE ON FUNCTION m_amenagement.ft_insert_lot_equ() TO public;
+GRANT EXECUTE ON FUNCTION m_amenagement.ft_insert_lot_equ() TO sig_create;
+GRANT EXECUTE ON FUNCTION m_amenagement.ft_insert_lot_equ() TO create_sig;
+GRANT EXECUTE ON FUNCTION m_amenagement.ft_insert_lot_equ() TO edit_sig;
+
+GRANT EXECUTE ON FUNCTION m_amenagement.ft_insert_lot_esppu() TO public;
+GRANT EXECUTE ON FUNCTION m_amenagement.ft_insert_lot_esppu() TO sig_create;
+GRANT EXECUTE ON FUNCTION m_amenagement.ft_insert_lot_esppu() TO create_sig;
+GRANT EXECUTE ON FUNCTION m_amenagement.ft_insert_lot_esppu() TO edit_sig;
+
+GRANT EXECUTE ON FUNCTION m_amenagement.ft_insert_lot_hab() TO public;
+GRANT EXECUTE ON FUNCTION m_amenagement.ft_insert_lot_hab() TO sig_create;
+GRANT EXECUTE ON FUNCTION m_amenagement.ft_insert_lot_hab() TO create_sig;
+GRANT EXECUTE ON FUNCTION m_amenagement.ft_insert_lot_hab() TO edit_sig;
+
+GRANT EXECUTE ON FUNCTION m_amenagement.ft_insert_lot_mixte() TO public;
+GRANT EXECUTE ON FUNCTION m_amenagement.ft_insert_lot_mixte() TO sig_create;
+GRANT EXECUTE ON FUNCTION m_amenagement.ft_insert_lot_mixte() TO create_sig;
+GRANT EXECUTE ON FUNCTION m_amenagement.ft_insert_lot_mixte() TO edit_sig;
+
+GRANT EXECUTE ON FUNCTION m_amenagement.ft_modif_lot_equ() TO public;
+GRANT EXECUTE ON FUNCTION m_amenagement.ft_modif_lot_equ() TO sig_create;
+GRANT EXECUTE ON FUNCTION m_amenagement.ft_modif_lot_equ() TO create_sig;
+GRANT EXECUTE ON FUNCTION m_amenagement.ft_modif_lot_equ() TO edit_sig;
+
+GRANT EXECUTE ON FUNCTION m_amenagement.ft_modif_lot_esppu() TO public;
+GRANT EXECUTE ON FUNCTION m_amenagement.ft_modif_lot_esppu() TO sig_create;
+GRANT EXECUTE ON FUNCTION m_amenagement.ft_modif_lot_esppu() TO create_sig;
+GRANT EXECUTE ON FUNCTION m_amenagement.ft_modif_lot_esppu() TO edit_sig;
+
+GRANT EXECUTE ON FUNCTION m_amenagement.ft_modif_lot_hab() TO public;
+GRANT EXECUTE ON FUNCTION m_amenagement.ft_modif_lot_hab() TO sig_create;
+GRANT EXECUTE ON FUNCTION m_amenagement.ft_modif_lot_hab() TO create_sig;
+GRANT EXECUTE ON FUNCTION m_amenagement.ft_modif_lot_hab() TO edit_sig;
+
+GRANT EXECUTE ON FUNCTION m_amenagement.ft_modif_lot_mixte() TO public;
+GRANT EXECUTE ON FUNCTION m_amenagement.ft_modif_lot_mixte() TO sig_create;
+GRANT EXECUTE ON FUNCTION m_amenagement.ft_modif_lot_mixte() TO create_sig;
+GRANT EXECUTE ON FUNCTION m_amenagement.ft_modif_lot_mixte() TO edit_sig
+
+GRANT EXECUTE ON FUNCTION m_amenagement.ft_modif_site_equ() TO public;
+GRANT EXECUTE ON FUNCTION m_amenagement.ft_modif_site_equ() TO sig_create;
+GRANT EXECUTE ON FUNCTION m_amenagement.ft_modif_site_equ() TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_amenagement.ft_modif_site_hab() TO public;
+GRANT EXECUTE ON FUNCTION m_amenagement.ft_modif_site_hab() TO sig_create;
+GRANT EXECUTE ON FUNCTION m_amenagement.ft_modif_site_hab() TO create_sig
+
+GRANT EXECUTE ON FUNCTION m_amenagement.ft_modif_site_mixte() TO public;
+GRANT EXECUTE ON FUNCTION m_amenagement.ft_modif_site_mixte() TO sig_create;
+GRANT EXECUTE ON FUNCTION m_amenagement.ft_modif_site_mixte() TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_amenagement.m_delete_lot_divers() TO public;
+GRANT EXECUTE ON FUNCTION m_amenagement.m_delete_lot_divers() TO sig_create;
+GRANT EXECUTE ON FUNCTION m_amenagement.m_delete_lot_divers() TO create_sig;
+GRANT EXECUTE ON FUNCTION m_amenagement.m_delete_lot_divers() TO edit_sig;
+
+GRANT EXECUTE ON FUNCTION m_amenagement.m_foncier_modif_geopic() TO public;
+GRANT EXECUTE ON FUNCTION m_amenagement.m_foncier_modif_geopic() TO sig_create;
+GRANT EXECUTE ON FUNCTION m_amenagement.m_foncier_modif_geopic() TO create_sig;
+GRANT EXECUTE ON FUNCTION m_amenagement.m_foncier_modif_geopic() TO edit_sig;
+GRANT EXECUTE ON FUNCTION m_amenagement.m_foncier_modif_geopic() TO read_sig;
+
+GRANT EXECUTE ON FUNCTION m_amenagement.m_insert_lot_divers() TO public;
+GRANT EXECUTE ON FUNCTION m_amenagement.m_insert_lot_divers() TO sig_create;
+GRANT EXECUTE ON FUNCTION m_amenagement.m_insert_lot_divers() TO create_sig;
+GRANT EXECUTE ON FUNCTION m_amenagement.m_insert_lot_divers() TO edit_sig;
+
+GRANT EXECUTE ON FUNCTION m_amenagement.m_modif_lot_divers() TO public;
+GRANT EXECUTE ON FUNCTION m_amenagement.m_modif_lot_divers() TO sig_create;
+GRANT EXECUTE ON FUNCTION m_amenagement.m_modif_lot_divers() TO create_sig;
+GRANT EXECUTE ON FUNCTION m_amenagement.m_modif_lot_divers() TO edit_sig;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
