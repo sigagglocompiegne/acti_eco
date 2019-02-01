@@ -3321,7 +3321,715 @@ WITH (
 ALTER TABLE m_economie.log_suivi_audit
   OWNER TO sig_create;
 
+				  
+-- ################################################# Du schéma m_amenagement ##################################
 
+-- ################################################# Classe des objets espaces publics ##################################
+
+-- Table: m_amenagement.an_amt_esppu
+
+-- DROP TABLE m_amenagement.an_amt_esppu;
+
+CREATE TABLE m_amenagement.an_amt_esppu
+(
+  idgeopu integer NOT NULL, -- Identifiant unique géographique de référence de l'objet virtuel
+  idsite character varying(10), -- Identifiant unique du site
+  idpole character varying(7), -- Identifiant unique du pole
+  date_int date, -- Date d'intégration par GéoPicardie dans la base (permet de connaître la dernière donnée intégrée)
+  op_sai character varying(80), -- Libellé de la personne ayant saisie la mise à jour
+  org_sai character varying(80), -- Organisme de saisie dont dépend l'opérateur de saisie
+  vocaep character varying(2) DEFAULT '00'::character varying, -- Code de valeurs des vocations des espaces publics
+  date_sai timestamp without time zone, -- Date de saisie des données attributaires
+  date_maj timestamp without time zone, -- Date de mises à jour des données attributaires
+  CONSTRAINT an_amt_esppu_pkey PRIMARY KEY (idgeopu)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE m_amenagement.an_amt_esppu
+  OWNER TO sig_create;
+
+COMMENT ON TABLE m_amenagement.an_amt_esppu
+  IS 'Information alphanumérique sur les emprises des espaces publiques contenus dans les sites opérationnels. Les objets virtuels de référence sont gérés dans le schéma r_objet';
+COMMENT ON COLUMN m_amenagement.an_amt_esppu.idgeopu IS 'Identifiant unique géographique de référence de l''objet virtuel';
+COMMENT ON COLUMN m_amenagement.an_amt_esppu.idsite IS 'Identifiant unique du site';
+COMMENT ON COLUMN m_amenagement.an_amt_esppu.idpole IS 'Identifiant unique du pole';
+COMMENT ON COLUMN m_amenagement.an_amt_esppu.date_int IS 'Date d''intégration par GéoPicardie dans la base (permet de connaître la dernière donnée intégrée)';
+COMMENT ON COLUMN m_amenagement.an_amt_esppu.op_sai IS 'Libellé de la personne ayant saisie la mise à jour';
+COMMENT ON COLUMN m_amenagement.an_amt_esppu.org_sai IS 'Organisme de saisie dont dépend l''opérateur de saisie';
+COMMENT ON COLUMN m_amenagement.an_amt_esppu.vocaep IS 'Code de valeurs des vocations des espaces publics';
+COMMENT ON COLUMN m_amenagement.an_amt_esppu.date_sai IS 'Date de saisie des données attributaires';
+COMMENT ON COLUMN m_amenagement.an_amt_esppu.date_maj IS 'Date de mises à jour des données attributaires';
+
+				  
+-- ################################################# Classe des objets des lots divers ##################################
+
+				  
+-- Table: m_amenagement.an_amt_lot_divers
+
+-- DROP TABLE m_amenagement.an_amt_lot_divers;
+
+CREATE TABLE m_amenagement.an_amt_lot_divers
+(
+  idgeolf integer NOT NULL, -- Identifiant unique géographique de référence de l'objet virtuel
+  idsite character varying(10), -- Identifiant unique du site
+  op_sai character varying(80), -- Libellé de la personne ayant saisie la mise à jour
+  org_sai character varying(80), -- Organisme de saisie dont dépend l'opérateur de saisie
+  l_nom character varying(100), -- Libellé
+  surf double precision, -- Surface du lot divers en m²
+  date_sai timestamp without time zone, -- Date de saisie des données attributaires
+  date_maj timestamp without time zone, -- Date de mise à jour des données attributaires
+  l_phase character varying(10), -- Phase opérationnelle éventuelle
+  l_surf_l character varying(15),
+  CONSTRAINT an_amt_lot_divers_pkey PRIMARY KEY (idgeolf)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE m_amenagement.an_amt_lot_divers
+  OWNER TO sig_create;
+
+COMMENT ON TABLE m_amenagement.an_amt_lot_divers
+  IS 'Information alphanumérique sur les lots divers';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_divers.idgeolf IS 'Identifiant unique géographique de référence de l''objet virtuel';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_divers.idsite IS 'Identifiant unique du site';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_divers.op_sai IS 'Libellé de la personne ayant saisie la mise à jour';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_divers.org_sai IS 'Organisme de saisie dont dépend l''opérateur de saisie';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_divers.l_nom IS 'Libellé';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_divers.surf IS 'Surface du lot divers en m²';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_divers.date_sai IS 'Date de saisie des données attributaires';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_divers.date_maj IS 'Date de mise à jour des données attributaires';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_divers.l_phase IS 'Phase opérationnelle éventuelle';
+
+
+-- ################################################# Classe des objets des lots équipements ##################################
+
+-- Table: m_amenagement.an_amt_lot_equ
+
+-- DROP TABLE m_amenagement.an_amt_lot_equ;
+
+CREATE TABLE m_amenagement.an_amt_lot_equ
+(
+  idgeolf integer NOT NULL, -- Identifiant unique géographique de référence de l'objet virtuel
+  idsite character varying(10), -- Identifiant unique du site
+  op_sai character varying(80), -- Libellé de la personne ayant saisie la mise à jour
+  org_sai character varying(80), -- Organisme de saisie dont dépend l'opérateur de saisie
+  l_nom character varying(100), -- Libellé de l'équipement
+  surf double precision, -- Surface du lot équipement en m²
+  date_sai timestamp without time zone, -- Date de saisie des données attributaires
+  date_maj timestamp without time zone, -- Date de mise à jour des données attributaires
+  l_phase character varying(10), -- Phase opérationnelle éventuelle
+  l_surf_l character varying(15), -- Surface littérale parcellaire occupée du lot
+  CONSTRAINT an_amt_lot_equ_pkey PRIMARY KEY (idgeolf)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE m_amenagement.an_amt_lot_equ
+  OWNER TO sig_create;
+
+COMMENT ON TABLE m_amenagement.an_amt_lot_equ
+  IS 'Information alphanumérique sur les lots équipements';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_equ.idgeolf IS 'Identifiant unique géographique de référence de l''objet virtuel';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_equ.idsite IS 'Identifiant unique du site';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_equ.op_sai IS 'Libellé de la personne ayant saisie la mise à jour';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_equ.org_sai IS 'Organisme de saisie dont dépend l''opérateur de saisie';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_equ.l_nom IS 'Libellé de l''équipement';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_equ.surf IS 'Surface du lot équipement en m²';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_equ.date_sai IS 'Date de saisie des données attributaires';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_equ.date_maj IS 'Date de mise à jour des données attributaires';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_equ.l_phase IS 'Phase opérationnelle éventuelle';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_equ.l_surf_l IS 'Surface littérale parcellaire occupée du lot';
+
+
+-- ################################################# Classe des objets des lots habitats ##################################
+  
+				  
+-- Table: m_amenagement.an_amt_lot_hab
+
+-- DROP TABLE m_amenagement.an_amt_lot_hab;
+
+CREATE TABLE m_amenagement.an_amt_lot_hab
+(
+  idgeolf integer NOT NULL, -- Identifiant unique de l'entité géographique lot
+  idsite character varying(10), -- Identifiant du site d'activité d'appartenance
+  surf integer, -- Surface parcellaire occupée du lot
+  l_surf_l character varying(15), -- Surface littérale parcellaire occupée du lot
+  op_sai character varying(80), -- Libellé de l'opérateur de saisie
+  org_sai character varying(80), -- Libellé de l'organisme de saisie
+  l_pvente double precision, -- Prix de vente du lot en HT (€/m²)
+  l_pvente_l character varying(15), -- Prix littéral de vente du lot en HT (ex:50€/m²)
+  nb_log integer, -- Nombre total de logements
+  nb_logind integer, -- Nombre de logements individuels
+  nb_logindgr integer, -- Nombre de logements individuels groupés
+  nb_logcol integer, -- Nombre de logements collectifs
+  nb_logaide integer, -- Dont nombre de logements aidés
+  l_observ character varying(255), -- Observations diverses
+  date_sai timestamp without time zone, -- Date de saisie des données attributaires
+  date_maj timestamp without time zone, -- Date de mise à jour des données attributaires
+  l_phase character varying(20), -- Information facultative sur l'appartenance du lot à un éventuel phasage de l'opération
+  nb_log_r integer DEFAULT 0, -- Nombre de logements total réalisé
+  nb_logind_r integer DEFAULT 0, -- Nombre de logements individuels réalisé
+  nb_logindgr_r integer DEFAULT 0, -- Nombre de logements individuels groupés réalisé
+  nb_logcol_r integer DEFAULT 0, -- Nombre de logements collectifs réalisé
+  nb_logaide_r integer DEFAULT 0, -- Nombre de logements aidés réalisé
+  l_pvente_lot integer, -- Prix de vente du lot (ht)
+  nb_logaide_loc_r integer, -- Nombre de logements aidés en location réalisé
+  nb_logaide_acc_r integer, -- Nombre de logements aidés en accession réalisé
+  CONSTRAINT an_amt_lot_hab_pkey PRIMARY KEY (idgeolf)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE m_amenagement.an_amt_lot_hab
+  OWNER TO sig_create;
+
+COMMENT ON TABLE m_amenagement.an_amt_lot_hab
+  IS 'Table alphanumérique contenant les données des lots à vocation habitat';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.idgeolf IS 'Identifiant unique de l''entité géographique lot';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.idsite IS 'Identifiant du site d''activité d''appartenance';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.surf IS 'Surface parcellaire occupée du lot';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.l_surf_l IS 'Surface littérale parcellaire occupée du lot';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.op_sai IS 'Libellé de l''opérateur de saisie';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.org_sai IS 'Libellé de l''organisme de saisie';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.l_pvente IS 'Prix de vente du lot en HT (€/m²)';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.l_pvente_l IS 'Prix littéral de vente du lot en HT (ex:50€/m²)';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.nb_log IS 'Nombre total de logements';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.nb_logind IS 'Nombre de logements individuels';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.nb_logindgr IS 'Nombre de logements individuels groupés';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.nb_logcol IS 'Nombre de logements collectifs';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.nb_logaide IS 'Dont nombre de logements aidés';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.l_observ IS 'Observations diverses';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.date_sai IS 'Date de saisie des données attributaires';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.date_maj IS 'Date de mise à jour des données attributaires';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.l_phase IS 'Information facultative sur l''appartenance du lot à un éventuel phasage de l''opération';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.nb_log_r IS 'Nombre de logements total réalisé';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.nb_logind_r IS 'Nombre de logements individuels réalisé';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.nb_logindgr_r IS 'Nombre de logements individuels groupés réalisé';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.nb_logcol_r IS 'Nombre de logements collectifs réalisé';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.nb_logaide_r IS 'Nombre de logements aidés réalisé';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.l_pvente_lot IS 'Prix de vente du lot (ht)';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.nb_logaide_loc_r IS 'Nombre de logements aidés en location réalisé';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.nb_logaide_acc_r IS 'Nombre de logements aidés en accession réalisé';
+
+				  
+-- Trigger: t_t3_r_suivi_audit on m_amenagement.an_amt_lot_hab
+
+-- DROP TRIGGER t_t3_r_suivi_audit ON m_amenagement.an_amt_lot_hab;
+
+CREATE TRIGGER t_t3_r_suivi_audit
+  AFTER INSERT OR UPDATE OR DELETE
+  ON m_amenagement.an_amt_lot_hab
+  FOR EACH ROW
+  EXECUTE PROCEDURE m_economie.r_suivi_audit();
+ALTER TABLE m_amenagement.an_amt_lot_hab DISABLE TRIGGER t_t3_r_suivi_audit;
+
+
+-- ################################################# Classe des objets des lots mixtes ##################################
+ 
+
+-- Table: m_amenagement.an_amt_lot_mixte
+
+-- DROP TABLE m_amenagement.an_amt_lot_mixte;
+
+CREATE TABLE m_amenagement.an_amt_lot_mixte
+(
+  idgeolf integer NOT NULL, -- Identifiant unique de l'entité géographique lot
+  idsite character varying(10), -- Identifiant du site d'appartenance
+  surf integer, -- Surface parcellaire occupée du lot
+  l_surf_l character varying(15), -- Surface littérale parcellaire occupée du lot
+  op_sai character varying(80), -- Libellé de l'opérateur de saisie
+  org_sai character varying(80), -- Libellé de l'organisme de saisie
+  l_pvente double precision, -- Prix de vente du lot en HT (€/m²)
+  l_pvente_l character varying(15), -- Prix littéral de vente du lot en HT (ex:50€/m²)
+  nb_log integer DEFAULT 0, -- Nombre total de logements
+  nb_logind integer DEFAULT 0, -- Nombre de logements individuels
+  nb_logindgr integer DEFAULT 0, -- Nombre de logements individuels groupés
+  nb_logcol integer DEFAULT 0, -- Nombre de logements collectifs
+  nb_logaide integer DEFAULT 0, -- Dont nombre de logements aidés
+  l_observ character varying(255), -- Observations diverses
+  date_sai timestamp without time zone, -- Date de saisie des données attributaires
+  date_maj timestamp without time zone, -- Date de mise à jour des données attributaires
+  l_phase character varying(20), -- Information facultative sur l'appartenance du lot à un éventuel phasage de l'opération
+  nb_log_r integer DEFAULT 0, -- Nombre de logements total réalisé
+  nb_logind_r integer DEFAULT 0, -- Nombre de logements individuels réalisé
+  nb_logindgr_r integer DEFAULT 0, -- Nombre de logements individuels groupés réalisé
+  nb_logcol_r integer DEFAULT 0, -- Nombre de logements collectifs réalisé
+  nb_logaide_r integer DEFAULT 0, -- Nombre de logements aidés réalisé
+  l_pvente_lot integer, -- Prix de vente du lot (ht)
+  l_tact character varying(2) DEFAULT '00'::character varying, -- Type d'activité présent sur le lot
+  l_tact_99 character varying(80), -- Précision de l'activité du lot (si Autre sélectionné dans l_tact)
+  l_nom_equ character varying(100), -- Libellé des équipements prévus sur le lot
+  nb_logaide_loc_r integer, -- Nombre de logements aidés en location réalisé
+  nb_logaide_acc_r integer, -- Nombre de logements aidés en accession réalisé
+  l_lnom character varying(250), -- Nom(s) du ou des acquéreurs du lot ou d'une partie des bâtiments
+  CONSTRAINT an_amt_lot_mixte_pkey PRIMARY KEY (idgeolf)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE m_amenagement.an_amt_lot_mixte
+  OWNER TO sig_create;
+
+COMMENT ON TABLE m_amenagement.an_amt_lot_mixte
+  IS 'Table alphanumérique contenant les données des lots à vocation mixte';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.idgeolf IS 'Identifiant unique de l''entité géographique lot';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.idsite IS 'Identifiant du site d''appartenance';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.surf IS 'Surface parcellaire occupée du lot';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.l_surf_l IS 'Surface littérale parcellaire occupée du lot';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.op_sai IS 'Libellé de l''opérateur de saisie';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.org_sai IS 'Libellé de l''organisme de saisie';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.l_pvente IS 'Prix de vente du lot en HT (€/m²)';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.l_pvente_l IS 'Prix littéral de vente du lot en HT (ex:50€/m²)';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.nb_log IS 'Nombre total de logements';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.nb_logind IS 'Nombre de logements individuels';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.nb_logindgr IS 'Nombre de logements individuels groupés';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.nb_logcol IS 'Nombre de logements collectifs';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.nb_logaide IS 'Dont nombre de logements aidés';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.l_observ IS 'Observations diverses';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.date_sai IS 'Date de saisie des données attributaires';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.date_maj IS 'Date de mise à jour des données attributaires';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.l_phase IS 'Information facultative sur l''appartenance du lot à un éventuel phasage de l''opération';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.nb_log_r IS 'Nombre de logements total réalisé';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.nb_logind_r IS 'Nombre de logements individuels réalisé';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.nb_logindgr_r IS 'Nombre de logements individuels groupés réalisé';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.nb_logcol_r IS 'Nombre de logements collectifs réalisé';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.nb_logaide_r IS 'Nombre de logements aidés réalisé';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.l_pvente_lot IS 'Prix de vente du lot (ht)';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.l_tact IS 'Type d''activité présent sur le lot';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.l_tact_99 IS 'Précision de l''activité du lot (si Autre sélectionné dans l_tact)';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.l_nom_equ IS 'Libellé des équipements prévus sur le lot';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.nb_logaide_loc_r IS 'Nombre de logements aidés en location réalisé';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.nb_logaide_acc_r IS 'Nombre de logements aidés en accession réalisé';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.l_lnom IS 'Nom(s) du ou des acquéreurs du lot ou d''une partie des bâtiments';
+
+
+-- Trigger: t_t2_r_suivi_audit on m_amenagement.an_amt_lot_mixte
+
+-- DROP TRIGGER t_t2_r_suivi_audit ON m_amenagement.an_amt_lot_mixte;
+
+CREATE TRIGGER t_t2_r_suivi_audit
+  AFTER INSERT OR UPDATE OR DELETE
+  ON m_amenagement.an_amt_lot_mixte
+  FOR EACH ROW
+  EXECUTE PROCEDURE m_economie.r_suivi_audit();
+ALTER TABLE m_amenagement.an_amt_lot_mixte DISABLE TRIGGER t_t2_r_suivi_audit;
+
+				  
+-- ################################################# Classe des objets des stades d'aménagements et de commercialisation ##################################
+ 
+				  
+-- Table: m_amenagement.an_amt_lot_stade
+
+-- DROP TABLE m_amenagement.an_amt_lot_stade;
+
+CREATE TABLE m_amenagement.an_amt_lot_stade
+(
+  idgeolf integer NOT NULL, -- Identifiant unique de l'entité géographique lot
+  idsite character varying(10), -- Identifiant du site d'activité d'appartenance
+  stade_amng character varying(2) DEFAULT '00'::character varying, -- Code du stade d'aménagement du foncier
+  l_amng2 character varying(2) DEFAULT '00'::character varying, -- Code du stade d'aménagement du foncier spécifique à l'ARC
+  stade_comm character varying(2) DEFAULT '00'::character varying, -- Code du stade de commercialisation du foncier
+  l_comm2 character varying(2) DEFAULT '00'::character varying, -- Code du stade de commercialisation du foncier spécifique à l'ARC
+  l_comm2_12 character varying(80), -- Spécification de la contrainte du lot en vente (code 12 du champ l_comm2)
+  etat_occup character varying(2) DEFAULT '00'::character varying, -- Code de l'état d'occupation du foncier
+  CONSTRAINT an_amt_lot_stade_pkey PRIMARY KEY (idgeolf)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE m_amenagement.an_amt_lot_stade
+  OWNER TO sig_create;
+
+COMMENT ON TABLE m_amenagement.an_amt_lot_stade
+  IS 'Table alphanumérique contenant les données de la classe stade d''aménagement et de commercialisation';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_stade.idgeolf IS 'Identifiant unique de l''entité géographique lot';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_stade.idsite IS 'Identifiant du site d''activité d''appartenance';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_stade.stade_amng IS 'Code du stade d''aménagement du foncier';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_stade.l_amng2 IS 'Code du stade d''aménagement du foncier spécifique à l''ARC';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_stade.stade_comm IS 'Code du stade de commercialisation du foncier';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_stade.l_comm2 IS 'Code du stade de commercialisation du foncier spécifique à l''ARC';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_stade.l_comm2_12 IS 'Spécification de la contrainte du lot en vente (code 12 du champ l_comm2)';
+COMMENT ON COLUMN m_amenagement.an_amt_lot_stade.etat_occup IS 'Code de l''état d''occupation du foncier';
+
+				  
+-- Function: m_amenagement.m_foncier_modif_geopic()
+
+-- DROP FUNCTION m_amenagement.m_foncier_modif_geopic();
+
+CREATE OR REPLACE FUNCTION m_amenagement.m_foncier_modif_geopic()
+  RETURNS trigger AS
+$BODY$
+
+BEGIN
+
+    -- mise à jour des champs stade_amng et stade_comm en fonction des champs l_comm2, l_amng2 saisies 
+    if new.l_amng2 = '10' then
+       UPDATE m_amenagement.an_amt_lot_stade SET  stade_amng = '40' WHERE idgeolf=new.idgeolf;
+    end if;
+    if new.l_amng2 = '20' then
+       UPDATE m_amenagement.an_amt_lot_stade SET  stade_amng = '20' WHERE idgeolf=new.idgeolf;
+    end if;
+    if new.l_amng2 = '30' then
+       UPDATE m_amenagement.an_amt_lot_stade SET  stade_amng = '30' WHERE idgeolf=new.idgeolf;
+    end if;
+
+    if new.l_comm2 = '11' or new.l_comm2 = '12' then
+       UPDATE m_amenagement.an_amt_lot_stade SET  stade_comm = '20' WHERE idgeolf=new.idgeolf;
+    end if;
+    if new.l_comm2 = '20' or (new.l_comm2 = '31' or new.l_comm2 = '32') then
+       UPDATE m_amenagement.an_amt_lot_stade SET  stade_comm = '10' WHERE idgeolf=new.idgeolf;
+    end if;
+    if new.l_comm2 = '00' then
+       UPDATE m_amenagement.an_amt_lot_stade SET  stade_comm = '00' WHERE idgeolf=new.idgeolf;
+    end if;
+    if new.l_amng2 = '00' then
+       UPDATE m_amenagement.an_amt_lot_stade SET  stade_amng = '00' WHERE idgeolf=new.idgeolf;
+    end if;
+
+
+     return new ;
+
+END;
+
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION m_amenagement.m_foncier_modif_geopic()
+  OWNER TO sig_create;
+
+COMMENT ON FUNCTION m_amenagement.m_foncier_modif_geopic() IS 'Fonction gérant l''automatisation des attributs stade d''aménagement et de commercialisation en fonction des disponibilités et du stade de commercilaisation spécifique à l''ARC';
+
+
+-- Trigger: t_t1_foncier_modif_geopic on m_amenagement.an_amt_lot_stade
+
+-- DROP TRIGGER t_t1_foncier_modif_geopic ON m_amenagement.an_amt_lot_stade;
+
+CREATE TRIGGER t_t1_foncier_modif_geopic
+  AFTER INSERT OR UPDATE OF l_comm2, l_amng2
+  ON m_amenagement.an_amt_lot_stade
+  FOR EACH ROW
+  EXECUTE PROCEDURE m_amenagement.m_foncier_modif_geopic();
+
+				  
+-- ################################################# Classe des objets des sites équipements ##################################
+ 				  
+-- Table: m_amenagement.an_amt_site_equ
+
+-- DROP TABLE m_amenagement.an_amt_site_equ;
+
+CREATE TABLE m_amenagement.an_amt_site_equ
+(
+  idgeopo integer NOT NULL, -- Identifiant unique géographique de référence de l'objet virtuel
+  idsite character varying(10), -- Identifiant du site équipement
+  site_nom character varying(80), -- Libellé du site
+  site_etat character varying(2) DEFAULT '00'::character varying, -- Code de l'état du site
+  op_sai character varying(80), -- Libellé de la personne ayant saisie la mise à jour
+  org_sai character varying(80), -- Organisme de saisie dont dépend l'opérateur de saisie
+  z_mai_ouvr character varying(80), -- Nom du maître d'ouvrage
+  z_compet character varying(80), -- Nom de la collectivité ayant dans ses compétences le développement de la zone
+  z_amng character varying(80), -- Nom de l'aménageur de la zone
+  z_gest character varying(80), -- Nom du gestionnaire de la zone
+  z_anim character varying(80), -- Nom de l'animateur de la zone
+  z_comm character varying(80), -- Structure de contact pour la commercialisation
+  contact character varying(80), -- Libellé de la personne contact pour la commercialisation
+  date_sai timestamp without time zone, -- Date de saisie des données attributaires
+  date_maj timestamp without time zone, -- Date de mise à jour des données attributaires
+  CONSTRAINT an_amt_site_equ_pkey PRIMARY KEY (idgeopo) -- Clé primaire de la table an_amt_site_equ
+
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE m_amenagement.an_amt_site_equ
+  OWNER TO sig_create;
+
+COMMENT ON TABLE m_amenagement.an_amt_site_equ
+  IS 'Information alphanumérique sur les Sites à vocation équipement. Les objets virtuels de référence sont gérés dans le schéma r_objet';
+COMMENT ON COLUMN m_amenagement.an_amt_site_equ.idgeopo IS 'Identifiant unique géographique de référence de l''objet virtuel';
+COMMENT ON COLUMN m_amenagement.an_amt_site_equ.idsite IS 'Identifiant du site équipement';
+COMMENT ON COLUMN m_amenagement.an_amt_site_equ.site_nom IS 'Libellé du site';
+COMMENT ON COLUMN m_amenagement.an_amt_site_equ.site_etat IS 'Code de l''état du site';
+COMMENT ON COLUMN m_amenagement.an_amt_site_equ.op_sai IS 'Libellé de la personne ayant saisie la mise à jour';
+COMMENT ON COLUMN m_amenagement.an_amt_site_equ.org_sai IS 'Organisme de saisie dont dépend l''opérateur de saisie';
+COMMENT ON COLUMN m_amenagement.an_amt_site_equ.z_mai_ouvr IS 'Nom du maître d''ouvrage';
+COMMENT ON COLUMN m_amenagement.an_amt_site_equ.z_compet IS 'Nom de la collectivité ayant dans ses compétences le développement de la zone';
+COMMENT ON COLUMN m_amenagement.an_amt_site_equ.z_amng IS 'Nom de l''aménageur de la zone';
+COMMENT ON COLUMN m_amenagement.an_amt_site_equ.z_gest IS 'Nom du gestionnaire de la zone';
+COMMENT ON COLUMN m_amenagement.an_amt_site_equ.z_anim IS 'Nom de l''animateur de la zone';
+COMMENT ON COLUMN m_amenagement.an_amt_site_equ.z_comm IS 'Structure de contact pour la commercialisation';
+COMMENT ON COLUMN m_amenagement.an_amt_site_equ.contact IS 'Libellé de la personne contact pour la commercialisation';
+COMMENT ON COLUMN m_amenagement.an_amt_site_equ.date_sai IS 'Date de saisie des données attributaires';
+COMMENT ON COLUMN m_amenagement.an_amt_site_equ.date_maj IS 'Date de mise à jour des données attributaires';
+
+COMMENT ON CONSTRAINT an_amt_site_equ_pkey ON m_amenagement.an_amt_site_equ IS 'Clé primaire de la table an_amt_site_equ';
+
+
+-- ################################################# Classe des objets des sites habitat ##################################
+
+-- Table: m_amenagement.an_amt_site_habitat
+
+-- DROP TABLE m_amenagement.an_amt_site_habitat;
+
+CREATE TABLE m_amenagement.an_amt_site_habitat
+(
+  idgeopo integer NOT NULL, -- Identifiant unique géographique de référence de l'objet virtuel
+  idsite character varying(10), -- Identifiant du site habitat
+  site_nom character varying(80), -- Libellé du site
+  site_etat character varying(2) DEFAULT '00'::character varying, -- Code de l'état du site
+  op_sai character varying(80), -- Libellé de la personne ayant saisie la mise à jour
+  org_sai character varying(80), -- Organisme de saisie dont dépend l'opérateur de saisie
+  nb_log integer, -- Nombre de logements prévue sur le site
+  z_mai_ouvr character varying(80), -- Nom du maître d'ouvrage
+  z_compet character varying(80), -- Nom de la collectivité ayant dans ses compétences le développement de la zone
+  z_amng character varying(80), -- Nom de l'aménageur de la zone
+  z_gest character varying(80), -- Nom du gestionnaire de la zone
+  z_anim character varying(80), -- Nom de l'animateur de la zone
+  z_comm character varying(80), -- Structure de contact pour la commercialisation
+  contact character varying(80), -- Libellé de la personne contact pour la commercialisation
+  date_sai timestamp without time zone, -- Date de saisie des données attributaires
+  date_maj timestamp without time zone, -- Date de mise à jour des données attributaires
+  CONSTRAINT an_amt_p_habitat_pkey PRIMARY KEY (idgeopo) -- Clé primaire de la table an_amt_site_habitat
+
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE m_amenagement.an_amt_site_habitat
+  OWNER TO sig_create;
+
+COMMENT ON TABLE m_amenagement.an_amt_site_habitat
+  IS 'Information alphanumérique sur les Sites à vocation habitat. Les objets virtuels de référence sont gérés dans le schéma r_objet';
+COMMENT ON COLUMN m_amenagement.an_amt_site_habitat.idgeopo IS 'Identifiant unique géographique de référence de l''objet virtuel';
+COMMENT ON COLUMN m_amenagement.an_amt_site_habitat.idsite IS 'Identifiant du site habitat';
+COMMENT ON COLUMN m_amenagement.an_amt_site_habitat.site_nom IS 'Libellé du site';
+COMMENT ON COLUMN m_amenagement.an_amt_site_habitat.site_etat IS 'Code de l''état du site';
+COMMENT ON COLUMN m_amenagement.an_amt_site_habitat.op_sai IS 'Libellé de la personne ayant saisie la mise à jour';
+COMMENT ON COLUMN m_amenagement.an_amt_site_habitat.org_sai IS 'Organisme de saisie dont dépend l''opérateur de saisie';
+COMMENT ON COLUMN m_amenagement.an_amt_site_habitat.nb_log IS 'Nombre de logements prévue sur le site';
+COMMENT ON COLUMN m_amenagement.an_amt_site_habitat.z_mai_ouvr IS 'Nom du maître d''ouvrage';
+COMMENT ON COLUMN m_amenagement.an_amt_site_habitat.z_compet IS 'Nom de la collectivité ayant dans ses compétences le développement de la zone';
+COMMENT ON COLUMN m_amenagement.an_amt_site_habitat.z_amng IS 'Nom de l''aménageur de la zone';
+COMMENT ON COLUMN m_amenagement.an_amt_site_habitat.z_gest IS 'Nom du gestionnaire de la zone';
+COMMENT ON COLUMN m_amenagement.an_amt_site_habitat.z_anim IS 'Nom de l''animateur de la zone';
+COMMENT ON COLUMN m_amenagement.an_amt_site_habitat.z_comm IS 'Structure de contact pour la commercialisation';
+COMMENT ON COLUMN m_amenagement.an_amt_site_habitat.contact IS 'Libellé de la personne contact pour la commercialisation';
+COMMENT ON COLUMN m_amenagement.an_amt_site_habitat.date_sai IS 'Date de saisie des données attributaires';
+COMMENT ON COLUMN m_amenagement.an_amt_site_habitat.date_maj IS 'Date de mise à jour des données attributaires';
+
+COMMENT ON CONSTRAINT an_amt_p_habitat_pkey ON m_amenagement.an_amt_site_habitat IS 'Clé primaire de la table an_amt_site_habitat';
+
+				  
+-- ################################################# Classe des objets des sites mixte ##################################
+
+-- Table: m_amenagement.an_amt_site_mixte
+
+-- DROP TABLE m_amenagement.an_amt_site_mixte;
+
+CREATE TABLE m_amenagement.an_amt_site_mixte
+(
+  idgeopo integer NOT NULL, -- Identifiant unique géographique de référence de l'objet virtuel
+  idsite character varying(10), -- Identifiant du site mixte
+  idpole character varying(7), -- Identifiant du pôle d'appartenance (si existe)
+  site_voca character varying(2) DEFAULT '00'::character varying, -- Code de la vocation simplifiée de la zone
+  site_nom character varying(80), -- Libellé du site
+  site_etat character varying(2) DEFAULT '00'::character varying, -- Code de l'état du site
+  date_int date, -- Date d'intégration par GéoPicardie dans la base (permet de connaître la dernière donnée intégrée)
+  op_sai character varying(80), -- Libellé de la personne ayant saisie la mise à jour
+  org_sai character varying(80), -- Organisme de saisie dont dépend l'opérateur de saisie
+  typo character varying(2) DEFAULT '00'::character varying, -- Typologie du site
+  dest character varying(2) DEFAULT '00'::character varying, -- Destination initiale du site (défini dans les documents d'urbanisme)
+  p_implant character varying(10), -- Première implantation des entreprises sur le site (année ou date)
+  z_mai_ouvr character varying(80), -- Nom du maître d'ouvrage
+  z_compet character varying(80), -- Nom de la collectivité ayant dans ses compétences le développement de la zone
+  z_amng character varying(80), -- Nom de l'aménageur de la zone
+  z_gest character varying(80), -- Nom du gestionnaire de la zone
+  z_anim character varying(80), -- Nom de l'animateur de la zone
+  z_comm character varying(80), -- Structure de contact pour la commercialisation
+  contact character varying(80), -- Libellé de la personne contact pour la commercialisation
+  z_cession_eco double precision, -- Conditions de cession en HT (euro/m²) pour les lots à vocation économique
+  z_cession_hab double precision, -- Conditions de cession en HT (euro/m²) pour les lots à vocation habitat
+  z_env character varying(80), -- Démarche environnementale
+  z_paysage character varying(80), -- Démarche paysagère
+  z_rehab character varying(80), -- Procédure de réhabilitaion du site
+  z_epu character varying(3), -- Traitement de l'eau d'épuration
+  z_dechet character varying(80), -- Libellé du gestionnaire des déchets
+  z_tr_slect character varying(3), -- Présence d'un tri sélectif sur le site
+  res_ass double precision, -- Linéaire de réseau d'assainissement
+  res_pluvia double precision, -- Linéaire de réseau d'eau pluviale
+  res_eau double precision, -- Débit du réseau d'eau potable
+  res_gaz double precision, -- Débit du réseau de gaz
+  res_elect double precision, -- Débit du réseau électrique
+  res_net character varying(80), -- Type de réseau internet
+  res_db_net double precision, -- Débit internet
+  z_auto character varying(10), -- Libellé de l'autoroute la plus proche
+  z_dst_auto double precision, -- Distance en km du diffuseur autoroutier par la route
+  z_tps_auto double precision, -- Temps d'accès en minutes du diffuseur autoroutier par la route
+  z_ar_f character varying(80), -- Nom de l'aéroport fret le plus proche
+  z_dst_ar_f double precision, -- Distance en km de l'aéroport de fret par la route
+  z_ar_v character varying(80), -- Nom de l'aéroport de voyageurs le plus proche
+  z_dst_ar_v double precision, -- Distance en km de l'aéroport de voyageurs par la route
+  z_fr_f character varying(80), -- Gare de fret la plus proche
+  z_dst_fr_f double precision, -- Distance en km de la gare de fret la plus proche par la route
+  z_fr_v character varying(80), -- Gare de voyageurs la plus proche
+  z_dst_fr_v double precision, -- Distance en km de la gare de voyageurs la plus proche par la route
+  z_pmm character varying(3), -- Présence d'une plate-forme multimodale
+  z_dst_pmm double precision, -- Distance en km de la plate-forme multimodale la plus proche par la route
+  serv_tc integer, -- Nombre de ligne de transport en commun desservant le site
+  circ_douce character varying(3), -- Accès aux sites par un mode doux (pistes cyclables)
+  serv_rest integer, -- Nombre de restaurants ou à proximité immédiate
+  serv_crech integer, -- Nombre de crèches ou à proximité immédiate
+  serv_autre character varying(80), -- Libellé des autres services disponibles sur le site
+  serv_collt character varying(80), -- Services collectifs présent sur le site (mutualisation, partage de services)
+  z_aide_pb character varying(2), -- Code de valeurs des aides publiques appliquées sur le site (AFR, ZFU, ZRR, aucun)
+  l_dated_aide_pb date, -- Date de début de la période des aides publiques
+  l_datef_aide_pb date, -- Date de fin de la période des aides publiques
+  date_sai timestamp without time zone, -- Date de saisie des données attributaires
+  date_maj timestamp without time zone, -- Date de mise à jour des données attributaires
+  d_paris integer, -- Distance en km de Paris
+  t_paris integer, -- Temps d'accès en minutes à Paris
+  d_lille integer, -- Distance en km à Lille
+  t_lille integer, -- Temps d'accès en minutes à Lille
+  l_dauto character varying(200), -- Libellé de ou des diffuseurs autoroutiers le ou les plus proches
+  l_dtgvhp integer, -- Distance à la gare TGV Haute-Picardie
+  l_ttgvhp integer, -- Temps d'accès en minutes à la gare TGV Haute Picardie
+  l_dtgvcdg integer, -- Distancr en km de la gare TGV Roissy-CDG
+  l_ttgvcdg integer, -- Temps d'accès en minutes à la gare TGV Roissy-CDG
+  l_tgcomp integer, -- Temps d'accès en minutes à la gare de Compiègne
+  l_dtille integer, -- Distance en km de l'aéroport de Beauvais-Tillé
+  l_ttille integer, -- Temps d'accès en minutes à l'aéroport de Beauvais-Tillé
+  l_dcdg integer, -- Distance en km à l'aéroport de Roissy-Charles de Gaulle
+  l_tcdg integer, -- Temps d'accès à l'aéroport en minutes à l'aéroport Roissy Charles de Gaulle
+  l_dlesquin integer, -- Distance en km de l'aéroport Lille-Lesquin
+  l_tlesquin integer, -- Temps d'accès en minutes à l'aéroport Lille-Lesquin
+  nb_log integer DEFAULT 0, -- Nombre de logements prévisionnel
+  zae boolean, -- Information sur le fait que le site soit une ZAE (sauf celle indiquée dans la table m_amenagement.geo_amt_zae)  ou non (compétence ARC selon la délibération du CA du 21 décembre 2017). Cette donnée permet de créer une vue matérialisée des ZAE complètes (geo_vmr_zae) avec les informations de la table m_amenagement.geo_amt_zae
+  CONSTRAINT an_amt_site_mixte_pkey PRIMARY KEY (idgeopo) -- Clé primaire de la table an_amt_site_mixte
+ 
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE m_amenagement.an_amt_site_mixte
+  OWNER TO sig_create;
+
+COMMENT ON TABLE m_amenagement.an_amt_site_mixte
+  IS 'Information alphanumérique sur les Sites d''activités mixte (habitat/Activité). Les objets virtuels de référence sont gérés dans le schéma r_objet';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.idgeopo IS 'Identifiant unique géographique de référence de l''objet virtuel';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.idsite IS 'Identifiant du site mixte';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.idpole IS 'Identifiant du pôle d''appartenance (si existe)';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.site_voca IS 'Code de la vocation simplifiée de la zone';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.site_nom IS 'Libellé du site';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.site_etat IS 'Code de l''état du site';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.date_int IS 'Date d''intégration par GéoPicardie dans la base (permet de connaître la dernière donnée intégrée)';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.op_sai IS 'Libellé de la personne ayant saisie la mise à jour';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.org_sai IS 'Organisme de saisie dont dépend l''opérateur de saisie';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.typo IS 'Typologie du site';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.dest IS 'Destination initiale du site (défini dans les documents d''urbanisme)';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.p_implant IS 'Première implantation des entreprises sur le site (année ou date)';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_mai_ouvr IS 'Nom du maître d''ouvrage';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_compet IS 'Nom de la collectivité ayant dans ses compétences le développement de la zone';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_amng IS 'Nom de l''aménageur de la zone';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_gest IS 'Nom du gestionnaire de la zone';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_anim IS 'Nom de l''animateur de la zone';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_comm IS 'Structure de contact pour la commercialisation';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.contact IS 'Libellé de la personne contact pour la commercialisation';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_cession_eco IS 'Conditions de cession en HT (euro/m²) pour les lots à vocation économique';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_cession_hab IS 'Conditions de cession en HT (euro/m²) pour les lots à vocation habitat';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_env IS 'Démarche environnementale';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_paysage IS 'Démarche paysagère';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_rehab IS 'Procédure de réhabilitaion du site';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_epu IS 'Traitement de l''eau d''épuration';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_dechet IS 'Libellé du gestionnaire des déchets';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_tr_slect IS 'Présence d''un tri sélectif sur le site';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.res_ass IS 'Linéaire de réseau d''assainissement';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.res_pluvia IS 'Linéaire de réseau d''eau pluviale';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.res_eau IS 'Débit du réseau d''eau potable';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.res_gaz IS 'Débit du réseau de gaz';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.res_elect IS 'Débit du réseau électrique';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.res_net IS 'Type de réseau internet';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.res_db_net IS 'Débit internet';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_auto IS 'Libellé de l''autoroute la plus proche';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_dst_auto IS 'Distance en km du diffuseur autoroutier par la route';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_tps_auto IS 'Temps d''accès en minutes du diffuseur autoroutier par la route';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_ar_f IS 'Nom de l''aéroport fret le plus proche';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_dst_ar_f IS 'Distance en km de l''aéroport de fret par la route';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_ar_v IS 'Nom de l''aéroport de voyageurs le plus proche';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_dst_ar_v IS 'Distance en km de l''aéroport de voyageurs par la route';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_fr_f IS 'Gare de fret la plus proche';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_dst_fr_f IS 'Distance en km de la gare de fret la plus proche par la route';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_fr_v IS 'Gare de voyageurs la plus proche';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_dst_fr_v IS 'Distance en km de la gare de voyageurs la plus proche par la route';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_pmm IS 'Présence d''une plate-forme multimodale';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_dst_pmm IS 'Distance en km de la plate-forme multimodale la plus proche par la route';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.serv_tc IS 'Nombre de ligne de transport en commun desservant le site';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.circ_douce IS 'Accès aux sites par un mode doux (pistes cyclables)';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.serv_rest IS 'Nombre de restaurants ou à proximité immédiate';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.serv_crech IS 'Nombre de crèches ou à proximité immédiate';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.serv_autre IS 'Libellé des autres services disponibles sur le site';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.serv_collt IS 'Services collectifs présent sur le site (mutualisation, partage de services)';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_aide_pb IS 'Code de valeurs des aides publiques appliquées sur le site (AFR, ZFU, ZRR, aucun)';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.l_dated_aide_pb IS 'Date de début de la période des aides publiques';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.l_datef_aide_pb IS 'Date de fin de la période des aides publiques';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.date_sai IS 'Date de saisie des données attributaires';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.date_maj IS 'Date de mise à jour des données attributaires';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.d_paris IS 'Distance en km de Paris';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.t_paris IS 'Temps d''accès en minutes à Paris';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.d_lille IS 'Distance en km à Lille';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.t_lille IS 'Temps d''accès en minutes à Lille';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.l_dauto IS 'Libellé de ou des diffuseurs autoroutiers le ou les plus proches';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.l_dtgvhp IS 'Distance à la gare TGV Haute-Picardie';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.l_ttgvhp IS 'Temps d''accès en minutes à la gare TGV Haute Picardie';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.l_dtgvcdg IS 'Distancr en km de la gare TGV Roissy-CDG';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.l_ttgvcdg IS 'Temps d''accès en minutes à la gare TGV Roissy-CDG';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.l_tgcomp IS 'Temps d''accès en minutes à la gare de Compiègne';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.l_dtille IS 'Distance en km de l''aéroport de Beauvais-Tillé';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.l_ttille IS 'Temps d''accès en minutes à l''aéroport de Beauvais-Tillé';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.l_dcdg IS 'Distance en km à l''aéroport de Roissy-Charles de Gaulle';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.l_tcdg IS 'Temps d''accès à l''aéroport en minutes à l''aéroport Roissy Charles de Gaulle';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.l_dlesquin IS 'Distance en km de l''aéroport Lille-Lesquin';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.l_tlesquin IS 'Temps d''accès en minutes à l''aéroport Lille-Lesquin';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.nb_log IS 'Nombre de logements prévisionnel';
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.zae IS 'Information sur le fait que le site soit une ZAE (sauf celle indiquée dans la table m_amenagement.geo_amt_zae)  ou non (compétence ARC selon la délibération du CA du 21 décembre 2017). Cette donnée permet de créer une vue matérialisée des ZAE complètes (geo_vmr_zae) avec les informations de la table m_amenagement.geo_amt_zae';
+
+COMMENT ON CONSTRAINT an_amt_site_mixte_pkey ON m_amenagement.an_amt_site_mixte IS 'Clé primaire de la table an_amt_site_mixte';
+
+				  
+-- ################################################# Classe des objets historique des sites mixte ##################################
+
+-- Table: m_amenagement.h_an_amt_site_mixte
+
+-- DROP TABLE m_amenagement.h_an_amt_site_mixte;
+
+CREATE TABLE m_amenagement.h_an_amt_site_mixte
+(
+  annee_h integer,
+  date_extract timestamp without time zone,
+  date_h timestamp without time zone,
+  dest character varying(50),
+  eff_etab character varying(20),
+  idsite character varying(10),
+  nb_etab character varying(20),
+  site_nom character varying(80),
+  surf_dedie_act character varying(30),
+  surf_dedie_mixte character varying(30),
+  surf_dispo_vente_eco character varying(30),
+  surf_dispo_vente_mixte character varying(30),
+  surf_reserve_projet_eco character varying(30),
+  surf_reserve_projet_mixte character varying(30),
+  voca character varying(50),
+  gid serial NOT NULL,
+  CONSTRAINT h_an_amt_site_mixte_pkey PRIMARY KEY (gid)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE m_amenagement.h_an_amt_site_mixte
+  OWNER TO sig_create;
+
+
+				  
+				  
 				  
 -- ####################################################################################################################################################
 -- ###                                                                                                                                              ###
@@ -3408,6 +4116,51 @@ CONSTRAINT geo_sa_bal_srcgeom_fkey FOREIGN KEY (src_geom)
       ON UPDATE NO ACTION ON DELETE NO ACTION,
   CONSTRAINT lt_sa_dest_fkey FOREIGN KEY (dest)
       REFERENCES m_economie.lt_sa_dest (dest) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION;
+				  
+
+  CONSTRAINT lt_amt_empesp_pu_fkey FOREIGN KEY (vocaep)
+      REFERENCES m_amenagement.lt_amt_empesp_pu (vocaep) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION;
+				  
+  CONSTRAINT an_sa_lot_etatoccup_fkey FOREIGN KEY (etat_occup)
+      REFERENCES m_amenagement.lt_sa_etat (code) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT an_sa_lot_l_amng2_fkey FOREIGN KEY (l_amng2)
+      REFERENCES m_amenagement.lt_sa_stadeamng2 (code) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT an_sa_lot_l_comm2_fkey FOREIGN KEY (l_comm2)
+      REFERENCES m_amenagement.lt_sa_stadecomm2 (code) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT an_sa_lot_stade_comm_fkey FOREIGN KEY (stade_comm)
+      REFERENCES m_amenagement.lt_sa_stadecomm (code) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT an_sa_lot_stadeamng_fkey FOREIGN KEY (stade_amng)
+      REFERENCES m_amenagement.lt_sa_stadeamng (code) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION;
+				  
+  CONSTRAINT an_amt_site_equ_etat_fkey FOREIGN KEY (site_etat)
+      REFERENCES m_amenagement.lt_sa_etat (code) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+  CONSTRAINT an_amt_site_habitat_etat_fkey FOREIGN KEY (site_etat)
+      REFERENCES m_amenagement.lt_sa_etat (code) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+ CONSTRAINT an_amt_site_mixte_etat_fkey FOREIGN KEY (site_etat)
+      REFERENCES m_amenagement.lt_sa_etat (code) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT lt_sa_aidepb_fkey FOREIGN KEY (z_aide_pb)
+      REFERENCES m_economie.lt_sa_aidepb (z_aide_pb) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT lt_sa_dest_fkey FOREIGN KEY (dest)
+      REFERENCES m_economie.lt_sa_dest (dest) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT lt_sa_typo_fkey FOREIGN KEY (typo)
+      REFERENCES m_economie.lt_sa_typo (typo) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT lt_sa_voca_fkey FOREIGN KEY (site_voca)
+      REFERENCES m_economie.lt_sa_voca (site_voca) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION;
 				  
 -- ####################################################################################################################################################
