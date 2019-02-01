@@ -4027,8 +4027,387 @@ WITH (
 ALTER TABLE m_amenagement.h_an_amt_site_mixte
   OWNER TO sig_create;
 
+				  
+-- ################################################# Du schéma m_foncier ##################################
+
+-- ################################################# Classe des objets cessions ##################################
+
+-- Table: m_foncier.an_cession
+
+-- DROP TABLE m_foncier.an_cession;
+
+CREATE TABLE m_foncier.an_cession
+(
+  idces character varying(6) NOT NULL DEFAULT nextval('m_foncier.ces_seq'::regclass), -- Identifiant du dossier de cession ou n° de dossier
+  l_rel character varying(2) DEFAULT '10'::character varying, -- Type de relation avec les lots
+  l_compo boolean DEFAULT false, -- Composition de la cession : si true (coché) la cession ne correspond pas au lot vendu par le service économie (cf le commentaire pour plus de précision)
+  l_etat character varying(2) DEFAULT '00'::character varying, -- Code de l'état du dossier de cession
+  l_orga character varying(50) DEFAULT '00'::character varying, -- Code du nom de l'organisme
+  d_delib_1 date, -- Date de la délibération de l'organisme cédant 1 ou de décision du président en cas de droit de préemption
+  d_delib_2 date, -- Date de la délibération de l'organisme cédant 2
+  d_delib_3 date, -- Date de la délibération de l'organisme cédant 3
+  insee character varying(5), -- Code insee de la commune
+  l_date_i date, -- Date d'ouverture du dossier dans le SIG
+  l_voca character varying(2) DEFAULT '00'::character varying, -- Code de la vocation de la cession
+  l_acque character varying(80), -- Nom de l'acquéreur
+  l_parcelle_i character varying(500), -- Numéro(s) de(s) parcelle(s) initiale(s) concernée(s) par le périmètre
+  l_parcelle_f character varying(500), -- Numéro(s) de(s) nouvelle(s) parcelle(s) concernée(s) par le périmètre
+  d_esti_1 date, -- Date d'estimation des domaines 1
+  d_esti_2 date, -- Date d'estimation des domaines 2
+  d_esti_3 date, -- Date d'estimation des domaines 3
+  l_esti_ht double precision, -- Montant total de(s) estimation(s) des domaines
+  l_surf integer, -- Superficie cadastrée du périmètre de cession en m²
+  l_condi character varying(2) DEFAULT '00'::character varying, -- Code de conditions de cession
+  l_type character varying(2) DEFAULT '00'::character varying, -- Code du type d'acte de cession
+  d_prome date, -- Date de la promesse de vente
+  d_acte date, -- Date de l'acte
+  l_notaire character varying(2) DEFAULT '00'::character varying, -- Code du nom de l'étude notariale
+  l_notaire_a character varying(254), -- Nom de l'étude notariale si pas dans la liste des études notariales du champ l_notaire
+  l_pvente_ht double precision, -- Montant de la vente HT
+  l_pvente_ttc double precision, -- Montant de la vente TTC
+  l_frais_a boolean DEFAULT false, -- Type de frais : aucun (champ non utilisé)
+  l_frais_b boolean DEFAULT false, -- Type de frais : Géomètre  (champ non utilisé)
+  l_frais_c boolean DEFAULT false, -- Type de frais : Notaire  (champ non utilisé)
+  l_frais_d boolean DEFAULT false, -- Type de frais : Agence immobilière  (champ non utilisé)
+  l_frais_e boolean DEFAULT false, -- Type de frais : Indemnités diverses  (champ non utilisé)
+  l_mfrais_ht double precision, -- Frais cumulés de cession en € HT (champ non utilisé)
+  l_mfrais_ttc double precision, -- Frais cumulés de cession en € TTC
+  l_pvente_s double precision, -- Prix de vente en € HT au m² (sans les frais)
+  l_type_a boolean DEFAULT false, -- Typologie du montant de cession : terrain
+  l_type_b boolean DEFAULT false, -- Typologie du montant de cession : bâti
+  l_type_c boolean DEFAULT false, -- Typologie du montant de cession : SHON
+  l_observ character varying(255), -- Commentaires
+  d_maj timestamp without time zone, -- Date de mise à jour des informations
+  l_mfrais_g_ttc double precision, -- Montant des frais de géomètre TTC
+  l_mfrais_n_ttc double precision, -- Montant des frais de notaires ttc
+  l_mfrais_a_ttc double precision, -- Montant des autres frais (agence, ...)
+  idsite character varying(10), -- Identifiant du site
+  idces_d character varying(10), -- Ancien numéro de cession DynMap
+  CONSTRAINT an_cession_pkey PRIMARY KEY (idces)
+  
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE m_foncier.an_cession
+  OWNER TO sig_create;
+
+COMMENT ON TABLE m_foncier.an_cession
+  IS 'Table alphanumérique contenant les données des cessions de lots';
+COMMENT ON COLUMN m_foncier.an_cession.idces IS 'Identifiant du dossier de cession ou n° de dossier';
+COMMENT ON COLUMN m_foncier.an_cession.l_rel IS 'Type de relation avec les lots';
+COMMENT ON COLUMN m_foncier.an_cession.l_compo IS 'Composition de la cession : si true (coché) la cession ne correspond pas au lot vendu par le service économie (cf le commentaire pour plus de précision)';
+COMMENT ON COLUMN m_foncier.an_cession.l_etat IS 'Code de l''état du dossier de cession';
+COMMENT ON COLUMN m_foncier.an_cession.l_orga IS 'Code du nom de l''organisme';
+COMMENT ON COLUMN m_foncier.an_cession.d_delib_1 IS 'Date de la délibération de l''organisme cédant 1 ou de décision du président en cas de droit de préemption';
+COMMENT ON COLUMN m_foncier.an_cession.d_delib_2 IS 'Date de la délibération de l''organisme cédant 2';
+COMMENT ON COLUMN m_foncier.an_cession.d_delib_3 IS 'Date de la délibération de l''organisme cédant 3';
+COMMENT ON COLUMN m_foncier.an_cession.insee IS 'Code insee de la commune';
+COMMENT ON COLUMN m_foncier.an_cession.l_date_i IS 'Date d''ouverture du dossier dans le SIG';
+COMMENT ON COLUMN m_foncier.an_cession.l_voca IS 'Code de la vocation de la cession';
+COMMENT ON COLUMN m_foncier.an_cession.l_acque IS 'Nom de l''acquéreur';
+COMMENT ON COLUMN m_foncier.an_cession.l_parcelle_i IS 'Numéro(s) de(s) parcelle(s) initiale(s) concernée(s) par le périmètre';
+COMMENT ON COLUMN m_foncier.an_cession.l_parcelle_f IS 'Numéro(s) de(s) nouvelle(s) parcelle(s) concernée(s) par le périmètre';
+COMMENT ON COLUMN m_foncier.an_cession.d_esti_1 IS 'Date d''estimation des domaines 1';
+COMMENT ON COLUMN m_foncier.an_cession.d_esti_2 IS 'Date d''estimation des domaines 2';
+COMMENT ON COLUMN m_foncier.an_cession.d_esti_3 IS 'Date d''estimation des domaines 3';
+COMMENT ON COLUMN m_foncier.an_cession.l_esti_ht IS 'Montant total de(s) estimation(s) des domaines';
+COMMENT ON COLUMN m_foncier.an_cession.l_surf IS 'Superficie cadastrée du périmètre de cession en m²';
+COMMENT ON COLUMN m_foncier.an_cession.l_condi IS 'Code de conditions de cession';
+COMMENT ON COLUMN m_foncier.an_cession.l_type IS 'Code du type d''acte de cession';
+COMMENT ON COLUMN m_foncier.an_cession.d_prome IS 'Date de la promesse de vente';
+COMMENT ON COLUMN m_foncier.an_cession.d_acte IS 'Date de l''acte';
+COMMENT ON COLUMN m_foncier.an_cession.l_notaire IS 'Code du nom de l''étude notariale';
+COMMENT ON COLUMN m_foncier.an_cession.l_notaire_a IS 'Nom de l''étude notariale si pas dans la liste des études notariales du champ l_notaire';
+COMMENT ON COLUMN m_foncier.an_cession.l_pvente_ht IS 'Montant de la vente HT';
+COMMENT ON COLUMN m_foncier.an_cession.l_pvente_ttc IS 'Montant de la vente TTC';
+COMMENT ON COLUMN m_foncier.an_cession.l_frais_a IS 'Type de frais : aucun (champ non utilisé)';
+COMMENT ON COLUMN m_foncier.an_cession.l_frais_b IS 'Type de frais : Géomètre  (champ non utilisé)';
+COMMENT ON COLUMN m_foncier.an_cession.l_frais_c IS 'Type de frais : Notaire  (champ non utilisé)';
+COMMENT ON COLUMN m_foncier.an_cession.l_frais_d IS 'Type de frais : Agence immobilière  (champ non utilisé)';
+COMMENT ON COLUMN m_foncier.an_cession.l_frais_e IS 'Type de frais : Indemnités diverses  (champ non utilisé)';
+COMMENT ON COLUMN m_foncier.an_cession.l_mfrais_ht IS 'Frais cumulés de cession en € HT (champ non utilisé)';
+COMMENT ON COLUMN m_foncier.an_cession.l_mfrais_ttc IS 'Frais cumulés de cession en € TTC';
+COMMENT ON COLUMN m_foncier.an_cession.l_pvente_s IS 'Prix de vente en € HT au m² (sans les frais)';
+COMMENT ON COLUMN m_foncier.an_cession.l_type_a IS 'Typologie du montant de cession : terrain';
+COMMENT ON COLUMN m_foncier.an_cession.l_type_b IS 'Typologie du montant de cession : bâti';
+COMMENT ON COLUMN m_foncier.an_cession.l_type_c IS 'Typologie du montant de cession : SHON';
+COMMENT ON COLUMN m_foncier.an_cession.l_observ IS 'Commentaires';
+COMMENT ON COLUMN m_foncier.an_cession.d_maj IS 'Date de mise à jour des informations';
+COMMENT ON COLUMN m_foncier.an_cession.l_mfrais_g_ttc IS 'Montant des frais de géomètre TTC';
+COMMENT ON COLUMN m_foncier.an_cession.l_mfrais_n_ttc IS 'Montant des frais de notaires ttc';
+COMMENT ON COLUMN m_foncier.an_cession.l_mfrais_a_ttc IS 'Montant des autres frais (agence, ...)';
+COMMENT ON COLUMN m_foncier.an_cession.idsite IS 'Identifiant du site';
+COMMENT ON COLUMN m_foncier.an_cession.idces_d IS 'Ancien numéro de cession DynMap';
+
+
+-- Trigger: t_t1_suivi on m_foncier.an_cession
+
+-- DROP TRIGGER t_t1_suivi ON m_foncier.an_cession;
+
+CREATE TRIGGER t_t1_suivi
+  AFTER INSERT OR UPDATE OR DELETE
+  ON m_foncier.an_cession
+  FOR EACH ROW
+  EXECUTE PROCEDURE m_economie.r_suivi_audit();
+ALTER TABLE m_foncier.an_cession DISABLE TRIGGER t_t1_suivi;
+
+			  
+-- ################################################# Classe des objets document de cessions ##################################
+
+-- Table: m_foncier.an_fon_doc_media
+
+-- DROP TABLE m_foncier.an_fon_doc_media;
+
+CREATE TABLE m_foncier.an_fon_doc_media
+(
+  gid serial NOT NULL,
+  id character varying(10), -- Identifiant de cession ou d'acquisition
+  media text, -- Champ Média de GEO
+  miniature bytea, -- Champ miniature de GEO
+  n_fichier text, -- Nom du fichier
+  t_fichier text, -- Type de média dans GEO
+  op_sai character varying(100), -- Libellé de l'opérateur ayant intégrer le document
+  date_sai timestamp without time zone, -- Date d'intégration du document
+  l_type character varying(2), -- Code du type de document de cessions ou d'acquisitions
+  l_prec character varying(50), -- Précision sur le document
+  CONSTRAINT an_fon_doc_media_pkey PRIMARY KEY (gid)
+
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE m_foncier.an_fon_doc_media
+  OWNER TO sig_create;
+
+COMMENT ON TABLE m_foncier.an_fon_doc_media
+  IS 'Table gérant la liste des documents de suivi d''une cession ou d''une acquisition et gérer avec le module média dans GEO (application Foncier)';
+COMMENT ON COLUMN m_foncier.an_fon_doc_media.id IS 'Identifiant de cession ou d''acquisition';
+COMMENT ON COLUMN m_foncier.an_fon_doc_media.media IS 'Champ Média de GEO';
+COMMENT ON COLUMN m_foncier.an_fon_doc_media.miniature IS 'Champ miniature de GEO';
+COMMENT ON COLUMN m_foncier.an_fon_doc_media.n_fichier IS 'Nom du fichier';
+COMMENT ON COLUMN m_foncier.an_fon_doc_media.t_fichier IS 'Type de média dans GEO';
+COMMENT ON COLUMN m_foncier.an_fon_doc_media.op_sai IS 'Libellé de l''opérateur ayant intégrer le document';
+COMMENT ON COLUMN m_foncier.an_fon_doc_media.date_sai IS 'Date d''intégration du document';
+COMMENT ON COLUMN m_foncier.an_fon_doc_media.l_type IS 'Code du type de document de cessions ou d''acquisitions';
+COMMENT ON COLUMN m_foncier.an_fon_doc_media.l_prec IS 'Précision sur le document';
+
+
+-- Trigger: t_t1_an_fon_doc_media_insert_date_sai on m_foncier.an_fon_doc_media
+
+-- DROP TRIGGER t_t1_an_fon_doc_media_insert_date_sai ON m_foncier.an_fon_doc_media;
+
+CREATE TRIGGER t_t1_an_fon_doc_media_insert_date_sai
+  BEFORE INSERT
+  ON m_foncier.an_fon_doc_media
+  FOR EACH ROW
+  EXECUTE PROCEDURE public.r_timestamp_sai();
 
 				  
+-- ################################################# Classe des objets des acquisitions ##################################
+
+-- Table: m_foncier.geo_fon_acqui
+
+-- DROP TABLE m_foncier.geo_fon_acqui;
+
+CREATE TABLE m_foncier.geo_fon_acqui
+(
+  idgeoaf integer NOT NULL DEFAULT nextval('m_foncier.ces_seq'::regclass), -- Identifiant unique de l'objet
+  idacq character varying(10), -- Identifiant du dossier (issu de DynMap)
+  l_etat character varying(2), -- Code de l'état de l'acquisition du foncier
+  l_orga character varying(2), -- Code de l'organisme acquéreur
+  d_delib1 timestamp without time zone, -- Date de la délibération (1)
+  d_delib2 timestamp without time zone, -- Date de la délibération (2)
+  d_delib3 timestamp without time zone, -- Date de la délibération (3)
+  insee character varying(20), -- Code Insee de la commune
+  d_int timestamp without time zone, -- Date d'ouverture du dossier
+  l_voca character varying(2), -- Code de la vocation de l'acquisition
+  lib_proprio character varying(100), -- Libellé du propriétaire initial
+  lib_par_i character varying(254), -- Identifiant des parcelles initiales
+  lib_par_f character varying(50), -- Identifiant des parcelles finales
+  d_esti1 timestamp without time zone, -- Date d'estimation(1)
+  d_esti2 timestamp without time zone, -- Date d'estimation(2)
+  d_esti3 timestamp without time zone, -- Date d'estimation(3)
+  m_esti double precision, -- Montant de l'estimation en € HT
+  lib_surf integer, -- Surface cadastrée en m²
+  l_condi character varying(2), -- Code de la condition de cession
+  l_type character varying(2), -- Code du type d'acte
+  d_prom timestamp without time zone, -- Date de la promesse de vente
+  d_acte timestamp without time zone, -- Date de l'acte de vente
+  l_notaire character varying(2), -- Code du Nom du notaire
+  l_notaire_a character varying(50), -- Autre(s) notaire(s)
+  m_acquiht double precision, -- Montant de l'acquisition en € HT
+  m_acquittc double precision, -- Montant de l'acquisition en € TTC
+  l_mfrais double precision, -- Montant des frais global
+  l_mfrais_g_ttc double precision, -- Montant des frais de géomètre TTC
+  l_mfrais_n_ttc double precision, -- Montant des frais de notaire TTC
+  l_mfrais_a_ttc double precision, -- Montant des frais autres (agences, divers, ...) TTC
+  l_macqui_s double precision, -- Montant de l'acquisition en € HT par m²
+  l_type_a boolean, -- Type de montant : terrain
+  l_type_b boolean, -- Type de montant : bâti
+  l_type_c boolean, -- Type de montant : surface de plancher
+  date_maj timestamp without time zone, -- Date de mise à jour des données
+  geom geometry(MultiPolygon,2154),
+  commune character varying(100),
+  l_observ character varying(255), -- Observations diverses
+  src_geom character varying DEFAULT '20'::character varying, -- Référentiel spatial utilisé pour la saisie
+  idsite character varying(10), -- Identifiant unique du site
+  CONSTRAINT geo_fon_acqui_pkey PRIMARY KEY (idgeoaf)
+  
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE m_foncier.geo_fon_acqui
+  OWNER TO sig_create;
+
+COMMENT ON TABLE m_foncier.geo_fon_acqui
+  IS 'Table contenant les données sur les acquisitons foncières réalisées par l''ARC et la ville de Compiègne';
+COMMENT ON COLUMN m_foncier.geo_fon_acqui.idgeoaf IS 'Identifiant unique de l''objet';
+COMMENT ON COLUMN m_foncier.geo_fon_acqui.idacq IS 'Identifiant du dossier (issu de DynMap)';
+COMMENT ON COLUMN m_foncier.geo_fon_acqui.l_etat IS 'Code de l''état de l''acquisition du foncier';
+COMMENT ON COLUMN m_foncier.geo_fon_acqui.l_orga IS 'Code de l''organisme acquéreur';
+COMMENT ON COLUMN m_foncier.geo_fon_acqui.d_delib1 IS 'Date de la délibération (1)';
+COMMENT ON COLUMN m_foncier.geo_fon_acqui.d_delib2 IS 'Date de la délibération (2)';
+COMMENT ON COLUMN m_foncier.geo_fon_acqui.d_delib3 IS 'Date de la délibération (3)';
+COMMENT ON COLUMN m_foncier.geo_fon_acqui.insee IS 'Code Insee de la commune';
+COMMENT ON COLUMN m_foncier.geo_fon_acqui.d_int IS 'Date d''ouverture du dossier';
+COMMENT ON COLUMN m_foncier.geo_fon_acqui.l_voca IS 'Code de la vocation de l''acquisition';
+COMMENT ON COLUMN m_foncier.geo_fon_acqui.lib_proprio IS 'Libellé du propriétaire initial';
+COMMENT ON COLUMN m_foncier.geo_fon_acqui.lib_par_i IS 'Identifiant des parcelles initiales';
+COMMENT ON COLUMN m_foncier.geo_fon_acqui.lib_par_f IS 'Identifiant des parcelles finales';
+COMMENT ON COLUMN m_foncier.geo_fon_acqui.d_esti1 IS 'Date d''estimation(1)';
+COMMENT ON COLUMN m_foncier.geo_fon_acqui.d_esti2 IS 'Date d''estimation(2)';
+COMMENT ON COLUMN m_foncier.geo_fon_acqui.d_esti3 IS 'Date d''estimation(3)';
+COMMENT ON COLUMN m_foncier.geo_fon_acqui.m_esti IS 'Montant de l''estimation en € HT';
+COMMENT ON COLUMN m_foncier.geo_fon_acqui.lib_surf IS 'Surface cadastrée en m²';
+COMMENT ON COLUMN m_foncier.geo_fon_acqui.l_condi IS 'Code de la condition de cession';
+COMMENT ON COLUMN m_foncier.geo_fon_acqui.l_type IS 'Code du type d''acte';
+COMMENT ON COLUMN m_foncier.geo_fon_acqui.d_prom IS 'Date de la promesse de vente';
+COMMENT ON COLUMN m_foncier.geo_fon_acqui.d_acte IS 'Date de l''acte de vente';
+COMMENT ON COLUMN m_foncier.geo_fon_acqui.l_notaire IS 'Code du Nom du notaire';
+COMMENT ON COLUMN m_foncier.geo_fon_acqui.l_notaire_a IS 'Autre(s) notaire(s)';
+COMMENT ON COLUMN m_foncier.geo_fon_acqui.m_acquiht IS 'Montant de l''acquisition en € HT';
+COMMENT ON COLUMN m_foncier.geo_fon_acqui.m_acquittc IS 'Montant de l''acquisition en € TTC';
+COMMENT ON COLUMN m_foncier.geo_fon_acqui.l_mfrais IS 'Montant des frais global';
+COMMENT ON COLUMN m_foncier.geo_fon_acqui.l_mfrais_g_ttc IS 'Montant des frais de géomètre TTC';
+COMMENT ON COLUMN m_foncier.geo_fon_acqui.l_mfrais_n_ttc IS 'Montant des frais de notaire TTC';
+COMMENT ON COLUMN m_foncier.geo_fon_acqui.l_mfrais_a_ttc IS 'Montant des frais autres (agences, divers, ...) TTC';
+COMMENT ON COLUMN m_foncier.geo_fon_acqui.l_macqui_s IS 'Montant de l''acquisition en € HT par m²';
+COMMENT ON COLUMN m_foncier.geo_fon_acqui.l_type_a IS 'Type de montant : terrain';
+COMMENT ON COLUMN m_foncier.geo_fon_acqui.l_type_b IS 'Type de montant : bâti';
+COMMENT ON COLUMN m_foncier.geo_fon_acqui.l_type_c IS 'Type de montant : surface de plancher';
+COMMENT ON COLUMN m_foncier.geo_fon_acqui.date_maj IS 'Date de mise à jour des données';
+COMMENT ON COLUMN m_foncier.geo_fon_acqui.l_observ IS 'Observations diverses';
+COMMENT ON COLUMN m_foncier.geo_fon_acqui.src_geom IS 'Référentiel spatial utilisé pour la saisie';
+COMMENT ON COLUMN m_foncier.geo_fon_acqui.idsite IS 'Identifiant unique du site';
+
+
+
+-- Function: m_foncier.m_ces_acq_idsite()
+
+-- DROP FUNCTION m_foncier.m_ces_acq_idsite();
+
+CREATE OR REPLACE FUNCTION m_foncier.m_ces_acq_idsite()
+  RETURNS trigger AS
+$BODY$
+
+
+BEGIN
+
+
+    if(TG_OP='INSERT') then
+
+    
+    -- insertion du numéro du site
+    new.idsite := (SELECT DISTINCT
+				idsite 
+		  FROM 
+				r_objet.geo_objet_site
+		  WHERE
+				st_intersects(st_pointonsurface(new.geom),geo_objet_site.geom) = true
+		  );
+
+    END IF;
+    if(TG_OP='UPDATE') then
+          UPDATE m_foncier.geo_fon_acqui SET
+							idsite= (
+									SELECT DISTINCT
+				idsite 
+		  FROM 
+				r_objet.geo_objet_site
+		  WHERE
+				st_intersects(st_pointonsurface(new.geom),geo_objet_site.geom) = true
+								
+									)
+		where idgeoaf = new.idgeoaf;
+
+    END IF;
+    return new;
+END;
+
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION m_foncier.m_ces_acq_idsite()
+  OWNER TO sig_create;
+
+
+-- Trigger: t_t1_idsite on m_foncier.geo_fon_acqui
+
+-- DROP TRIGGER t_t1_idsite ON m_foncier.geo_fon_acqui;
+
+CREATE TRIGGER t_t1_idsite
+  BEFORE INSERT
+  ON m_foncier.geo_fon_acqui
+  FOR EACH ROW
+  EXECUTE PROCEDURE m_foncier.m_ces_acq_idsite();
+
+-- Trigger: t_t2_insee on m_foncier.geo_fon_acqui
+
+-- DROP TRIGGER t_t2_insee ON m_foncier.geo_fon_acqui;
+
+CREATE TRIGGER t_t2_insee
+  BEFORE INSERT OR UPDATE
+  ON m_foncier.geo_fon_acqui
+  FOR EACH ROW
+  EXECUTE PROCEDURE public.r_commune_pl();
+
+-- Trigger: t_t3_insert_date_maj on m_foncier.geo_fon_acqui
+
+-- DROP TRIGGER t_t3_insert_date_maj ON m_foncier.geo_fon_acqui;
+
+CREATE TRIGGER t_t3_insert_date_maj
+  BEFORE INSERT OR UPDATE
+  ON m_foncier.geo_fon_acqui
+  FOR EACH ROW
+  EXECUTE PROCEDURE public.r_timestamp_maj();
+
+-- ################################################# Classe des objets des relations cessions - lot ##################################
+				  
+-- Table: m_foncier.lk_cession_lot
+
+-- DROP TABLE m_foncier.lk_cession_lot;
+
+CREATE TABLE m_foncier.lk_cession_lot
+(
+  idgeolf integer NOT NULL, -- Identifiant géographique du lot
+  idces character varying(6), -- Identifiant du dossier de cession
+  CONSTRAINT lk_cession_lot_pkey PRIMARY KEY (idgeolf)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE m_foncier.lk_cession_lot
+  OWNER TO sig_create;
+
+COMMENT ON TABLE m_foncier.lk_cession_lot
+  IS 'Table de lien entre les lots et les dossiers de cession';
+COMMENT ON COLUMN m_foncier.lk_cession_lot.idgeolf IS 'Identifiant géographique du lot';
+COMMENT ON COLUMN m_foncier.lk_cession_lot.idces IS 'Identifiant du dossier de cession';
+
+
+
 				  
 				  
 -- ####################################################################################################################################################
@@ -4161,6 +4540,52 @@ CONSTRAINT geo_sa_bal_srcgeom_fkey FOREIGN KEY (src_geom)
       ON UPDATE NO ACTION ON DELETE NO ACTION,
   CONSTRAINT lt_sa_voca_fkey FOREIGN KEY (site_voca)
       REFERENCES m_economie.lt_sa_voca (site_voca) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION;
+				  
+CONSTRAINT lt_ces_cond_fkey FOREIGN KEY (l_condi)
+      REFERENCES m_foncier.lt_ces_cond (l_condi) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT lt_ces_etat_fkey FOREIGN KEY (l_etat)
+      REFERENCES m_foncier.lt_ces_etat (l_etat) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT lt_ces_nota_fkey FOREIGN KEY (l_notaire)
+      REFERENCES m_foncier.lt_ces_nota (l_notaire) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT lt_ces_orga_fkey FOREIGN KEY (l_orga)
+      REFERENCES m_foncier.lt_ces_orga (l_orga) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT lt_ces_tact_fkey FOREIGN KEY (l_type)
+      REFERENCES m_foncier.lt_ces_tact (l_type) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT lt_ces_voca_fkey FOREIGN KEY (l_voca)
+      REFERENCES m_foncier.lt_ces_voca (l_voca) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+
+  CONSTRAINT an_fon_doc_media_fkey FOREIGN KEY (l_type)
+      REFERENCES m_foncier.lt_ces_doc (l_type) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+CONSTRAINT geo_fon_acqui_condi_fkey FOREIGN KEY (l_condi)
+      REFERENCES m_foncier.lt_ces_cond (l_condi) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT geo_fon_acqui_notaire_fkey FOREIGN KEY (l_notaire)
+      REFERENCES m_foncier.lt_ces_nota (l_notaire) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT geo_fon_acqui_srcgeom_fkey FOREIGN KEY (src_geom)
+      REFERENCES r_objet.lt_src_geom (code) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT geo_fon_acqui_type_fkey FOREIGN KEY (l_type)
+      REFERENCES m_foncier.lt_ces_tact (l_type) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT geo_fon_acquis_etat_fkey FOREIGN KEY (l_etat)
+      REFERENCES m_foncier.lt_ces_etat (l_etat) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT geo_fon_acquis_orga_fkey FOREIGN KEY (l_orga)
+      REFERENCES m_foncier.lt_ces_orga (l_orga) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT geo_fon_acquis_voca_fkey FOREIGN KEY (l_voca)
+      REFERENCES m_foncier.lt_ces_voca (l_voca) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION;
 				  
 -- ####################################################################################################################################################
@@ -4329,3 +4754,40 @@ CREATE INDEX geo_sa_site_zu_geom_idx
   ON m_economie.geo_sa_site_zu
   USING gist
   (geom);
+
+- Index: m_foncier.an_fon_doc_media_id_idx
+
+-- DROP INDEX m_foncier.an_fon_doc_media_id_idx;
+
+CREATE INDEX an_fon_doc_media_id_idx
+  ON m_foncier.an_fon_doc_media
+  USING btree
+  (id COLLATE pg_catalog."default");
+
+-- Index: m_foncier.idx_an_fon_doc_media_l_type
+
+-- DROP INDEX m_foncier.idx_an_fon_doc_media_l_type;
+
+CREATE INDEX idx_an_fon_doc_media_l_type
+  ON m_foncier.an_fon_doc_media
+  USING btree
+  (l_type COLLATE pg_catalog."default");
+				  
+-- Index: m_foncier.geo_fon_acqui_geom_idx
+
+-- DROP INDEX m_foncier.geo_fon_acqui_geom_idx;
+
+CREATE INDEX geo_fon_acqui_geom_idx
+  ON m_foncier.geo_fon_acqui
+  USING gist
+  (geom);
+
+-- Index: m_foncier.idx_lk_cession_lot_idces
+
+-- DROP INDEX m_foncier.idx_lk_cession_lot_idces;
+
+CREATE INDEX idx_lk_cession_lot_idces
+  ON m_foncier.lk_cession_lot
+  USING btree
+  (idces COLLATE pg_catalog."default");
+				 
