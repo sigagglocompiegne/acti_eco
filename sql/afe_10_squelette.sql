@@ -2114,6 +2114,678 @@ CREATE TRIGGER t_t1_suivi
                    
 -- ################################################# Classe des objets des lots ##################################
 
+-- Table: m_economie.an_sa_lot
+
+-- DROP TABLE m_economie.an_sa_lot;
+
+CREATE TABLE m_economie.an_sa_lot
+(
+  idgeolf integer NOT NULL, -- Identifiant unique de l'entité géographique lot
+  idsite character varying(10), -- Identifiant du site d'activité d'appartenance
+  surf integer, -- Surface parcellaire occupée du lot
+  l_surf_l character varying(15), -- Surface littérale parcellaire occupée du lot
+  date_int date, -- Date renseignée par GéoPicardie lors de l'intégration (correspond aux dernières données reçues)
+  op_sai character varying(80), -- Libellé de l'opérateur de saisie
+  org_sai character varying(80), -- Libellé de l'organisme de saisie
+  l_tact character varying(2) DEFAULT '00'::character varying, -- Type d'activité présent sur le lot
+  l_tact_99 character varying(80), -- Précision de l'activité du lot (si Autre sélectionné dans l_tact)
+  l_cnom character varying(20), -- Nom de code de l'acquéreur
+  l_lnom character varying(80), -- Nom de l'acquéreur
+  l_pvente_l character varying(15), -- Prix littéral de vente du lot en HT (ex:50€/m²)
+  l_pcess_l character varying(15), -- Prix littéral de cession du lot en HT (ex:30€/m²)
+  l_eff_dep integer, -- Effectif de départ prévu par l'implantation de l'établissement lors de l'octroi de la convention de subvention
+  l_eff_n5 integer, -- Effectif prévu de l'établissement à n+5 par la convention d'octroi de subvention
+  l_conv boolean, -- Accord ou non d'une convention d'octroi de subvention
+  l_datefin_conv date, -- Date de fin de la convention d'octroi de subvention, liée à l'effectif n+5
+  l_observ character varying(255), -- Observations diverses
+  date_sai timestamp without time zone, -- Date de saisie des données attributaires
+  date_maj timestamp without time zone, -- Date de mise à jour des données attributaires
+  l_bati integer, -- Surface de bâtiments projetée en m²
+  l_pc_depot timestamp without time zone, -- Date de dépôt du permis de construire
+  l_pc_accord timestamp without time zone, -- Date d'obtention du permis de construire
+  l_pc_tra timestamp without time zone, -- Date de commencement des travaux du permis de construire
+  l_pc_fin timestamp without time zone, -- Date de fin des travaux du permis de construire
+  l_pvente_e numeric(10,2), -- Prix de vente (ou cession) envisagé du lot en HT (€/m²) par le service économique
+  l_pcess_e numeric(10,2), -- Prix de cession du lot en HT(€/m²) - plus utilisé (cf prix de cession du foncier)
+  l_pc_num character varying(50), -- N° du permis de construire
+  l_pc_mo character varying(100), -- Nom du mapitre d'oeuvre (architecte) du PC
+  l_pers_v character varying(10), -- Année de la perspective de vente ou de cession
+  l_oripro character varying(15), -- Information sur l'origine du projet. 3 valeurs possibles ENDOGENE ou EXOGENE ou non renseignée (pas de listes de valeurs créées, cette liste est paramétrée dans GEO)
+  l_occupant character varying(100), -- Libellé de l'occupant (et non acquéreur initial)
+  l_descrip character varying(1000), -- Descriptif du bâtiment construit sur le lot
+  insee character varying(30), -- Code Insee du ou des communes
+  commune character varying(250), -- Libellé de la ou des communes contenant le lot
+  CONSTRAINT an_sa_lot_pkey PRIMARY KEY (idgeolf)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE m_economie.an_sa_lot
+  OWNER TO sig_create;
+
+COMMENT ON TABLE m_economie.an_sa_lot
+  IS 'Table alphanumérique contenant les données des lots à vocation économique';
+COMMENT ON COLUMN m_economie.an_sa_lot.idgeolf IS 'Identifiant unique de l''entité géographique lot';
+COMMENT ON COLUMN m_economie.an_sa_lot.idsite IS 'Identifiant du site d''activité d''appartenance';
+COMMENT ON COLUMN m_economie.an_sa_lot.surf IS 'Surface parcellaire occupée du lot';
+COMMENT ON COLUMN m_economie.an_sa_lot.l_surf_l IS 'Surface littérale parcellaire occupée du lot';
+COMMENT ON COLUMN m_economie.an_sa_lot.date_int IS 'Date renseignée par GéoPicardie lors de l''intégration (correspond aux dernières données reçues)';
+COMMENT ON COLUMN m_economie.an_sa_lot.op_sai IS 'Libellé de l''opérateur de saisie';
+COMMENT ON COLUMN m_economie.an_sa_lot.org_sai IS 'Libellé de l''organisme de saisie';
+COMMENT ON COLUMN m_economie.an_sa_lot.l_tact IS 'Type d''activité présent sur le lot';
+COMMENT ON COLUMN m_economie.an_sa_lot.l_tact_99 IS 'Précision de l''activité du lot (si Autre sélectionné dans l_tact)';
+COMMENT ON COLUMN m_economie.an_sa_lot.l_cnom IS 'Nom de code de l''acquéreur';
+COMMENT ON COLUMN m_economie.an_sa_lot.l_lnom IS 'Nom de l''acquéreur';
+COMMENT ON COLUMN m_economie.an_sa_lot.l_pvente_l IS 'Prix littéral de vente du lot en HT (ex:50€/m²)';
+COMMENT ON COLUMN m_economie.an_sa_lot.l_pcess_l IS 'Prix littéral de cession du lot en HT (ex:30€/m²)';
+COMMENT ON COLUMN m_economie.an_sa_lot.l_eff_dep IS 'Effectif de départ prévu par l''implantation de l''établissement lors de l''octroi de la convention de subvention';
+COMMENT ON COLUMN m_economie.an_sa_lot.l_eff_n5 IS 'Effectif prévu de l''établissement à n+5 par la convention d''octroi de subvention';
+COMMENT ON COLUMN m_economie.an_sa_lot.l_conv IS 'Accord ou non d''une convention d''octroi de subvention';
+COMMENT ON COLUMN m_economie.an_sa_lot.l_datefin_conv IS 'Date de fin de la convention d''octroi de subvention, liée à l''effectif n+5';
+COMMENT ON COLUMN m_economie.an_sa_lot.l_observ IS 'Observations diverses';
+COMMENT ON COLUMN m_economie.an_sa_lot.date_sai IS 'Date de saisie des données attributaires';
+COMMENT ON COLUMN m_economie.an_sa_lot.date_maj IS 'Date de mise à jour des données attributaires';
+COMMENT ON COLUMN m_economie.an_sa_lot.l_bati IS 'Surface de bâtiments projetée en m²';
+COMMENT ON COLUMN m_economie.an_sa_lot.l_pc_depot IS 'Date de dépôt du permis de construire';
+COMMENT ON COLUMN m_economie.an_sa_lot.l_pc_accord IS 'Date d''obtention du permis de construire';
+COMMENT ON COLUMN m_economie.an_sa_lot.l_pc_tra IS 'Date de commencement des travaux du permis de construire';
+COMMENT ON COLUMN m_economie.an_sa_lot.l_pc_fin IS 'Date de fin des travaux du permis de construire';
+COMMENT ON COLUMN m_economie.an_sa_lot.l_pvente_e IS 'Prix de vente (ou cession) envisagé du lot en HT (€/m²) par le service économique';
+COMMENT ON COLUMN m_economie.an_sa_lot.l_pcess_e IS 'Prix de cession du lot en HT(€/m²) - plus utilisé (cf prix de cession du foncier)';
+COMMENT ON COLUMN m_economie.an_sa_lot.l_pc_num IS 'N° du permis de construire';
+COMMENT ON COLUMN m_economie.an_sa_lot.l_pc_mo IS 'Nom du mapitre d''oeuvre (architecte) du PC';
+COMMENT ON COLUMN m_economie.an_sa_lot.l_pers_v IS 'Année de la perspective de vente ou de cession';
+COMMENT ON COLUMN m_economie.an_sa_lot.l_oripro IS 'Information sur l''origine du projet. 3 valeurs possibles ENDOGENE ou EXOGENE ou non renseignée (pas de listes de valeurs créées, cette liste est paramétrée dans GEO)';
+COMMENT ON COLUMN m_economie.an_sa_lot.l_occupant IS 'Libellé de l''occupant (et non acquéreur initial)';
+COMMENT ON COLUMN m_economie.an_sa_lot.l_descrip IS 'Descriptif du bâtiment construit sur le lot';
+COMMENT ON COLUMN m_economie.an_sa_lot.insee IS 'Code Insee du ou des communes';
+COMMENT ON COLUMN m_economie.an_sa_lot.commune IS 'Libellé de la ou des communes contenant le lot';
+
+
+-- Trigger: t_t2_suivi on m_economie.an_sa_lot
+
+-- DROP TRIGGER t_t2_suivi ON m_economie.an_sa_lot;
+
+CREATE TRIGGER t_t2_suivi
+  AFTER INSERT OR UPDATE OR DELETE
+  ON m_economie.an_sa_lot
+  FOR EACH ROW
+  EXECUTE PROCEDURE m_economie.r_suivi_audit();
+ALTER TABLE m_economie.an_sa_lot DISABLE TRIGGER t_t2_suivi;
+
+			 
+-- ################################################# Classe des objets des sites ##################################
+
+-- Table: m_economie.an_sa_site
+
+-- DROP TABLE m_economie.an_sa_site;
+
+CREATE TABLE m_economie.an_sa_site
+(
+  idsite character varying(10) NOT NULL, -- Identifiant du site d'activités
+  idpole character varying(7), -- Identifiant du pôle d'appartenance
+  site_voca character varying(2) DEFAULT '00'::character varying, -- Code de la vocation simplifiée de la zone
+  site_nom character varying(80), -- Libellé du site
+  site_etat character varying(2) DEFAULT '00'::character varying, -- Code de l'état du site
+  date_int date, -- Date d'intégration par GéoPicardie dans la base (permet de connaître la dernière donnée intégrée)
+  op_sai character varying(80), -- Libellé de la personne ayant saisie la mise à jour
+  org_sai character varying(80), -- Organisme de saisie dont dépend l'opérateur de saisie
+  typo character varying(2) DEFAULT '00'::character varying, -- Typologie du site
+  dest character varying(2) DEFAULT '00'::character varying, -- Destination initiale du site (défini dans les documents d'urbanisme)
+  p_implant character varying(10), -- Première implantation des entreprises sur le site (année ou date)
+  z_mai_ouvr character varying(80), -- Nom du maître d'ouvrage
+  z_compet character varying(80), -- Nom de la collectivité ayant dans ses compétences le développement de la zone
+  z_amng character varying(80), -- Nom de l'aménageur de la zone
+  z_gest character varying(80), -- Nom du gestionnaire de la zone
+  z_anim character varying(80), -- Nom de l'animateur de la zone
+  z_comm character varying(80), -- Structure de contact pour la commercialisation
+  contact character varying(80), -- Libellé de la personne contact pour la commercialisation
+  z_cession double precision, -- Conditions de cession en HT (euro/m²)
+  z_env character varying(80), -- Démarche environnementale
+  z_paysage character varying(80), -- Démarche paysagère
+  z_rehab character varying(80), -- Procédure de réhabilitaion du site
+  z_epu character varying(3), -- Traitement de l'eau d'épuration
+  z_dechet character varying(80), -- Libellé du gestionnaire des déchets
+  z_tr_slect character varying(3), -- Présence d'un tri sélectif sur le site
+  res_ass double precision, -- Linéaire de réseau d'assainissement
+  res_pluvia double precision, -- Linéaire de réseau d'eau pluviale
+  res_eau double precision, -- Débit du réseau d'eau potable
+  res_gaz double precision, -- Débit du réseau de gaz
+  res_elect double precision, -- Débit du réseau électrique
+  res_net character varying(80), -- Type de réseau internet
+  res_db_net double precision, -- Débit internet
+  z_auto character varying(10), -- Libellé de l'autoroute la plus proche
+  z_dst_auto double precision, -- Distance en km du diffuseur autoroutier par la route
+  z_tps_auto double precision, -- Temps d'accès en minutes du diffuseur autoroutier par la route
+  z_ar_f character varying(80), -- Nom de l'aéroport fret le plus proche
+  z_dst_ar_f double precision, -- Distance en km de l'aéroport de fret par la route
+  z_ar_v character varying(80), -- Nom de l'aéroport de voyageurs le plus proche
+  z_dst_ar_v double precision, -- Distance en km de l'aéroport de voyageurs par la route
+  z_fr_f character varying(80), -- Gare de fret la plus proche
+  z_dst_fr_f double precision, -- Distance en km de la gare de fret la plus proche par la route
+  z_fr_v character varying(80), -- Gare de voyageurs la plus proche
+  z_dst_fr_v double precision, -- Distance en km de la gare de voyageurs la plus proche par la route
+  z_pmm character varying(3), -- Présence d'une plate-forme multimodale
+  z_dst_pmm double precision, -- Distance en km de la plate-forme multimodale la plus proche par la route
+  serv_tc integer, -- Nombre de ligne de transport en commun desservant le site
+  circ_douce character varying(3), -- Accès aux sites par un mode doux (pistes cyclables)
+  serv_rest integer, -- Nombre de restaurants ou à proximité immédiate
+  serv_crech integer, -- Nombre de crèches ou à proximité immédiate
+  serv_autre character varying(80), -- Libellé des autres services disponibles sur le site
+  serv_collt character varying(80), -- Services collectifs présent sur le site (mutualisation, partage de services)
+  z_aide_pb character varying(2), -- Code de valeurs des aides publiques appliquées sur le site (AFR, ZFU, ZRR, aucun)
+  l_dated_aide_pb date, -- Date de début de la période des aides publiques
+  l_datef_aide_pb date, -- Date de fin de la période des aides publiques
+  date_sai timestamp without time zone, -- Date de saisie des données attributaires
+  date_maj timestamp without time zone, -- Date de mise à jour des données attributaires
+  d_paris integer, -- Distance en km de paris
+  t_paris integer, -- Temps d'accès à Paris en minutes
+  d_lille integer, -- Distance en km d'accès à Lille
+  t_lille integer, -- Temps d'accès à Lille en minutes
+  l_dauto character varying(200), -- Libellé du diffuseur autoroutier le plus proche
+  l_dtgvhp integer, -- Distance de la gare RGV Haute Picardie
+  l_ttgvhp integer, -- Temps d'accès à la gare TGV Haute Picardie
+  l_dtgvcdg integer, -- Distance de la Gare TGV Roissy-Charles de Gaulle
+  l_ttgvcdg integer, -- Temps d'accès à la Gare TGV Roissy-Charles de Gaulle
+  l_tgcomp integer, -- Temps d'accès à la gare de Compiègne
+  l_dtille integer, -- Distance de l'aéroport de Beauvais-Tillé
+  l_ttille integer, -- Temps d'accès à l'aéroport de Beauvais-Tillé
+  l_dcdg integer, -- Distance de l'aéroport de Roissy-Charles de Gaulle
+  l_tcdg integer, -- Temps d'accès à l'aéroport de Roissy-Charles de Gaulle
+  l_dlesquin integer, -- Distance de l'aéroport de Lille-Lesquin
+  l_tlesquin integer, -- Temps d'accès à l'aéroport Lille-Lesquin
+  zae boolean, -- Information sur le fait que le site soit une ZAE (sauf celle indiquée dans la table m_amenagement.geo_amt_zae)  ou non (compétence ARC selon la délibération du CA du 21 décembre 2017). Cette donnée permet de créer une vue matérialisée des ZAE complètes (geo_vmr_zae) avec les informations de la table m_amenagement.geo_amt_zae
+  l_cc_aep_lib character varying(100), -- Nom du concessionnaire de l'eau potable
+  l_cc_aep_nom character varying(100), -- Nom du contact du concessionnaire d'eau potable
+  l_cc_aep_poste character varying(50), -- Libellé du poste du contact du concessionnaire d'eau potable
+  l_cc_aep_tel character varying(15), -- Numéro de téléphone du contact du concessionnaire d'eau potable
+  l_cc_aep_telp character varying(15), -- Numéro de téléphone portable du contact du concessionnaire d'eau potable
+  l_cc_aep_mail character varying(50), -- Mail du contact du concessionnaire d'eau potable
+  l_cc_elect_lib character varying(100), -- Nom du concessionnaire d'électricité
+  l_cc_elect_nom character varying(100), -- Nom du contact du concessionnaire d'électricité
+  l_cc_elect_poste character varying(50), -- Libellé du poste du contact du concessionnaire d'électricité
+  l_cc_elect_tel character varying(15), -- Numéro de téléphone du contact du concessionnaire d'électricité
+  l_cc_elect_telp character varying(15), -- Numéro de téléphone portable du contact du concessionnaire d'électricité
+  l_cc_elect_mail character varying(50), -- Mail du contact du concessionnaire d'électricité
+  l_cc_gaz_lib character varying(100), -- Nom du concessionnaire de gaz
+  l_cc_gaz_nom character varying(100), -- Nom du contact du concessionnaire de gaz
+  l_cc_gaz_poste character varying(50), -- Libellé du poste du contact du concessionnaire de gaz
+  l_cc_gaz_tel character varying(15), -- Numéro de téléphone du contact du concessionnaire de gaz
+  l_cc_gaz_telp character varying(15), -- Numéro de téléphone portable du contact du concessionnaire de gaz
+  l_cc_gaz_mail character varying(50), -- Mail du contact du concessionnaire de gaz
+  l_cc_tel_lib character varying(100), -- Nom du concessionnaire télécom
+  l_cc_tel_nom character varying(100), -- Nom du contact du concessionnaire télécom
+  l_cc_tel_poste character varying(50), -- Libellé du poste du contact du concessionnaire télécom
+  l_cc_tel_tel character varying(15), -- Numéro de téléphone du contact du concessionnaire télécom
+  l_cc_tel_telp character varying(15), -- Numéro de téléphone portable du contact du concessionnaire télécom
+  l_cc_tel_mail character varying(50), -- Mail du contact du concessionnaire télécom
+  CONSTRAINT an_sa_site_pkey PRIMARY KEY (idsite) -- Clé primaire de la table geo_sa_p_site
+
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE m_economie.an_sa_site
+  OWNER TO sig_create;
+
+COMMENT ON TABLE m_economie.an_sa_site
+  IS 'Information alphanumérique sur les Sites d''activités économiques. Les objets virtuels de référence sont gérés dans le schéma r_objet';
+COMMENT ON COLUMN m_economie.an_sa_site.idsite IS 'Identifiant du site d''activités';
+COMMENT ON COLUMN m_economie.an_sa_site.idpole IS 'Identifiant du pôle d''appartenance';
+COMMENT ON COLUMN m_economie.an_sa_site.site_voca IS 'Code de la vocation simplifiée de la zone';
+COMMENT ON COLUMN m_economie.an_sa_site.site_nom IS 'Libellé du site';
+COMMENT ON COLUMN m_economie.an_sa_site.site_etat IS 'Code de l''état du site';
+COMMENT ON COLUMN m_economie.an_sa_site.date_int IS 'Date d''intégration par GéoPicardie dans la base (permet de connaître la dernière donnée intégrée)';
+COMMENT ON COLUMN m_economie.an_sa_site.op_sai IS 'Libellé de la personne ayant saisie la mise à jour';
+COMMENT ON COLUMN m_economie.an_sa_site.org_sai IS 'Organisme de saisie dont dépend l''opérateur de saisie';
+COMMENT ON COLUMN m_economie.an_sa_site.typo IS 'Typologie du site';
+COMMENT ON COLUMN m_economie.an_sa_site.dest IS 'Destination initiale du site (défini dans les documents d''urbanisme)';
+COMMENT ON COLUMN m_economie.an_sa_site.p_implant IS 'Première implantation des entreprises sur le site (année ou date)';
+COMMENT ON COLUMN m_economie.an_sa_site.z_mai_ouvr IS 'Nom du maître d''ouvrage';
+COMMENT ON COLUMN m_economie.an_sa_site.z_compet IS 'Nom de la collectivité ayant dans ses compétences le développement de la zone';
+COMMENT ON COLUMN m_economie.an_sa_site.z_amng IS 'Nom de l''aménageur de la zone';
+COMMENT ON COLUMN m_economie.an_sa_site.z_gest IS 'Nom du gestionnaire de la zone';
+COMMENT ON COLUMN m_economie.an_sa_site.z_anim IS 'Nom de l''animateur de la zone';
+COMMENT ON COLUMN m_economie.an_sa_site.z_comm IS 'Structure de contact pour la commercialisation';
+COMMENT ON COLUMN m_economie.an_sa_site.contact IS 'Libellé de la personne contact pour la commercialisation';
+COMMENT ON COLUMN m_economie.an_sa_site.z_cession IS 'Conditions de cession en HT (euro/m²)';
+COMMENT ON COLUMN m_economie.an_sa_site.z_env IS 'Démarche environnementale';
+COMMENT ON COLUMN m_economie.an_sa_site.z_paysage IS 'Démarche paysagère';
+COMMENT ON COLUMN m_economie.an_sa_site.z_rehab IS 'Procédure de réhabilitaion du site';
+COMMENT ON COLUMN m_economie.an_sa_site.z_epu IS 'Traitement de l''eau d''épuration';
+COMMENT ON COLUMN m_economie.an_sa_site.z_dechet IS 'Libellé du gestionnaire des déchets';
+COMMENT ON COLUMN m_economie.an_sa_site.z_tr_slect IS 'Présence d''un tri sélectif sur le site';
+COMMENT ON COLUMN m_economie.an_sa_site.res_ass IS 'Linéaire de réseau d''assainissement';
+COMMENT ON COLUMN m_economie.an_sa_site.res_pluvia IS 'Linéaire de réseau d''eau pluviale';
+COMMENT ON COLUMN m_economie.an_sa_site.res_eau IS 'Débit du réseau d''eau potable';
+COMMENT ON COLUMN m_economie.an_sa_site.res_gaz IS 'Débit du réseau de gaz';
+COMMENT ON COLUMN m_economie.an_sa_site.res_elect IS 'Débit du réseau électrique';
+COMMENT ON COLUMN m_economie.an_sa_site.res_net IS 'Type de réseau internet';
+COMMENT ON COLUMN m_economie.an_sa_site.res_db_net IS 'Débit internet';
+COMMENT ON COLUMN m_economie.an_sa_site.z_auto IS 'Libellé de l''autoroute la plus proche';
+COMMENT ON COLUMN m_economie.an_sa_site.z_dst_auto IS 'Distance en km du diffuseur autoroutier par la route';
+COMMENT ON COLUMN m_economie.an_sa_site.z_tps_auto IS 'Temps d''accès en minutes du diffuseur autoroutier par la route';
+COMMENT ON COLUMN m_economie.an_sa_site.z_ar_f IS 'Nom de l''aéroport fret le plus proche';
+COMMENT ON COLUMN m_economie.an_sa_site.z_dst_ar_f IS 'Distance en km de l''aéroport de fret par la route';
+COMMENT ON COLUMN m_economie.an_sa_site.z_ar_v IS 'Nom de l''aéroport de voyageurs le plus proche';
+COMMENT ON COLUMN m_economie.an_sa_site.z_dst_ar_v IS 'Distance en km de l''aéroport de voyageurs par la route';
+COMMENT ON COLUMN m_economie.an_sa_site.z_fr_f IS 'Gare de fret la plus proche';
+COMMENT ON COLUMN m_economie.an_sa_site.z_dst_fr_f IS 'Distance en km de la gare de fret la plus proche par la route';
+COMMENT ON COLUMN m_economie.an_sa_site.z_fr_v IS 'Gare de voyageurs la plus proche';
+COMMENT ON COLUMN m_economie.an_sa_site.z_dst_fr_v IS 'Distance en km de la gare de voyageurs la plus proche par la route';
+COMMENT ON COLUMN m_economie.an_sa_site.z_pmm IS 'Présence d''une plate-forme multimodale';
+COMMENT ON COLUMN m_economie.an_sa_site.z_dst_pmm IS 'Distance en km de la plate-forme multimodale la plus proche par la route';
+COMMENT ON COLUMN m_economie.an_sa_site.serv_tc IS 'Nombre de ligne de transport en commun desservant le site';
+COMMENT ON COLUMN m_economie.an_sa_site.circ_douce IS 'Accès aux sites par un mode doux (pistes cyclables)';
+COMMENT ON COLUMN m_economie.an_sa_site.serv_rest IS 'Nombre de restaurants ou à proximité immédiate';
+COMMENT ON COLUMN m_economie.an_sa_site.serv_crech IS 'Nombre de crèches ou à proximité immédiate';
+COMMENT ON COLUMN m_economie.an_sa_site.serv_autre IS 'Libellé des autres services disponibles sur le site';
+COMMENT ON COLUMN m_economie.an_sa_site.serv_collt IS 'Services collectifs présent sur le site (mutualisation, partage de services)';
+COMMENT ON COLUMN m_economie.an_sa_site.z_aide_pb IS 'Code de valeurs des aides publiques appliquées sur le site (AFR, ZFU, ZRR, aucun)';
+COMMENT ON COLUMN m_economie.an_sa_site.l_dated_aide_pb IS 'Date de début de la période des aides publiques';
+COMMENT ON COLUMN m_economie.an_sa_site.l_datef_aide_pb IS 'Date de fin de la période des aides publiques';
+COMMENT ON COLUMN m_economie.an_sa_site.date_sai IS 'Date de saisie des données attributaires';
+COMMENT ON COLUMN m_economie.an_sa_site.date_maj IS 'Date de mise à jour des données attributaires';
+COMMENT ON COLUMN m_economie.an_sa_site.d_paris IS 'Distance en km de paris';
+COMMENT ON COLUMN m_economie.an_sa_site.t_paris IS 'Temps d''accès à Paris en minutes';
+COMMENT ON COLUMN m_economie.an_sa_site.d_lille IS 'Distance en km d''accès à Lille';
+COMMENT ON COLUMN m_economie.an_sa_site.t_lille IS 'Temps d''accès à Lille en minutes';
+COMMENT ON COLUMN m_economie.an_sa_site.l_dauto IS 'Libellé du diffuseur autoroutier le plus proche';
+COMMENT ON COLUMN m_economie.an_sa_site.l_dtgvhp IS 'Distance de la gare RGV Haute Picardie';
+COMMENT ON COLUMN m_economie.an_sa_site.l_ttgvhp IS 'Temps d''accès à la gare TGV Haute Picardie';
+COMMENT ON COLUMN m_economie.an_sa_site.l_dtgvcdg IS 'Distance de la Gare TGV Roissy-Charles de Gaulle';
+COMMENT ON COLUMN m_economie.an_sa_site.l_ttgvcdg IS 'Temps d''accès à la Gare TGV Roissy-Charles de Gaulle';
+COMMENT ON COLUMN m_economie.an_sa_site.l_tgcomp IS 'Temps d''accès à la gare de Compiègne';
+COMMENT ON COLUMN m_economie.an_sa_site.l_dtille IS 'Distance de l''aéroport de Beauvais-Tillé';
+COMMENT ON COLUMN m_economie.an_sa_site.l_ttille IS 'Temps d''accès à l''aéroport de Beauvais-Tillé';
+COMMENT ON COLUMN m_economie.an_sa_site.l_dcdg IS 'Distance de l''aéroport de Roissy-Charles de Gaulle';
+COMMENT ON COLUMN m_economie.an_sa_site.l_tcdg IS 'Temps d''accès à l''aéroport de Roissy-Charles de Gaulle';
+COMMENT ON COLUMN m_economie.an_sa_site.l_dlesquin IS 'Distance de l''aéroport de Lille-Lesquin';
+COMMENT ON COLUMN m_economie.an_sa_site.l_tlesquin IS 'Temps d''accès à l''aéroport Lille-Lesquin';
+COMMENT ON COLUMN m_economie.an_sa_site.zae IS 'Information sur le fait que le site soit une ZAE (sauf celle indiquée dans la table m_amenagement.geo_amt_zae)  ou non (compétence ARC selon la délibération du CA du 21 décembre 2017). Cette donnée permet de créer une vue matérialisée des ZAE complètes (geo_vmr_zae) avec les informations de la table m_amenagement.geo_amt_zae';
+COMMENT ON COLUMN m_economie.an_sa_site.l_cc_aep_lib IS 'Nom du concessionnaire de l''eau potable';
+COMMENT ON COLUMN m_economie.an_sa_site.l_cc_aep_nom IS 'Nom du contact du concessionnaire d''eau potable';
+COMMENT ON COLUMN m_economie.an_sa_site.l_cc_aep_poste IS 'Libellé du poste du contact du concessionnaire d''eau potable';
+COMMENT ON COLUMN m_economie.an_sa_site.l_cc_aep_tel IS 'Numéro de téléphone du contact du concessionnaire d''eau potable';
+COMMENT ON COLUMN m_economie.an_sa_site.l_cc_aep_telp IS 'Numéro de téléphone portable du contact du concessionnaire d''eau potable';
+COMMENT ON COLUMN m_economie.an_sa_site.l_cc_aep_mail IS 'Mail du contact du concessionnaire d''eau potable';
+COMMENT ON COLUMN m_economie.an_sa_site.l_cc_elect_lib IS 'Nom du concessionnaire d''électricité';
+COMMENT ON COLUMN m_economie.an_sa_site.l_cc_elect_nom IS 'Nom du contact du concessionnaire d''électricité';
+COMMENT ON COLUMN m_economie.an_sa_site.l_cc_elect_poste IS 'Libellé du poste du contact du concessionnaire d''électricité';
+COMMENT ON COLUMN m_economie.an_sa_site.l_cc_elect_tel IS 'Numéro de téléphone du contact du concessionnaire d''électricité';
+COMMENT ON COLUMN m_economie.an_sa_site.l_cc_elect_telp IS 'Numéro de téléphone portable du contact du concessionnaire d''électricité';
+COMMENT ON COLUMN m_economie.an_sa_site.l_cc_elect_mail IS 'Mail du contact du concessionnaire d''électricité';
+COMMENT ON COLUMN m_economie.an_sa_site.l_cc_gaz_lib IS 'Nom du concessionnaire de gaz';
+COMMENT ON COLUMN m_economie.an_sa_site.l_cc_gaz_nom IS 'Nom du contact du concessionnaire de gaz';
+COMMENT ON COLUMN m_economie.an_sa_site.l_cc_gaz_poste IS 'Libellé du poste du contact du concessionnaire de gaz';
+COMMENT ON COLUMN m_economie.an_sa_site.l_cc_gaz_tel IS 'Numéro de téléphone du contact du concessionnaire de gaz';
+COMMENT ON COLUMN m_economie.an_sa_site.l_cc_gaz_telp IS 'Numéro de téléphone portable du contact du concessionnaire de gaz';
+COMMENT ON COLUMN m_economie.an_sa_site.l_cc_gaz_mail IS 'Mail du contact du concessionnaire de gaz';
+COMMENT ON COLUMN m_economie.an_sa_site.l_cc_tel_lib IS 'Nom du concessionnaire télécom';
+COMMENT ON COLUMN m_economie.an_sa_site.l_cc_tel_nom IS 'Nom du contact du concessionnaire télécom';
+COMMENT ON COLUMN m_economie.an_sa_site.l_cc_tel_poste IS 'Libellé du poste du contact du concessionnaire télécom';
+COMMENT ON COLUMN m_economie.an_sa_site.l_cc_tel_tel IS 'Numéro de téléphone du contact du concessionnaire télécom';
+COMMENT ON COLUMN m_economie.an_sa_site.l_cc_tel_telp IS 'Numéro de téléphone portable du contact du concessionnaire télécom';
+COMMENT ON COLUMN m_economie.an_sa_site.l_cc_tel_mail IS 'Mail du contact du concessionnaire télécom';
+
+COMMENT ON CONSTRAINT an_sa_site_pkey ON m_economie.an_sa_site IS 'Clé primaire de la table geo_sa_p_site';
+
+
+-- Trigger: t_t1_insert_date_sai on m_economie.an_sa_site
+
+-- DROP TRIGGER t_t1_insert_date_sai ON m_economie.an_sa_site;
+
+CREATE TRIGGER t_t1_insert_date_sai
+  BEFORE INSERT
+  ON m_economie.an_sa_site
+  FOR EACH ROW
+  EXECUTE PROCEDURE public.r_timestamp_sai();
+
+-- Trigger: t_t2_update_date_maj on m_economie.an_sa_site
+
+-- DROP TRIGGER t_t2_update_date_maj ON m_economie.an_sa_site;
+
+CREATE TRIGGER t_t2_update_date_maj
+  BEFORE UPDATE
+  ON m_economie.an_sa_site
+  FOR EACH ROW
+  EXECUTE PROCEDURE public.r_timestamp_maj();
+
+-- Trigger: t_t3_suivi on m_economie.an_sa_site
+
+-- DROP TRIGGER t_t3_suivi ON m_economie.an_sa_site;
+
+CREATE TRIGGER t_t3_suivi
+  AFTER INSERT OR UPDATE OR DELETE
+  ON m_economie.an_sa_site
+  FOR EACH ROW
+  EXECUTE PROCEDURE m_economie.r_suivi_audit();
+
+			 
+-- ################################################# Classe des objets des documents de sites ##################################
+
+-- Table: m_economie.an_site_doc_media
+
+-- DROP TABLE m_economie.an_site_doc_media;
+
+CREATE TABLE m_economie.an_site_doc_media
+(
+  id character varying(10), -- Identifiant de site
+  media text, -- Champ Média de GEO
+  miniature bytea, -- Champ miniature de GEO
+  n_fichier text, -- Nom du fichier
+  t_fichier text, -- Type de média dans GEO
+  op_sai character varying(20), -- Opérateur de saisie (par défaut login de connexion à GEO)
+  l_doc character varying(100), -- nom ou léger descriptif du document
+  date_sai timestamp without time zone, -- Date de la saisie du document
+  d_photo timestamp without time zone, -- Date de la prise de vue
+  gid integer NOT NULL DEFAULT nextval('m_economie.an_site_doc_media_gig_seq'::regclass), -- Compteur (identifiant interne)
+  CONSTRAINT an_site_doc_media_pkey PRIMARY KEY (gid)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE m_economie.an_site_doc_media
+  OWNER TO sig_create;
+
+COMMENT ON TABLE m_economie.an_site_doc_media
+  IS 'Table gérant les documents des sites d''activité (photo notamment) dans le module MEDIA dans GEO avec stockage des documents dans une arborescence de fichiers (saisie de docs par les utilisateurs)';
+COMMENT ON COLUMN m_economie.an_site_doc_media.id IS 'Identifiant de site';
+COMMENT ON COLUMN m_economie.an_site_doc_media.media IS 'Champ Média de GEO';
+COMMENT ON COLUMN m_economie.an_site_doc_media.miniature IS 'Champ miniature de GEO';
+COMMENT ON COLUMN m_economie.an_site_doc_media.n_fichier IS 'Nom du fichier';
+COMMENT ON COLUMN m_economie.an_site_doc_media.t_fichier IS 'Type de média dans GEO';
+COMMENT ON COLUMN m_economie.an_site_doc_media.op_sai IS 'Opérateur de saisie (par défaut login de connexion à GEO)';
+COMMENT ON COLUMN m_economie.an_site_doc_media.l_doc IS 'nom ou léger descriptif du document';
+COMMENT ON COLUMN m_economie.an_site_doc_media.date_sai IS 'Date de la saisie du document';
+COMMENT ON COLUMN m_economie.an_site_doc_media.d_photo IS 'Date de la prise de vue';
+COMMENT ON COLUMN m_economie.an_site_doc_media.gid IS 'Compteur (identifiant interne)';
+
+
+-- Trigger: t_t1_an_site_doc_media_date_sai on m_economie.an_site_doc_media
+
+-- DROP TRIGGER t_t1_an_site_doc_media_date_sai ON m_economie.an_site_doc_media;
+
+CREATE TRIGGER t_t1_an_site_doc_media_date_sai
+  BEFORE INSERT
+  ON m_economie.an_site_doc_media
+  FOR EACH ROW
+  EXECUTE PROCEDURE public.r_timestamp_sai();
+
+			 
+-- ################################################# Classe des objets de la bourse aux locaux ##################################
+
+-- Table: m_economie.geo_sa_bal
+
+-- DROP TABLE m_economie.geo_sa_bal;
+
+CREATE TABLE m_economie.geo_sa_bal
+(
+  idgeobal integer NOT NULL, -- Identifiant géographique
+  idsite character varying(10), -- Identifiant du site d'activité d'appartenance
+  date_maj timestamp without time zone, -- Date de mise à jour
+  op_sai character varying(50), -- Opérateur de saisie
+  org_sai character varying(100), -- Organisme de saisie
+  contact character varying(50), -- Libellé du Contact ARC
+  l_nom_loc character varying(255), -- Libellé du local
+  l_nom_prop character varying(80), -- Libellé du propriétaire du local
+  tel_prop character varying(15), -- Numéro de téléphone du propriétaire
+  mail_prop character varying(80), -- Adresse email du propriétaire
+  code_comm character varying(2) DEFAULT '00'::character varying, -- Code de valeur du nom du commercialisateur
+  code_comm_99 character varying(50), -- Précision du code de valeur 99 pour le nom du commercialisateur
+  tel_comm character varying(14), -- Numéro de téléphone du commercialisateur
+  mail_comm character varying(80), -- Adresse email du commercialisateur
+  date_maj_loc timestamp without time zone, -- Date de mise à jour des données sur le local
+  etat_comm character varying(2) DEFAULT '00'::character varying, -- Code de valeur de l'état de commercialisation du local
+  date_dispo timestamp without time zone, -- Date de disponibilité du local si pas immédiate
+  source_maj character varying(2) DEFAULT '00'::character varying, -- Code de valeur de la source de la mise à jour du local
+  source_maj_99 character varying(50), -- Précision du code de valeur 99 pour la source de la mise à jour du local
+  url_1 character varying(500), -- Lien 1 internet vers une présentation du local
+  url_2 character varying(500), -- Lien 2 internet vers une présentation du local
+  url_3 character varying(500), -- Lien 3 internet vers une présentation du local
+  surf_loc integer, -- Surface totale disponible du local en m²
+  divisible boolean DEFAULT false, -- Information sur la disponibilité du local (oui ou non)
+  surf_div_min integer, -- Surface minimale disponible du local en m² (si divisible)
+  type_loc character varying(20) DEFAULT '00'::character varying, -- Code de valeur du type de local
+  adres character varying(255), -- Libellé de l'adresse du local
+  insee character varying(5), -- Code Insee de la commune
+  commune character varying(100), -- Libellé de la commune
+  dispo_loc boolean DEFAULT false, -- Information si le local est disponible à la location (oui ou non)
+  loyer_annuel_s integer, -- Montant du loyer mensuel en HT/m²/mois
+  loyer_annuel integer, -- Montant du loyer annuel en HT/m²/an
+  p_vente_s integer, -- Prix de vente du local en HT/m²
+  p_vente integer, -- Prix de vente du local en HT
+  nom_etab_prec character varying(80), -- Nom de l'établissement précédent du local
+  act_etab_prec character varying(80), -- Activité de l'établissement occupant précédemment le local
+  description_loc character varying(500), -- Descriptif du local
+  nom_etab_nego character varying(255), -- Nom du ou des établissement(s) avec le(s)quel(s) les négociations sont en cours
+  date_accord timestamp without time zone, -- Date de l'aboutissement des négociations
+  nom_etab_preneur character varying(80), -- Nom de l'établissement avec lequel les négociations ont abouti
+  act_etab_preneur character varying(80), -- Activité de l'établissement avec lequel les négociations ont abouti
+  geom geometry(Point,2154), -- Champ contenant la géométrie des objets
+  date_sai timestamp without time zone, -- Date de saisie des données
+  src_geom character varying(2) DEFAULT '20'::character varying, -- Référentiel spatial utilisé pour la saisie
+  bail_com_m double precision, -- Montant du bail commercial
+  dispo_vte character varying(20), -- Disponibilité à la vente (oui, non, oui occupé)
+  CONSTRAINT geo_sa_bal_pkey PRIMARY KEY (idgeobal)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE m_economie.geo_sa_bal
+  OWNER TO sig_create;
+
+COMMENT ON TABLE m_economie.geo_sa_bal
+  IS 'Table contenant la localisation des locaux contenus dans la BAL (bourse aux locaux)';
+COMMENT ON COLUMN m_economie.geo_sa_bal.idgeobal IS 'Identifiant géographique';
+COMMENT ON COLUMN m_economie.geo_sa_bal.idsite IS 'Identifiant du site d''activité d''appartenance';
+COMMENT ON COLUMN m_economie.geo_sa_bal.date_maj IS 'Date de mise à jour';
+COMMENT ON COLUMN m_economie.geo_sa_bal.op_sai IS 'Opérateur de saisie';
+COMMENT ON COLUMN m_economie.geo_sa_bal.org_sai IS 'Organisme de saisie';
+COMMENT ON COLUMN m_economie.geo_sa_bal.contact IS 'Libellé du Contact ARC';
+COMMENT ON COLUMN m_economie.geo_sa_bal.l_nom_loc IS 'Libellé du local';
+COMMENT ON COLUMN m_economie.geo_sa_bal.l_nom_prop IS 'Libellé du propriétaire du local';
+COMMENT ON COLUMN m_economie.geo_sa_bal.tel_prop IS 'Numéro de téléphone du propriétaire';
+COMMENT ON COLUMN m_economie.geo_sa_bal.mail_prop IS 'Adresse email du propriétaire';
+COMMENT ON COLUMN m_economie.geo_sa_bal.code_comm IS 'Code de valeur du nom du commercialisateur';
+COMMENT ON COLUMN m_economie.geo_sa_bal.code_comm_99 IS 'Précision du code de valeur 99 pour le nom du commercialisateur';
+COMMENT ON COLUMN m_economie.geo_sa_bal.tel_comm IS 'Numéro de téléphone du commercialisateur';
+COMMENT ON COLUMN m_economie.geo_sa_bal.mail_comm IS 'Adresse email du commercialisateur';
+COMMENT ON COLUMN m_economie.geo_sa_bal.date_maj_loc IS 'Date de mise à jour des données sur le local';
+COMMENT ON COLUMN m_economie.geo_sa_bal.etat_comm IS 'Code de valeur de l''état de commercialisation du local';
+COMMENT ON COLUMN m_economie.geo_sa_bal.date_dispo IS 'Date de disponibilité du local si pas immédiate';
+COMMENT ON COLUMN m_economie.geo_sa_bal.source_maj IS 'Code de valeur de la source de la mise à jour du local';
+COMMENT ON COLUMN m_economie.geo_sa_bal.source_maj_99 IS 'Précision du code de valeur 99 pour la source de la mise à jour du local';
+COMMENT ON COLUMN m_economie.geo_sa_bal.url_1 IS 'Lien 1 internet vers une présentation du local';
+COMMENT ON COLUMN m_economie.geo_sa_bal.url_2 IS 'Lien 2 internet vers une présentation du local';
+COMMENT ON COLUMN m_economie.geo_sa_bal.url_3 IS 'Lien 3 internet vers une présentation du local';
+COMMENT ON COLUMN m_economie.geo_sa_bal.surf_loc IS 'Surface totale disponible du local en m²';
+COMMENT ON COLUMN m_economie.geo_sa_bal.divisible IS 'Information sur la disponibilité du local (oui ou non)';
+COMMENT ON COLUMN m_economie.geo_sa_bal.surf_div_min IS 'Surface minimale disponible du local en m² (si divisible)';
+COMMENT ON COLUMN m_economie.geo_sa_bal.type_loc IS 'Code de valeur du type de local';
+COMMENT ON COLUMN m_economie.geo_sa_bal.adres IS 'Libellé de l''adresse du local';
+COMMENT ON COLUMN m_economie.geo_sa_bal.insee IS 'Code Insee de la commune';
+COMMENT ON COLUMN m_economie.geo_sa_bal.commune IS 'Libellé de la commune';
+COMMENT ON COLUMN m_economie.geo_sa_bal.dispo_loc IS 'Information si le local est disponible à la location (oui ou non)';
+COMMENT ON COLUMN m_economie.geo_sa_bal.loyer_annuel_s IS 'Montant du loyer mensuel en HT/m²/mois';
+COMMENT ON COLUMN m_economie.geo_sa_bal.loyer_annuel IS 'Montant du loyer annuel en HT/m²/an';
+COMMENT ON COLUMN m_economie.geo_sa_bal.p_vente_s IS 'Prix de vente du local en HT/m²';
+COMMENT ON COLUMN m_economie.geo_sa_bal.p_vente IS 'Prix de vente du local en HT';
+COMMENT ON COLUMN m_economie.geo_sa_bal.nom_etab_prec IS 'Nom de l''établissement précédent du local';
+COMMENT ON COLUMN m_economie.geo_sa_bal.act_etab_prec IS 'Activité de l''établissement occupant précédemment le local';
+COMMENT ON COLUMN m_economie.geo_sa_bal.description_loc IS 'Descriptif du local';
+COMMENT ON COLUMN m_economie.geo_sa_bal.nom_etab_nego IS 'Nom du ou des établissement(s) avec le(s)quel(s) les négociations sont en cours';
+COMMENT ON COLUMN m_economie.geo_sa_bal.date_accord IS 'Date de l''aboutissement des négociations';
+COMMENT ON COLUMN m_economie.geo_sa_bal.nom_etab_preneur IS 'Nom de l''établissement avec lequel les négociations ont abouti';
+COMMENT ON COLUMN m_economie.geo_sa_bal.act_etab_preneur IS 'Activité de l''établissement avec lequel les négociations ont abouti';
+COMMENT ON COLUMN m_economie.geo_sa_bal.geom IS 'Champ contenant la géométrie des objets';
+COMMENT ON COLUMN m_economie.geo_sa_bal.date_sai IS 'Date de saisie des données';
+COMMENT ON COLUMN m_economie.geo_sa_bal.src_geom IS 'Référentiel spatial utilisé pour la saisie';
+COMMENT ON COLUMN m_economie.geo_sa_bal.bail_com_m IS 'Montant du bail commercial';
+COMMENT ON COLUMN m_economie.geo_sa_bal.dispo_vte IS 'Disponibilité à la vente (oui, non, oui occupé)';
+
+			 
+-- Function: m_economie.m_bal_insert()
+
+-- DROP FUNCTION m_economie.m_bal_insert();
+
+CREATE OR REPLACE FUNCTION m_economie.m_bal_insert()
+  RETURNS trigger AS
+$BODY$
+
+DECLARE v_idgeolf integer;
+
+BEGIN
+
+    v_idgeolf := (SELECT nextval('idgeo_seq'::regclass));
+
+    new.idgeobal = v_idgeolf;
+
+    -- insertion du numéro du site
+    new.idsite := (SELECT DISTINCT
+				an_sa_site.idsite 
+		  FROM 
+				m_economie.an_sa_site, r_objet.geo_objet_ope
+		  WHERE
+				geo_objet_ope.idsite=an_sa_site.idsite
+		  AND
+				st_intersects(geo_objet_ope.geom,new.geom) = true
+		  );
+     -- insertion du code insee
+     new.insee :=	(SELECT DISTINCT
+				geo_osm_commune.insee AS insee
+			FROM 
+				r_osm.geo_osm_commune
+			WHERE 
+				st_intersects(new.geom,r_osm.geo_osm_commune.geom) = true
+                        ); 
+
+    -- recherche du libellé de la commune
+    new.commune :=	(SELECT DISTINCT
+				geo_osm_commune.commune AS commune
+			FROM 
+				r_osm.geo_osm_commune
+			WHERE 
+				st_intersects(new.geom,r_osm.geo_osm_commune.geom) = true
+                        ); 
+     
+    return new ;
+END;
+
+
+
+
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION m_economie.m_bal_insert()
+  OWNER TO sig_create;
+
+
+
+
+-- Trigger: t_t1_bal_insert on m_economie.geo_sa_bal
+
+-- DROP TRIGGER t_t1_bal_insert ON m_economie.geo_sa_bal;
+
+CREATE TRIGGER t_t1_bal_insert
+  BEFORE INSERT
+  ON m_economie.geo_sa_bal
+  FOR EACH ROW
+  EXECUTE PROCEDURE m_economie.m_bal_insert();
+
+-- Trigger: t_t2_bal_insert_date_sai on m_economie.geo_sa_bal
+
+-- DROP TRIGGER t_t2_bal_insert_date_sai ON m_economie.geo_sa_bal;
+
+CREATE TRIGGER t_t2_bal_insert_date_sai
+  BEFORE INSERT
+  ON m_economie.geo_sa_bal
+  FOR EACH ROW
+  EXECUTE PROCEDURE public.r_timestamp_sai();
+
+				 
+-- Function: m_economie.m_bal_update()
+
+-- DROP FUNCTION m_economie.m_bal_update();
+
+CREATE OR REPLACE FUNCTION m_economie.m_bal_update()
+  RETURNS trigger AS
+$BODY$
+
+BEGIN
+
+    -- insertion du numéro du site
+    new.idsite := (SELECT DISTINCT
+				an_sa_site.idsite 
+		  FROM 
+				m_economie.an_sa_site, r_objet.geo_objet_ope
+		  WHERE
+				geo_objet_ope.idsite=an_sa_site.idsite
+		  AND
+				st_intersects(geo_objet_ope.geom,new.geom) = true
+		  );
+     -- insertion du code insee
+     new.insee :=	(SELECT DISTINCT
+				geo_osm_commune.insee AS insee
+			FROM 
+				r_osm.geo_osm_commune
+			WHERE 
+				st_intersects(new.geom,r_osm.geo_osm_commune.geom) = true
+                        ); 
+
+    -- recherche du libellé de la commune
+    new.commune :=	(SELECT DISTINCT
+				geo_osm_commune.commune AS commune
+			FROM 
+				r_osm.geo_osm_commune
+			WHERE 
+				st_intersects(new.geom,r_osm.geo_osm_commune.geom) = true
+                        ); 
+    return new ;
+END;
+
+
+
+
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION m_economie.m_bal_update()
+  OWNER TO sig_create;
+
+
+				 
+-- Trigger: t_t3_bal_update on m_economie.geo_sa_bal
+
+-- DROP TRIGGER t_t3_bal_update ON m_economie.geo_sa_bal;
+
+CREATE TRIGGER t_t3_bal_update
+  BEFORE UPDATE
+  ON m_economie.geo_sa_bal
+  FOR EACH ROW
+  EXECUTE PROCEDURE m_economie.m_bal_update();
+
+-- Trigger: t_t4_bal_update_date_maj on m_economie.geo_sa_bal
+
+-- DROP TRIGGER t_t4_bal_update_date_maj ON m_economie.geo_sa_bal;
+
+CREATE TRIGGER t_t4_bal_update_date_maj
+  BEFORE UPDATE
+  ON m_economie.geo_sa_bal
+  FOR EACH ROW
+  EXECUTE PROCEDURE public.r_timestamp_maj();
+
+-- Trigger: t_t5_suivi on m_economie.geo_sa_bal
+
+-- DROP TRIGGER t_t5_suivi ON m_economie.geo_sa_bal;
+
+CREATE TRIGGER t_t5_suivi
+  AFTER INSERT OR UPDATE OR DELETE
+  ON m_economie.geo_sa_bal
+  FOR EACH ROW
+  EXECUTE PROCEDURE m_economie.r_suivi_audit();
+
 
                    
 -- ####################################################################################################################################################
@@ -2155,7 +2827,43 @@ CREATE TRIGGER t_t1_suivi
   CONSTRAINT lt_sa_filiale_fkey FOREIGN KEY (filiale)
       REFERENCES m_economie.lt_sa_filiale (filiale) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION;
-                   
+
+CONSTRAINT an_sa_lot_tact_fkey FOREIGN KEY (l_tact)
+      REFERENCES m_economie.lt_sa_tact (l_tact) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+			 
+  CONSTRAINT an_sa_site_etat_fkey FOREIGN KEY (site_etat)
+      REFERENCES m_amenagement.lt_sa_etat (code) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT lt_sa_aidepb_fkey FOREIGN KEY (z_aide_pb)
+      REFERENCES m_economie.lt_sa_aidepb (z_aide_pb) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT lt_sa_dest_fkey FOREIGN KEY (dest)
+      REFERENCES m_economie.lt_sa_dest (dest) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT lt_sa_typo_fkey FOREIGN KEY (typo)
+      REFERENCES m_economie.lt_sa_typo (typo) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT lt_sa_voca_fkey FOREIGN KEY (site_voca)
+      REFERENCES m_economie.lt_sa_voca (site_voca) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+CONSTRAINT geo_sa_bal_srcgeom_fkey FOREIGN KEY (src_geom)
+      REFERENCES r_objet.lt_src_geom (code) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT lt_bal_ecomm_fkey FOREIGN KEY (etat_comm)
+      REFERENCES m_economie.lt_bal_ecomm (etat_comm) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT lt_bal_ncomm_fkey FOREIGN KEY (code_comm)
+      REFERENCES m_economie.lt_bal_ncomm (code_comm) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT lt_bal_source_fkey FOREIGN KEY (source_maj)
+      REFERENCES m_economie.lt_bal_source (source_maj) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT lt_bal_tlocal_fkey FOREIGN KEY (type_loc)
+      REFERENCES m_economie.lt_bal_tlocal (type_loc) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION;
+			 
 -- ####################################################################################################################################################
 -- ###                                                                                                                                              ###
 -- ###                                                                INDEX                                                           ###
@@ -2229,4 +2937,66 @@ CREATE INDEX idx_an_sa_etab_idsite
   USING btree
   (idsite COLLATE pg_catalog."default");
 
+-- Index: m_economie.idx_an_site_doc_media_id
 
+-- DROP INDEX m_economie.idx_an_site_doc_media_id;
+
+CREATE INDEX idx_an_site_doc_media_id
+  ON m_economie.an_site_doc_media
+  USING btree
+  (id COLLATE pg_catalog."default");
+			 
+
+-- Index: m_economie.geo_sa_bal_geom_idx
+
+-- DROP INDEX m_economie.geo_sa_bal_geom_idx;
+
+CREATE INDEX geo_sa_bal_geom_idx
+  ON m_economie.geo_sa_bal
+  USING gist
+  (geom);
+
+-- Index: m_economie.idx_geo_sa_bal_code_comm
+
+-- DROP INDEX m_economie.idx_geo_sa_bal_code_comm;
+
+CREATE INDEX idx_geo_sa_bal_code_comm
+  ON m_economie.geo_sa_bal
+  USING btree
+  (code_comm COLLATE pg_catalog."default");
+
+-- Index: m_economie.idx_geo_sa_bal_etat_comm
+
+-- DROP INDEX m_economie.idx_geo_sa_bal_etat_comm;
+
+CREATE INDEX idx_geo_sa_bal_etat_comm
+  ON m_economie.geo_sa_bal
+  USING btree
+  (etat_comm COLLATE pg_catalog."default");
+
+-- Index: m_economie.idx_geo_sa_bal_idsite
+
+-- DROP INDEX m_economie.idx_geo_sa_bal_idsite;
+
+CREATE INDEX idx_geo_sa_bal_idsite
+  ON m_economie.geo_sa_bal
+  USING btree
+  (idsite COLLATE pg_catalog."default");
+
+-- Index: m_economie.idx_geo_sa_bal_source_maj
+
+-- DROP INDEX m_economie.idx_geo_sa_bal_source_maj;
+
+CREATE INDEX idx_geo_sa_bal_source_maj
+  ON m_economie.geo_sa_bal
+  USING btree
+  (source_maj COLLATE pg_catalog."default");
+
+-- Index: m_economie.idx_geo_sa_bal_type_loc
+
+-- DROP INDEX m_economie.idx_geo_sa_bal_type_loc;
+
+CREATE INDEX idx_geo_sa_bal_type_loc
+  ON m_economie.geo_sa_bal
+  USING btree
+  (type_loc COLLATE pg_catalog."default");
