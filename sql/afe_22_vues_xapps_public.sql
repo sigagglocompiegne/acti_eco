@@ -7,4 +7,4 @@
 /* Auteur : Grégory Bodet */
 
 
--- pas de vues grand pubblic pour ce projet
+-- pas de vues grand public pour ce projet
