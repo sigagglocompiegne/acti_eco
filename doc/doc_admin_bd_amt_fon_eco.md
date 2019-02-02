@@ -12,7 +12,7 @@ Le contexte d'urbanisation répond à cette double particularité :
 problématiques de plusieurs métiers,
 - un même objet géographique "virtuel", la plupart du temps, participe à plusieurs métiers.
 
-De ce fait un objet géographique est partagé par plusieurs services et les attributs métiers propres à chacun sont gérés dans une classe indépendant. Des vues métiers sont ainsi réalisées reprenant la géométrie de l'objet partagé. Cette organisation permet de modifier un seul objet pour tout le monde et évite la multiplicité des objets.
+De ce fait un objet géographique est partagé par plusieurs services et les attributs métiers propres à chacun sont gérés dans une classe indépendante. Des vues métiers sont ainsi réalisées reprenant la géométrie de l'objet partagé. Cette organisation permet de modifier un seul objet pour tout le monde et évite la multiplicité des objets.
 
  
  * **résumé fonctionnel** :
