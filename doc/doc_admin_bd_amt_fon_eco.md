@@ -22,7 +22,7 @@ Pour rappel des grands principes :
 * le service information géographique assure le maintient du référentiel aménagement (procédure, site, lot à commercialiser, ...) et économique (établissements),
 * le service aménagement assure la mise à jour des informations métiers liées aux procédures et à la programmation des secteurs d'aménagement,
 * le service du développement économique peut créer, modifier ou supprimer les lots à vocation économique dans ces métiers de commercialisation de terrains pour les entreprises. Il assure la mise à jour de ces propres attributs de lots mais il maintient également à jour les informations liées aux entreprises,
-* le service foncier assureruant à lui la mise à jour des données d'acquisitions et de cessions de terrain. A cet effet il peut saisir les objets correspondant à ces activités.
+* le service foncier assure quant à lui la mise à jour des données d'acquisitions et de cessions de terrains. A cet effet il peut saisir les objets correspondant à ces activités.
 
 
 ## Schéma fonctionnel
