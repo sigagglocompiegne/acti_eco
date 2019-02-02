@@ -19,8 +19,10 @@ De ce fait un objet géographique est partagé par plusieurs services et les att
 
 Pour rappel des grands principes :
 
-
-* à rédiger
+* le service information géographique assure le maintient du référentiel aménagement (procédure, site, lot à commercialiser, ...) et économique (établissements),
+* le service aménagement assure la mise à jour des informations métiers liées aux procédures et à la programmation des secteurs d'aménagement,
+* le service du développement économique peut créer, modifier ou supprimer les lots à vocation économique dans ces métiers de commercilaisation de terrains pour les entreprises. Il assure la mise à jour de ces propres attributs de lots mais il maintient également à jour les informations liées aux entreprises,
+* le service foncier assureruant à lui la mise à jour des données d'acquisitions et de cessions de terrain. A cet effet il peut saisir les objets correspondant à ces activités.
 
 
 ## Schéma fonctionnel
