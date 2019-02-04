@@ -1455,8 +1455,8 @@ ALTER TABLE x_apps.xapps_geo_vmr_proc
   OWNER TO sig_create;
 
 COMMENT ON MATERIALIZED VIEW x_apps.xapps_geo_vmr_proc
-  IS 'Vue matérialisée pour l''intégration dans le traitement pour la remontée dans la fiche de renseignements d''urbanisme dans GEO
-(pas encore traitée et intégrée dans GEO)';
+  IS 'Vue matérialisée des procédures pour la cartographie et dans dans le traitement pour la remontée dans la fiche de renseignements d''urbanisme dans GEO.
+Vue rafraichie lors de la mise à jour des procédures';
 
 -- Index: x_apps.idx_xapps_geo_vmr_proc_idsite
 
