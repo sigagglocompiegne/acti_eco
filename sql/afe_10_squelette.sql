@@ -2051,6 +2051,36 @@ CREATE TRIGGER t_t4_geo_objet_ope_site
   ON r_objet.geo_objet_ope
   FOR EACH ROW
   EXECUTE PROCEDURE r_objet.ft_m_vm_site();
+			 
+-- Function: r_objet.ft_m_geo_vmr_proc()
+
+-- DROP FUNCTION r_objet.ft_m_geo_vmr_proc();
+
+CREATE OR REPLACE FUNCTION r_objet.ft_m_geo_vmr_proc()
+  RETURNS trigger AS
+$BODY$
+
+BEGIN
+
+    REFRESH MATERIALIZED VIEW x_apps.xapps_geo_vmr_proc;
+
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION r_objet.ft_m_geo_vmr_proc()
+  OWNER TO sig_create;
+		 
+
+-- Trigger: t_t5_xapps_geo_vmr_proc on r_objet.geo_objet_ope
+
+-- DROP TRIGGER t_t5_xapps_geo_vmr_proc ON r_objet.geo_objet_ope;
+
+CREATE TRIGGER t_t5_xapps_geo_vmr_proc
+  AFTER INSERT OR UPDATE OR DELETE
+  ON r_objet.geo_objet_ope
+  FOR EACH ROW
+  EXECUTE PROCEDURE r_objet.ft_m_geo_vmr_proc();
 
 -- ################################################# Classe des objets sites reconstitués ##################################
 
