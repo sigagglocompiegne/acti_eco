@@ -2063,7 +2063,7 @@ $BODY$
 BEGIN
 
     REFRESH MATERIALIZED VIEW x_apps.xapps_geo_vmr_proc;
-
+    return new;
 END
 $BODY$
   LANGUAGE plpgsql VOLATILE
