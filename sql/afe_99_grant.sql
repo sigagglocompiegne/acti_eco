@@ -680,6 +680,10 @@ GRANT EXECUTE ON FUNCTION r_objet.m_delete_proc() TO create_sig;
 GRANT EXECUTE ON FUNCTION r_objet.m_delete_proc() TO sig_create;
 GRANT EXECUTE ON FUNCTION r_objet.m_delete_proc() TO public;
 
+GRANT EXECUTE ON FUNCTION r_objet.ft_m_geo_vmr_proc() TO public;
+GRANT EXECUTE ON FUNCTION r_objet.ft_m_geo_vmr_proc() TO sig_create;
+GRANT EXECUTE ON FUNCTION r_objet.ft_m_geo_vmr_proc() TO create_sig;	
+
 GRANT EXECUTE ON FUNCTION r_objet.m_empesp_pu_update() TO create_sig;
 GRANT EXECUTE ON FUNCTION r_objet.m_empesp_pu_update() TO sig_create;
 GRANT EXECUTE ON FUNCTION r_objet.m_empesp_pu_update() TO public;
