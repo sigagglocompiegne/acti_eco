@@ -5072,7 +5072,7 @@ CONSTRAINT an_proced_consotype_fkey FOREIGN KEY (l_conso_type)
       REFERENCES m_urbanisme_reg.lt_proced (z_proced) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION,
   CONSTRAINT lt_destdomi_fkey FOREIGN KEY (dest)
-      REFERENCES m_urbanisme_doc_cnig2014.lt_destdomi (destdomi) MATCH SIMPLE
+      REFERENCES m_urbanisme_doc.lt_destdomi (destdomi) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION;		
 				  
   CONSTRAINT geo_amt_zae_scr_geom_fkey FOREIGN KEY (src_geom)
