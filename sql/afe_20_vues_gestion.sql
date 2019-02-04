@@ -2734,6 +2734,8 @@ ALTER FUNCTION r_objet.ft_m_insert_proc()
   OWNER TO sig_create;
 
 
+
+
 										     
 -- Trigger: t_t2_insert_proc on r_objet.geo_v_proc
 
