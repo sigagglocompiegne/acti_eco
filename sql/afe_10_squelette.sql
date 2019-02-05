@@ -2670,31 +2670,7 @@ COMMENT ON COLUMN m_economie.an_sa_site.l_cc_tel_mail IS 'Mail du contact du con
 COMMENT ON CONSTRAINT an_sa_site_pkey ON m_economie.an_sa_site IS 'Clé primaire de la table geo_sa_p_site';
 
 
--- Trigger: t_t1_insert_date_sai on m_economie.an_sa_site
-
--- DROP TRIGGER t_t1_insert_date_sai ON m_economie.an_sa_site;
-
-CREATE TRIGGER t_t1_insert_date_sai
-  BEFORE INSERT
-  ON m_economie.an_sa_site
-  FOR EACH ROW
-  EXECUTE PROCEDURE public.ft_r_timestamp_sai();
-
--- Trigger: t_t2_update_date_maj on m_economie.an_sa_site
-
--- DROP TRIGGER t_t2_update_date_maj ON m_economie.an_sa_site;
-
-CREATE TRIGGER t_t2_update_date_maj
-  BEFORE UPDATE
-  ON m_economie.an_sa_site
-  FOR EACH ROW
-  EXECUTE PROCEDURE public.ft_r_timestamp_maj();
-
--- Trigger: t_t3_suivi on m_economie.an_sa_site
-
--- DROP TRIGGER t_t3_suivi ON m_economie.an_sa_site;
-
-CREATE TRIGGER t_t3_suivi
+CREATE TRIGGER t_t1_suivi
   AFTER INSERT OR UPDATE OR DELETE
   ON m_economie.an_sa_site
   FOR EACH ROW
