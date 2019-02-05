@@ -1798,31 +1798,12 @@ COMMENT ON COLUMN r_objet.geo_objet_empesp_pu.geom IS 'Champ contenant la géom�
 COMMENT ON COLUMN r_objet.geo_objet_empesp_pu.date_sai IS 'Date de saisie de l''objet';
 COMMENT ON COLUMN r_objet.geo_objet_empesp_pu.date_maj IS 'Date de mise à jour de l''objet';
 
--- Trigger: t_t1_empesppu_insert_date_maj on r_objet.geo_objet_empesp_pu
 
--- DROP TRIGGER t_t1_empesppu_insert_date_maj ON r_objet.geo_objet_empesp_pu;
+-- Trigger: t_t1_empesppu_insert_surf on r_objet.geo_objet_empesp_pu
 
-CREATE TRIGGER t_t1_empesppu_insert_date_maj
-  BEFORE INSERT
-  ON r_objet.geo_objet_empesp_pu
-  FOR EACH ROW
-  EXECUTE PROCEDURE public.ft_r_timestamp_maj();
+-- DROP TRIGGER t_t1_empesppu_insert_surf ON r_objet.geo_objet_empesp_pu;
 
--- Trigger: t_t2_empesppu_insert_date_sai on r_objet.geo_objet_empesp_pu
-
--- DROP TRIGGER t_t2_empesppu_insert_date_sai ON r_objet.geo_objet_empesp_pu;
-
-CREATE TRIGGER t_t2_empesppu_insert_date_sai
-  BEFORE INSERT
-  ON r_objet.geo_objet_empesp_pu
-  FOR EACH ROW
-  EXECUTE PROCEDURE public.ft_r_timestamp_sai();
-
--- Trigger: t_t3_empesppu_insert_surf on r_objet.geo_objet_empesp_pu
-
--- DROP TRIGGER t_t3_empesppu_insert_surf ON r_objet.geo_objet_empesp_pu;
-
-CREATE TRIGGER t_t3_empesppu_insert_surf
+CREATE TRIGGER t_t1_empesppu_insert_surf
   BEFORE INSERT
   ON r_objet.geo_objet_empesp_pu
   FOR EACH ROW
