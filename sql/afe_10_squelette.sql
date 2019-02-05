@@ -4612,7 +4612,7 @@ ALTER FUNCTION m_foncier.ft_m_ces_acq_idsite()
 -- DROP TRIGGER t_t1_idsite ON m_foncier.geo_fon_acqui;
 
 CREATE TRIGGER t_t1_idsite
-  BEFORE INSERT
+  BEFORE INSERT OR UPDATE
   ON m_foncier.geo_fon_acqui
   FOR EACH ROW
   EXECUTE PROCEDURE m_foncier.ft_m_ces_acq_idsite();
