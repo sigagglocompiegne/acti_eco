@@ -3368,25 +3368,20 @@ CREATE TRIGGER t_t2_pole_insert_date_sai
   FOR EACH ROW
   EXECUTE PROCEDURE public.ft_r_timestamp_sai();
 
--- Trigger: t_t3_pole_modif_att on m_economie.geo_sa_pole
+-- Function: public.ft_r_timestamp_maj()
 
--- DROP TRIGGER t_t3_pole_modif_att ON m_economie.geo_sa_pole;
+-- DROP FUNCTION public.ft_r_timestamp_maj();
 
-CREATE TRIGGER t_t3_pole_modif_att
-  BEFORE UPDATE OF op_sai, org_sai, dest, nom_pole
-  ON m_economie.geo_sa_pole
-  FOR EACH ROW
-  EXECUTE PROCEDURE public.ft_r_timestamp_maj();
-
--- Trigger: t_t4_pole_modif_geom on m_economie.geo_sa_pole
-
--- DROP TRIGGER t_t4_pole_modif_geom ON m_economie.geo_sa_pole;
-
-CREATE TRIGGER t_t4_pole_modif_geom
-  BEFORE UPDATE OF geom
-  ON m_economie.geo_sa_pole
-  FOR EACH ROW
-  EXECUTE PROCEDURE public.ft_r_timestamp_maj();
+CREATE OR REPLACE FUNCTION public.ft_r_timestamp_maj()
+  RETURNS trigger AS
+$BODY$BEGIN
+new.date_maj=current_timestamp;
+return new;
+END$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION public.ft_r_timestamp_maj()
+  OWNER TO sig_create;
 
 -- ################################################# Classe des objets des sites en zone urbaine (données externes GéoPicardie) ############################
 				  
