@@ -4078,7 +4078,8 @@ UPDATE m_economie.an_sa_site SET
     l_cc_tel_tel = new.l_cc_tel_tel,
     l_cc_tel_telp = new.l_cc_tel_telp,
     l_cc_tel_mail = new.l_cc_tel_mail,
-	zae = new.zae
+    zae = new.zae,
+    date_maj = now()
   WHERE an_sa_site.idsite = new.idsite;
 
      return new;
