@@ -1339,7 +1339,7 @@ ALTER TABLE s_sirene.lt_vetab
   OWNER TO sig_create;
 
 COMMENT ON TABLE s_sirene.lt_vetab
-  IS 'Liste de valeurs du champ filiale (modèle GéoPic)';
+  IS 'LListe de valeurs de la présence active ou non de l''établissement dans SIRENE';
 
 INSERT INTO s_sirene.lt_vetab(
             l_vetab, vetab_lib)
@@ -1483,7 +1483,7 @@ ALTER TABLE m_urbanisme_reg.lt_conso_type
   OWNER TO sig_create;
 
 COMMENT ON TABLE m_urbanisme_reg.lt_conso_type
-  IS 'Liste de valeurs de la procédure d''aménagement de la zone (table site)';
+  IS 'Liste de valeurs des types de consommations foncières';
 COMMENT ON COLUMN m_urbanisme_reg.lt_conso_type.l_conso_type IS 'Code du type de consommation de surface';
 COMMENT ON COLUMN m_urbanisme_reg.lt_conso_type.l_conso_type_lib IS 'Libellé du type de consommation de surface';
 
@@ -1516,7 +1516,7 @@ ALTER TABLE m_urbanisme_reg.lt_ope_phase
   OWNER TO sig_create;
 
 COMMENT ON TABLE m_urbanisme_reg.lt_ope_phase
-  IS 'Liste de valeurs de la procédure d''aménagement de la zone (table site)';
+  IS 'Liste de valeurs des phases opérationnelles';
 COMMENT ON COLUMN m_urbanisme_reg.lt_ope_phase.l_ope_phase IS 'Code de la phase de l''opération';
 COMMENT ON COLUMN m_urbanisme_reg.lt_ope_phase.l_ope_phase_lib IS 'Libellé de la phase de l''opération';
 
@@ -1551,7 +1551,7 @@ ALTER TABLE m_urbanisme_reg.lt_pr_fon_typ
   OWNER TO sig_create;
 
 COMMENT ON TABLE m_urbanisme_reg.lt_pr_fon_typ
-  IS 'Liste de valeurs de la procédure d''aménagement de la zone (table site)';
+  IS 'Liste de valeurs des procédures foncières';
 COMMENT ON COLUMN m_urbanisme_reg.lt_pr_fon_typ.l_pr_fon_type IS 'Code de la procédure foncière';
 COMMENT ON COLUMN m_urbanisme_reg.lt_pr_fon_typ.l_pr_fon_type_lib IS 'Libellé de la procédure foncière';
 
@@ -1585,7 +1585,7 @@ ALTER TABLE m_urbanisme_reg.lt_proced
   OWNER TO sig_create;
 
 COMMENT ON TABLE m_urbanisme_reg.lt_proced
-  IS 'Liste de valeurs de la procédure d''aménagement de la zone (table site)';
+  IS 'Liste de valeurs des types de procédure';
 COMMENT ON COLUMN m_urbanisme_reg.lt_proced.z_proced IS 'Code de la procédure';
 COMMENT ON COLUMN m_urbanisme_reg.lt_proced.proced_lib IS 'Libellé de la procédure';
 
