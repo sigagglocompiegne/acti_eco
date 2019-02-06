@@ -2820,7 +2820,7 @@ CREATE TRIGGER t_t3_update_proc
 
 -- ########################################################### SCHEMA m_foncier #########################
 
--- ########################################################### Vue de gestion des cessions #########################
+-- ########################################################### Vue de gestion des cessions (attributs) #########################
 
 -- View: m_foncier.geo_v_cession
 
@@ -2894,7 +2894,7 @@ ALTER TABLE m_foncier.geo_v_cession
   OWNER TO sig_create;
 
 COMMENT ON VIEW m_foncier.geo_v_cession
-  IS 'Vue éditable des cessions de lots';
+  IS 'Vue éditable des cessions de lots (attributs uniquement)';
 
 -- Function: m_foncier.ft_m_cess_nlot()
 
@@ -3017,7 +3017,11 @@ CREATE TRIGGER t_t1_cess_nlot
   FOR EACH ROW
   EXECUTE PROCEDURE m_foncier.ft_m_cess_nlot();
 
-										     
+-- ########################################################### Vue de gestion des cessions (saisies de cession hors opérations d'aménagement) #########################
+				  
+(en cours de développement)
+				  
+				  
 -- ########################################################### SCHEMA m_economie #########################
 
 -- ########################################################### Vue exploitant les mises à jour de SIRENE (ici établissement créé lors de la dernière mise à jour) #########################
