@@ -5924,7 +5924,7 @@ CREATE OR REPLACE VIEW m_amenagement.geo_v_site_mixte AS
     o.geom
    FROM m_amenagement.an_amt_site_mixte sa,
     r_objet.geo_objet_site o
-  WHERE sa.site_voca::text <> '00'::text AND sa.idsite::text = o.idsite::text;
+  WHERE sa.idsite::text = o.idsite::text;
 
 ALTER TABLE m_amenagement.geo_v_site_mixte
   OWNER TO sig_create;
