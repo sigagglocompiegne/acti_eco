@@ -2314,7 +2314,9 @@ BEGIN
 								st_intersects(geo_objet_ope.geom,geo_sa_pole.geom) = true
 								
 							), -- recherche auto de l'IDPOLE
-							null,null,null,
+							null,
+							null,
+							null,
 							null,
 							null,
 							null,
@@ -2362,8 +2364,28 @@ BEGIN
 							null,
 							null,
 							null,
+							null,
+							null,
 							now(),
-							now();
+							now(),
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							false
+							;
     
 
     end if;
@@ -2568,7 +2590,9 @@ BEGIN
 								st_intersects(geo_objet_ope.geom,geo_sa_pole.geom) = true
 								
 							), -- recherche auto de l'IDPOLE
-							null,null,null,
+							null,
+							null,
+							null,
 							null,
 							null,
 							null,
@@ -2619,7 +2643,24 @@ BEGIN
 							null,
 							null,
 							now(),
-							now()						
+							now(),
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							false
 							;
 
 
