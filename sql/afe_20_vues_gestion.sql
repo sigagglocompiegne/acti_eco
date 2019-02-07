@@ -3758,7 +3758,7 @@ BEGIN
 						(SELECT insee FROM r_osm.geo_osm_commune WHERE st_intersects(st_pointonsurface(new.geom),geom)),
 						null,
 						'00',
-						new.l_nom,
+						new.l_lnom,
 						null,
 						null,
 						null,
