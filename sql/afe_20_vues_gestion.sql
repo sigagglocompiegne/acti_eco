@@ -3004,11 +3004,6 @@ BEGIN
 	WHERE an_cession.idces=new.idces;
 
 
-        -- automatisation de l'état de commercialisation pour les lots (uniquement la cas terrain cédé mis à jour par le service foncier)
-	IF new.l_etat ='40' THEN
-	update m_amenagement.an_amt_lot_stade set l_comm2='20',stade_amng='40',l_amng2 = '10' where idgeolf IN (select idgeolf from m_foncier.lk_cession_lot where idces=new.idces);
-	END IF;
-
         -- automatisation de l'état de commercialisation pour les lots
 	IF new.l_etat ='01' THEN
 	update m_amenagement.an_amt_lot_stade set l_comm2='11',stade_amng='40',l_amng2 = '10' where idgeolf IN (select idgeolf from m_foncier.lk_cession_lot where idces=new.idces);
