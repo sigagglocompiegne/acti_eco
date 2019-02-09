@@ -2863,11 +2863,11 @@ CREATE TRIGGER t_t3_update_proc
 
 -- ########################################################### Vue de gestion des cessions (attributs) #########################
 
--- View: m_foncier.geo_v_cession
 
+-- View: m_foncier.geo_v_cession
 -- DROP VIEW m_foncier.geo_v_cession;
 
-CREATE OR REPLACE VIEW m_foncier.geo_v_cession AS 
+ CREATE OR REPLACE VIEW m_foncier.geo_v_cession AS
  SELECT o.idgeolf,
     c.idces,
     c.idces AS idces_lk,
@@ -2875,6 +2875,25 @@ CREATE OR REPLACE VIEW m_foncier.geo_v_cession AS
     c.l_rel,
     c.l_compo,
     c.l_etat,
+    o.l_voca AS voca_ces,
+    o.l_nom,
+    -- insertion d'attribut temporaire pour la ventilation des informations de lots à l'enregistrement diune cession saisie dans GEO
+    ''::character varying AS lot_l_nom,
+    NULL::integer AS lhab_nb_log,
+    NULL::integer AS lhab_nb_logind,
+    NULL::integer AS lhab_nb_logindgr,
+    NULL::integer AS lhab_nb_logcol,
+    NULL::integer AS lhab_nb_logaide,
+    NULL::character varying AS llot_observ,
+    NULL::integer AS lhab_nb_log_r,
+    NULL::integer AS lhab_nb_logind_r,
+    NULL::integer AS lhab_nb_logindgr_r,
+    NULL::integer AS lhab_nb_logcol_r,
+    NULL::integer AS lhab_nb_logaide_r,
+    NULL::integer AS lhab_nb_logaide_loc_r,
+    NULL::integer AS lhab_nb_logaide_acc_r,
+    '00'::character varying AS llot_tact,
+    -- attribut temporairement reconstitué pour gérer l'affichage de l'état de cession au niveau de la cartographie de GEO
         CASE
             WHEN c.l_etat::text = '10'::text OR c.l_etat::text = '20'::text OR c.l_etat::text = '30'::text OR c.l_etat::text = '50'::text THEN 'En cours de cession'::text
             WHEN c.l_etat::text = '40'::text THEN 'Cédé'::text
@@ -2890,7 +2909,6 @@ CREATE OR REPLACE VIEW m_foncier.geo_v_cession AS
     c.insee,
     c.l_date_i,
     c.l_voca,
-    o.l_nom,
     c.l_acque,
     c.l_parcelle_i,
     c.l_parcelle_f,
@@ -2923,9 +2941,9 @@ CREATE OR REPLACE VIEW m_foncier.geo_v_cession AS
     c.l_type_c,
     c.l_observ,
     c.d_maj,
-    o.l_voca AS voca_ces,
     c.idsite,
     o.geom
+
    FROM m_foncier.an_cession c,
     m_foncier.lk_cession_lot lc,
     r_objet.geo_objet_fon_lot o
@@ -2933,129 +2951,72 @@ CREATE OR REPLACE VIEW m_foncier.geo_v_cession AS
 
 ALTER TABLE m_foncier.geo_v_cession
   OWNER TO sig_create;
-
 COMMENT ON VIEW m_foncier.geo_v_cession
-  IS 'Vue éditable des cessions de lots (attributs uniquement)';
+  IS 'Vue éditable des cessions de lots et possibilité d''ajout d''un lot par le service foncier';
 
--- Function: m_foncier.ft_m_cess_nlot()
+				  
+-- Function: m_foncier.ft_m_cess_nlot_delete()
+-- DROP FUNCTION m_foncier.ft_m_cess_nlot_delete();
 
--- DROP FUNCTION m_foncier.ft_m_cess_nlot();
-
-CREATE OR REPLACE FUNCTION m_foncier.ft_m_cess_nlot()
+CREATE OR REPLACE FUNCTION m_foncier.ft_m_cess_nlot_delete()
   RETURNS trigger AS
 $BODY$
-
-
 BEGIN
-/* A REVOIR */
 
-     -- vérification du changement de la référence du dossier et qu'il s'agisse d'un dossier comportant au moins 2 lots
-     if (old.idces <> new.idces_lk) and old.l_rel='10' and new.l_rel='20' then
-	UPDATE m_foncier.lk_cession_lot SET idces=new.idces_lk WHERE idgeolf=new.idgeolf;
-	UPDATE m_foncier.an_cession SET l_rel=new.l_rel WHERE idces=new.idces_lk;
-	DELETE FROM m_foncier.an_cession WHERE idces=old.idces;
-     end if;	
+ -- pré-test pour vérifier si le lot n'est pas dans une zone d'aménagement, si non renvoie une exception et ne fait rien (dans GEO il faut créer un message pour l'utilisateur)
+IF (SELECT count(*) FROM r_objet.geo_objet_fon_lot o WHERE o.op_sai <> 'Service foncier' AND idgeolf = old.idgeolf) >= 1 THEN
+RAISE EXCEPTION 'La cession à supprimer est dans une opération d''aménagements. Vous pouvez seulement supprimer un lot hors de ces zones. Merci de vous rapprochez du service Information Géographique pour la suppression de votre cession.';
+ELSE
 
-     -- mise à jour du code du nom de lot dans la table objet
-
-     UPDATE r_objet.geo_objet_fon_lot SET l_nom = new.l_nom WHERE idgeolf = new.idgeolf;
-
-
-     -- insertion des champs à mettre à jour 
-     UPDATE m_foncier.an_cession SET
-        idces_d = new.idces_d,
-	l_rel = new.l_rel,
-	l_compo = new.l_compo,
-	l_etat = new.l_etat,
-	l_orga = new.l_orga,
-	d_delib_1 = new.d_delib_1,
-	d_delib_2 = new.d_delib_2,
-	d_delib_3 = new.d_delib_3,
-	insee = new.insee,
-	l_date_i = new.l_date_i,
-	l_voca = new.l_voca,
-	l_acque = CASE WHEN new.l_acque IS NULL or new.l_acque = '' THEN null ELSE new.l_acque END,
-	l_parcelle_i = new.l_parcelle_i,
-	l_parcelle_f = new.l_parcelle_f,
-	d_esti_1 = new.d_esti_1,
-	d_esti_2 = new.d_esti_2,
-	d_esti_3 = new.d_esti_3,
-	l_esti_ht = new.l_esti_ht,
-	l_surf = new.l_surf,
-	l_condi = new.l_condi,
-	l_type = new.l_type,
-	d_prome = new.d_prome,
-	d_acte = new.d_acte,
-	l_notaire = new.l_notaire,
-	l_notaire_a = new.l_notaire_a,
-	l_pvente_ht = new.l_pvente_ht,
-	l_pvente_ttc = new.l_pvente_ttc,
-	l_mfrais_ttc = new.l_mfrais_ttc,
-	l_mfrais_g_ttc = new.l_mfrais_g_ttc,
-	l_mfrais_n_ttc = new.l_mfrais_n_ttc,
-	l_mfrais_a_ttc = new.l_mfrais_a_ttc,
-	l_pvente_s = new.l_pvente_s,
-	l_type_a = new.l_type_a,
-	l_type_b = new.l_type_b,
-	l_type_c = new.l_type_c,
-	l_observ = new.l_observ,
-	d_maj = now(),
-	idsite=new.idsite
-	WHERE an_cession.idces=new.idces;
-
-
-        -- automatisation de l'état de commercialisation pour les lots
-	IF new.l_etat ='01' THEN
-	update m_amenagement.an_amt_lot_stade set l_comm2='11',stade_amng='40',l_amng2 = '10' where idgeolf IN (select idgeolf from m_foncier.lk_cession_lot where idces=new.idces);
-	END IF;
-	IF new.l_etat ='10' THEN
-	update m_amenagement.an_amt_lot_stade set l_comm2='32',stade_amng='40',l_amng2 = '10' where idgeolf IN  (select idgeolf from m_foncier.lk_cession_lot where idces=new.idces);
-	END IF;
-	IF (new.l_etat ='20' or new.l_etat ='30') THEN
-	update m_amenagement.an_amt_lot_stade set l_comm2='31',stade_amng='40',l_amng2 = '10' where idgeolf IN  (select idgeolf from m_foncier.lk_cession_lot where idces=new.idces);
-	END IF;
-	IF new.l_etat ='40'  THEN
-	update m_amenagement.an_amt_lot_stade set l_comm2='20',stade_amng='40',l_amng2 = '10' where idgeolf IN  (select idgeolf from m_foncier.lk_cession_lot where idces=new.idces);
-	END IF;
-	IF new.l_etat ='50'  THEN
-	update m_amenagement.an_amt_lot_stade set l_comm2='00' where idgeolf IN  (select idgeolf from m_foncier.lk_cession_lot where idces=new.idces);
-	END IF;
-	IF new.l_etat ='60'  THEN
-	update m_amenagement.an_amt_lot_stade set l_comm2='00',stade_amng='30',l_amng2 = '10' where idgeolf IN  (select idgeolf from m_foncier.lk_cession_lot where idces=new.idces);
-	END IF;
-	IF new.l_etat ='99'  THEN
-	update m_amenagement.an_amt_lot_stade set l_comm2='99',stade_amng='00',l_amng2 = '00' where idgeolf IN  (select idgeolf from m_foncier.lk_cession_lot where idces=new.idces);
-	END IF;
-	IF new.l_etat ='00' THEN
-	update m_amenagement.an_amt_lot_stade set l_comm2='00',stade_amng='00',l_amng2 = '00' where idgeolf IN  (select idgeolf from m_foncier.lk_cession_lot where idces=new.idces);
-	END IF;
-	
+    DELETE FROM m_foncier.an_cession WHERE idces=(SELECT lf.idces FROM m_foncier.an_cession f, m_foncier.lk_cession_lot lf WHERE f.idces=lf.idces AND lf.idgeolf=old.idgeolf);
+    DELETE FROM m_foncier.lk_cession_lot WHERE idgeolf=old.idgeolf;
+    DELETE FROM m_amenagement.an_amt_lot_stade WHERE idgeolf=old.idgeolf;
+    DELETE FROM m_amenagement.an_amt_lot_hab WHERE idgeolf=old.idgeolf;
+    DELETE FROM m_amenagement.an_amt_lot_equ WHERE idgeolf=old.idgeolf;
+    DELETE FROM m_amenagement.an_amt_lot_mixte WHERE idgeolf=old.idgeolf;
+    DELETE FROM m_amenagement.an_amt_lot_divers WHERE idgeolf=old.idgeolf;
+    DELETE FROM m_economie.an_sa_lot WHERE idgeolf=old.idgeolf;
+    DELETE FROM r_objet.geo_objet_fon_lot WHERE idgeolf=old.idgeolf;
+END IF;
      return new ;
-
 END;
-
 $BODY$
   LANGUAGE plpgsql VOLATILE
   COST 100;
-ALTER FUNCTION m_foncier.ft_m_cess_nlot()
+ALTER FUNCTION m_foncier.ft_m_cess_nlot_delete()
   OWNER TO sig_create;
 
-COMMENT ON FUNCTION m_foncier.ft_m_cess_nlot() IS 'Fonction gérant la mise à jour des données des cessions foncières et la gestion des stades d''aménagement et de commercilaisation des lots en cas de cession vendu';
-  
+COMMENT ON FUNCTION m_foncier.ft_m_cess_nlot_delete() IS 'Fonction gérant la suppression des cessions (lots) uniquement dans le tissu (hors zone d''aménagement)';
 				  
--- Trigger: t_t1_cess_nlot on m_foncier.geo_v_cession
+-- Trigger: t_t1_cess_nlot_delete on m_foncier.geo_v_cession
+-- DROP TRIGGER t_t1_cess_nlot_delete ON m_foncier.geo_v_cession;
 
--- DROP TRIGGER t_t1_cess_nlot ON m_foncier.geo_v_cession;
-
-CREATE TRIGGER t_t1_cess_nlot
-  INSTEAD OF UPDATE
+CREATE TRIGGER t_t1_cess_nlot_delete
+  INSTEAD OF DELETE
   ON m_foncier.geo_v_cession
   FOR EACH ROW
-  EXECUTE PROCEDURE m_foncier.ft_m_cess_nlot();
+  EXECUTE PROCEDURE m_foncier.ft_m_cess_nlot_delete();
 
--- ########################################################### Vue de gestion des cessions (saisies de cession hors opérations d'aménagement) #########################
-				  
-(en cours de développement)
+
+-- Trigger: t_t2_cess_nlot on m_foncier.geo_v_cession
+-- DROP TRIGGER t_t2_cess_nlot ON m_foncier.geo_v_cession;
+
+CREATE TRIGGER t_t2_cess_nlot
+  INSTEAD OF INSERT
+  ON m_foncier.geo_v_cession
+  FOR EACH ROW
+  EXECUTE PROCEDURE m_foncier.ft_m_cess_nlot_insert();
+
+
+-- Trigger: t_t3_cess_nlot on m_foncier.geo_v_cession
+-- DROP TRIGGER t_t3_cess_nlot ON m_foncier.geo_v_cession;
+
+CREATE TRIGGER t_t3_cess_nlot
+  INSTEAD OF UPDATE
+   ON m_foncier.geo_v_cession
+  FOR EACH ROW
+  EXECUTE PROCEDURE m_foncier.ft_m_cess_nlot_update();				  
+
 				  
 				  
 -- ########################################################### SCHEMA m_economie #########################
