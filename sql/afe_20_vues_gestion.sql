@@ -2997,7 +2997,705 @@ CREATE TRIGGER t_t1_cess_nlot_delete
   FOR EACH ROW
   EXECUTE PROCEDURE m_foncier.ft_m_cess_nlot_delete();
 
+-- Function: m_foncier.ft_m_cess_nlot_insert()
 
+-- DROP FUNCTION m_foncier.ft_m_cess_nlot_insert();
+
+CREATE OR REPLACE FUNCTION m_foncier.ft_m_cess_nlot_insert()
+  RETURNS trigger AS
+$BODY$
+
+-- déclaration de variable pré-calculée avant intégration dans la base ou servant de tests de condition
+DECLARE v_l_comm2 character varying;
+DECLARE v_stade_amng character varying;
+DECLARE v_l_amng2 character varying;
+DECLARE v_idgeolf integer;
+DECLARE v_idces integer;
+DECLARE lot_surf integer;
+
+
+BEGIN
+
+-- récupération d'un identifiant d'objet
+v_idgeolf := (SELECT nextval('idgeo_seq'::regclass));
+
+-- récupération d'un nidentifiant cession
+v_idces := (SELECT nextval('m_foncier.ces_seq'::regclass));
+
+-- calcul de la surface du lot
+lot_surf:=round(cast(st_area(new.geom) as numeric),0);
+
+-- gestion des attributs intégrés dans la table m_amenagement.an_amt_lot_stade en fonction de l'état du dossier de cessions
+
+        -- automatisation de l'état de commercialisation pour les lots (uniquement la cas terrain cédé mis à jour par le service foncier)
+	IF new.l_etat ='40' THEN
+	v_l_comm2 :='20';
+	v_stade_amng :='40';
+	v_l_amng2 := '10';
+	END IF;
+
+        -- automatisation de l'état de commercialisation pour les lots
+	IF new.l_etat ='01' THEN
+	v_l_comm2 :='11';
+	v_stade_amng :='40';
+	v_l_amng2 := '10';
+	END IF;
+
+	IF new.l_etat ='10' THEN
+	v_l_comm2 :='32';
+	v_stade_amng :='40';
+	v_l_amng2 := '10';
+	END IF;
+	
+	IF (new.l_etat ='20' or new.l_etat ='30') THEN
+	v_l_comm2 :='31';
+	v_stade_amng :='40';
+	v_l_amng2 := '10';
+	END IF;
+	
+	IF new.l_etat ='40'  THEN
+	v_l_comm2 :='20';
+	v_stade_amng :='40';
+	v_l_amng2 := '10';
+	END IF;
+	
+	IF new.l_etat ='50'  THEN
+	v_l_comm2 :='00';
+	END IF;
+	
+	IF new.l_etat ='60'  THEN
+	v_l_comm2 :='00';
+	v_stade_amng :='30';
+	v_l_amng2 := '10';
+
+	END IF;
+	IF new.l_etat ='99'  THEN
+	v_l_comm2 :='99';
+	v_stade_amng :='00';
+	v_l_amng2 := '00';
+	END IF;
+	
+	IF new.l_etat ='00' THEN
+	v_l_comm2 :='00';
+	v_stade_amng :='00';
+	v_l_amng2 := '00';
+	END IF;
+
+
+
+-- pré-test pour vérifier si le lot est bien sur l'ARC et pas sur un autre lot, si non renvoie une exception et ne fait rien (dans GEO il faut créer un message pour l'utilisateur)
+
+IF ST_Disjoint(new.geom,(SELECT c.geom FROM r_osm.geo_vm_osm_contour_arc c)) = true OR (SELECT count(*) FROM r_objet.geo_objet_fon_lot o WHERE st_intersects(st_buffer(new.geom,-1),o.geom) AND idgeolf <> v_idgeolf ) >= 1  THEN
+
+RAISE EXCEPTION 'La cession saisie est dans une opération d''aménagements. Vous pouvez seulement saisir un lot hors de ces zones. Merci de vous rapprochez du service Information Géographique pour la saisie de votre cession.';
+
+
+ELSE
+-- insertion des informations dans les tables correspondants selon la vocation saisie
+        -- si la vocation est non renseignée
+	IF new.voca_ces = '00' or new.voca_ces = '' or new.voca_ces is null THEN
+	
+
+	RAISE EXCEPTION 'La vocation ne peut pas être non renseignée ici.'; --(générer un message pour GEO afficher dans la fiche d'information
+
+
+	END IF;
+
+	-- si la vocation est un équipement public, insertion dans geo_objet_fon_lot, an_amt_lot_stade,an_amt_lot_equ, lk_cession_lot et an_cession
+	IF new.voca_ces = '10' THEN
+                -- insertion dans la table objet
+		INSERT INTO r_objet.geo_objet_fon_lot SELECT v_idgeolf,'Service foncier','11',null,'10',new.geom,null,null,new.l_nom;
+                -- insertion dans la table des stades d'aménagement et de commercialisation
+	        INSERT INTO m_amenagement.an_amt_lot_stade SELECT v_idgeolf, (SELECT DISTINCT idsite FROM r_objet.geo_objet_ope WHERE st_intersects(geo_objet_ope.geom,ST_PointOnSurface(new.geom)) = true), v_stade_amng, v_l_amng2, null, v_l_comm2, null,'00';
+                -- insertion dans la table des lots thématiques
+                INSERT INTO m_amenagement.an_amt_lot_equ SELECT v_idgeolf,(SELECT DISTINCT idsite FROM r_objet.geo_objet_ope WHERE st_intersects(geo_objet_ope.geom,ST_PointOnSurface(new.geom)) = true),
+							'Service Foncier',
+							'ARC',
+							new.lot_l_nom,
+							lot_surf,
+							now(),
+							null,
+							null,
+							CASE WHEN length(cast (lot_surf as character varying)) >= 1 and length(cast (lot_surf as character varying)) <= 3 THEN lot_surf || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 4 THEN replace(to_char(lot_surf,'FM9G999'),',',' ') || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 5 THEN replace(to_char(lot_surf,'FM99G999'),',',' ') || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 6 THEN replace(to_char(lot_surf,'FM999G999'),',',' ') || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 7 THEN replace(to_char(lot_surf,'FM9G999G999'),',',' ') || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 8 THEN replace(to_char(lot_surf,'FM99G999G999'),',',' ') || 'm²'
+								   END
+							;
+                -- insertion dans la table de relation lot/cession
+		INSERT INTO m_foncier.lk_cession_lot SELECT v_idgeolf, v_idces;	
+                -- insertion dans la table des attributs de cession
+		INSERT INTO m_foncier.an_cession VALUES (
+						v_idces, -- idces
+						'10',
+						false, -- relation
+						new.l_etat,
+						new.l_orga,
+						new.d_delib_1,
+						new.d_delib_2,
+						new.d_delib_3,
+						(SELECT insee FROM r_osm.geo_osm_commune WHERE st_intersects(st_pointonsurface(new.geom),geom)),
+						new.l_date_i,
+						new.l_voca,
+						new.l_acque,
+						new.l_parcelle_i,
+						new.l_parcelle_f,
+						new.d_esti_1,
+						new.d_esti_2,
+						new.d_esti_3,
+						new.l_esti_ht,
+						new.l_surf,
+						new.l_condi,
+						new.l_type,
+						new.d_prome,
+						new.d_acte,
+						new.l_notaire,
+						new.l_notaire_a,
+						new.l_pvente_ht,
+						new.l_pvente_ttc,
+						new.l_frais_a,
+						new.l_frais_b,
+						new.l_frais_c,
+						new.l_frais_d,
+						new.l_frais_e,
+						new.l_mfrais_ht,
+						new.l_mfrais_ttc,
+						new.l_pvente_s,
+						new.l_type_a,
+						new.l_type_b,
+						new.l_type_c,
+						new.l_observ,
+						now(),
+						new.l_mfrais_g_ttc,
+						new.l_mfrais_n_ttc,
+						new.l_mfrais_a_ttc,
+						(SELECT DISTINCT
+								idsite 
+							FROM 
+								r_objet.geo_objet_ope
+							WHERE
+								st_intersects(geo_objet_ope.geom,new.geom) = true
+								
+							),
+						null
+						);
+	END IF;
+
+	-- si la vocation est économique, insertion dans geo_objet_fon_lot, an_amt_lot_stade,an_sa_lot (m_economie), lk_cession_lot  et an_cession
+	IF new.voca_ces = '20' THEN
+                -- insertion dans la table objet
+		INSERT INTO r_objet.geo_objet_fon_lot SELECT v_idgeolf,'Service foncier','11',null,'20',new.geom,null,null,new.l_nom;
+                -- insertion dans la table des stades d'aménagement et de commercialisation
+	        INSERT INTO m_amenagement.an_amt_lot_stade SELECT v_idgeolf, (SELECT DISTINCT idsite FROM r_objet.geo_objet_ope WHERE st_intersects(geo_objet_ope.geom,ST_PointOnSurface(new.geom)) = true), v_stade_amng, v_l_amng2, null, v_l_comm2, null,'00';
+		-- insertion dans la table des lots thématiques
+		INSERT INTO m_economie.an_sa_lot SELECT v_idgeolf,
+						 
+						 (
+							SELECT DISTINCT
+								idsite 
+							FROM 
+								r_objet.geo_objet_ope
+							WHERE
+								st_intersects(geo_objet_ope.geom,ST_PointOnSurface(new.geom)) = true
+								
+						  ) , -- recherche idsite
+
+						  lot_surf,
+						
+								   CASE WHEN length(cast (lot_surf as character varying)) >= 1 and length(cast (lot_surf as character varying)) <= 3 THEN lot_surf || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 4 THEN replace(to_char(lot_surf,'FM9G999'),',',' ') || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 5 THEN replace(to_char(lot_surf,'FM99G999'),',',' ') || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 6 THEN replace(to_char(lot_surf,'FM999G999'),',',' ') || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 7 THEN replace(to_char(lot_surf,'FM9G999G999'),',',' ') || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 8 THEN replace(to_char(lot_surf,'FM99G999G999'),',',' ') || 'm²'
+								   END,
+						  null,
+						  'Service foncier',
+						  'ARC',
+						  new.llot_tact,
+						  null,
+						  null,
+						  new.l_acque,
+						  null,
+						  null,
+						  null,
+						  null,
+						  false,
+						  null,
+						  new.llot_observ,
+						  now(),
+						  now(),
+						  null,
+						  null,
+						  null,
+						  null,
+						  null,
+						  null,
+						  null,
+						  null,
+						  null,
+						  null,
+						  null,
+						  null,
+						  null,
+						  (select string_agg(insee, ', ') from r_osm.geo_osm_commune where st_intersects(st_buffer(new.geom,-1),geom)),
+						  (select string_agg(commune, ', ') from r_osm.geo_osm_commune where st_intersects(st_buffer(new.geom,-1),geom))
+						  ;
+		-- insertion dans la table de relation lot/cession
+		INSERT INTO m_foncier.lk_cession_lot SELECT v_idgeolf, v_idces;	
+                -- insertion dans la table des attributs de cession
+		INSERT INTO m_foncier.an_cession VALUES (
+						v_idces, -- idces
+						'10',
+						false, -- relation
+						new.l_etat,
+						new.l_orga,
+						new.d_delib_1,
+						new.d_delib_2,
+						new.d_delib_3,
+						(SELECT insee FROM r_osm.geo_osm_commune WHERE st_intersects(st_pointonsurface(new.geom),geom)),
+						new.l_date_i,
+						new.l_voca,
+						new.l_acque,
+						new.l_parcelle_i,
+						new.l_parcelle_f,
+						new.d_esti_1,
+						new.d_esti_2,
+						new.d_esti_3,
+						new.l_esti_ht,
+						new.l_surf,
+						new.l_condi,
+						new.l_type,
+						new.d_prome,
+						new.d_acte,
+						new.l_notaire,
+						new.l_notaire_a,
+						new.l_pvente_ht,
+						new.l_pvente_ttc,
+						new.l_frais_a,
+						new.l_frais_b,
+						new.l_frais_c,
+						new.l_frais_d,
+						new.l_frais_e,
+						new.l_mfrais_ht,
+						new.l_mfrais_ttc,
+						new.l_pvente_s,
+						new.l_type_a,
+						new.l_type_b,
+						new.l_type_c,
+						new.l_observ,
+						now(),
+						new.l_mfrais_g_ttc,
+						new.l_mfrais_n_ttc,
+						new.l_mfrais_a_ttc,
+						(SELECT DISTINCT
+								idsite 
+							FROM 
+								r_objet.geo_objet_ope
+							WHERE
+								st_intersects(geo_objet_ope.geom,new.geom) = true
+								
+							),
+						null
+						);
+	END IF;
+
+
+	-- si la vocation est habitat, insertion dans geo_objet_fon_lot, an_amt_lot_stade,an_amt_lot_hab, lk_cession_lot  et an_cession
+	IF new.voca_ces = '30' THEN
+		-- insertion dans la table objet
+		INSERT INTO r_objet.geo_objet_fon_lot SELECT v_idgeolf,'Service foncier','11',null,'30',new.geom,null,null,new.l_nom;
+                -- insertion dans la table des stades d'aménagement et de commercialisation
+	        INSERT INTO m_amenagement.an_amt_lot_stade SELECT v_idgeolf, (SELECT DISTINCT idsite FROM r_objet.geo_objet_ope WHERE st_intersects(geo_objet_ope.geom,ST_PointOnSurface(new.geom)) = true), v_stade_amng, v_l_amng2, null, v_l_comm2, null,'00';
+		-- insertion dans la table des lots thématiques
+		INSERT INTO m_amenagement.an_amt_lot_hab SELECT v_idgeolf,
+						 (
+							SELECT DISTINCT
+								idsite 
+							FROM 
+								r_objet.geo_objet_ope
+							WHERE
+								st_intersects(geo_objet_ope.geom,ST_PointOnSurface(new.geom)) = true
+								
+						  ), -- recherche idsite
+						  lot_surf,
+						
+								   CASE WHEN length(cast (lot_surf as character varying)) >= 1 and length(cast (lot_surf as character varying)) <= 3 THEN lot_surf || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 4 THEN replace(to_char(lot_surf,'FM9G999'),',',' ') || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 5 THEN replace(to_char(lot_surf,'FM99G999'),',',' ') || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 6 THEN replace(to_char(lot_surf,'FM999G999'),',',' ') || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 7 THEN replace(to_char(lot_surf,'FM9G999G999'),',',' ') || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 8 THEN replace(to_char(lot_surf,'FM99G999G999'),',',' ') || 'm²'
+								   END,
+						  'Service foncier',
+						  'ARC',
+						  null,
+						  null,
+						  new.lhab_nb_log,
+						  new.lhab_nb_logind,
+						  new.lhab_nb_logindgr,
+						  new.lhab_nb_logcol,
+						  new.lhab_nb_logaide,
+						  new.llot_observ,
+						  now(),
+						  now(),
+						  null,
+						  new.lhab_nb_log_r,
+						  new.lhab_nb_logind_r,
+						  new.lhab_nb_logindgr_r,
+						  new.lhab_nb_logcol_r,
+						  new.lhab_nb_logaide_r,
+						  null,
+						  new.lhab_nb_logaide_loc_r,
+						  new.lhab_nb_logaide_acc_r
+						  ;
+		-- insertion dans la table de relation lot/cession
+		INSERT INTO m_foncier.lk_cession_lot SELECT v_idgeolf, v_idces;	
+                -- insertion dans la table des attributs de cession
+		INSERT INTO m_foncier.an_cession VALUES (
+						v_idces, -- idces
+						'10',
+						false, -- relation
+						new.l_etat,
+						new.l_orga,
+						new.d_delib_1,
+						new.d_delib_2,
+						new.d_delib_3,
+						(SELECT insee FROM r_osm.geo_osm_commune WHERE st_intersects(st_pointonsurface(new.geom),geom)),
+						new.l_date_i,
+						new.l_voca,
+						new.l_acque,
+						new.l_parcelle_i,
+						new.l_parcelle_f,
+						new.d_esti_1,
+						new.d_esti_2,
+						new.d_esti_3,
+						new.l_esti_ht,
+						new.l_surf,
+						new.l_condi,
+						new.l_type,
+						new.d_prome,
+						new.d_acte,
+						new.l_notaire,
+						new.l_notaire_a,
+						new.l_pvente_ht,
+						new.l_pvente_ttc,
+						new.l_frais_a,
+						new.l_frais_b,
+						new.l_frais_c,
+						new.l_frais_d,
+						new.l_frais_e,
+						new.l_mfrais_ht,
+						new.l_mfrais_ttc,
+						new.l_pvente_s,
+						new.l_type_a,
+						new.l_type_b,
+						new.l_type_c,
+						new.l_observ,
+						now(),
+						new.l_mfrais_g_ttc,
+						new.l_mfrais_n_ttc,
+						new.l_mfrais_a_ttc,
+						(SELECT DISTINCT
+								idsite 
+							FROM 
+								r_objet.geo_objet_ope
+							WHERE
+								st_intersects(geo_objet_ope.geom,new.geom) = true
+								
+							),
+						null
+						);
+	END IF;
+
+	-- si la vocation est divers, insertion dans geo_objet_fon_lot, an_amt_lot_stade,an_amt_lot_divers, lk_cession_lot  et an_cession
+	IF new.voca_ces = '40' THEN
+		-- insertion dans la table objet
+		INSERT INTO r_objet.geo_objet_fon_lot SELECT v_idgeolf,'Service foncier','11',null,'40',new.geom,null,null,new.l_nom;
+                -- insertion dans la table des stades d'aménagement et de commercialisation
+	        INSERT INTO m_amenagement.an_amt_lot_stade SELECT v_idgeolf, (SELECT DISTINCT idsite FROM r_objet.geo_objet_ope WHERE st_intersects(geo_objet_ope.geom,ST_PointOnSurface(new.geom)) = true), v_stade_amng, v_l_amng2, null, v_l_comm2, null,'00';
+		-- insertion dans la table des lots thématiques
+		INSERT INTO m_amenagement.an_amt_lot_divers SELECT v_idgeolf,
+							(
+							SELECT DISTINCT
+								idsite 
+							FROM 
+								r_objet.geo_objet_ope
+							WHERE
+								st_intersects(geo_objet_ope.geom,new.geom) = true
+								
+							),-- recherche auto de l'IDSITE
+							'Service foncier',
+							'ARC',
+							new.lot_l_nom,
+							lot_surf,
+							now(),
+							null,
+							null,
+							CASE WHEN length(cast (lot_surf as character varying)) >= 1 and length(cast (lot_surf as character varying)) <= 3 THEN lot_surf || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 4 THEN replace(to_char(lot_surf,'FM9G999'),',',' ') || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 5 THEN replace(to_char(lot_surf,'FM99G999'),',',' ') || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 6 THEN replace(to_char(lot_surf,'FM999G999'),',',' ') || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 7 THEN replace(to_char(lot_surf,'FM9G999G999'),',',' ') || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 8 THEN replace(to_char(lot_surf,'FM99G999G999'),',',' ') || 'm²'
+								   END
+							;
+		-- insertion dans la table de relation lot/cession
+		INSERT INTO m_foncier.lk_cession_lot SELECT v_idgeolf, v_idces;	
+                -- insertion dans la table des attributs de cession
+		INSERT INTO m_foncier.an_cession VALUES (
+						v_idces, -- idces
+						'10',
+						false, -- relation
+						new.l_etat,
+						new.l_orga,
+						new.d_delib_1,
+						new.d_delib_2,
+						new.d_delib_3,
+						(SELECT insee FROM r_osm.geo_osm_commune WHERE st_intersects(st_pointonsurface(new.geom),geom)),
+						new.l_date_i,
+						new.l_voca,
+						new.l_acque,
+						new.l_parcelle_i,
+						new.l_parcelle_f,
+						new.d_esti_1,
+						new.d_esti_2,
+						new.d_esti_3,
+						new.l_esti_ht,
+						new.l_surf,
+						new.l_condi,
+						new.l_type,
+						new.d_prome,
+						new.d_acte,
+						new.l_notaire,
+						new.l_notaire_a,
+						new.l_pvente_ht,
+						new.l_pvente_ttc,
+						new.l_frais_a,
+						new.l_frais_b,
+						new.l_frais_c,
+						new.l_frais_d,
+						new.l_frais_e,
+						new.l_mfrais_ht,
+						new.l_mfrais_ttc,
+						new.l_pvente_s,
+						new.l_type_a,
+						new.l_type_b,
+						new.l_type_c,
+						new.l_observ,
+						now(),
+						new.l_mfrais_g_ttc,
+						new.l_mfrais_n_ttc,
+						new.l_mfrais_a_ttc,
+						(SELECT DISTINCT
+								idsite 
+							FROM 
+								r_objet.geo_objet_ope
+							WHERE
+								st_intersects(geo_objet_ope.geom,new.geom) = true
+								
+							),
+						null
+						);
+	END IF;
+
+	-- si la vocation est espace public, insertion dans geo_objet_fon_lot, an_amt_lot_stade, lk_cession_lot  et an_cession
+	IF new.voca_ces = '50' THEN
+		-- insertion dans la table objet
+		INSERT INTO r_objet.geo_objet_fon_lot SELECT v_idgeolf,'Service foncier','11',null,'50',new.geom,null,null,new.l_nom;
+                -- insertion dans la table des stades d'aménagement et de commercialisation
+	        INSERT INTO m_amenagement.an_amt_lot_stade SELECT v_idgeolf, (SELECT DISTINCT idsite FROM r_objet.geo_objet_ope WHERE st_intersects(geo_objet_ope.geom,ST_PointOnSurface(new.geom)) = true), v_stade_amng, v_l_amng2, null, v_l_comm2, null,'00';
+		
+		-- insertion dans la table de relation lot/cession
+		INSERT INTO m_foncier.lk_cession_lot SELECT v_idgeolf, v_idces;	
+                -- insertion dans la table des attributs de cession
+		INSERT INTO m_foncier.an_cession VALUES (
+						v_idces, -- idces
+						'10',
+						false, -- relation
+						new.l_etat,
+						new.l_orga,
+						new.d_delib_1,
+						new.d_delib_2,
+						new.d_delib_3,
+						(SELECT insee FROM r_osm.geo_osm_commune WHERE st_intersects(st_pointonsurface(new.geom),geom)),
+						new.l_date_i,
+						new.l_voca,
+						new.l_acque,
+						new.l_parcelle_i,
+						new.l_parcelle_f,
+						new.d_esti_1,
+						new.d_esti_2,
+						new.d_esti_3,
+						new.l_esti_ht,
+						new.l_surf,
+						new.l_condi,
+						new.l_type,
+						new.d_prome,
+						new.d_acte,
+						new.l_notaire,
+						new.l_notaire_a,
+						new.l_pvente_ht,
+						new.l_pvente_ttc,
+						new.l_frais_a,
+						new.l_frais_b,
+						new.l_frais_c,
+						new.l_frais_d,
+						new.l_frais_e,
+						new.l_mfrais_ht,
+						new.l_mfrais_ttc,
+						new.l_pvente_s,
+						new.l_type_a,
+						new.l_type_b,
+						new.l_type_c,
+						new.l_observ,
+						now(),
+						new.l_mfrais_g_ttc,
+						new.l_mfrais_n_ttc,
+						new.l_mfrais_a_ttc,
+						(SELECT DISTINCT
+								idsite 
+							FROM 
+								r_objet.geo_objet_ope
+							WHERE
+								st_intersects(geo_objet_ope.geom,new.geom) = true
+								
+							),
+						null
+						);
+	END IF;
+
+	-- si la vocation est mixte, insertion dans geo_objet_fon_lot, an_amt_lot_stade,an_amt_lot_mixte, lk_cession_lot  et an_cession
+	IF new.voca_ces = '60' THEN
+		-- insertion dans la table objet
+		INSERT INTO r_objet.geo_objet_fon_lot SELECT v_idgeolf,'Service foncier','11',null,'60',new.geom,null,null,new.l_nom;
+                -- insertion dans la table des stades d'aménagement et de commercialisation
+	        INSERT INTO m_amenagement.an_amt_lot_stade SELECT v_idgeolf, (SELECT DISTINCT idsite FROM r_objet.geo_objet_ope WHERE st_intersects(geo_objet_ope.geom,ST_PointOnSurface(new.geom)) = true), v_stade_amng, v_l_amng2, null, v_l_comm2, null,'00';
+
+		-- insertion dans la table des lots thématiques
+		INSERT INTO m_amenagement.an_amt_lot_mixte SELECT v_idgeolf,
+						 (
+							SELECT DISTINCT
+								idsite 
+							FROM 
+								r_objet.geo_objet_ope
+							WHERE
+								st_intersects(geo_objet_ope.geom,ST_PointOnSurface(new.geom)) = true
+								
+						  ), -- recherche idsite
+						  lot_surf,
+						
+								   CASE WHEN length(cast (lot_surf as character varying)) >= 1 and length(cast (lot_surf as character varying)) <= 3 THEN lot_surf || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 4 THEN replace(to_char(lot_surf,'FM9G999'),',',' ') || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 5 THEN replace(to_char(lot_surf,'FM99G999'),',',' ') || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 6 THEN replace(to_char(lot_surf,'FM999G999'),',',' ') || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 7 THEN replace(to_char(lot_surf,'FM9G999G999'),',',' ') || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 8 THEN replace(to_char(lot_surf,'FM99G999G999'),',',' ') || 'm²'
+								   END,
+						  'Service Foncier',
+						  'ARC',
+						  null,
+						  null,
+						  new.lhab_nb_log,
+						  new.lhab_nb_logind,
+						  new.lhab_nb_logindgr,
+						  new.lhab_nb_logcol,
+						  new.lhab_nb_logaide,
+						  new.llot_observ,
+						  now(),
+						  now(),
+						  null,
+						  new.lhab_nb_log_r,
+						  new.lhab_nb_logind_r,
+						  new.lhab_nb_logindgr_r,
+						  new.lhab_nb_logcol_r,
+						  new.lhab_nb_logaide_r,
+						  null,
+						  new.llot_tact,
+						  null,
+						  new.lot_l_nom,
+                                                  new.lhab_nb_logaide_loc_r,
+                                                  new.lhab_nb_logaide_acc_r,
+                                                  new.l_acque						  
+						  ;
+		-- insertion dans la table de relation lot/cession
+		INSERT INTO m_foncier.lk_cession_lot SELECT v_idgeolf, v_idces;	
+                -- insertion dans la table des attributs de cession
+		INSERT INTO m_foncier.an_cession VALUES (
+						v_idces, -- idces
+						'10',
+						false, -- relation
+						new.l_etat,
+						new.l_orga,
+						new.d_delib_1,
+						new.d_delib_2,
+						new.d_delib_3,
+						(SELECT insee FROM r_osm.geo_osm_commune WHERE st_intersects(st_pointonsurface(new.geom),geom)),
+						new.l_date_i,
+						new.l_voca,
+						new.l_acque,
+						new.l_parcelle_i,
+						new.l_parcelle_f,
+						new.d_esti_1,
+						new.d_esti_2,
+						new.d_esti_3,
+						new.l_esti_ht,
+						new.l_surf,
+						new.l_condi,
+						new.l_type,
+						new.d_prome,
+						new.d_acte,
+						new.l_notaire,
+						new.l_notaire_a,
+						new.l_pvente_ht,
+						new.l_pvente_ttc,
+						new.l_frais_a,
+						new.l_frais_b,
+						new.l_frais_c,
+						new.l_frais_d,
+						new.l_frais_e,
+						new.l_mfrais_ht,
+						new.l_mfrais_ttc,
+						new.l_pvente_s,
+						new.l_type_a,
+						new.l_type_b,
+						new.l_type_c,
+						new.l_observ,
+						now(),
+						new.l_mfrais_g_ttc,
+						new.l_mfrais_n_ttc,
+						new.l_mfrais_a_ttc,
+						(SELECT DISTINCT
+								idsite 
+							FROM 
+								r_objet.geo_objet_ope
+							WHERE
+								st_intersects(geo_objet_ope.geom,new.geom) = true
+								
+							),
+						null
+						);
+	END IF;
+
+END IF;
+
+
+	
+     return new ;
+
+END;
+
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION m_foncier.ft_m_cess_nlot_insert()
+  OWNER TO sig_create;
+
+COMMENT ON FUNCTION m_foncier.ft_m_cess_nlot_insert() IS 'Fonction gérant l''insertion des cessions (lots) dans le tissu (hors zone d''aménagement)';
+
+				  
 -- Trigger: t_t2_cess_nlot on m_foncier.geo_v_cession
 -- DROP TRIGGER t_t2_cess_nlot ON m_foncier.geo_v_cession;
 
@@ -3007,7 +3705,126 @@ CREATE TRIGGER t_t2_cess_nlot
   FOR EACH ROW
   EXECUTE PROCEDURE m_foncier.ft_m_cess_nlot_insert();
 
+-- Function: m_foncier.ft_m_cess_nlot_update()
 
+-- DROP FUNCTION m_foncier.ft_m_cess_nlot_update();
+
+CREATE OR REPLACE FUNCTION m_foncier.ft_m_cess_nlot_update()
+  RETURNS trigger AS
+$BODY$
+
+
+BEGIN
+/* A REVOIR */
+
+
+
+     -- vérification du changement de la référence du dossier et qu'il s'agisse d'un dossier comportant au moins 2 lots
+     if (old.idces <> new.idces_lk) and old.l_rel='10' and new.l_rel='20' then
+	UPDATE m_foncier.lk_cession_lot SET idces=new.idces_lk WHERE idgeolf=new.idgeolf;
+	UPDATE m_foncier.an_cession SET l_rel=new.l_rel WHERE idces=new.idces_lk;
+	DELETE FROM m_foncier.an_cession WHERE idces=old.idces;
+     end if;	
+
+     -- mise à jour du code du nom de lot dans la table objet
+
+	IF ST_Disjoint(new.geom,(SELECT c.geom FROM r_osm.geo_vm_osm_contour_arc c)) = true OR (SELECT count(*) FROM r_objet.geo_objet_fon_lot o WHERE st_intersects(st_buffer(new.geom,-1),o.geom) AND idgeolf <> old.idgeolf ) >= 1  THEN
+
+	RAISE EXCEPTION 'Le lot ne peut pas être modifié en géométrie. Faire une demande de modification au Service Information Géographique.'; --(générer un message pour GEO afficher dans la fiche d'information
+
+
+     
+
+     ELSE
+
+	UPDATE r_objet.geo_objet_fon_lot SET l_nom = new.l_nom, geom = new.geom WHERE idgeolf = new.idgeolf;
+
+     END IF;
+     
+     -- insertion des champs à mettre à jour 
+     UPDATE m_foncier.an_cession SET
+        idces_d = new.idces_d,
+	l_rel = new.l_rel,
+	l_compo = new.l_compo,
+	l_etat = new.l_etat,
+	l_orga = new.l_orga,
+	d_delib_1 = new.d_delib_1,
+	d_delib_2 = new.d_delib_2,
+	d_delib_3 = new.d_delib_3,
+	insee = new.insee,
+	l_date_i = new.l_date_i,
+	l_voca = new.l_voca,
+	l_acque = CASE WHEN new.l_acque IS NULL or new.l_acque = '' THEN null ELSE new.l_acque END,
+	l_parcelle_i = new.l_parcelle_i,
+	l_parcelle_f = new.l_parcelle_f,
+	d_esti_1 = new.d_esti_1,
+	d_esti_2 = new.d_esti_2,
+	d_esti_3 = new.d_esti_3,
+	l_esti_ht = new.l_esti_ht,
+	l_surf = new.l_surf,
+	l_condi = new.l_condi,
+	l_type = new.l_type,
+	d_prome = new.d_prome,
+	d_acte = new.d_acte,
+	l_notaire = new.l_notaire,
+	l_notaire_a = new.l_notaire_a,
+	l_pvente_ht = new.l_pvente_ht,
+	l_pvente_ttc = new.l_pvente_ttc,
+	l_mfrais_ttc = new.l_mfrais_ttc,
+	l_mfrais_g_ttc = new.l_mfrais_g_ttc,
+	l_mfrais_n_ttc = new.l_mfrais_n_ttc,
+	l_mfrais_a_ttc = new.l_mfrais_a_ttc,
+	l_pvente_s = new.l_pvente_s,
+	l_type_a = new.l_type_a,
+	l_type_b = new.l_type_b,
+	l_type_c = new.l_type_c,
+	l_observ = new.l_observ,
+	d_maj = now(),
+	idsite=new.idsite
+	WHERE an_cession.idces=new.idces;
+
+
+        -- automatisation de l'état de commercialisation pour les lots
+	IF new.l_etat ='01' THEN
+	update m_amenagement.an_amt_lot_stade set l_comm2='11',stade_amng='40',l_amng2 = '10' where idgeolf IN (select idgeolf from m_foncier.lk_cession_lot where idces=new.idces);
+	END IF;
+	IF new.l_etat ='10' THEN
+	update m_amenagement.an_amt_lot_stade set l_comm2='32',stade_amng='40',l_amng2 = '10' where idgeolf IN  (select idgeolf from m_foncier.lk_cession_lot where idces=new.idces);
+	END IF;
+	IF (new.l_etat ='20' or new.l_etat ='30') THEN
+	update m_amenagement.an_amt_lot_stade set l_comm2='31',stade_amng='40',l_amng2 = '10' where idgeolf IN  (select idgeolf from m_foncier.lk_cession_lot where idces=new.idces);
+	END IF;
+	IF new.l_etat ='40'  THEN
+	update m_amenagement.an_amt_lot_stade set l_comm2='20',stade_amng='40',l_amng2 = '10' where idgeolf IN  (select idgeolf from m_foncier.lk_cession_lot where idces=new.idces);
+	END IF;
+	IF new.l_etat ='50'  THEN
+	update m_amenagement.an_amt_lot_stade set l_comm2='00' where idgeolf IN  (select idgeolf from m_foncier.lk_cession_lot where idces=new.idces);
+	END IF;
+	IF new.l_etat ='60'  THEN
+	update m_amenagement.an_amt_lot_stade set l_comm2='00',stade_amng='30',l_amng2 = '10' where idgeolf IN  (select idgeolf from m_foncier.lk_cession_lot where idces=new.idces);
+	END IF;
+	IF new.l_etat ='99'  THEN
+	update m_amenagement.an_amt_lot_stade set l_comm2='99',stade_amng='00',l_amng2 = '00' where idgeolf IN  (select idgeolf from m_foncier.lk_cession_lot where idces=new.idces);
+	END IF;
+	IF new.l_etat ='00' THEN
+	update m_amenagement.an_amt_lot_stade set l_comm2='00',stade_amng='00',l_amng2 = '00' where idgeolf IN  (select idgeolf from m_foncier.lk_cession_lot where idces=new.idces);
+	END IF;
+
+
+	
+     return new ;
+
+END;
+
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION m_foncier.ft_m_cess_nlot_update()
+  OWNER TO sig_create;
+
+COMMENT ON FUNCTION m_foncier.ft_m_cess_nlot_update() IS 'Fonction gérant la mise à jour des données des cessions foncières et la gestion des stades d''aménagement et de commercilaisation des lots en cas de cession vendu';
+
+						 
 -- Trigger: t_t3_cess_nlot on m_foncier.geo_v_cession
 -- DROP TRIGGER t_t3_cess_nlot ON m_foncier.geo_v_cession;
 
