@@ -630,7 +630,7 @@ BEGIN
 							FROM 
 								r_objet.geo_objet_ope
 							WHERE
-								st_intersects(geo_objet_ope.geom,new.geom) = true
+								st_intersects(geo_objet_ope.geom,st_pointonsurface(new.geom)) = true
 								
 							),
 							null
@@ -3295,7 +3295,7 @@ ELSE
 							FROM 
 								r_objet.geo_objet_ope
 							WHERE
-								st_intersects(geo_objet_ope.geom,new.geom) = true
+								st_intersects(geo_objet_ope.geom,st_pointonsurface(new.geom)) = true
 								
 							),
 						null
@@ -4573,7 +4573,7 @@ BEGIN
 							FROM 
 								r_objet.geo_objet_ope
 							WHERE
-								st_intersects(geo_objet_ope.geom,new.geom) = true
+								st_intersects(geo_objet_ope.geom,st_pointonsurface(new.geom)) = true
 								
 							),
 							null
@@ -5160,7 +5160,7 @@ BEGIN
 							FROM 
 								r_objet.geo_objet_ope
 							WHERE
-								st_intersects(geo_objet_ope.geom,new.geom) = true
+								st_intersects(geo_objet_ope.geom,st_pointonsurface(new.geom)) = true
 								
 							),
 							null
@@ -5455,7 +5455,7 @@ BEGIN
 							FROM 
 								r_objet.geo_objet_ope
 							WHERE
-								st_intersects(geo_objet_ope.geom,new.geom) = true
+								st_intersects(geo_objet_ope.geom,st_pointonsurface(new.geom)) = true
 								
 							),
 							null
@@ -5707,7 +5707,7 @@ BEGIN
 							FROM 
 								r_objet.geo_objet_ope
 							WHERE
-								st_intersects(geo_objet_ope.geom,new.geom) = true
+								st_intersects(geo_objet_ope.geom,st_pointonsurface(new.geom)) = true
 								
 							),
 							null
@@ -6017,7 +6017,7 @@ BEGIN
 							FROM 
 								r_objet.geo_objet_ope
 							WHERE
-								st_intersects(geo_objet_ope.geom,new.geom) = true
+								st_intersects(geo_objet_ope.geom,st_pointonsurface(new.geom)) = true
 								
 							),
 							null
@@ -6370,7 +6370,7 @@ BEGIN
 							FROM 
 								r_objet.geo_objet_ope
 							WHERE
-								st_intersects(geo_objet_ope.geom,new.geom) = true
+								st_intersects(geo_objet_ope.geom,st_pointonsurface(new.geom)) = true
 								
 							),
 							null
