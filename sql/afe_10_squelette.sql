@@ -1755,6 +1755,41 @@ CREATE TRIGGER t_t6_geo_objet_etab_idsite
   FOR EACH ROW
   EXECUTE PROCEDURE r_objet.ft_m_geo_etab_objet_idsite();
 
+-- Function: r_objet.ft_m_geo_objet_etab_enseigne()
+
+-- DROP FUNCTION r_objet.ft_m_geo_objet_etab_enseigne();
+
+CREATE OR REPLACE FUNCTION r_objet.ft_m_geo_objet_etab_enseigne()
+  RETURNS trigger AS
+$BODY$
+
+begin
+
+ -- gestion des valeurs '' quand suppression d'une valeur dans une fiche GEO
+ update r_objet.geo_objet_etab set enseigne = null where enseigne = '';        
+
+
+	return new; 
+end;
+
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION r_objet.ft_m_geo_objet_etab_enseigne()
+  OWNER TO sig_create;
+
+COMMENT ON FUNCTION r_objet.ft_m_geo_objet_etab_enseigne() IS 'Fonction forçant le champ à null quand insertion ou mise à jour de l''attribut pour éviter les '''' (pb d''afficchage des étiquettes dans GEO)';
+
+-- Trigger: t_t7_enseigne_null on r_objet.geo_objet_etab
+
+-- DROP TRIGGER t_t7_enseigne_null ON r_objet.geo_objet_etab;
+
+CREATE TRIGGER t_t7_enseigne_null
+  AFTER INSERT OR UPDATE
+  ON r_objet.geo_objet_etab
+  FOR EACH ROW
+  EXECUTE PROCEDURE r_objet.ft_m_geo_objet_etab_enseigne();
+
 -- Trigger: t_t8_suivi on r_objet.geo_objet_etab
 
 -- DROP TRIGGER t_t8_suivi ON r_objet.geo_objet_etab;
@@ -2320,12 +2355,46 @@ COMMENT ON COLUMN m_economie.an_sa_etab.l_drh_ad IS 'Adresse extérieure de la D
 COMMENT ON COLUMN m_economie.an_sa_etab.id IS 'Identifiant unique interne';
 COMMENT ON COLUMN m_economie.an_sa_etab.l_telp_aut IS 'Téléphone portable de l''autre responsable';
 
+-- Function: m_economie.ft_m_an_sa_etab_l_nom_null()
 
--- Trigger: t_t1_suivi on m_economie.an_sa_etab
+-- DROP FUNCTION m_economie.ft_m_an_sa_etab_l_nom_null();
 
--- DROP TRIGGER t_t1_suivi ON m_economie.an_sa_etab;
+CREATE OR REPLACE FUNCTION m_economie.ft_m_an_sa_etab_l_nom_null()
+  RETURNS trigger AS
+$BODY$
 
-CREATE TRIGGER t_t1_suivi
+begin
+
+ -- gestion des valeurs '' quand suppression d'une valeur dans une fiche GEO
+ update m_economie.an_sa_etab set l_nom = null where l_nom = '';        
+
+
+	return new; 
+end;
+
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION m_economie.ft_m_an_sa_etab_l_nom_null()
+  OWNER TO sig_create;
+
+COMMENT ON FUNCTION m_economie.ft_m_an_sa_etab_l_nom_null() IS 'Fonction forçant le champ à null quand insertion ou mise à jour de l''attribut pour éviter les '''' (pb d''afficchage des étiquettes dans GEO)';
+			 
+-- Trigger: t_t1_l_nom_null on m_economie.an_sa_etab
+
+-- DROP TRIGGER t_t1_l_nom_null ON m_economie.an_sa_etab;
+
+CREATE TRIGGER t_t1_l_nom_null
+  AFTER UPDATE
+  ON m_economie.an_sa_etab
+  FOR EACH ROW
+  EXECUTE PROCEDURE m_economie.ft_m_an_sa_etab_l_nom_null();
+			 
+-- Trigger: t_t2_suivi on m_economie.an_sa_etab
+
+-- DROP TRIGGER t_t2_suivi ON m_economie.an_sa_etab;
+
+CREATE TRIGGER t_t2_suivi
   AFTER INSERT OR UPDATE OR DELETE
   ON m_economie.an_sa_etab
   FOR EACH ROW
