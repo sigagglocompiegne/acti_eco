@@ -924,7 +924,13 @@ GRANT EXECUTE ON FUNCTION m_amenagement.ft_m_modif_lot_divers() TO sig_create;
 GRANT EXECUTE ON FUNCTION m_amenagement.ft_m_modif_lot_divers() TO create_sig;
 GRANT EXECUTE ON FUNCTION m_amenagement.ft_m_modif_lot_divers() TO edit_sig;
 
+GRANT EXECUTE ON FUNCTION m_economie.ft_m_an_sa_etab_l_nom_null() TO public;
+GRANT EXECUTE ON FUNCTION m_economie.ft_m_an_sa_etab_l_nom_null() TO sig_create;
+GRANT EXECUTE ON FUNCTION m_economie.ft_m_an_sa_etab_l_nom_null() TO create_sig;
 
+GRANT EXECUTE ON FUNCTION r_objet.ft_m_geo_objet_etab_enseigne() TO public;
+GRANT EXECUTE ON FUNCTION r_objet.ft_m_geo_objet_etab_enseigne() TO sig_create;
+GRANT EXECUTE ON FUNCTION r_objet.ft_m_geo_objet_etab_enseigne() TO create_sig;
 
 
 
