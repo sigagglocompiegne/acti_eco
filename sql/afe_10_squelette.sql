@@ -4620,9 +4620,7 @@ $BODY$
 BEGIN
 
 
-    if(TG_OP='INSERT') then
-
-    
+     
     -- insertion du numéro du site
     new.idsite := (SELECT DISTINCT
 				idsite 
@@ -4631,22 +4629,7 @@ BEGIN
 		  WHERE
 				st_intersects(st_pointonsurface(new.geom),geo_objet_site.geom) = true
 		  );
-
-    END IF;
-    if(TG_OP='UPDATE') then
-          UPDATE m_foncier.geo_fon_acqui SET
-							idsite= (
-									SELECT DISTINCT
-				idsite 
-		  FROM 
-				r_objet.geo_objet_site
-		  WHERE
-				st_intersects(st_pointonsurface(new.geom),geo_objet_site.geom) = true
-								
-									)
-		where idgeoaf = new.idgeoaf;
-
-    END IF;
+  
     return new;
 END;
 
