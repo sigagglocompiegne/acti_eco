@@ -123,10 +123,50 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA s_sirene
     
 -- #################################################################### DOMAINE DE VALEUR  ####################################################################
 
-GRANT ALL ON TABLE s_sirene.lt_vetab TO sig_create;
-GRANT ALL ON TABLE s_sirene.lt_vetab TO create_sig;
-GRANT SELECT ON TABLE s_sirene.lt_vetab TO read_sig;
-GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE s_sirene.lt_vetab TO edit_sig;
+GRANT ALL ON TABLE s_sirene.lt_cemployeur TO sig_create;
+GRANT ALL ON TABLE s_sirene.lt_cemployeur TO create_sig;
+GRANT SELECT ON TABLE s_sirene.lt_cemployeur TO read_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE s_sirene.lt_cemployeur TO edit_sig;
+
+GRANT ALL ON TABLE s_sirene.lt_nafa TO sig_create;
+GRANT ALL ON TABLE s_sirene.lt_nafa TO create_sig;
+GRANT SELECT ON TABLE s_sirene.lt_nafa TO read_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE s_sirene.lt_nafa TO edit_sig;
+
+GRANT ALL ON TABLE s_sirene.lt_trancheeff TO sig_create;
+GRANT ALL ON TABLE s_sirene.lt_trancheeff TO create_sig;
+GRANT SELECT ON TABLE s_sirene.lt_trancheeff TO read_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE s_sirene.lt_trancheeff TO edit_sig;
+
+GRANT ALL ON TABLE s_sirene.lt_nap TO sig_create;
+GRANT ALL ON TABLE s_sirene.lt_nap TO create_sig;
+GRANT SELECT ON TABLE s_sirene.lt_nap TO read_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE s_sirene.lt_nap TO edit_sig;
+
+GRANT ALL ON TABLE s_sirene.lt_nafrev2 TO sig_create;
+GRANT ALL ON TABLE s_sirene.lt_nafrev2 TO create_sig;
+GRANT SELECT ON TABLE s_sirene.lt_nafrev2 TO read_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE s_sirene.lt_nafrev2 TO edit_sig;
+
+GRANT ALL ON TABLE s_sirene.lt_nafrev1 TO sig_create;
+GRANT ALL ON TABLE s_sirene.lt_nafrev1 TO create_sig;
+GRANT SELECT ON TABLE s_sirene.lt_nafrev1 TO read_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE s_sirene.lt_lt_nafrev1 TO edit_sig;
+
+GRANT ALL ON TABLE s_sirene.lt_naf1993 TO sig_create;
+GRANT ALL ON TABLE s_sirene.lt_naf1993 TO create_sig;
+GRANT SELECT ON TABLE s_sirene.lt_naf1993 TO read_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE s_sirene.lt_naf1993 TO edit_sig;
+
+GRANT ALL ON TABLE s_sirene.lt_etatadmin TO sig_create;
+GRANT ALL ON TABLE s_sirene.lt_etatadmin TO create_sig;
+GRANT SELECT ON TABLE s_sirene.lt_etatadmin TO read_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE s_sirene.lt_etatadmin TO edit_sig;
+
+GRANT ALL ON TABLE s_sirene.lt_essul TO sig_create;
+GRANT ALL ON TABLE s_sirene.lt_essul TO create_sig;
+GRANT SELECT ON TABLE s_sirene.lt_essul TO read_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE s_sirene.lt_essul TO edit_sig;
 
 GRANT ALL ON TABLE s_sirene.naf_n1 TO sig_create;
 GRANT ALL ON TABLE s_sirene.naf_n1 TO create_sig;
@@ -243,11 +283,6 @@ GRANT ALL ON TABLE m_economie.lt_sa_aidepb TO create_sig;
 GRANT SELECT ON TABLE m_economie.lt_sa_aidepb TO read_sig;
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE m_economie.lt_sa_aidepb TO edit_sig;
 
-GRANT ALL ON TABLE m_economie.lt_sa_decalage TO sig_create;
-GRANT ALL ON TABLE m_economie.lt_sa_decalage TO create_sig;
-GRANT SELECT ON TABLE m_economie.lt_sa_decalage TO read_sig;
-GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE m_economie.lt_sa_decalage TO edit_sig;
-
 GRANT ALL ON TABLE m_economie.lt_sa_dest TO sig_create;
 GRANT ALL ON TABLE m_economie.lt_sa_dest TO create_sig;
 GRANT SELECT ON TABLE m_economie.lt_sa_dest TO read_sig;
@@ -257,11 +292,6 @@ GRANT ALL ON TABLE m_economie.lt_sa_etatoccup TO sig_create;
 GRANT ALL ON TABLE m_economie.lt_sa_etatoccup TO create_sig;
 GRANT SELECT ON TABLE m_economie.lt_sa_etatoccup TO read_sig;
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE m_economie.lt_sa_etatoccup TO edit_sig;
-
-GRANT ALL ON TABLE m_economie.lt_sa_filiale TO sig_create;
-GRANT ALL ON TABLE m_economie.lt_sa_filiale TO create_sig;
-GRANT SELECT ON TABLE m_economie.lt_sa_filiale TO read_sig;
-GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE m_economie.lt_sa_filiale TO edit_sig;
 
 GRANT ALL ON TABLE m_economie.lt_sa_tact TO sig_create;
 GRANT ALL ON TABLE m_economie.lt_sa_tact TO create_sig;
@@ -353,10 +383,15 @@ GRANT ALL ON SEQUENCE m_amenagement.h_an_amt_site_mixte_gid_seq TO public;
 
 -- #################################################################### TABLE  ####################################################################
 
-GRANT ALL ON TABLE s_sirene.an_etablissement TO sig_create;
-GRANT ALL ON TABLE s_sirene.an_etablissement TO create_sig;
-GRANT SELECT ON TABLE s_sirene.an_etablissement TO read_sig;
-GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE s_sirene.an_etablissement TO edit_sig;
+GRANT ALL ON TABLE s_sirene.an_etablissement_api TO sig_create;
+GRANT ALL ON TABLE s_sirene.an_etablissement_api TO create_sig;
+GRANT SELECT ON TABLE s_sirene.an_etablissement_api TO read_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE s_sirene.an_etablissement_api TO edit_sig;
+
+GRANT ALL ON TABLE s_sirene.an_unitelegale_api TO sig_create;
+GRANT ALL ON TABLE s_sirene.an_unitelegale_api TO create_sig;
+GRANT SELECT ON TABLE s_sirene.an_unitelegale_api TO read_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE s_sirene.an_unitelegale_api TO edit_sig;
 
 GRANT ALL ON TABLE r_objet.geo_objet_empesp_pu TO create_sig;
 GRANT SELECT ON TABLE r_objet.geo_objet_empesp_pu TO read_sig;
@@ -463,6 +498,21 @@ GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE m_economie.log_suivi_audit TO edit
 GRANT ALL ON TABLE m_economie.log_suivi_audit TO create_sig;
 GRANT SELECT ON TABLE m_economie.log_suivi_audit TO read_sig;
 
+GRANT ALL ON TABLE m_economie.geo_sa_local TO sig_create;
+GRANT ALL ON TABLE m_economie.geo_sa_local TO create_sig;
+GRANT SELECT ON TABLE m_economie.geo_sa_local TO read_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE m_economie.geo_sa_local TO edit_sig;
+
+GRANT ALL ON TABLE m_economie.lk_adresseetablissement TO sig_create;
+GRANT ALL ON TABLE m_economie.lk_adresseetablissement TO create_sig;
+GRANT SELECT ON TABLE m_economie.lk_adresseetablissement TO read_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE m_economie.lk_adresseetablissement TO edit_sig;
+
+GRANT ALL ON TABLE m_economie.lk_localsiret TO sig_create;
+GRANT ALL ON TABLE m_economie.lk_localsiret TO create_sig;
+GRANT SELECT ON TABLE m_economie.lk_localsiret TO read_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE m_economie.lk_localsiret TO edit_sig;
+
 GRANT ALL ON TABLE m_amenagement.an_amt_esppu TO sig_create;
 GRANT SELECT ON TABLE m_amenagement.an_amt_esppu TO read_sig;
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE m_amenagement.an_amt_esppu TO edit_sig;
@@ -538,11 +588,6 @@ GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE m_economie.an_v_sa_etab_sup_majsir
 GRANT ALL ON TABLE m_economie.an_v_sa_etab_sup_majsirene TO create_sig;
 GRANT SELECT ON TABLE m_economie.an_v_sa_etab_sup_majsirene TO read_sig;
 
-GRANT ALL ON TABLE m_economie.geo_v_etab TO sig_create;
-GRANT ALL ON TABLE m_economie.geo_v_etab TO create_sig;
-GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE m_economie.geo_v_etab TO edit_sig;
-GRANT SELECT ON TABLE m_economie.geo_v_etab TO read_sig;
-
 GRANT ALL ON TABLE m_economie.geo_v_lot_eco TO sig_create;
 GRANT ALL ON TABLE m_economie.geo_v_lot_eco TO create_sig;
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE m_economie.geo_v_lot_eco TO edit_sig;
@@ -608,20 +653,20 @@ GRANT ALL ON TABLE x_apps.xapps_an_vmr_bilan_procedure TO create_sig;
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE x_apps.xapps_an_vmr_bilan_procedure TO edit_sig;
 GRANT SELECT ON TABLE x_apps.xapps_an_vmr_bilan_procedure TO read_sig;
 
-GRANT ALL ON TABLE x_apps.xapps_an_vmr_synt_pole TO sig_create;
-GRANT ALL ON TABLE x_apps.xapps_an_vmr_synt_pole TO create_sig;
-GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE x_apps.xapps_an_vmr_synt_pole TO edit_sig;
-GRANT SELECT ON TABLE x_apps.xapps_an_vmr_synt_pole TO read_sig;
+GRANT ALL ON TABLE x_apps.xapps_an_vmr_synt_pole_api TO sig_create;
+GRANT ALL ON TABLE x_apps.xapps_an_vmr_synt_pole_api TO create_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE x_apps.xapps_an_vmr_synt_pole_api TO edit_sig;
+GRANT SELECT ON TABLE x_apps.xapps_an_vmr_synt_pole_api TO read_sig;
 
-GRANT ALL ON TABLE x_apps.xapps_an_vmr_synt_site_act TO sig_create;
-GRANT ALL ON TABLE x_apps.xapps_an_vmr_synt_site_act TO create_sig;
-GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE x_apps.xapps_an_vmr_synt_site_act TO edit_sig;
-GRANT SELECT ON TABLE x_apps.xapps_an_vmr_synt_site_act TO read_sig;
+GRANT ALL ON TABLE x_apps.xapps_an_vmr_synt_site_act_api TO sig_create;
+GRANT ALL ON TABLE x_apps.xapps_an_vmr_synt_site_act_api TO create_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE x_apps.xapps_an_vmr_synt_site_act_api TO edit_sig;
+GRANT SELECT ON TABLE x_apps.xapps_an_vmr_synt_site_act_api TO read_sig;
 
-GRANT ALL ON TABLE x_apps.xapps_an_vmr_synt_site_mixte TO sig_create;
-GRANT ALL ON TABLE x_apps.xapps_an_vmr_synt_site_mixte TO create_sig;
-GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE x_apps.xapps_an_vmr_synt_site_mixte TO edit_sig;
-GRANT SELECT ON TABLE x_apps.xapps_an_vmr_synt_site_mixte TO read_sig;
+GRANT ALL ON TABLE x_apps.xapps_an_vmr_synt_site_mixte_api TO sig_create;
+GRANT ALL ON TABLE x_apps.xapps_an_vmr_synt_site_mixte_api TO create_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE x_apps.xapps_an_vmr_synt_site_mixte_api TO edit_sig;
+GRANT SELECT ON TABLE x_apps.xapps_an_vmr_synt_site_mixte_api TO read_sig;
 
 GRANT ALL ON TABLE x_apps.xapps_geo_v_lot_com TO sig_create;
 GRANT ALL ON TABLE x_apps.xapps_geo_v_lot_com TO create_sig;
@@ -646,16 +691,21 @@ GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE x_apps.xapps_geo_v_zae TO edit_sig
 GRANT ALL ON TABLE x_apps.xapps_geo_v_zae TO create_sig;
 GRANT SELECT ON TABLE x_apps.xapps_geo_v_zae TO read_sig;
 
-GRANT ALL ON TABLE x_apps.xapps_geo_vmr_etab TO sig_create;
-GRANT ALL ON TABLE x_apps.xapps_geo_vmr_etab TO create_sig;
-GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE x_apps.xapps_geo_vmr_etab TO edit_sig;
-GRANT SELECT ON TABLE x_apps.xapps_geo_vmr_etab TO read_sig;
+GRANT ALL ON TABLE x_apps.xapps_geo_vmr_etab_api TO sig_create;
+GRANT ALL ON TABLE x_apps.xapps_geo_vmr_etab_api TO create_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE x_apps.xapps_geo_vmr_etab_api TO edit_sig;
+GRANT SELECT ON TABLE x_apps.xapps_geo_vmr_etab_api TO read_sig;
 
-GRANT ALL ON TABLE x_apps.xapps_geo_vmr_proc TO sig_create WITH GRANT OPTION;
-GRANT ALL ON TABLE x_apps.xapps_geo_vmr_proc TO create_sig;
-GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE x_apps.xapps_geo_vmr_proc TO edit_sig;
-GRANT SELECT ON TABLE x_apps.xapps_geo_vmr_proc TO read_sig;
-GRANT UPDATE ON TABLE x_apps.xapps_geo_vmr_proc TO public;
+GRANT ALL ON TABLE x_apps.xapps_geo_vmr_etab_api TO sig_create;
+GRANT ALL ON TABLE x_apps.xapps_geo_vmr_etab_api TO create_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE x_apps.xapps_geo_vmr_etab_api TO edit_sig;
+GRANT SELECT ON TABLE x_apps.xapps_geo_vmr_etab_api TO read_sig;
+
+GRANT ALL ON TABLE x_apps.xapps_geo_vmr_local TO sig_create WITH GRANT OPTION;
+GRANT ALL ON TABLE x_apps.xapps_geo_vmr_local TO create_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE x_apps.xapps_geo_vmr_local TO edit_sig;
+GRANT SELECT ON TABLE x_apps.xapps_geo_vmr_local TO read_sig;
+
 
 
 -- #################################################################### VUE GRAND PUBLIC  ####################################################################
