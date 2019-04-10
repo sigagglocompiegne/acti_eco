@@ -245,23 +245,37 @@ ALTER TABLE public.idgeo_seq
 */
 
 
--- ################################################# Séquence des identifiants pour les établissements (source SIRENE) ##################################
+-- ################################################# Séquence des identifiants pour les établissements (source API SIRENE) ##################################
 
+-- Sequence: s_sirene.an_etablissement_api_gid_seq
 
--- Sequence: s_sirene.an_etablissement_gid_seq
-
--- DROP SEQUENCE s_sirene.an_etablissement_gid_seq;
+-- DROP SEQUENCE s_sirene.an_etablissement_api_gid_seq;
 /*
-CREATE SEQUENCE s_sirene.an_etablissement_gid_seq
+CREATE SEQUENCE s_sirene.an_etablissement_api_gid_seq
   INCREMENT 1
   MINVALUE 1
   MAXVALUE 9223372036854775807
-  START 22970
+  START 1
   CACHE 1;
-ALTER TABLE s_sirene.an_etablissement_gid_seq
+ALTER TABLE s_sirene.an_etablissement_api_gid_seq
   OWNER TO sig_create;
 */
 
+-- ################################################# Séquence des identifiants pour les unités légales (source API SIRENE) ##################################
+
+-- Sequence: s_sirene.an_unitelegale_api_gid_seq
+
+-- DROP SEQUENCE s_sirene.an_unitelegale_api_gid_seq;
+/*
+CREATE SEQUENCE s_sirene.an_unitelegale_api_gid_seq
+  INCREMENT 1
+  MINVALUE 1
+  MAXVALUE 9223372036854775807
+  START 1
+  CACHE 1;
+ALTER TABLE s_sirene.an_unitelegale_api_gid_seq
+  OWNER TO sig_create;
+*/
 
 -- ################################################# Séquence des identifiants pour les sites mixte historiques ##################################
 
@@ -1320,33 +1334,6 @@ INSERT INTO m_amenagement.lt_sa_stadecomm2(
 
 -- ################################################# Du schéma s_sirene ##################################
 
--- ################################################################# Domaine valeur - Vie des établissements  ###############################################
-
--- Table: s_sirene.lt_vetab
-
--- DROP TABLE s_sirene.lt_vetab;
-
-CREATE TABLE s_sirene.lt_vetab
-(
-  l_vetab character varying(2) NOT NULL,
-  vetab_lib character varying(15),
-  CONSTRAINT lt_vetab_pkey PRIMARY KEY (l_vetab)
-)
-WITH (
-  OIDS=FALSE
-);
-ALTER TABLE s_sirene.lt_vetab
-  OWNER TO sig_create;
-
-COMMENT ON TABLE s_sirene.lt_vetab
-  IS 'LListe de valeurs de la présence active ou non de l''établissement dans SIRENE';
-
-INSERT INTO s_sirene.lt_vetab(
-            l_vetab, vetab_lib)
-    VALUES
-    ('00','Non renseigné'),
-    ('10','Actif'),
-    ('20','Inactif');
 
 -- ################################################################# Domaine valeur - Naf niveau 1  ###############################################
 
@@ -1460,6 +1447,213 @@ COMMENT ON TABLE s_sirene.naf_n5
 COMMENT ON COLUMN s_sirene.naf_n5.code_apet700 IS 'Code des APET700 simplifié sans le . (comme dans SIRENE)';
 
 -- la liste des valeurs correspondant à la liste officielle de l'Insee (se reporter à cette liste pour visualiser toutes les valeurs
+
+-- ################################################################# Domaine valeur - Naf rev 1 niveau 5 ###############################################
+
+-- Table: s_sirene.lt_nafrev1
+
+-- DROP TABLE s_sirene.lt_nafrev1;
+
+CREATE TABLE s_sirene.lt_nafrev1
+(
+  code character varying(6) NOT NULL, -- Code NAF niveau 5
+  valeur character varying(122), -- Libellé code NAF niveau 5
+  CONSTRAINT lt_nafrev1_pkey PRIMARY KEY (code)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE s_sirene.lt_nafrev1
+  OWNER TO sig_create;
+
+COMMENT ON TABLE s_sirene.lt_nafrev1
+  IS 'Libellé des codes NAF (nomenclature d''activité française) niveau 5 (dernière nomanclature NAFRev1)';
+COMMENT ON COLUMN s_sirene.lt_nafrev1.code IS 'Code NAF niveau 5';
+COMMENT ON COLUMN s_sirene.lt_nafrev1.valeur IS 'Libellé code NAF niveau 5';
+
+-- ################################################################# Domaine valeur - Naf rev 2 niveau 5 ###############################################
+
+-- Table: s_sirene.lt_nafrev2
+
+-- DROP TABLE s_sirene.lt_nafrev2;
+
+CREATE TABLE s_sirene.lt_nafrev2
+(
+  code character varying(6) NOT NULL,
+  valeur character varying(147),
+  code_apet700 character varying(6),
+  CONSTRAINT lt_nafrev2_pkey PRIMARY KEY (code)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE s_sirene.lt_nafrev2
+  OWNER TO postgres;
+
+COMMENT ON TABLE s_sirene.lt_nafrev2
+  IS 'Libellé des codes NAF (nomenclature d''activité française) niveau 5 (dernière nomanclature NAFRev2)';
+
+-- ################################################################# Domaine valeur - Naf 1993 ###############################################
+
+-- Table: s_sirene.lt_naf1993
+
+-- DROP TABLE s_sirene.lt_naf1993;
+
+CREATE TABLE s_sirene.lt_naf1993
+(
+  code character varying(6) NOT NULL, -- Code NAF niveau 5
+  valeur character varying(122), -- Libellé des codes NAF niveau 5
+  CONSTRAINT lt_naf1993_pkey PRIMARY KEY (code)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE s_sirene.lt_naf1993
+  OWNER TO sig_create;
+
+COMMENT ON TABLE s_sirene.lt_naf1993
+  IS 'Libellé des codes NAF (nomenclature d''activité française) niveau 5 (nomenclature de 1993 mise en place entre 2002 et 2003)';
+COMMENT ON COLUMN s_sirene.lt_naf1993.code IS 'Code NAF niveau 5';
+COMMENT ON COLUMN s_sirene.lt_naf1993.valeur IS 'Libellé des codes NAF niveau 5';
+
+-- ################################################################# Domaine valeur - Nafa ###############################################
+
+-- Table: s_sirene.lt_nafa
+
+-- DROP TABLE s_sirene.lt_nafa;
+
+CREATE TABLE s_sirene.lt_nafa
+(
+  code character varying(9) NOT NULL, -- Code de la catégorie NAFA
+  valeur character varying(133), -- Libellé de la catégorie NAFA
+  CONSTRAINT lt_nafa_pkey PRIMARY KEY (code)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE s_sirene.lt_nafa
+  OWNER TO sig_create;
+
+COMMENT ON TABLE s_sirene.lt_nafa
+  IS 'Libélé des codes NAFA (nomenclature d''Activité Française de l''Artisanat)';
+COMMENT ON COLUMN s_sirene.lt_nafa.code IS 'Code de la catégorie NAFA';
+COMMENT ON COLUMN s_sirene.lt_nafa.valeur IS 'Libellé de la catégorie NAFA';
+
+-- ################################################################# Domaine valeur - Nap ###############################################
+
+-- Table: s_sirene.lt_nap
+
+-- DROP TABLE s_sirene.lt_nap;
+
+CREATE TABLE s_sirene.lt_nap
+(
+  code numeric(5,2) NOT NULL, -- Code de la NAP niveau 5
+  valeur character varying(174), -- Libellé de la NAP niveau 5
+  CONSTRAINT lt_nap_pkey PRIMARY KEY (code)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE s_sirene.lt_nap
+  OWNER TO sig_create;
+
+COMMENT ON TABLE s_sirene.lt_nap
+  IS 'Libellé des codes NAP (nomenclature d''activités et de produits) niveau 5 (dernière nomanclature utilisée entre 1973 et 1992 et remplacé par la NAF)';
+COMMENT ON COLUMN s_sirene.lt_nap.code IS 'Code de la NAP niveau 5';
+COMMENT ON COLUMN s_sirene.lt_nap.valeur IS 'Libellé de la NAP niveau 5';
+
+-- ################################################################# Domaine valeur - Code employeur ###############################################
+
+-- Table: s_sirene.lt_cemployeur
+
+-- DROP TABLE s_sirene.lt_cemployeur;
+
+CREATE TABLE s_sirene.lt_cemployeur
+(
+  code character varying(1) NOT NULL, -- Code du caractère employeur de l'établissement
+  valeur character varying(30), -- Libellé du caractère employeur de l'établissement (source : issu de SIRENE API)
+  CONSTRAINT lt_cemployeur_pkey PRIMARY KEY (code)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE s_sirene.lt_cemployeur
+  OWNER TO sig_create;
+
+COMMENT ON TABLE s_sirene.lt_cemployeur
+  IS 'Libélé des caractères employeurs de l''établissement (source : SIRENE API)';
+COMMENT ON COLUMN s_sirene.lt_cemployeur.code IS 'Code du caractère employeur de l''établissement';
+COMMENT ON COLUMN s_sirene.lt_cemployeur.valeur IS 'Libellé du caractère employeur de l''établissement (source : issu de SIRENE API)';
+
+-- ################################################################# Domaine valeur - Economie sociale et solidaire ###############################################
+
+-- Table: s_sirene.lt_essul
+
+-- DROP TABLE s_sirene.lt_essul;
+
+CREATE TABLE s_sirene.lt_essul
+(
+  code character varying(1) NOT NULL, -- Code d'appartenance à l'économie sociale et solidfaire des unités légales
+  valeur character varying(75), -- Libellé d'appartenance à l'économie sociale et solidaire des unités légales (source : issu de SIRENE API)
+  CONSTRAINT lt_essul_pkey PRIMARY KEY (code)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE s_sirene.lt_essul
+  OWNER TO sig_create;
+
+COMMENT ON TABLE s_sirene.lt_essul
+  IS 'Libélé des codes d''appartenance à l''économie sociale et solidaire des unités légales (source : SIRENE API)';
+COMMENT ON COLUMN s_sirene.lt_essul.code IS 'Code d''appartenance à l''économie sociale et solidfaire des unités légales';
+COMMENT ON COLUMN s_sirene.lt_essul.valeur IS 'Libellé d''appartenance à l''économie sociale et solidaire des unités légales (source : issu de SIRENE API)';
+
+-- ################################################################# Domaine valeur - Etat administratif ###############################################
+
+-- Table: s_sirene.lt_etatadmin
+
+-- DROP TABLE s_sirene.lt_etatadmin;
+
+CREATE TABLE s_sirene.lt_etatadmin
+(
+  code character varying(1) NOT NULL, -- Code de l'état administratif de l'établissement
+  valeur character varying(10), -- Libellé de l'état administratif de l'établissement
+  CONSTRAINT lt_etatadmin_pkey PRIMARY KEY (code)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE s_sirene.lt_etatadmin
+  OWNER TO sig_create;
+
+COMMENT ON TABLE s_sirene.lt_etatadmin
+  IS 'Libélé des états administratif de l''établissement (source : SIRENE API)';
+COMMENT ON COLUMN s_sirene.lt_etatadmin.code IS 'Code de l''état administratif de l''établissement';
+COMMENT ON COLUMN s_sirene.lt_etatadmin.valeur IS 'Libellé de l''état administratif de l''établissement';
+
+-- ################################################################# Domaine valeur - Tranche d'effectif ###############################################
+
+-- Table: s_sirene.lt_trancheeff
+
+-- DROP TABLE s_sirene.lt_trancheeff;
+
+CREATE TABLE s_sirene.lt_trancheeff
+(
+  code character varying(2) NOT NULL, -- Code des tranches d'effectifs des établissements
+  valeur character varying(50), -- Libellé des tranches d'effectifs des établissements
+  CONSTRAINT lt_trancheeff_pkey PRIMARY KEY (code)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE s_sirene.lt_trancheeff
+  OWNER TO sig_create;
+
+COMMENT ON TABLE s_sirene.lt_trancheeff
+  IS 'Libélé des tranches d''effectifs des établissements (source : SIRENE API)';
+COMMENT ON COLUMN s_sirene.lt_trancheeff.code IS 'Code des tranches d''effectifs des établissements';
+COMMENT ON COLUMN s_sirene.lt_trancheeff.valeur IS 'Libellé des tranches d''effectifs des établissements';
+
 
 
 -- ################################################# Du schéma m_urbanisme_reg ##################################
@@ -1613,192 +1807,6 @@ INSERT INTO m_urbanisme_reg.lt_proced(
 
 -- ################################################# Du schéma r_objet ##################################
 
--- ################################################# Classe des objets établissements ##################################
-
--- Table: r_objet.geo_objet_etab
-
--- DROP TABLE r_objet.geo_objet_etab;
-
-CREATE TABLE r_objet.geo_objet_etab
-(
-  idgeoet integer NOT NULL DEFAULT nextval('idgeo_seq'::regclass), -- Identifiant unique de l'objet
-  op_sai character varying(80), -- Opérateur de saisir d'objet à l'ARC
-  code_geo character varying(1), -- Code de précision du géocodage
-  idban character varying(25), -- Identifant de la BAN (à rechercher)
-  idsiret character varying(14), -- Identifiant SIRET de l'établissement
-  info_int character varying(255), -- Information sur la période d'intégration de la géolocalisation
-  info_prec character varying(50), -- Information sur l'affinage manuelle de la Géolocalisation réalisée ou non sur les nouveaux établissements intégrés
-  geom geometry(Point,2154) NOT NULL, -- Champ contenant la géométrie
-  l_nom_eco character varying(255), -- Nom de l'établissement issu du service du développement économique
-  l_nom_sirene character varying(255), -- Libellé de l'établissement issu du fichier SIRENE
-  date_sai timestamp without time zone, -- Date de saisie de l'objet
-  date_maj timestamp without time zone, -- Date de mise à jour de l'objet
-  l_vetab character varying(2), -- Vie de l'établissement issue de SIRENE
-  l4_voie character varying(254), -- Adresse de l'établissement issue de SIRENE
-  enseigne character varying(254), -- Enseigne de l'établissement issue de SIRENE
-  src_geom character varying(2) DEFAULT '60'::character varying,
-  insee character varying(5), -- Code Insee de la commune
-  commune character varying(100), -- Libellé de la commune
-  l_nom character varying(150), -- Libellé du nom de l'établissement spécifique si différent du nom SIRENE (nom usuel du service économie)
-  CONSTRAINT geo_objet_etab_pkey PRIMARY KEY (idgeoet)
-)
-WITH (
-  OIDS=FALSE
-);
-ALTER TABLE r_objet.geo_objet_etab
-  OWNER TO sig_create;
-
-COMMENT ON TABLE r_objet.geo_objet_etab
-  IS 'Données géographiques contenant la localisation des établissements';
-COMMENT ON COLUMN r_objet.geo_objet_etab.idgeoet IS 'Identifiant unique de l''objet';
-COMMENT ON COLUMN r_objet.geo_objet_etab.op_sai IS 'Opérateur de saisir d''objet à l''ARC';
-COMMENT ON COLUMN r_objet.geo_objet_etab.code_geo IS 'Code de précision du géocodage';
-COMMENT ON COLUMN r_objet.geo_objet_etab.idban IS 'Identifant de la BAN (à rechercher)';
-COMMENT ON COLUMN r_objet.geo_objet_etab.idsiret IS 'Identifiant SIRET de l''établissement';
-COMMENT ON COLUMN r_objet.geo_objet_etab.info_int IS 'Information sur la période d''intégration de la géolocalisation';
-COMMENT ON COLUMN r_objet.geo_objet_etab.info_prec IS 'Information sur l''affinage manuelle de la Géolocalisation réalisée ou non sur les nouveaux établissements intégrés';
-COMMENT ON COLUMN r_objet.geo_objet_etab.geom IS 'Champ contenant la géométrie';
-COMMENT ON COLUMN r_objet.geo_objet_etab.l_nom_eco IS 'Nom de l''établissement issu du service du développement économique';
-COMMENT ON COLUMN r_objet.geo_objet_etab.l_nom_sirene IS 'Libellé de l''établissement issu du fichier SIRENE';
-COMMENT ON COLUMN r_objet.geo_objet_etab.date_sai IS 'Date de saisie de l''objet';
-COMMENT ON COLUMN r_objet.geo_objet_etab.date_maj IS 'Date de mise à jour de l''objet';
-COMMENT ON COLUMN r_objet.geo_objet_etab.l_vetab IS 'Vie de l''établissement issue de SIRENE';
-COMMENT ON COLUMN r_objet.geo_objet_etab.l4_voie IS 'Adresse de l''établissement issue de SIRENE';
-COMMENT ON COLUMN r_objet.geo_objet_etab.enseigne IS 'Enseigne de l''établissement issue de SIRENE';
-COMMENT ON COLUMN r_objet.geo_objet_etab.insee IS 'Code Insee de la commune';
-COMMENT ON COLUMN r_objet.geo_objet_etab.commune IS 'Libellé de la commune';
-COMMENT ON COLUMN r_objet.geo_objet_etab.l_nom IS 'Libellé du nom de l''établissement spécifique si différent du nom SIRENE (nom usuel du service économie)';
-
-
--- Trigger: t_t1_etab_insert on r_objet.geo_objet_etab
-
--- DROP TRIGGER t_t1_etab_insert ON r_objet.geo_objet_etab;
-
-CREATE TRIGGER t_t1_etab_insert
-  BEFORE INSERT
-  ON r_objet.geo_objet_etab
-  FOR EACH ROW
-  EXECUTE PROCEDURE r_objet.ft_m_etab_insert();
-ALTER TABLE r_objet.geo_objet_etab DISABLE TRIGGER t_t1_etab_insert;
-COMMENT ON TRIGGER t_t1_etab_insert ON r_objet.geo_objet_etab IS 'Trigger plus utilisé pour l''insertion des établissements. Remplacé par un worflow FME d''intégration';
-
--- Trigger: t_t2_etab_insert_date_maj on r_objet.geo_objet_etab
-
--- DROP TRIGGER t_t2_etab_insert_date_maj ON r_objet.geo_objet_etab;
-
-CREATE TRIGGER t_t2_etab_insert_date_maj
-  BEFORE INSERT OR UPDATE
-  ON r_objet.geo_objet_etab
-  FOR EACH ROW
-  EXECUTE PROCEDURE public.ft_r_timestamp_maj();
-
--- Trigger: t_t4_etab_insert_date_sai on r_objet.geo_objet_etab
-
--- DROP TRIGGER t_t4_etab_insert_date_sai ON r_objet.geo_objet_etab;
-
-CREATE TRIGGER t_t4_etab_insert_date_sai
-  BEFORE INSERT
-  ON r_objet.geo_objet_etab
-  FOR EACH ROW
-  EXECUTE PROCEDURE public.ft_r_timestamp_sai();
-
--- Trigger: t_t5_geo_objet_etab_insee on r_objet.geo_objet_etab
-
--- DROP TRIGGER t_t5_geo_objet_etab_insee ON r_objet.geo_objet_etab;
-
-CREATE TRIGGER t_t5_geo_objet_etab_insee
-  BEFORE INSERT OR UPDATE OF geom
-  ON r_objet.geo_objet_etab
-  FOR EACH ROW
-  EXECUTE PROCEDURE public.ft_r_commune_pl();
-
--- Function: r_objet.ft_m_geo_etab_objet_idsite()
-
--- DROP FUNCTION r_objet.ft_m_geo_etab_objet_idsite();
-
-CREATE OR REPLACE FUNCTION r_objet.ft_m_geo_etab_objet_idsite()
-  RETURNS trigger AS
-$BODY$
-
-BEGIN
-
-	UPDATE m_economie.an_sa_etab SET
-							idsite= (
-									SELECT DISTINCT
-										idsite 
-									FROM 
-										r_objet.geo_objet_ope
-									WHERE
-										st_intersects(geo_objet_ope.geom,new.geom) = true and idsite <> '60382zz' and idsite <> '60665hb'
-								
-									)
-
-	WHERE an_sa_etab.idgeoet=new.idgeoet;
-
-	
-	return new;
-END
-$BODY$
-  LANGUAGE plpgsql VOLATILE
-  COST 100;
-ALTER FUNCTION r_objet.ft_m_geo_etab_objet_idsite()
-  OWNER TO sig_create;
-
-
--- Trigger: t_t6_geo_objet_etab_idsite on r_objet.geo_objet_etab
-
--- DROP TRIGGER t_t6_geo_objet_etab_idsite ON r_objet.geo_objet_etab;
-
-CREATE TRIGGER t_t6_geo_objet_etab_idsite
-  BEFORE UPDATE OF geom
-  ON r_objet.geo_objet_etab
-  FOR EACH ROW
-  EXECUTE PROCEDURE r_objet.ft_m_geo_etab_objet_idsite();
-
--- Function: r_objet.ft_m_geo_objet_etab_enseigne()
-
--- DROP FUNCTION r_objet.ft_m_geo_objet_etab_enseigne();
-
-CREATE OR REPLACE FUNCTION r_objet.ft_m_geo_objet_etab_enseigne()
-  RETURNS trigger AS
-$BODY$
-
-begin
-
- -- gestion des valeurs '' quand suppression d'une valeur dans une fiche GEO
- update r_objet.geo_objet_etab set enseigne = null where enseigne = '';        
-
-
-	return new; 
-end;
-
-$BODY$
-  LANGUAGE plpgsql VOLATILE
-  COST 100;
-ALTER FUNCTION r_objet.ft_m_geo_objet_etab_enseigne()
-  OWNER TO sig_create;
-
-COMMENT ON FUNCTION r_objet.ft_m_geo_objet_etab_enseigne() IS 'Fonction forçant le champ à null quand insertion ou mise à jour de l''attribut pour éviter les '''' (pb d''afficchage des étiquettes dans GEO)';
-
--- Trigger: t_t7_enseigne_null on r_objet.geo_objet_etab
-
--- DROP TRIGGER t_t7_enseigne_null ON r_objet.geo_objet_etab;
-
-CREATE TRIGGER t_t7_enseigne_null
-  AFTER INSERT OR UPDATE
-  ON r_objet.geo_objet_etab
-  FOR EACH ROW
-  EXECUTE PROCEDURE r_objet.ft_m_geo_objet_etab_enseigne();
-
--- Trigger: t_t8_suivi on r_objet.geo_objet_etab
-
--- DROP TRIGGER t_t8_suivi ON r_objet.geo_objet_etab;
-
-CREATE TRIGGER t_t8_suivi
-  AFTER INSERT OR UPDATE OR DELETE
-  ON r_objet.geo_objet_etab
-  FOR EACH ROW
-  EXECUTE PROCEDURE m_economie.ft_r_suivi_audit();
 
 -- ################################################# Classe des objets espaces publics ##################################
 
@@ -1863,7 +1871,13 @@ CREATE TABLE r_objet.geo_objet_fon_lot
   date_sai timestamp without time zone, -- Date de saisie de l'objet
   date_maj timestamp without time zone, -- Date de mise à jour
   l_nom character varying(80), -- Nom de lot donné au moment du plan d'aménagement (ex : lot 1)
-  CONSTRAINT geo_objet_fon_lot_pkey PRIMARY KEY (idgeolf)
+  CONSTRAINT geo_objet_fon_lot_pkey PRIMARY KEY (idgeolf),
+  CONSTRAINT geo_objet_fon_lot_scrgeom_fkey FOREIGN KEY (src_geom)
+      REFERENCES r_objet.lt_src_geom (code) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT lt_objet_vocafon_fkey FOREIGN KEY (l_voca)
+      REFERENCES r_objet.lt_objet_vocafon (l_voca) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
 )
 WITH (
   OIDS=FALSE
@@ -1882,6 +1896,16 @@ COMMENT ON COLUMN r_objet.geo_objet_fon_lot.geom IS 'Champ contenant la géomét
 COMMENT ON COLUMN r_objet.geo_objet_fon_lot.date_sai IS 'Date de saisie de l''objet';
 COMMENT ON COLUMN r_objet.geo_objet_fon_lot.date_maj IS 'Date de mise à jour';
 COMMENT ON COLUMN r_objet.geo_objet_fon_lot.l_nom IS 'Nom de lot donné au moment du plan d''aménagement (ex : lot 1)';
+
+
+-- Index: r_objet.geo_objet_fon_lot_geom_idx
+
+-- DROP INDEX r_objet.geo_objet_fon_lot_geom_idx;
+
+CREATE INDEX geo_objet_fon_lot_geom_idx
+  ON r_objet.geo_objet_fon_lot
+  USING gist
+  (geom);
 
 
 -- Trigger: t_t1_foncier_insert_date_maj on r_objet.geo_objet_fon_lot
@@ -1904,6 +1928,28 @@ CREATE TRIGGER t_t2_foncier_insert_surf
   FOR EACH ROW
   EXECUTE PROCEDURE public.ft_r_sup_m2_maj();
 
+-- Trigger: t_t3_foncier_l_nom on r_objet.geo_objet_fon_lot
+
+-- DROP TRIGGER t_t3_foncier_l_nom ON r_objet.geo_objet_fon_lot;
+
+CREATE TRIGGER t_t3_foncier_l_nom
+  BEFORE INSERT OR UPDATE OF l_nom
+  ON r_objet.geo_objet_fon_lot
+  FOR EACH ROW
+  EXECUTE PROCEDURE r_objet.ft_m_foncier_l_nom();
+
+-- Trigger: t_t4_suivi on r_objet.geo_objet_fon_lot
+
+-- DROP TRIGGER t_t4_suivi ON r_objet.geo_objet_fon_lot;
+
+CREATE TRIGGER t_t4_suivi
+  AFTER INSERT OR UPDATE OR DELETE
+  ON r_objet.geo_objet_fon_lot
+  FOR EACH ROW
+  EXECUTE PROCEDURE m_economie.ft_m_suivi_audit();
+ALTER TABLE r_objet.geo_objet_fon_lot DISABLE TRIGGER t_t4_suivi;
+
+
 
 -- Function: r_objet.ft_m_foncier_l_nom()
 
@@ -1925,7 +1971,6 @@ ALTER FUNCTION r_objet.ft_m_foncier_l_nom()
   OWNER TO sig_create;
 
 COMMENT ON FUNCTION r_objet.ft_m_foncier_l_nom() IS 'Fonction dont l''objet de forcer à null le champ l_nom après effacement par exemple pour éviter les doubles cotes';
-
 
 -- Trigger: ft_m_foncier_l_nom on r_objet.geo_objet_fon_lot
 
@@ -2281,6 +2326,11 @@ CREATE TABLE m_economie.an_sa_etab
   l_drh_ad character varying(150), -- Adresse extérieure de la DRH si pas sur site
   id serial NOT NULL, -- Identifiant unique interne
   l_telp_aut character varying(15), -- Téléphone portable de l'autre responsable
+  dentree timestamp without time zone, -- Date d'entrée dans le fichier SIRENE
+  dsortie timestamp without time zone, -- Date de sortie du fichier SIRENE
+  etatadministratifetablissement character varying(1), -- Etat administratif de l'établissement dans le fichier SIEREN (attribut déjà présent dans SIRENE mais dupliqué ici pour le filtrage dans GEO, améliore les performances sans passer par une vue)
+  old_siret character varying(14), -- Attribut de gestion servant uniquement temporairement à la récupération des contacts d'un ancien établissement qui aurait disparu pour les remettre dans le nouveau. Cet attribut est vidé parès mise à jour
+  old_id integer, -- Attribut de gestion servant uniquement temporairement à la récupération des contacts d'un établissement spécifique non présent dans SIRENE mais apparu par la suite. Cet attribut est vidé parès mise à jour
   CONSTRAINT an_sa_etab_pkey PRIMARY KEY (id)
 )
 WITH (
@@ -2354,32 +2404,23 @@ COMMENT ON COLUMN m_economie.an_sa_etab.l_drh_ss IS 'Information sur le fait que
 COMMENT ON COLUMN m_economie.an_sa_etab.l_drh_ad IS 'Adresse extérieure de la DRH si pas sur site';
 COMMENT ON COLUMN m_economie.an_sa_etab.id IS 'Identifiant unique interne';
 COMMENT ON COLUMN m_economie.an_sa_etab.l_telp_aut IS 'Téléphone portable de l''autre responsable';
-
--- Function: m_economie.ft_m_an_sa_etab_l_nom_null()
-
--- DROP FUNCTION m_economie.ft_m_an_sa_etab_l_nom_null();
-
-CREATE OR REPLACE FUNCTION m_economie.ft_m_an_sa_etab_l_nom_null()
-  RETURNS trigger AS
-$BODY$
-
-begin
-
- -- gestion des valeurs '' quand suppression d'une valeur dans une fiche GEO
- update m_economie.an_sa_etab set l_nom = null where l_nom = '';        
+COMMENT ON COLUMN m_economie.an_sa_etab.dentree IS 'Date d''entrée dans le fichier SIRENE';
+COMMENT ON COLUMN m_economie.an_sa_etab.dsortie IS 'Date de sortie du fichier SIRENE';
+COMMENT ON COLUMN m_economie.an_sa_etab.etatadministratifetablissement IS 'Etat administratif de l''établissement dans le fichier SIEREN (attribut déjà présent dans SIRENE mais dupliqué ici pour le filtrage dans GEO, améliore les performances sans passer par une vue)';
+COMMENT ON COLUMN m_economie.an_sa_etab.old_siret IS 'Attribut de gestion servant uniquement temporairement à la récupération des contacts d''un ancien établissement qui aurait disparu pour les remettre dans le nouveau. Cet attribut est vidé parès mise à jour';
+COMMENT ON COLUMN m_economie.an_sa_etab.old_id IS 'Attribut de gestion servant uniquement temporairement à la récupération des contacts d''un établissement spécifique non présent dans SIRENE mais apparu par la suite. Cet attribut est vidé parès mise à jour';
 
 
-	return new; 
-end;
+-- Trigger: t_t1_an_sa_etab_date_maj on m_economie.an_sa_etab
 
-$BODY$
-  LANGUAGE plpgsql VOLATILE
-  COST 100;
-ALTER FUNCTION m_economie.ft_m_an_sa_etab_l_nom_null()
-  OWNER TO sig_create;
+-- DROP TRIGGER t_t1_an_sa_etab_date_maj ON m_economie.an_sa_etab;
 
-COMMENT ON FUNCTION m_economie.ft_m_an_sa_etab_l_nom_null() IS 'Fonction forçant le champ à null quand insertion ou mise à jour de l''attribut pour éviter les '''' (pb d''afficchage des étiquettes dans GEO)';
-			 
+CREATE TRIGGER t_t1_an_sa_etab_date_maj
+  BEFORE UPDATE
+  ON m_economie.an_sa_etab
+  FOR EACH ROW
+  EXECUTE PROCEDURE public.ft_r_timestamp_maj();
+
 -- Trigger: t_t1_l_nom_null on m_economie.an_sa_etab
 
 -- DROP TRIGGER t_t1_l_nom_null ON m_economie.an_sa_etab;
@@ -2389,7 +2430,8 @@ CREATE TRIGGER t_t1_l_nom_null
   ON m_economie.an_sa_etab
   FOR EACH ROW
   EXECUTE PROCEDURE m_economie.ft_m_an_sa_etab_l_nom_null();
-			 
+ALTER TABLE m_economie.an_sa_etab DISABLE TRIGGER t_t1_l_nom_null;
+
 -- Trigger: t_t2_suivi on m_economie.an_sa_etab
 
 -- DROP TRIGGER t_t2_suivi ON m_economie.an_sa_etab;
@@ -2398,9 +2440,173 @@ CREATE TRIGGER t_t2_suivi
   AFTER INSERT OR UPDATE OR DELETE
   ON m_economie.an_sa_etab
   FOR EACH ROW
-  EXECUTE PROCEDURE m_economie.ft_r_suivi_audit();
+  EXECUTE PROCEDURE m_economie.ft_m_suivi_audit();
+ALTER TABLE m_economie.an_sa_etab DISABLE TRIGGER t_t2_suivi;
 
-                   
+-- Trigger: t_t4_an_sa_etab_oldsiret on m_economie.an_sa_etab
+
+-- DROP TRIGGER t_t4_an_sa_etab_oldsiret ON m_economie.an_sa_etab;
+
+CREATE TRIGGER t_t4_an_sa_etab_oldsiret
+  AFTER UPDATE OF old_siret, old_id
+  ON m_economie.an_sa_etab
+  FOR EACH ROW
+  EXECUTE PROCEDURE m_economie.ft_m_an_sa_etab_oldsiret();
+
+-- Function: m_economie.ft_m_an_sa_etab_oldsiret()
+
+-- DROP FUNCTION m_economie.ft_m_an_sa_etab_oldsiret();
+
+CREATE OR REPLACE FUNCTION m_economie.ft_m_an_sa_etab_oldsiret()
+  RETURNS trigger AS
+$BODY$BEGIN
+
+
+IF new.old_siret is not null or new.old_siret <> '' THEN
+
+update m_economie.an_sa_etab set eff_etab = (select eff_etab from m_economie.an_sa_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_economie.an_sa_etab set source_eff = (select source_eff from m_economie.an_sa_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_economie.an_sa_etab set l_date_eff = (select l_date_eff from m_economie.an_sa_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_economie.an_sa_etab set op_sai = (select op_sai from m_economie.an_sa_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_economie.an_sa_etab set org_sai = (select org_sai from m_economie.an_sa_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_economie.an_sa_etab set l_tel = (select l_tel from m_economie.an_sa_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_economie.an_sa_etab set l_mail = (select l_mail from m_economie.an_sa_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_economie.an_sa_etab set l_url = (select l_url from m_economie.an_sa_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_economie.an_sa_etab set l_nom_dir = (select l_nom_dir from m_economie.an_sa_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_economie.an_sa_etab set l_titre = (select l_titre from m_economie.an_sa_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_economie.an_sa_etab set source_maj_dir = (select source_maj_dir from m_economie.an_sa_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_economie.an_sa_etab set date_maj_dir = (select date_maj_dir from m_economie.an_sa_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_economie.an_sa_etab set l_mail_dir = (select l_mail_dir from m_economie.an_sa_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_economie.an_sa_etab set l_tel_dir = (select l_tel_dir from m_economie.an_sa_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_economie.an_sa_etab set l_telp_dir = (select l_telp_dir from m_economie.an_sa_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_economie.an_sa_etab set l_nom_aut = (select l_nom_aut from m_economie.an_sa_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_economie.an_sa_etab set l_titre_aut = (select l_titre_aut from m_economie.an_sa_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_economie.an_sa_etab set date_maj_aut = (select date_maj_aut from m_economie.an_sa_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_economie.an_sa_etab set l_mail_aut = (select l_mail_aut from m_economie.an_sa_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_economie.an_sa_etab set l_tel_aut = (select l_tel_aut from m_economie.an_sa_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_economie.an_sa_etab set l_telp_aut = (select l_telp_aut from m_economie.an_sa_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_economie.an_sa_etab set l_nom_drh = (select l_nom_drh from m_economie.an_sa_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_economie.an_sa_etab set l_titre_drh = (select l_titre_drh from m_economie.an_sa_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_economie.an_sa_etab set date_maj_drh = (select date_maj_drh from m_economie.an_sa_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_economie.an_sa_etab set l_mail_drh = (select l_mail_drh from m_economie.an_sa_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_economie.an_sa_etab set l_tel_drh = (select l_tel_drh from m_economie.an_sa_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_economie.an_sa_etab set l_drh_ss = (select l_drh_ss from m_economie.an_sa_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_economie.an_sa_etab set l_drh_ad = (select l_drh_ad from m_economie.an_sa_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_economie.an_sa_etab set l_nom_ad = (select l_nom_ad from m_economie.an_sa_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_economie.an_sa_etab set l_titre_ad = (select l_titre_ad from m_economie.an_sa_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_economie.an_sa_etab set date_maj_ad = (select date_maj_ad from m_economie.an_sa_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_economie.an_sa_etab set l_mail_ad = (select l_mail_ad from m_economie.an_sa_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_economie.an_sa_etab set l_tel_ad = (select l_tel_ad from m_economie.an_sa_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_economie.an_sa_etab set l_comp_ad = (select l_comp_ad from m_economie.an_sa_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_economie.an_sa_etab set l_url_bil = (select l_url_bil from m_economie.an_sa_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_economie.an_sa_etab set l_observ = (select l_observ from m_economie.an_sa_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+
+update m_economie.an_sa_etab set eff_etab_d = (select eff_etab_d from m_economie.an_sa_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_economie.an_sa_etab set old_siret = null WHERE idsiret=new.idsiret;
+
+
+END IF;
+
+IF new.old_id is not null or new.old_id > 0 THEN
+
+update m_economie.an_sa_etab set l_observ = (select l_observ from m_economie.geo_sa_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_economie.an_sa_etab set eff_etab = (select eff_etab from m_economie.geo_sa_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_economie.an_sa_etab set source_eff = (select source_eff from m_economie.geo_sa_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_economie.an_sa_etab set l_date_eff = (select date_eff from m_economie.geo_sa_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_economie.an_sa_etab set op_sai = (select op_sai from m_economie.geo_sa_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_economie.an_sa_etab set org_sai = (select org_sai from m_economie.geo_sa_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_economie.an_sa_etab set l_tel = (select l_tel from m_economie.geo_sa_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_economie.an_sa_etab set l_mail = (select l_mail from m_economie.geo_sa_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_economie.an_sa_etab set l_url = (select l_url from m_economie.geo_sa_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_economie.an_sa_etab set l_nom_dir = (select l_nom_dir from m_economie.geo_sa_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_economie.an_sa_etab set l_titre = (select l_titre from m_economie.geo_sa_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_economie.an_sa_etab set source_maj_dir = (select source_maj_dir from m_economie.geo_sa_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_economie.an_sa_etab set date_maj_dir = (select date_maj_dir from m_economie.geo_sa_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_economie.an_sa_etab set l_mail_dir = (select l_mail_dir from m_economie.geo_sa_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_economie.an_sa_etab set l_tel_dir = (select l_tel_dir from m_economie.geo_sa_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_economie.an_sa_etab set l_telp_dir = (select l_telp_dir from m_economie.geo_sa_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_economie.an_sa_etab set l_nom_aut = (select l_nom_aut from m_economie.geo_sa_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_economie.an_sa_etab set l_titre_aut = (select l_titre_aut from m_economie.geo_sa_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_economie.an_sa_etab set date_maj_aut = (select date_maj_aut from m_economie.geo_sa_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_economie.an_sa_etab set l_mail_aut = (select l_mail_aut from m_economie.geo_sa_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_economie.an_sa_etab set l_tel_aut = (select l_tel_aut from m_economie.geo_sa_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_economie.an_sa_etab set l_telp_aut = (select l_telp_aut from m_economie.geo_sa_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_economie.an_sa_etab set l_nom_drh = (select l_nom_drh from m_economie.geo_sa_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_economie.an_sa_etab set l_titre_drh = (select l_titre_drh from m_economie.geo_sa_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_economie.an_sa_etab set date_maj_drh = (select date_maj_drh from m_economie.geo_sa_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_economie.an_sa_etab set l_mail_drh = (select l_mail_drh from m_economie.geo_sa_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_economie.an_sa_etab set l_tel_drh = (select l_tel_drh from m_economie.geo_sa_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_economie.an_sa_etab set l_drh_ss = (select l_drh_ss from m_economie.geo_sa_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_economie.an_sa_etab set l_drh_ad = (select l_drh_ad from m_economie.geo_sa_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_economie.an_sa_etab set l_nom_ad = (select l_nom_ad from m_economie.geo_sa_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_economie.an_sa_etab set l_titre_ad = (select l_titre_ad from m_economie.geo_sa_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_economie.an_sa_etab set date_maj_ad = (select date_maj_ad from m_economie.geo_sa_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_economie.an_sa_etab set l_mail_ad = (select l_mail_ad from m_economie.geo_sa_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_economie.an_sa_etab set l_tel_ad = (select l_tel_ad from m_economie.geo_sa_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+
+update m_economie.an_sa_etab set l_comp_ad = (select l_comp_ad from m_economie.geo_sa_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_economie.an_sa_etab set l_url_bil = (select l_url_bil from m_economie.geo_sa_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_economie.an_sa_etab set eff_etab_d = (select eff_etab_d from m_economie.geo_sa_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+
+
+update m_economie.an_sa_etab set old_id = null WHERE idgeoet=new.idgeoet;
+
+DELETE FROM m_economie.geo_sa_etabp where idgeoet = new.old_id;
+
+END IF;
+
+
+
+return new;
+END$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION m_economie.ft_m_an_sa_etab_oldsiret()
+  OWNER TO sig_create;
+
+COMMENT ON FUNCTION m_economie.ft_m_an_sa_etab_oldsiret() IS 'Fonction dont l''objet est de récupérer les anciens contacts d''unb établissement fermé pour les réinscrires au même établissement ayant changer de SIRET';
+
+			 
+-- Trigger: t_t5_an_sa_etab_lcompte_local on m_economie.an_sa_etab
+
+-- DROP TRIGGER t_t5_an_sa_etab_lcompte_local ON m_economie.an_sa_etab;
+
+CREATE TRIGGER t_t5_an_sa_etab_lcompte_local
+  AFTER UPDATE OF l_compte
+  ON m_economie.an_sa_etab
+  FOR EACH ROW
+  EXECUTE PROCEDURE m_economie.ft_m_etiquette_local();
+			 
+-- Function: m_economie.ft_m_etiquette_local()
+
+-- DROP FUNCTION m_economie.ft_m_etiquette_local();
+
+CREATE OR REPLACE FUNCTION m_economie.ft_m_etiquette_local()
+  RETURNS trigger AS
+$BODY$
+
+BEGIN
+-- rafraichissement de la vue matérialisée des locaux pour affichage étiquette des noms
+REFRESH MATERIALIZED VIEW x_apps.xapps_geo_vmr_local;
+-- refraichissement de la vue matérialisée des points établissements à l'adresse
+REFRESH MATERIALIZED VIEW x_apps.xapps_geo_vmr_etab_api;
+
+return new;
+
+END;
+
+
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION m_economie.ft_m_etiquette_local()
+  OWNER TO sig_create;
+
+
+
+
+ 
+			 
 -- ################################################# Classe des objets des lots ##################################
 
 -- Table: m_economie.an_sa_lot
@@ -3110,7 +3316,10 @@ CREATE TABLE m_economie.geo_sa_etabp
   l_drh_ss boolean DEFAULT true, -- Information sur le fait que la DRH soit sur le site (par défaut oui)
   l_drh_ad character varying(150), -- Adresse extérieure de la DRH si pas sur le site
   l_telp_aut character varying(15), -- Téléphone portable de l'autre responsable
-  CONSTRAINT geo_sa_etabp_pkey PRIMARY KEY (idgeoet)
+  CONSTRAINT geo_sa_etabp_pkey PRIMARY KEY (idgeoet),
+  CONSTRAINT geo_sa_etabp_srcgeom_fkey FOREIGN KEY (src_geom)
+      REFERENCES r_objet.lt_src_geom (code) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
 )
 WITH (
   OIDS=FALSE
@@ -3170,40 +3379,15 @@ COMMENT ON COLUMN m_economie.geo_sa_etabp.l_drh_ss IS 'Information sur le fait q
 COMMENT ON COLUMN m_economie.geo_sa_etabp.l_drh_ad IS 'Adresse extérieure de la DRH si pas sur le site';
 COMMENT ON COLUMN m_economie.geo_sa_etabp.l_telp_aut IS 'Téléphone portable de l''autre responsable';
 
-				 
--- Function: m_economie.ft_m_etabp_insert()
 
--- DROP FUNCTION m_economie.ft_m_etabp_insert();
+-- Index: m_economie.geo_sa_etabp_geom_idx
 
-CREATE OR REPLACE FUNCTION m_economie.ft_m_etabp_insert()
-  RETURNS trigger AS
-$BODY$
+-- DROP INDEX m_economie.geo_sa_etabp_geom_idx;
 
-BEGIN
-    new.idgeoet = (SELECT nextval('idgeo_seq'::regclass));
-    -- insertion du numéro du site
-    new.idsite = (SELECT DISTINCT
-				an_sa_site.idsite 
-		  FROM 
-				m_economie.an_sa_site, r_objet.geo_objet_ope
-		  WHERE
-				geo_objet_ope.idsite=an_sa_site.idsite
-		  AND
-				st_intersects(geo_objet_ope.geom,new.geom) = true
-		  );
-	
-    return new ;
-END;
-
-
-
-
-$BODY$
-  LANGUAGE plpgsql VOLATILE
-  COST 100;
-ALTER FUNCTION m_economie.ft_m_etabp_insert()
-  OWNER TO sig_create;
-
+CREATE INDEX geo_sa_etabp_geom_idx
+  ON m_economie.geo_sa_etabp
+  USING gist
+  (geom);
 
 
 -- Trigger: t_t1_etabp_insert on m_economie.geo_sa_etabp
@@ -3216,6 +3400,62 @@ CREATE TRIGGER t_t1_etabp_insert
   FOR EACH ROW
   EXECUTE PROCEDURE m_economie.ft_m_etabp_insert();
 
+-- Function: m_economie.ft_m_etabp_insert()
+
+-- DROP FUNCTION m_economie.ft_m_etabp_insert();
+
+CREATE OR REPLACE FUNCTION m_economie.ft_m_etabp_insert()
+  RETURNS trigger AS
+$BODY$
+
+DECLARE v_idgeoet integer;
+
+BEGIN
+    v_idgeoet := (SELECT nextval('idgeo_seq'::regclass));
+    new.idgeoet = v_idgeoet;
+    -- insertion du numéro du site
+    new.idsite = (SELECT DISTINCT
+				an_sa_site.idsite 
+		  FROM 
+				m_economie.an_sa_site, r_objet.geo_objet_ope
+		  WHERE
+				geo_objet_ope.idsite=an_sa_site.idsite
+		  AND
+				st_intersects(geo_objet_ope.geom,new.geom) = true
+		  );
+
+-- mise à jour des appartenances des établissements au local dans la table lk_localsiret
+-- si le point est dans un local alors
+IF
+(
+	SELECT count(*) FROM m_economie.geo_sa_local l
+	WHERE st_intersects(new.geom,l.geom)
+) > 0
+THEN
+INSERT INTO m_economie.lk_localsiret (idgeoloc,siret)
+SELECT DISTINCT l.idgeoloc,v_idgeoet FROM m_economie.geo_sa_local l
+WHERE st_intersects(l.geom,new.geom);
+
+-- sinon dans un lot
+ELSE
+INSERT INTO m_economie.lk_localsiret (idgeoloc,siret)
+SELECT DISTINCT l.idgeolf,v_idgeoet FROM r_objet.geo_objet_fon_lot l
+WHERE st_intersects(l.geom,new.geom) AND l.l_voca='20';
+
+END IF;
+
+
+    return new ;
+END;
+
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION m_economie.ft_m_etabp_insert()
+  OWNER TO sig_create;
+
+
+				 
 -- Trigger: t_t2_etabp_insert_date_maj on m_economie.geo_sa_etabp
 
 -- DROP TRIGGER t_t2_etabp_insert_date_maj ON m_economie.geo_sa_etabp;
@@ -3235,6 +3475,162 @@ CREATE TRIGGER t_t3_etabp_insert_date_sai
   ON m_economie.geo_sa_etabp
   FOR EACH ROW
   EXECUTE PROCEDURE public.ft_r_timestamp_sai();
+
+-- Trigger: t_t5_etabp_update on m_economie.geo_sa_etabp
+
+-- DROP TRIGGER t_t5_etabp_update ON m_economie.geo_sa_etabp;
+
+CREATE TRIGGER t_t5_etabp_update
+  BEFORE UPDATE
+  ON m_economie.geo_sa_etabp
+  FOR EACH ROW
+  EXECUTE PROCEDURE m_economie.ft_m_etabp_update();
+
+-- Function: m_economie.ft_m_etabp_update()
+
+-- DROP FUNCTION m_economie.ft_m_etabp_update();
+
+CREATE OR REPLACE FUNCTION m_economie.ft_m_etabp_update()
+  RETURNS trigger AS
+$BODY$
+
+BEGIN
+
+    -- insertion du numéro du site
+    new.idsite = (SELECT DISTINCT
+				an_sa_site.idsite 
+		  FROM 
+				m_economie.an_sa_site, r_objet.geo_objet_ope
+		  WHERE
+				geo_objet_ope.idsite=an_sa_site.idsite
+		  AND
+				st_intersects(geo_objet_ope.geom,new.geom) = true
+		  );
+	
+ 
+
+-- mise à jour des appartenances des établissements au local dans la table lk_localsiret
+-- si le point est dans un local alors
+
+IF
+
+(
+	SELECT count(*) FROM m_economie.geo_sa_local l
+	WHERE st_intersects(new.geom,l.geom)
+) > 0
+THEN
+DELETE FROM m_economie.lk_localsiret WHERE siret = new.idgeoet::character varying; 
+INSERT INTO m_economie.lk_localsiret (idgeoloc,siret)
+SELECT DISTINCT l.idgeoloc,new.idgeoet FROM m_economie.geo_sa_local l
+WHERE st_intersects(l.geom,new.geom);
+
+-- sinon dans un lot
+ELSE
+IF
+(
+	SELECT count(*) FROM r_objet.geo_objet_fon_lot l
+	WHERE st_intersects(new.geom,l.geom) AND l.l_voca='20'
+) > 0
+THEN
+DELETE FROM m_economie.lk_localsiret WHERE siret = new.idgeoet::character varying; 
+INSERT INTO m_economie.lk_localsiret (idgeoloc,siret)
+SELECT DISTINCT l.idgeolf,new.idgeoet FROM r_objet.geo_objet_fon_lot l
+WHERE st_intersects(l.geom,new.geom) AND l.l_voca='20';
+
+ELSE
+DELETE FROM m_economie.lk_localsiret WHERE siret = new.idgeoet::character varying;
+
+END IF;
+END IF;
+
+
+return new ;
+
+END;
+
+
+
+
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION m_economie.ft_m_etabp_update()
+  OWNER TO sig_create;
+
+ 
+				 
+-- Trigger: t_t6_etabp_update_datemaj on m_economie.geo_sa_etabp
+
+-- DROP TRIGGER t_t6_etabp_update_datemaj ON m_economie.geo_sa_etabp;
+
+CREATE TRIGGER t_t6_etabp_update_datemaj
+  BEFORE UPDATE
+  ON m_economie.geo_sa_etabp
+  FOR EACH ROW
+  EXECUTE PROCEDURE public.ft_r_timestamp_maj();
+
+-- Trigger: t_t7_geo_sa_etabp_insee on m_economie.geo_sa_etabp
+
+-- DROP TRIGGER t_t7_geo_sa_etabp_insee ON m_economie.geo_sa_etabp;
+
+CREATE TRIGGER t_t7_geo_sa_etabp_insee
+  BEFORE INSERT OR UPDATE OF geom
+  ON m_economie.geo_sa_etabp
+  FOR EACH ROW
+  EXECUTE PROCEDURE public.ft_r_commune_pl();
+
+-- Trigger: t_t8_geo_sa_etabp_delete on m_economie.geo_sa_etabp
+
+-- DROP TRIGGER t_t8_geo_sa_etabp_delete ON m_economie.geo_sa_etabp;
+
+CREATE TRIGGER t_t8_geo_sa_etabp_delete
+  AFTER DELETE
+  ON m_economie.geo_sa_etabp
+  FOR EACH ROW
+  EXECUTE PROCEDURE m_economie.ft_m_geo_sa_etabp_delete();
+
+-- Function: m_economie.ft_m_geo_sa_etabp_delete()
+
+-- DROP FUNCTION m_economie.ft_m_geo_sa_etabp_delete();
+
+CREATE OR REPLACE FUNCTION m_economie.ft_m_geo_sa_etabp_delete()
+  RETURNS trigger AS
+$BODY$BEGIN
+
+-- supression dans la table de relation local siret
+DELETE FROM m_economie.lk_localsiret WHERE siret = old.idgeoet::character varying;
+
+return new;
+END$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION m_economie.ft_m_geo_sa_etabp_delete()
+  OWNER TO sig_create;
+
+COMMENT ON FUNCTION m_economie.ft_m_geo_sa_etabp_delete() IS 'Fonction dont l''objet de supprimer l''établissement spécifique affecté à un local après suppression. La récupération des informations spécifiques s''effectue via la fiche établissement après affectation de celui-ci à la bonne adresse
+lors de son apparition dans le ficher SIRENE';
+
+				 
+-- Trigger: t_t8_suivi on m_economie.geo_sa_etabp
+
+-- DROP TRIGGER t_t8_suivi ON m_economie.geo_sa_etabp;
+
+CREATE TRIGGER t_t8_suivi
+  AFTER INSERT OR UPDATE OR DELETE
+  ON m_economie.geo_sa_etabp
+  FOR EACH ROW
+  EXECUTE PROCEDURE m_economie.ft_m_suivi_audit();
+ALTER TABLE m_economie.geo_sa_etabp DISABLE TRIGGER t_t8_suivi;
+
+-- Trigger: t_t91_etabp_null on m_economie.geo_sa_etabp
+
+-- DROP TRIGGER t_t91_etabp_null ON m_economie.geo_sa_etabp;
+
+CREATE TRIGGER t_t91_etabp_null
+  AFTER INSERT OR UPDATE
+  ON m_economie.geo_sa_etabp
+  FOR EACH ROW
+  EXECUTE PROCEDURE m_economie.ft_m_etabp_null();
 
 -- Function: m_economie.ft_m_etabp_null()
 
@@ -3272,91 +3668,43 @@ ALTER FUNCTION m_economie.ft_m_etabp_null()
   OWNER TO sig_create;
 
 
-				  				  
--- Trigger: t_t4_etabp_null on m_economie.geo_sa_etabp
+				 
+-- Trigger: t_t9_etiquette_local_refresh on m_economie.geo_sa_etabp
 
--- DROP TRIGGER t_t4_etabp_null ON m_economie.geo_sa_etabp;
+-- DROP TRIGGER t_t9_etiquette_local_refresh ON m_economie.geo_sa_etabp;
 
-CREATE TRIGGER t_t4_etabp_null
-  AFTER INSERT OR UPDATE
+CREATE TRIGGER t_t9_etiquette_local_refresh
+  AFTER INSERT OR UPDATE OR DELETE
   ON m_economie.geo_sa_etabp
   FOR EACH ROW
-  EXECUTE PROCEDURE m_economie.ft_m_etabp_null();
+  EXECUTE PROCEDURE m_economie.ft_m_etiquette_local();
 
--- Function: m_economie.ft_m_etabp_update()
+-- Function: m_economie.ft_m_etiquette_local()
 
--- DROP FUNCTION m_economie.ft_m_etabp_update();
+-- DROP FUNCTION m_economie.ft_m_etiquette_local();
 
-CREATE OR REPLACE FUNCTION m_economie.ft_m_etabp_update()
+CREATE OR REPLACE FUNCTION m_economie.ft_m_etiquette_local()
   RETURNS trigger AS
 $BODY$
 
 BEGIN
+-- rafraichissement de la vue matérialisée des locaux pour affichage étiquette des noms
+REFRESH MATERIALIZED VIEW x_apps.xapps_geo_vmr_local;
+-- refraichissement de la vue matérialisée des points établissements à l'adresse
+REFRESH MATERIALIZED VIEW x_apps.xapps_geo_vmr_etab_api;
 
-    -- insertion du numéro du site
-    new.idsite = (SELECT DISTINCT
-				an_sa_site.idsite 
-		  FROM 
-				m_economie.an_sa_site, r_objet.geo_objet_ope
-		  WHERE
-				geo_objet_ope.idsite=an_sa_site.idsite
-		  AND
-				st_intersects(geo_objet_ope.geom,new.geom) = true
-		  );
-	
-    return new ;
+return new;
+
 END;
-
-
 
 
 $BODY$
   LANGUAGE plpgsql VOLATILE
   COST 100;
-ALTER FUNCTION m_economie.ft_m_etabp_update()
+ALTER FUNCTION m_economie.ft_m_etiquette_local()
   OWNER TO sig_create;
 
 
-				  
--- Trigger: t_t5_etabp_update on m_economie.geo_sa_etabp
-
--- DROP TRIGGER t_t5_etabp_update ON m_economie.geo_sa_etabp;
-
-CREATE TRIGGER t_t5_etabp_update
-  BEFORE UPDATE
-  ON m_economie.geo_sa_etabp
-  FOR EACH ROW
-  EXECUTE PROCEDURE m_economie.ft_m_etabp_update();
-
--- Trigger: t_t6_etabp_update_datemaj on m_economie.geo_sa_etabp
-
--- DROP TRIGGER t_t6_etabp_update_datemaj ON m_economie.geo_sa_etabp;
-
-CREATE TRIGGER t_t6_etabp_update_datemaj
-  BEFORE UPDATE
-  ON m_economie.geo_sa_etabp
-  FOR EACH ROW
-  EXECUTE PROCEDURE public.ft_r_timestamp_maj();
-
--- Trigger: t_t7_geo_sa_etabp_insee on m_economie.geo_sa_etabp
-
--- DROP TRIGGER t_t7_geo_sa_etabp_insee ON m_economie.geo_sa_etabp;
-
-CREATE TRIGGER t_t7_geo_sa_etabp_insee
-  BEFORE INSERT OR UPDATE OF geom
-  ON m_economie.geo_sa_etabp
-  FOR EACH ROW
-  EXECUTE PROCEDURE public.ft_r_commune_pl();
-
--- Trigger: t_t8_suivi on m_economie.geo_sa_etabp
-
--- DROP TRIGGER t_t8_suivi ON m_economie.geo_sa_etabp;
-
-CREATE TRIGGER t_t8_suivi
-  AFTER INSERT OR UPDATE OR DELETE
-  ON m_economie.geo_sa_etabp
-  FOR EACH ROW
-  EXECUTE PROCEDURE m_economie.ft_r_suivi_audit();
 
 -- ################################################# Classe des objets des poles ############################
 
@@ -3580,8 +3928,533 @@ WITH (
 );
 ALTER TABLE m_economie.log_suivi_audit
   OWNER TO sig_create;
+				 
+-- ################################################# Classe des objets des locaux (hors BAL) ############################
 
-				  
+-- Table: m_economie.geo_sa_local
+
+-- DROP TABLE m_economie.geo_sa_local;
+
+CREATE TABLE m_economie.geo_sa_local
+(
+  idgeoloc integer NOT NULL DEFAULT nextval('idgeo_seq'::regclass), -- Identifiant unique du local
+  idgeolf integer, -- Identifiant unique du lot foncier d'appartenance
+  usage character varying(100), -- Usage du local si pas d'occupants identifiés
+  sup_m2 double precision, -- Surface en m² du local
+  geom geometry(Polygon,2154), -- Champ stockant la géométrie des objets
+  l_occupp character varying(255), -- Libellé du bâtiment ou occupant principale
+  CONSTRAINT geo_sa_local_pkey PRIMARY KEY (idgeoloc)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE m_economie.geo_sa_local
+  OWNER TO sig_create;
+
+COMMENT ON TABLE m_economie.geo_sa_local
+  IS 'Table géographique contenant la localisation des locaux. Par défaut les objets reprennent ceux des lots fonciers. Au besoin des sous-découpages sont créés (galerie commerciale, division de lots, ...)';
+COMMENT ON COLUMN m_economie.geo_sa_local.idgeoloc IS 'Identifiant unique du local';
+COMMENT ON COLUMN m_economie.geo_sa_local.idgeolf IS 'Identifiant unique du lot foncier d''appartenance';
+COMMENT ON COLUMN m_economie.geo_sa_local.usage IS 'Usage du local si pas d''occupants identifiés';
+COMMENT ON COLUMN m_economie.geo_sa_local.sup_m2 IS 'Surface en m² du local';
+COMMENT ON COLUMN m_economie.geo_sa_local.geom IS 'Champ stockant la géométrie des objets';
+COMMENT ON COLUMN m_economie.geo_sa_local.l_occupp IS 'Libellé du bâtiment ou occupant principale';
+
+
+-- Trigger: t_t1_local_insert_surf on m_economie.geo_sa_local
+
+-- DROP TRIGGER t_t1_local_insert_surf ON m_economie.geo_sa_local;
+
+CREATE TRIGGER t_t1_local_insert_surf
+  BEFORE INSERT OR UPDATE OF geom
+  ON m_economie.geo_sa_local
+  FOR EACH ROW
+  EXECUTE PROCEDURE public.ft_r_sup_m2_maj();
+
+-- Trigger: t_t2_local_insert_update_etab on m_economie.geo_sa_local
+
+-- DROP TRIGGER t_t2_local_insert_update_etab ON m_economie.geo_sa_local;
+
+CREATE TRIGGER t_t2_local_insert_update_etab
+  BEFORE INSERT OR UPDATE OF geom
+  ON m_economie.geo_sa_local
+  FOR EACH ROW
+  EXECUTE PROCEDURE m_economie.ft_m_local_insert_update();
+
+-- Function: m_economie.ft_m_local_insert_update()
+
+-- DROP FUNCTION m_economie.ft_m_local_insert_update();
+
+CREATE OR REPLACE FUNCTION m_economie.ft_m_local_insert_update()
+  RETURNS trigger AS
+$BODY$
+
+
+DECLARE v_idgeolf integer;
+BEGIN
+
+
+
+	-- mise à jour des appartenances des établissements à l'adresse dans la table lk_localsiret
+	-- si le local ne contient pas d'adresse, ne supprime pas les relations du local avec les établissements si non oui 
+
+        -- à la mise à jour
+        IF (TG_OP = 'UPDATE') THEN
+	-- si il n'y a pas d'adresse sur le lot je ne fais rien pour conserver éventuellement les établissements affectés à ce local manuellement dans GEO
+	IF 
+		(SELECT count(*) FROM m_economie.geo_sa_local l , x_apps.xapps_geo_vmr_adresse a
+		WHERE st_intersects(new.geom,a.geom))= 0
+	THEN
+		INSERT INTO m_economie.lk_localsiret (idgeoloc,siret)
+		SELECT DISTINCT new.idgeoloc,lk.siret FROM m_economie.geo_sa_local l , x_apps.xapps_geo_vmr_adresse a , m_economie.lk_adresseetablissement lk
+		WHERE st_intersects(new.geom,a.geom) AND a.id_adresse = lk.idadresse;
+
+
+        ELSE 
+		DELETE FROM m_economie.lk_localsiret lk WHERE lk.idgeoloc = old.idgeoloc;
+		INSERT INTO m_economie.lk_localsiret (idgeoloc,siret)
+		SELECT DISTINCT new.idgeoloc, lk.siret FROM m_economie.geo_sa_local l , x_apps.xapps_geo_vmr_adresse a , m_economie.lk_adresseetablissement lk
+		WHERE st_intersects(new.geom,a.geom) AND a.id_adresse = lk.idadresse;
+	END IF;
+	END IF;
+
+	-- à l'insertion
+	IF (TG_OP = 'INSERT') THEN
+	        v_idgeolf = (SELECT l.idgeolf FROM r_objet.geo_objet_fon_lot l WHERE st_intersects(l.geom,st_pointonsurface(new.geom)));
+		-- mise à jour des appartenances des établissements à l'adresse dans la table lk_localsiret
+                new.idgeolf = v_idgeolf;
+                -- si il existe des siret accrochés à l'ancien lot foncier les réaafecter à ce local si non j'insère par défaut
+                -- si il n'y a pas d'adresse sur le lot je ne fais rien pour conserver éventuellement les établissements affectés à ce local manuellement dans GEO
+		IF 
+			
+			(SELECT count(*) FROM m_economie.geo_sa_local l , x_apps.xapps_geo_vmr_adresse a
+			WHERE st_intersects(new.geom,a.geom)) = 0
+		THEN
+
+			UPDATE m_economie.lk_localsiret SET idgeoloc = new.idgeoloc WHERE idgeoloc = v_idgeolf;
+
+
+		ELSE
+			DELETE FROM m_economie.lk_localsiret WHERE idgeoloc = v_idgeolf;
+			INSERT INTO m_economie.lk_localsiret (idgeoloc,siret)
+			SELECT DISTINCT new.idgeoloc, lk.siret FROM m_economie.geo_sa_local l , x_apps.xapps_geo_vmr_adresse a , m_economie.lk_adresseetablissement lk
+			WHERE st_intersects(new.geom,a.geom) AND a.id_adresse = lk.idadresse;
+			
+		END IF;
+		
+
+
+
+	END IF ;
+
+RETURN NEW;
+END;$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION m_economie.ft_m_local_insert_update()
+  OWNER TO sig_create;
+
+COMMENT ON FUNCTION m_economie.ft_m_local_insert_update() IS 'Fonction dont l''objet de rechercher les établissements dans le local si celui-ci croise une adresse et de les intégrer dans la table lk_localsiret';
+
+				 
+-- Trigger: t_t3_local_delete_etab on m_economie.geo_sa_local
+
+-- DROP TRIGGER t_t3_local_delete_etab ON m_economie.geo_sa_local;
+
+CREATE TRIGGER t_t3_local_delete_etab
+  AFTER DELETE
+  ON m_economie.geo_sa_local
+  FOR EACH ROW
+  EXECUTE PROCEDURE m_economie.ft_m_local_delete_etab();
+
+-- Function: m_economie.ft_m_local_delete_etab()
+
+-- DROP FUNCTION m_economie.ft_m_local_delete_etab();
+
+CREATE OR REPLACE FUNCTION m_economie.ft_m_local_delete_etab()
+  RETURNS trigger AS
+$BODY$
+
+
+
+BEGIN
+
+	DELETE FROM m_economie.lk_localsiret WHERE idgeoloc = old.idgeoloc;
+		IF old.idgeolf is not NULL THEN
+			INSERT INTO m_economie.lk_localsiret (idgeoloc,siret)
+			SELECT DISTINCT old.idgeolf,lk.siret FROM r_objet.geo_objet_fon_lot l , x_apps.xapps_geo_vmr_adresse a , m_economie.lk_adresseetablissement lk
+			WHERE st_intersects(l.geom,a.geom) AND l.l_voca='20' AND a.id_adresse = lk.idadresse AND l.idgeolf = old.idgeolf;
+		END IF;
+	REFRESH MATERIALIZED VIEW x_apps.xapps_geo_vmr_local;
+
+        
+
+RETURN NEW;
+END;$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION m_economie.ft_m_local_delete_etab()
+  OWNER TO sig_create;
+
+COMMENT ON FUNCTION m_economie.ft_m_local_delete_etab() IS 'Fonction dont l''objet est de supprimer dans la table lk_localsiret les relations du local avec les établissements présents';
+					    
+
+-- Trigger: t_t4_etiquette_local_refresh on m_economie.geo_sa_local
+
+-- DROP TRIGGER t_t4_etiquette_local_refresh ON m_economie.geo_sa_local;
+
+CREATE TRIGGER t_t4_etiquette_local_refresh
+  AFTER INSERT OR UPDATE OR DELETE
+  ON m_economie.geo_sa_local
+  FOR EACH ROW
+  EXECUTE PROCEDURE m_economie.ft_m_etiquette_local();
+
+-- Function: m_economie.ft_m_etiquette_local()
+
+-- DROP FUNCTION m_economie.ft_m_etiquette_local();
+
+CREATE OR REPLACE FUNCTION m_economie.ft_m_etiquette_local()
+  RETURNS trigger AS
+$BODY$
+
+BEGIN
+-- rafraichissement de la vue matérialisée des locaux pour affichage étiquette des noms
+REFRESH MATERIALIZED VIEW x_apps.xapps_geo_vmr_local;
+-- refraichissement de la vue matérialisée des points établissements à l'adresse
+REFRESH MATERIALIZED VIEW x_apps.xapps_geo_vmr_etab_api;
+
+return new;
+
+END;
+
+
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION m_economie.ft_m_etiquette_local()
+  OWNER TO sig_create;
+
+-- ################################# Classe des objets des liens entre adresse et établissements ############################
+	
+-- Table: m_economie.lk_adresseetablissement
+
+-- DROP TABLE m_economie.lk_adresseetablissement;
+
+CREATE TABLE m_economie.lk_adresseetablissement
+(
+  idadresse bigint, -- Identifiant unique de l'adresse
+  siret character varying(14) -- N° SIRET de l'établissement
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE m_economie.lk_adresseetablissement
+  OWNER TO create_sig;
+
+COMMENT ON TABLE m_economie.lk_adresseetablissement
+  IS 'Table de lien permettant d''affecter les adresses de localisations aux établissements issus de la donnée SIRENE de l''Insee';
+COMMENT ON COLUMN m_economie.lk_adresseetablissement.idadresse IS 'Identifiant unique de l''adresse';
+COMMENT ON COLUMN m_economie.lk_adresseetablissement.siret IS 'N° SIRET de l''établissement';
+
+
+-- Trigger: t_t1_lk_adresseetablissement_siret_update on m_economie.lk_adresseetablissement
+
+-- DROP TRIGGER t_t1_lk_adresseetablissement_siret_update ON m_economie.lk_adresseetablissement;
+
+CREATE TRIGGER t_t1_lk_adresseetablissement_siret_update
+  BEFORE INSERT OR UPDATE
+  ON m_economie.lk_adresseetablissement
+  FOR EACH ROW
+  EXECUTE PROCEDURE m_economie.ft_m_lk_adresseetablissement_siret_update();
+
+-- Function: m_economie.ft_m_lk_adresseetablissement_siret_update()
+
+-- DROP FUNCTION m_economie.ft_m_lk_adresseetablissement_siret_update();
+
+CREATE OR REPLACE FUNCTION m_economie.ft_m_lk_adresseetablissement_siret_update()
+  RETURNS trigger AS
+$BODY$
+
+BEGIN
+
+-- si j'ai déjà un établissement à une adresse et qu'il est adressé à une autre, je supprime d'abord les appariemments
+
+DELETE FROM m_economie.lk_adresseetablissement WHERE siret = new.siret;
+
+return new;
+
+END;
+
+
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION m_economie.ft_m_lk_adresseetablissement_siret_update()
+  OWNER TO sig_create;
+
+
+					    
+-- Trigger: t_t2_lk_adresseetablissement_idsite on m_economie.lk_adresseetablissement
+
+-- DROP TRIGGER t_t2_lk_adresseetablissement_idsite ON m_economie.lk_adresseetablissement;
+
+CREATE TRIGGER t_t2_lk_adresseetablissement_idsite
+  BEFORE INSERT OR UPDATE
+  ON m_economie.lk_adresseetablissement
+  FOR EACH ROW
+  EXECUTE PROCEDURE m_economie.ft_m_lk_adresseetablissement_idsite();
+
+-- Function: m_economie.ft_m_lk_adresseetablissement_idsite()
+
+-- DROP FUNCTION m_economie.ft_m_lk_adresseetablissement_idsite();
+
+CREATE OR REPLACE FUNCTION m_economie.ft_m_lk_adresseetablissement_idsite()
+  RETURNS trigger AS
+$BODY$
+
+
+BEGIN
+
+
+UPDATE m_economie.an_sa_etab SET idsite = 
+(SELECT DISTINCT idsite FROM r_objet.geo_objet_ope WHERE st_intersects(geo_objet_ope.geom,(SELECT a.geom FROM x_apps.xapps_geo_vmr_adresse a WHERE a.id_adresse = new.idadresse)) = true and idsite <> '60382zz')
+WHERE idsiret = new.siret;
+
+
+
+return new;
+
+END;
+
+
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION m_economie.ft_m_lk_adresseetablissement_idsite()
+  OWNER TO sig_create;
+
+					    
+-- Trigger: t_t3_lk_adresseetablissement_idsite_delete on m_economie.lk_adresseetablissement
+
+-- DROP TRIGGER t_t3_lk_adresseetablissement_idsite_delete ON m_economie.lk_adresseetablissement;
+
+CREATE TRIGGER t_t3_lk_adresseetablissement_idsite_delete
+  AFTER DELETE
+  ON m_economie.lk_adresseetablissement
+  FOR EACH ROW
+  EXECUTE PROCEDURE m_economie.ft_m_lk_adresseetablissement_idsite_delete();
+
+-- Function: m_economie.ft_m_lk_adresseetablissement_idsite_delete()
+
+-- DROP FUNCTION m_economie.ft_m_lk_adresseetablissement_idsite_delete();
+
+CREATE OR REPLACE FUNCTION m_economie.ft_m_lk_adresseetablissement_idsite_delete()
+  RETURNS trigger AS
+$BODY$
+
+BEGIN
+
+-- suppression de l'appariemment du siret à l'adresse
+DELETE FROM m_economie.lk_adresseetablissement WHERE siret = old.siret;
+-- suppression de l'établissement affecté au local
+DELETE FROM m_economie.lk_localsiret WHERE siret = old.siret;
+return new;
+
+END;
+
+
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION m_economie.ft_m_lk_adresseetablissement_idsite_delete()
+  OWNER TO sig_create;
+
+				       
+								       
+-- Trigger: t_t4_lk_etablissementlocal on m_economie.lk_adresseetablissement
+
+-- DROP TRIGGER t_t4_lk_etablissementlocal ON m_economie.lk_adresseetablissement;
+
+CREATE TRIGGER t_t4_lk_etablissementlocal
+  AFTER INSERT OR UPDATE OR DELETE
+  ON m_economie.lk_adresseetablissement
+  FOR EACH ROW
+  EXECUTE PROCEDURE m_economie.ft_m_lk_adresseetablissement();
+
+-- Function: m_economie.ft_m_lk_adresseetablissement()
+
+-- DROP FUNCTION m_economie.ft_m_lk_adresseetablissement();
+
+CREATE OR REPLACE FUNCTION m_economie.ft_m_lk_adresseetablissement()
+  RETURNS trigger AS
+$BODY$
+
+BEGIN
+
+IF (TG_OP = 'UPDATE') THEN
+        -- si l'adresse est sur un local spécifique
+	IF 
+	(
+		SELECT count(*) FROM m_economie.geo_sa_local l , x_apps.xapps_geo_vmr_adresse a , m_economie.lk_adresseetablissement lk
+		WHERE st_intersects(l.geom,a.geom) AND a.id_adresse = lk.idadresse AND lk.siret = new.siret
+	) = 0
+	THEN
+		INSERT INTO m_economie.lk_localsiret (idgeoloc,siret)
+		SELECT DISTINCT l.idgeoloc,new.siret FROM m_economie.geo_sa_local l , x_apps.xapps_geo_vmr_adresse a , m_economie.lk_adresseetablissement lk
+		WHERE st_intersects(l.geom,a.geom) AND a.id_adresse = lk.idadresse AND lk.siret = new.siret;
+	ELSE
+		DELETE FROM m_economie.lk_localsiret lk WHERE lk.siret = new.siret;
+		INSERT INTO m_economie.lk_localsiret (idgeoloc,siret)
+		SELECT DISTINCT l.idgeoloc,new.siret FROM m_economie.geo_sa_local l , x_apps.xapps_geo_vmr_adresse a , m_economie.lk_adresseetablissement lk
+		WHERE st_intersects(l.geom,a.geom) AND a.id_adresse = lk.idadresse AND lk.siret = new.siret;
+        -- si non sur un lot
+	IF 
+		(SELECT count(*) FROM r_objet.geo_objet_fon_lot l , x_apps.xapps_geo_vmr_adresse a , m_economie.lk_adresseetablissement lk
+		WHERE st_intersects(l.geom,a.geom) AND l.l_voca='20' AND a.id_adresse = lk.idadresse AND lk.siret = new.siret) = 0
+	THEN
+		INSERT INTO m_economie.lk_localsiret (idgeoloc,siret)
+		SELECT DISTINCT l.idgeolf,new.siret FROM r_objet.geo_objet_fon_lot l , x_apps.xapps_geo_vmr_adresse a , m_economie.lk_adresseetablissement lk
+		WHERE st_intersects(l.geom,a.geom) AND l.l_voca='20' AND a.id_adresse = lk.idadresse AND lk.siret = new.siret;
+        ELSE
+		DELETE FROM m_economie.lk_localsiret lk WHERE lk.siret = new.siret;
+		INSERT INTO m_economie.lk_localsiret (idgeoloc,siret)
+		SELECT DISTINCT l.idgeolf,new.siret FROM r_objet.geo_objet_fon_lot l , x_apps.xapps_geo_vmr_adresse a , m_economie.lk_adresseetablissement lk
+		WHERE st_intersects(l.geom,a.geom) AND l.l_voca='20' AND a.id_adresse = lk.idadresse AND lk.siret = new.siret;
+	END IF;
+END IF;
+END IF;
+
+IF (TG_OP = 'INSERT') THEN
+
+-- mise à jour des appartenances des établissements au local dans la table lk_localsiret
+-- si l'adresse intersect un local
+IF (
+	SELECT count(*) FROM m_economie.geo_sa_local l , x_apps.xapps_geo_vmr_adresse a , m_economie.lk_adresseetablissement lk
+	WHERE st_intersects(l.geom,a.geom) AND a.id_adresse = lk.idadresse AND lk.siret = new.siret
+   ) > 0 THEN
+INSERT INTO m_economie.lk_localsiret (idgeoloc,siret)
+SELECT DISTINCT l.idgeoloc,new.siret FROM m_economie.geo_sa_local l , x_apps.xapps_geo_vmr_adresse a , m_economie.lk_adresseetablissement lk
+WHERE st_intersects(l.geom,a.geom) AND a.id_adresse = lk.idadresse AND lk.siret = new.siret;
+ELSE
+-- si non l'adresse intersect un lot
+INSERT INTO m_economie.lk_localsiret (idgeoloc,siret)
+SELECT DISTINCT l.idgeolf,new.siret FROM r_objet.geo_objet_fon_lot l , x_apps.xapps_geo_vmr_adresse a , m_economie.lk_adresseetablissement lk
+WHERE st_intersects(l.geom,a.geom) AND l.l_voca='20' AND a.id_adresse = lk.idadresse AND lk.siret = new.siret;
+END IF;
+
+END IF;
+
+-- rafraichissement de la vue matérialisée à chaque insertion, suppression ou mise à jour de l'adressage d'un établissement
+REFRESH MATERIALIZED VIEW x_apps.xapps_geo_vmr_etab_api;
+
+return new;
+
+END;
+
+
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION m_economie.ft_m_lk_adresseetablissement()
+  OWNER TO sig_create;
+
+
+								       
+-- Trigger: t_t5_etiquette_local_refresh on m_economie.lk_adresseetablissement
+
+-- DROP TRIGGER t_t5_etiquette_local_refresh ON m_economie.lk_adresseetablissement;
+
+CREATE TRIGGER t_t5_etiquette_local_refresh
+  AFTER INSERT OR UPDATE OR DELETE
+  ON m_economie.lk_adresseetablissement
+  FOR EACH ROW
+  EXECUTE PROCEDURE m_economie.ft_m_etiquette_local();
+
+-- Function: m_economie.ft_m_etiquette_local()
+
+-- DROP FUNCTION m_economie.ft_m_etiquette_local();
+
+CREATE OR REPLACE FUNCTION m_economie.ft_m_etiquette_local()
+  RETURNS trigger AS
+$BODY$
+
+BEGIN
+-- rafraichissement de la vue matérialisée des locaux pour affichage étiquette des noms
+REFRESH MATERIALIZED VIEW x_apps.xapps_geo_vmr_local;
+-- refraichissement de la vue matérialisée des points établissements à l'adresse
+REFRESH MATERIALIZED VIEW x_apps.xapps_geo_vmr_etab_api;
+
+return new;
+
+END;
+
+
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION m_economie.ft_m_etiquette_local()
+  OWNER TO sig_create;
+
+-- ################################# Classe des objets des liens entre local et établissements ############################					    
+					    
+-- Table: m_economie.lk_localsiret
+
+-- DROP TABLE m_economie.lk_localsiret;
+
+CREATE TABLE m_economie.lk_localsiret
+(
+  idgeoloc integer, -- Identifiant du local
+  siret character varying(14) -- N° SIRET de l'établissement
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE m_economie.lk_localsiret
+  OWNER TO sig_create;
+
+COMMENT ON TABLE m_economie.lk_localsiret
+  IS 'Table de lien permettant de gérer l''occupation d''un local par n établissements';
+COMMENT ON COLUMN m_economie.lk_localsiret.idgeoloc IS 'Identifiant du local';
+COMMENT ON COLUMN m_economie.lk_localsiret.siret IS 'N° SIRET de l''établissement';
+
+
+-- Trigger: t_t1_lk_localsiret_refresch on m_economie.lk_localsiret
+
+-- DROP TRIGGER t_t1_lk_localsiret_refresch ON m_economie.lk_localsiret;
+
+CREATE TRIGGER t_t1_lk_localsiret_refresch
+  AFTER INSERT OR UPDATE OR DELETE
+  ON m_economie.lk_localsiret
+  FOR EACH ROW
+  EXECUTE PROCEDURE m_economie.ft_m_etiquette_local_lk();
+
+-- Function: m_economie.ft_m_etiquette_local_lk()
+
+-- DROP FUNCTION m_economie.ft_m_etiquette_local_lk();
+
+CREATE OR REPLACE FUNCTION m_economie.ft_m_etiquette_local_lk()
+  RETURNS trigger AS
+$BODY$
+
+BEGIN
+-- rafraichissement de la vue matérialisée des locaux pour affichage étiquette des noms
+REFRESH MATERIALIZED VIEW x_apps.xapps_geo_vmr_local;
+-- refraichissement de la vue matérialisée des points établissements à l'adresse
+REFRESH MATERIALIZED VIEW x_apps.xapps_geo_vmr_etab_api;
+
+return new;
+
+END;
+
+
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION m_economie.ft_m_etiquette_local_lk()
+  OWNER TO sig_create;
+
+
+					    
 -- ################################################# Du schéma m_amenagement ##################################
 
 -- ################################################# Classe des objets espaces publics ##################################
