@@ -227,13 +227,15 @@ CREATE INDEX idx_xapps_an_vmr_bilan_procedure_idsite
   USING btree
   (idsite COLLATE pg_catalog."default");
 
+
+
 -- ########################################################### Synthèse des pôles #########################
 
--- Materialized View: x_apps.xapps_an_vmr_synt_pole
+-- Materialized View: x_apps.xapps_an_vmr_synt_pole_api
 
--- DROP MATERIALIZED VIEW x_apps.xapps_an_vmr_synt_pole;
+-- DROP MATERIALIZED VIEW x_apps.xapps_an_vmr_synt_pole_api;
 
-CREATE MATERIALIZED VIEW x_apps.xapps_an_vmr_synt_pole AS 
+CREATE MATERIALIZED VIEW x_apps.xapps_an_vmr_synt_pole_api AS 
  WITH req_a AS (
          SELECT geo_sa_pole.idpole,
             geo_sa_pole.nom_pole,
@@ -252,11 +254,11 @@ CREATE MATERIALIZED VIEW x_apps.xapps_an_vmr_synt_pole AS
         ), req_f AS (
          SELECT geo_sa_pole.idpole,
             count(*) AS nb_etab_sirene
-           FROM r_objet.geo_objet_etab,
-            s_sirene.an_etablissement,
-            m_economie.an_sa_etab,
-            m_economie.geo_sa_pole
-          WHERE an_etablissement.siret::text = geo_objet_etab.idsiret::text AND an_etablissement.siret::text = an_sa_etab.idsiret::text AND an_etablissement.l_vetab::text = '10'::text AND an_sa_etab.l_compte = true AND st_intersects(geo_objet_etab.geom, geo_sa_pole.geom)
+           FROM m_economie.an_sa_etab,
+            x_apps.xapps_an_v_site_liste,
+            m_economie.geo_sa_pole,
+            s_sirene.an_etablissement_api
+          WHERE an_sa_etab.idsite::text = xapps_an_v_site_liste.idsite::text AND xapps_an_v_site_liste.idpole::text = geo_sa_pole.idpole::text AND an_sa_etab.idsiret::text = an_etablissement_api.siret::text AND an_etablissement_api.etatadministratifetablissement::text = 'A'::text AND an_sa_etab.l_compte = true
           GROUP BY geo_sa_pole.idpole
         ), req_g AS (
          SELECT geo_sa_pole.idpole,
@@ -268,11 +270,11 @@ CREATE MATERIALIZED VIEW x_apps.xapps_an_vmr_synt_pole AS
         ), req_h AS (
          SELECT geo_sa_pole.idpole,
             sum(an_sa_etab.eff_etab)::integer AS eff_globaux_sirene
-           FROM r_objet.geo_objet_etab,
-            s_sirene.an_etablissement,
+           FROM m_economie.an_sa_etab,
+            x_apps.xapps_an_v_site_liste,
             m_economie.geo_sa_pole,
-            m_economie.an_sa_etab
-          WHERE an_sa_etab.idsiret::text = geo_objet_etab.idsiret::text AND an_etablissement.siret::text = geo_objet_etab.idsiret::text AND an_etablissement.l_vetab::text = '10'::text AND an_sa_etab.l_compte = true AND st_intersects(geo_objet_etab.geom, geo_sa_pole.geom)
+            s_sirene.an_etablissement_api
+          WHERE an_sa_etab.idsite::text = xapps_an_v_site_liste.idsite::text AND xapps_an_v_site_liste.idpole::text = geo_sa_pole.idpole::text AND an_sa_etab.idsiret::text = an_etablissement_api.siret::text AND an_etablissement_api.etatadministratifetablissement::text = 'A'::text AND an_sa_etab.l_compte = true
           GROUP BY geo_sa_pole.idpole
         ), req_i AS (
          SELECT geo_sa_pole.idpole,
@@ -390,19 +392,18 @@ CREATE MATERIALIZED VIEW x_apps.xapps_an_vmr_synt_pole AS
      LEFT JOIN req_m m ON a.idpole::text = m.idpole::text
 WITH DATA;
 
-ALTER TABLE x_apps.xapps_an_vmr_synt_pole
+ALTER TABLE x_apps.xapps_an_vmr_synt_pole_api
   OWNER TO sig_create;
 
-COMMENT ON MATERIALIZED VIEW x_apps.xapps_an_vmr_synt_pole
+COMMENT ON MATERIALIZED VIEW x_apps.xapps_an_vmr_synt_pole_api
   IS 'Vue matérialisée présentant les données de synthèses à l''échelle du pôle (données sur l''environnement économique et statistiques foncières présentes sur le fiche d''information du pôle dans l''application métier GEO). Cette vue est rafraichie toutes les nuits par une tache CRON sur le serveur sig-sgbd.';
 
 -- ########################################################### Synthèse des sites d'activités #########################
+-- Materialized View: x_apps.xapps_an_vmr_synt_site_act_api
 
--- Materialized View: x_apps.xapps_an_vmr_synt_site_act
+-- DROP MATERIALIZED VIEW x_apps.xapps_an_vmr_synt_site_act_api;
 
--- DROP MATERIALIZED VIEW x_apps.xapps_an_vmr_synt_site_act;
-
-CREATE MATERIALIZED VIEW x_apps.xapps_an_vmr_synt_site_act AS 
+CREATE MATERIALIZED VIEW x_apps.xapps_an_vmr_synt_site_act_api AS 
  WITH req_a AS (
          SELECT an_sa_site.idsite,
             an_sa_site.site_nom,
@@ -431,9 +432,9 @@ CREATE MATERIALIZED VIEW x_apps.xapps_an_vmr_synt_site_act AS
         ), req_f AS (
          SELECT an_sa_site.idsite,
             count(*) AS nb_etab_sirene
-           FROM m_economie.geo_v_etab,
+           FROM m_economie.an_sa_etab,
             m_economie.an_sa_site
-          WHERE geo_v_etab.idsite::text = an_sa_site.idsite::text AND geo_v_etab.l_compte = true
+          WHERE an_sa_etab.idsite::text = an_sa_site.idsite::text AND an_sa_etab.l_compte = true
           GROUP BY an_sa_site.idsite
         ), req_g AS (
          SELECT an_sa_site.idsite,
@@ -444,10 +445,10 @@ CREATE MATERIALIZED VIEW x_apps.xapps_an_vmr_synt_site_act AS
           GROUP BY an_sa_site.idsite
         ), req_h AS (
          SELECT an_sa_site.idsite,
-            sum(geo_v_etab.eff_etab)::integer AS eff_globaux_sirene
-           FROM m_economie.geo_v_etab,
+            sum(an_sa_etab.eff_etab)::integer AS eff_globaux_sirene
+           FROM m_economie.an_sa_etab,
             m_economie.an_sa_site
-          WHERE geo_v_etab.idsite::text = an_sa_site.idsite::text AND geo_v_etab.l_compte = true
+          WHERE an_sa_etab.idsite::text = an_sa_site.idsite::text AND an_sa_etab.l_compte = true
           GROUP BY an_sa_site.idsite
         ), req_i AS (
          SELECT an_sa_site.idsite,
@@ -739,20 +740,20 @@ CREATE MATERIALIZED VIEW x_apps.xapps_an_vmr_synt_site_act AS
      LEFT JOIN req_l2007 l2007 ON a.idsite::text = l2007.idsite::text
 WITH DATA;
 
-ALTER TABLE x_apps.xapps_an_vmr_synt_site_act
+ALTER TABLE x_apps.xapps_an_vmr_synt_site_act_api
   OWNER TO sig_create;
 
-COMMENT ON MATERIALIZED VIEW x_apps.xapps_an_vmr_synt_site_act
+COMMENT ON MATERIALIZED VIEW x_apps.xapps_an_vmr_synt_site_act_api
   IS 'Vue matérialisée présentant les données de synthèses à l''échelle du site d''activité  (données sur l''environnement économique et statistiques foncières présentes sur le fiche d''information du site dans l''application métier GEO). Cette vue est rafraichie toutes les nuits par une tache CRON sur le serveur sig-sgbd.';
 
 
 -- ########################################################### Synthèse des sites mixtes #########################
 
--- Materialized View: x_apps.xapps_an_vmr_synt_site_mixte
+-- Materialized View: x_apps.xapps_an_vmr_synt_site_mixte_api
 
--- DROP MATERIALIZED VIEW x_apps.xapps_an_vmr_synt_site_mixte;
+-- DROP MATERIALIZED VIEW x_apps.xapps_an_vmr_synt_site_mixte_api;
 
-CREATE MATERIALIZED VIEW x_apps.xapps_an_vmr_synt_site_mixte AS 
+CREATE MATERIALIZED VIEW x_apps.xapps_an_vmr_synt_site_mixte_api AS 
  WITH req_a AS (
          SELECT an_amt_site_mixte.idsite,
             an_amt_site_mixte.site_nom,
@@ -781,9 +782,9 @@ CREATE MATERIALIZED VIEW x_apps.xapps_an_vmr_synt_site_mixte AS
         ), req_f AS (
          SELECT an_amt_site_mixte.idsite,
             count(*) AS nb_etab_sirene
-           FROM m_economie.geo_v_etab,
+           FROM m_economie.an_sa_etab,
             m_amenagement.an_amt_site_mixte
-          WHERE geo_v_etab.idsite::text = an_amt_site_mixte.idsite::text AND geo_v_etab.l_compte = true
+          WHERE an_sa_etab.idsite::text = an_amt_site_mixte.idsite::text AND an_sa_etab.l_compte = true
           GROUP BY an_amt_site_mixte.idsite
         ), req_g AS (
          SELECT an_amt_site_mixte.idsite,
@@ -794,10 +795,10 @@ CREATE MATERIALIZED VIEW x_apps.xapps_an_vmr_synt_site_mixte AS
           GROUP BY an_amt_site_mixte.idsite
         ), req_h AS (
          SELECT an_amt_site_mixte.idsite,
-            sum(geo_v_etab.eff_etab)::integer AS eff_globaux_sirene
+            sum(an_sa_etab.eff_etab)::integer AS eff_globaux_sirene
            FROM m_amenagement.an_amt_site_mixte,
-            m_economie.geo_v_etab
-          WHERE geo_v_etab.l_compte = true AND geo_v_etab.idsite::text = an_amt_site_mixte.idsite::text
+            m_economie.an_sa_etab
+          WHERE an_sa_etab.l_compte = true AND an_sa_etab.idsite::text = an_amt_site_mixte.idsite::text
           GROUP BY an_amt_site_mixte.idsite
         ), req_i AS (
          SELECT an_amt_site_mixte.idsite,
@@ -909,37 +910,32 @@ CREATE MATERIALIZED VIEW x_apps.xapps_an_vmr_synt_site_mixte AS
      LEFT JOIN req_k1 k1 ON a.idsite::text = k1.idsite::text
 WITH DATA;
 
-ALTER TABLE x_apps.xapps_an_vmr_synt_site_mixte
+ALTER TABLE x_apps.xapps_an_vmr_synt_site_mixte_api
   OWNER TO sig_create;
 
-COMMENT ON MATERIALIZED VIEW x_apps.xapps_an_vmr_synt_site_mixte
+COMMENT ON MATERIALIZED VIEW x_apps.xapps_an_vmr_synt_site_mixte_api
   IS 'Vue matérialisée présentant les données de synthèses à l''échelle du site mixte  (données sur l''environnement économique et statistiques foncières présentes sur le fiche d''information du site dans l''application métier GEO). Cette vue est rafraichie toutes les nuits par une tache CRON sur le serveur sig-sgbd.';
 
--- Index: x_apps.idx_an_vmr_synt_site_mixte_idsite
+-- Index: x_apps.idx_xapps_an_vmr_synt_site_mixte_api_idsite
 
--- DROP INDEX x_apps.idx_an_vmr_synt_site_mixte_idsite;
+-- DROP INDEX x_apps.idx_xapps_an_vmr_synt_site_mixte_api_idsite;
 
-CREATE INDEX idx_an_vmr_synt_site_mixte_idsite
-  ON x_apps.xapps_an_vmr_synt_site_mixte
+CREATE INDEX idx_xapps_an_vmr_synt_site_mixte_api_idsite
+  ON x_apps.xapps_an_vmr_synt_site_mixte_api
   USING btree
   ("Identifiant du site" COLLATE pg_catalog."default");
 
 
+
+
 -- ########################################################### Vue d'export des établissements depuis GEO #########################
 
--- View: x_apps.xapps_geo_v_etab_actif_export
+-- View: x_apps.xapps_geo_v_etab_api_export
 
--- DROP VIEW x_apps.xapps_geo_v_etab_actif_export;
+-- DROP VIEW x_apps.xapps_geo_v_etab_api_export;
 
-CREATE OR REPLACE VIEW x_apps.xapps_geo_v_etab_actif_export AS 
- WITH req_o AS (
-         SELECT geo_v_etab.idsiret,
-            geo_v_etab.insee,
-            geo_v_etab.commune,
-            geo_v_etab.geom
-           FROM m_economie.geo_v_etab
-          WHERE geo_v_etab.l_compte = true
-        ), req_e AS (
+CREATE OR REPLACE VIEW x_apps.xapps_geo_v_etab_api_export AS 
+ WITH req_e AS (
          SELECT e.idsiret,
             e.idsite,
             e.l_nom,
@@ -963,29 +959,48 @@ CREATE OR REPLACE VIEW x_apps.xapps_geo_v_etab_actif_export AS
                     WHEN se.site_nom IS NOT NULL THEN se.site_nom
                     WHEN sm.site_nom IS NOT NULL THEN sm.site_nom
                     ELSE NULL::character varying
-                END AS site
+                END AS site,
+            l.idadresse
            FROM m_economie.an_sa_etab e
+             LEFT JOIN m_economie.lk_adresseetablissement l ON e.idsiret::text = l.siret::text
              LEFT JOIN m_economie.an_sa_site se ON se.idsite::text = e.idsite::text
              LEFT JOIN m_amenagement.an_amt_site_mixte sm ON sm.idsite::text = e.idsite::text
           WHERE e.l_compte = true
         ), req_si AS (
-         SELECT an_etablissement.siret,
-            an_etablissement.numvoie::character varying AS numvoie,
-            (an_etablissement.typvoie::text || ' '::text) || an_etablissement.libvoie::text AS voie,
-            an_etablissement.l1_nomen,
-            an_etablissement.enseigne,
-            an_etablissement.l4_voie,
-            an_etablissement.l3_cadr,
-            an_etablissement.l5_disp,
-            an_etablissement.l6_post,
-            an_etablissement.apet700,
-            an_etablissement.libapet
-           FROM s_sirene.an_etablissement
-          WHERE an_etablissement.l_vetab::text = '10'::text
+         SELECT s.siret,
+            s.numerovoieetablissement::text ||
+                CASE
+                    WHEN s.indicerepetitionetablissement IS NULL OR s.indicerepetitionetablissement::text <> ''::text THEN s.indicerepetitionetablissement
+                    ELSE ''::character varying
+                END::text AS numvoie,
+            (
+                CASE
+                    WHEN s.typevoieetablissement IS NULL OR s.typevoieetablissement::text <> ''::text THEN s.typevoieetablissement
+                    ELSE ''::character varying
+                END::text || ' '::text) || s.libellevoieetablissement::text AS libvoie,
+            s.codecommuneetablissement,
+            s.complementadresseetablissement AS complementadresse,
+            s.distributionspecialeetablissement AS boite_postale,
+            s.codepostaletablissement AS code_postal,
+            s.denominationusuelleetablissement,
+            s.enseigne1etablissement,
+            ul.denominationunitelegale,
+            ul.denominationusuelle1unitelegale,
+            ul.nomunitelegale,
+            (ul.nomusageunitelegale::text || ' '::text) || ul.prenom1unitelegale::text AS personnephysique,
+            s.activiteprincipaleetablissement AS apet700,
+            n.valeur AS libapet700
+           FROM s_sirene.an_etablissement_api s,
+            s_sirene.an_unitelegale_api ul,
+            s_sirene.lt_nafrev2 n
+          WHERE s.siren::text = ul.siren::text AND n.code::text = s.activiteprincipaleetablissement::text AND s.etatadministratifetablissement::text = 'A'::text
         )
  SELECT e.idsiret,
-    si.l1_nomen,
-    si.enseigne,
+    si.denominationusuelleetablissement,
+    si.enseigne1etablissement,
+    si.denominationunitelegale,
+    si.denominationusuelle1unitelegale,
+    si.personnephysique,
     e.l_nom,
     e.l_nom_dir,
     e.l_titre,
@@ -996,30 +1011,39 @@ CREATE OR REPLACE VIEW x_apps.xapps_geo_v_etab_actif_export AS
     e.l_tel_dir,
     e.l_telp_dir,
     si.apet700,
-    si.libapet,
+    si.libapet700,
     e.eff_etab,
     e.eff_etab_n,
     e.source_eff,
     e.l_date_eff,
     e.annee_eff::character varying AS annee_eff,
     si.numvoie,
-    si.voie,
-    si.l4_voie,
-    si.l3_cadr,
-    si.l5_disp,
-    si.l6_post,
-    o.insee,
-    o.commune,
+    si.libvoie,
+    si.complementadresse,
+    si.boite_postale,
+    si.code_postal,
+        CASE
+            WHEN a.id_adresse IS NULL THEN si.codecommuneetablissement::bpchar
+            ELSE a.insee
+        END AS insee,
     e.site,
-    o.geom
-   FROM req_o o,
-    req_e e,
-    req_si si
-  WHERE o.idsiret::text = e.idsiret::text AND e.idsiret::text = si.siret::text
-UNION
+        CASE
+            WHEN e.idadresse IS NULL OR e.idadresse::text = ''::text THEN 'Etablissement non localisé à l''adresse'::character varying
+            ELSE e.idadresse::character varying
+        END AS adresse_loc,
+    a.x_l93,
+    a.y_l93,
+    a.geom
+   FROM req_si si
+     JOIN req_e e ON e.idsiret::text = si.siret::text
+     LEFT JOIN x_apps.xapps_geo_vmr_adresse a ON e.idadresse = a.id_adresse
+UNION ALL
  SELECT sp.idsiret,
-    'non renseignée'::character varying AS l1_nomen,
-    'non renseignée'::character varying AS enseigne,
+    'non renseignée'::character varying AS denominationusuelleetablissement,
+    'non renseignée'::character varying AS enseigne1etablissement,
+    'non renseignée'::character varying AS denominationunitelegale,
+    'non renseignée'::character varying AS denominationusuelle1unitelegale,
+    'non renseignée'::character varying AS personnephysique,
     sp.l_nom,
     sp.l_nom_dir,
     sp.l_titre,
@@ -1030,63 +1054,37 @@ UNION
     sp.l_tel_dir,
     sp.l_telp_dir,
     'Non renseignée'::character varying AS apet700,
-    'Non renseignée'::character varying AS libapet,
+    'Non renseignée'::character varying AS libapet700,
     sp.eff_etab::character varying AS eff_etab,
     sp.eff_etab AS eff_etab_n,
     sp.source_eff,
     sp.date_eff AS l_date_eff,
     'non renseignée'::character varying AS annee_eff,
     ''::character varying AS numvoie,
-    ''::character varying AS voie,
-    sp.l_comp_ad AS l4_voie,
-    'non renseignée'::character varying AS l3_cadr,
-    'non renseignée'::character varying AS l5_disp,
-    'non renseignée'::character varying AS l6_post,
+    ''::character varying AS libvoie,
+    sp.l_comp_ad AS complementadresse,
+    'non renseignée'::character varying AS boite_postale,
+    'non renseignée'::character varying AS code_postal,
     sp.insee,
-    sp.commune,
         CASE
             WHEN se.site_nom IS NOT NULL THEN se.site_nom
             WHEN sm.site_nom IS NOT NULL THEN sm.site_nom
             ELSE NULL::character varying
         END AS site,
+    'non renseignée'::character varying AS adresse_loc,
+    st_x(sp.geom) AS x_l93,
+    st_y(sp.geom) AS y_l93,
     sp.geom
    FROM m_economie.geo_sa_etabp sp
      LEFT JOIN m_economie.an_sa_site se ON se.idsite::text = sp.idsite::text
      LEFT JOIN m_amenagement.an_amt_site_mixte sm ON sm.idsite::text = sp.idsite::text;
 
-ALTER TABLE x_apps.xapps_geo_v_etab_actif_export
+ALTER TABLE x_apps.xapps_geo_v_etab_api_export
   OWNER TO sig_create;
 
-COMMENT ON VIEW x_apps.xapps_geo_v_etab_actif_export
-  IS 'Vue géométrique composée des éléments sur les établissements actifs permettant de gérer des exports de listes par commune, par site dans GEO (Recherche d''établissements par commune, par site)';
+COMMENT ON VIEW x_apps.xapps_geo_v_etab_api_export
+  IS 'Vue géographique composée des éléments sur les établissements actifs (API Sirene) permettant de gérer des exports de listes par commune, par site dans GEO (Recherche d''établissements par commune, par site)';
 
-
--- ########################################################### Vue d'extraction des établissements mis à jour depuis la dernière intégration de SIRENE #########################
-
--- View: x_apps.xapps_geo_v_etab_maj
-
--- DROP VIEW x_apps.xapps_geo_v_etab_maj;
-
-CREATE OR REPLACE VIEW x_apps.xapps_geo_v_etab_maj AS 
- SELECT row_number() OVER () AS gid,
-    o.idgeoet,
-    o.insee,
-    o.commune,
-    o.l_nom_sirene,
-    o.enseigne,
-    e.dentree,
-    e.l4_voie,
-    o.geom
-   FROM s_sirene.an_etablissement e,
-    m_economie.an_sa_etab et,
-    r_objet.geo_objet_etab o
-  WHERE e.siret::text = o.idsiret::text AND et.idsiret::text = e.siret::text AND o.l_vetab::text = '10'::text AND e.dentree = '2018-12-01'::date AND et.l_compte = true;
-
-ALTER TABLE x_apps.xapps_geo_v_etab_maj
-  OWNER TO sig_create;
-
-COMMENT ON VIEW x_apps.xapps_geo_v_etab_maj
-  IS 'Vue géographique des établissements entrées dans la base lors de la dernière mise à jour';
 
 
 -- ########################################################### Vue d'extraction des lots par stade de commercialisation #########################
@@ -1306,104 +1304,82 @@ COMMENT ON VIEW x_apps.xapps_geo_v_zae
 
 -- ########################################################### Vue extrayant les établissements #########################
 
--- Materialized View: x_apps.xapps_geo_vmr_etab
+-- Materialized View: x_apps.xapps_geo_vmr_etab_api
 
--- DROP MATERIALIZED VIEW x_apps.xapps_geo_vmr_etab;
+-- DROP MATERIALIZED VIEW x_apps.xapps_geo_vmr_etab_api;
 
-CREATE MATERIALIZED VIEW x_apps.xapps_geo_vmr_etab AS 
+CREATE MATERIALIZED VIEW x_apps.xapps_geo_vmr_etab_api AS 
+ WITH req_t AS (
+         SELECT DISTINCT row_number() OVER () AS gid,
+            a_1.id_adresse,
+            count(*) AS nb_etab_t
+           FROM m_economie.an_sa_etab e,
+            x_apps.xapps_geo_vmr_adresse a_1,
+            m_economie.lk_adresseetablissement l
+          WHERE l.idadresse = a_1.id_adresse AND l.siret::text = e.idsiret::text AND e.etatadministratifetablissement::text = 'A'::text AND e.l_compte IS TRUE
+          GROUP BY a_1.id_adresse
+        ), req_f AS (
+         SELECT DISTINCT row_number() OVER () AS gid,
+            a_1.id_adresse,
+            count(*) AS nb_etab_f
+           FROM m_economie.an_sa_etab e,
+            x_apps.xapps_geo_vmr_adresse a_1,
+            m_economie.lk_adresseetablissement l
+          WHERE l.idadresse = a_1.id_adresse AND l.siret::text = e.idsiret::text AND e.etatadministratifetablissement::text = 'A'::text AND e.l_compte IS FALSE
+          GROUP BY a_1.id_adresse
+        ), req_a AS (
+         SELECT DISTINCT a_1.id_adresse,
+            count(*) AS nb_etab
+           FROM m_economie.an_sa_etab e,
+            x_apps.xapps_geo_vmr_adresse a_1,
+            m_economie.lk_adresseetablissement l
+          WHERE l.idadresse = a_1.id_adresse AND l.siret::text = e.idsiret::text AND e.etatadministratifetablissement::text = 'A'::text
+          GROUP BY a_1.id_adresse
+        )
  SELECT row_number() OVER () AS gid,
-    o.idgeoet,
-    o.code_geo,
-    o.insee,
-    o.commune,
-    o.info_prec,
-    e.idsiren,
-    e.idsiret,
-    e.idsite,
-    e.date_sai,
-    e.date_maj,
-    o.op_sai AS op_sai_geo,
-    e.op_sai,
-    e.org_sai,
-    e.decalage,
-    e.l_nom,
-    o.l_nom_sirene,
-    o.enseigne,
-    o.l4_voie,
-    e.n_adres,
-    e.filiale,
-    e.capital,
-    e.eff_ent,
-    e.eff_etab,
-    e.eff_etab_d,
-    e.eff_ent_etp,
-    e.eff_etab_etp,
-    e.source_eff,
-    e.annee_eff,
-    e.l_date_eff,
-    e.l_nom_dir,
-    e.date_maj_dir,
-    e.source_maj_dir,
-    e.l_tel,
-    e.l_mail,
-    e.chiff_aff,
-    e.annee_ca,
-    e.usage_comm,
-    e.etb_env,
-    e.l_observ,
-    e.l_compte,
-    e.l_tel_dir,
-    e.l_telp_dir,
-    e.l_mail_dir,
-    e.l_nom_aut,
-    e.l_titre_aut,
-    e.l_tel_aut,
-    e.l_telp_aut,
-    e.l_mail_aut,
-    e.l_nom_drh,
-    e.l_tel_drh,
-    e.l_mail_drh,
-    e.l_nom_ad,
-    e.l_tel_ad,
-    e.l_mail_ad,
-    e.l_url,
-    e.l_url_bil,
-    e.l_comp_ad,
-    e.apet700,
-    e.libapet,
-    e.l_titre,
-    e.date_maj_drh,
-    e.date_maj_ad,
-    e.date_maj_aut,
-    e.l_titre_drh,
-    e.l_titre_ad,
-    e.l_drh_ss,
-    e.l_drh_ad,
-    NULL::character varying(14) AS old_siret,
-    NULL::integer AS old_id,
-    o.geom
-   FROM m_economie.an_sa_etab e,
-    r_objet.geo_objet_etab o
-  WHERE e.idgeoet = o.idgeoet AND o.l_vetab::text = '10'::text
+    a.id_adresse,
+    (((((
+        CASE
+            WHEN a.etiquette::text IS NULL OR a.etiquette::text = ''::text THEN a.numero::text
+            ELSE a.etiquette::text
+        END || ' '::text) || btrim(a.libvoie_c::text)) || ' '::text) || a.codepostal::text) || ' '::text) || upper(unaccent_string(a.commune::text)) AS lib_adresse,
+    req_a.nb_etab,
+        CASE
+            WHEN req_t.nb_etab_t > 0 THEN req_t.nb_etab_t
+            ELSE 0::bigint
+        END AS nb_etab_t,
+        CASE
+            WHEN req_f.nb_etab_f > 0 THEN req_f.nb_etab_f
+            ELSE 0::bigint
+        END AS nb_etab_f,
+    a.etiquette,
+    a.angle,
+    a.geom
+   FROM x_apps.xapps_geo_vmr_adresse a
+     LEFT JOIN req_a ON req_a.id_adresse = a.id_adresse
+     LEFT JOIN req_t ON req_t.id_adresse = req_a.id_adresse
+     LEFT JOIN req_f ON req_f.id_adresse = req_a.id_adresse
 WITH DATA;
 
-ALTER TABLE x_apps.xapps_geo_vmr_etab
+ALTER TABLE x_apps.xapps_geo_vmr_etab_api
   OWNER TO sig_create;
 
-COMMENT ON MATERIALIZED VIEW x_apps.xapps_geo_vmr_etab
-  IS 'Vue matérialisée non éditable des établissements pour optimiser l''affichage de la lite des établissements dans les fiches sous GEO. Cette vue est rafraichie toutes les nuits par une tache cron. Après test cette vue n''est pas utilisée dans GEO (pas de gain de performance). A voir si à supprimer de la trache cron si plus utilisée.';
+COMMENT ON MATERIALIZED VIEW x_apps.xapps_geo_vmr_etab_api
+  IS 'Vue matérialisé rafraichit à chaque intégration ou mise à jour de la table lk_adresseetablissement et dénombrant le nombre d''établissement par adresse (lien dans GEO pour avoir la liste des établissements et les modifier) (en cours de refonte suite migration API Sirene)';
 
--- Index: x_apps.idx_xapps_geo_vmr_etab_idsite
+-- Index: x_apps.idx_xapps_geo_vmr_etab_api_id_adresse
 
--- DROP INDEX x_apps.idx_xapps_geo_vmr_etab_idsite;
+-- DROP INDEX x_apps.idx_xapps_geo_vmr_etab_api_id_adresse;
 
-CREATE INDEX idx_xapps_geo_vmr_etab_idsite
-  ON x_apps.xapps_geo_vmr_etab
+CREATE INDEX idx_xapps_geo_vmr_etab_api_id_adresse
+  ON x_apps.xapps_geo_vmr_etab_api
   USING btree
-  (idsite COLLATE pg_catalog."default");
+  (id_adresse);
+
 
 
 -- ########################################################### Vue extrayant les procédures #########################
+																   
 -- vue à intégrer dans les taches cron ou dans les triggers de la table gérant la source
 
 -- Materialized View: x_apps.xapps_geo_vmr_proc
@@ -1467,4 +1443,153 @@ CREATE INDEX idx_xapps_geo_vmr_proc_idsite
   USING btree
   (idsite COLLATE pg_catalog."default");
 
+-- ########################################################### Vue générant l'affichage des locaux #########################
+
+-- Materialized View: x_apps.xapps_geo_vmr_local
+
+-- DROP MATERIALIZED VIEW x_apps.xapps_geo_vmr_local;
+
+CREATE MATERIALIZED VIEW x_apps.xapps_geo_vmr_local AS 
+ SELECT DISTINCT lo.idgeoloc AS idgeo,
+    (
+        CASE
+            WHEN length(btrim(lo.usage::text)) > 0 THEN lo.usage::text
+            WHEN length(btrim(lo.l_occupp::text)) > 0 THEN lo.l_occupp::text
+            ELSE string_agg(upper(
+            CASE
+                WHEN length(btrim(em.l_nom::text)) > 0 AND em.l_compte = true THEN em.l_nom
+                WHEN length(btrim(ep.l_nom::text)) > 0 AND ep.l_compte = true THEN ep.l_nom
+                WHEN length(btrim(s.enseigne1etablissement::text)) > 0 AND em.l_compte = true AND s.etatadministratifetablissement::text = 'A'::text THEN s.enseigne1etablissement
+                WHEN length(btrim(s.denominationusuelleetablissement::text)) > 0 AND em.l_compte = true AND s.etatadministratifetablissement::text = 'A'::text THEN s.denominationusuelleetablissement
+                WHEN length(btrim(ul.denominationunitelegale::text)) > 0 AND em.l_compte = true AND s.etatadministratifetablissement::text = 'A'::text THEN ul.denominationunitelegale
+                WHEN length(btrim(ul.denominationusuelle1unitelegale::text)) > 0 AND em.l_compte = true AND s.etatadministratifetablissement::text = 'A'::text THEN ul.denominationusuelle1unitelegale
+                WHEN length(btrim(ul.nomunitelegale::text)) > 0 AND em.l_compte = true AND s.etatadministratifetablissement::text = 'A'::text THEN ul.nomunitelegale
+                WHEN length(btrim(ul.nomusageunitelegale::text)) > 0 AND em.l_compte = true AND s.etatadministratifetablissement::text = 'A'::text THEN ((ul.nomusageunitelegale::text || ' '::text) || ul.prenom1unitelegale::text)::character varying
+                WHEN length(btrim(ul.pseudonymeunitelegale::text)) > 0 AND em.l_compte = true AND s.etatadministratifetablissement::text = 'A'::text THEN ul.pseudonymeunitelegale
+                ELSE NULL::character varying
+            END::text), chr(10) ORDER BY em.l_nom, s.enseigne1etablissement, s.denominationusuelleetablissement, ul.denominationunitelegale, ul.denominationusuelle1unitelegale, ul.nomunitelegale, ep.l_nom, lo.usage, lo.l_occupp)
+        END || chr(10)) ||
+        CASE
+            WHEN length(lo.sup_m2::character varying::text) >= 1 AND length(lo.sup_m2::character varying::text) <= 3 THEN lo.sup_m2::character varying::text || ' m²'::text
+            WHEN length(lo.sup_m2::character varying::text) = 4 THEN replace(to_char(lo.sup_m2, 'FM9G999'::text), ','::text, ' '::text) || ' m²'::text
+            WHEN length(lo.sup_m2::character varying::text) = 5 THEN replace(to_char(lo.sup_m2, 'FM99G999'::text), ','::text, ' '::text) || ' m²'::text
+            WHEN length(lo.sup_m2::character varying::text) = 6 THEN replace(to_char(lo.sup_m2, 'FM999G999'::text), ','::text, ' '::text) || ' m²'::text
+            WHEN length(lo.sup_m2::character varying::text) = 7 THEN replace(to_char(lo.sup_m2, 'FM9G999G999'::text), ','::text, ' '::text) || ' m²'::text
+            WHEN length(lo.sup_m2::character varying::text) = 8 THEN replace(to_char(lo.sup_m2, 'FM99G999G999'::text), ','::text, ' '::text) || ' m²'::text
+            ELSE NULL::text
+        END AS etiquette,
+    lo.geom
+   FROM m_economie.geo_sa_local lo
+     LEFT JOIN (m_economie.lk_localsiret lk
+     LEFT JOIN m_economie.geo_sa_etabp ep ON ep.idgeoet::text = lk.siret::text
+     LEFT JOIN m_economie.an_sa_etab em ON em.idsiret::text = lk.siret::text
+     LEFT JOIN s_sirene.an_etablissement_api s ON s.siret::text = lk.siret::text
+     LEFT JOIN s_sirene.an_unitelegale_api ul ON ul.siren::text = "left"(lk.siret::text, 9)) ON lk.idgeoloc = lo.idgeoloc
+  GROUP BY lo.idgeoloc, lo.geom, lo.usage, lo.l_occupp
+UNION ALL
+ SELECT lf.idgeolf AS idgeo,
+        CASE
+            WHEN length(btrim(string_agg(upper(
+            CASE
+                WHEN length(btrim(em.l_nom::text)) > 0 AND em.l_compte = true THEN em.l_nom
+                WHEN length(btrim(ep.l_nom::text)) > 0 AND ep.l_compte = true THEN ep.l_nom
+                WHEN length(btrim(s.enseigne1etablissement::text)) > 0 AND em.l_compte = true AND s.etatadministratifetablissement::text = 'A'::text THEN s.enseigne1etablissement
+                WHEN length(btrim(s.denominationusuelleetablissement::text)) > 0 AND em.l_compte = true AND s.etatadministratifetablissement::text = 'A'::text THEN s.denominationusuelleetablissement
+                WHEN length(btrim(ul.denominationunitelegale::text)) > 0 AND em.l_compte = true AND s.etatadministratifetablissement::text = 'A'::text THEN ul.denominationunitelegale
+                WHEN length(btrim(ul.denominationusuelle1unitelegale::text)) > 0 AND em.l_compte = true AND s.etatadministratifetablissement::text = 'A'::text THEN ul.denominationusuelle1unitelegale
+                WHEN length(btrim(ul.nomunitelegale::text)) > 0 AND em.l_compte = true AND s.etatadministratifetablissement::text = 'A'::text THEN ul.nomunitelegale
+                WHEN length(btrim(ul.nomusageunitelegale::text)) > 0 AND em.l_compte = true AND s.etatadministratifetablissement::text = 'A'::text THEN ((ul.nomusageunitelegale::text || ' '::text) || ul.prenom1unitelegale::text)::character varying
+                WHEN length(btrim(ul.pseudonymeunitelegale::text)) > 0 AND em.l_compte = true AND s.etatadministratifetablissement::text = 'A'::text THEN ul.pseudonymeunitelegale
+                ELSE NULL::character varying
+            END::text), chr(10) ORDER BY em.l_nom, s.enseigne1etablissement, s.denominationusuelleetablissement, ul.denominationunitelegale, ul.denominationusuelle1unitelegale, ul.nomunitelegale, ep.l_nom) || chr(10))::character varying::text) > 0 THEN (string_agg(upper(
+            CASE
+                WHEN length(btrim(em.l_nom::text)) > 0 AND em.l_compte = true THEN em.l_nom
+                WHEN length(btrim(ep.l_nom::text)) > 0 AND ep.l_compte = true THEN ep.l_nom
+                WHEN length(btrim(s.enseigne1etablissement::text)) > 0 AND em.l_compte = true AND s.etatadministratifetablissement::text = 'A'::text THEN s.enseigne1etablissement
+                WHEN length(btrim(s.denominationusuelleetablissement::text)) > 0 AND em.l_compte = true AND s.etatadministratifetablissement::text = 'A'::text THEN s.denominationusuelleetablissement
+                WHEN length(btrim(ul.denominationunitelegale::text)) > 0 AND em.l_compte = true AND s.etatadministratifetablissement::text = 'A'::text THEN ul.denominationunitelegale
+                WHEN length(btrim(ul.denominationusuelle1unitelegale::text)) > 0 AND em.l_compte = true AND s.etatadministratifetablissement::text = 'A'::text THEN ul.denominationusuelle1unitelegale
+                WHEN length(btrim(ul.nomunitelegale::text)) > 0 AND em.l_compte = true AND s.etatadministratifetablissement::text = 'A'::text THEN ul.nomunitelegale
+                WHEN length(btrim(ul.nomusageunitelegale::text)) > 0 AND em.l_compte = true AND s.etatadministratifetablissement::text = 'A'::text THEN ((ul.nomusageunitelegale::text || ' '::text) || ul.prenom1unitelegale::text)::character varying
+                WHEN length(btrim(ul.pseudonymeunitelegale::text)) > 0 AND em.l_compte = true AND s.etatadministratifetablissement::text = 'A'::text THEN ul.pseudonymeunitelegale
+                ELSE NULL::character varying
+            END::text), chr(10) ORDER BY em.l_nom, s.enseigne1etablissement, s.denominationusuelleetablissement, ul.denominationunitelegale, ul.denominationusuelle1unitelegale, ul.nomunitelegale) || chr(10)) ||
+            CASE
+                WHEN length(lf.sup_m2::character varying::text) >= 1 AND length(lf.sup_m2::character varying::text) <= 3 THEN lf.sup_m2::character varying::text || ' m²'::text
+                WHEN length(lf.sup_m2::character varying::text) = 4 THEN replace(to_char(lf.sup_m2, 'FM9G999'::text), ','::text, ' '::text) || ' m²'::text
+                WHEN length(lf.sup_m2::character varying::text) = 5 THEN replace(to_char(lf.sup_m2, 'FM99G999'::text), ','::text, ' '::text) || ' m²'::text
+                WHEN length(lf.sup_m2::character varying::text) = 6 THEN replace(to_char(lf.sup_m2, 'FM999G999'::text), ','::text, ' '::text) || ' m²'::text
+                WHEN length(lf.sup_m2::character varying::text) = 7 THEN replace(to_char(lf.sup_m2, 'FM9G999G999'::text), ','::text, ' '::text) || ' m²'::text
+                WHEN length(lf.sup_m2::character varying::text) = 8 THEN replace(to_char(lf.sup_m2, 'FM99G999G999'::text), ','::text, ' '::text) || ' m²'::text
+                ELSE NULL::text
+            END
+            ELSE (
+            CASE
+                WHEN length(btrim(lf.l_occupant::text)) > 0 THEN btrim(upper(lf.l_occupant::text))
+                ELSE btrim(upper(lf.l_lnom::text))
+            END || chr(10)) ||
+            CASE
+                WHEN length(lf.sup_m2::character varying::text) >= 1 AND length(lf.sup_m2::character varying::text) <= 3 THEN lf.sup_m2::character varying::text || ' m²'::text
+                WHEN length(lf.sup_m2::character varying::text) = 4 THEN replace(to_char(lf.sup_m2, 'FM9G999'::text), ','::text, ' '::text) || ' m²'::text
+                WHEN length(lf.sup_m2::character varying::text) = 5 THEN replace(to_char(lf.sup_m2, 'FM99G999'::text), ','::text, ' '::text) || ' m²'::text
+                WHEN length(lf.sup_m2::character varying::text) = 6 THEN replace(to_char(lf.sup_m2, 'FM999G999'::text), ','::text, ' '::text) || ' m²'::text
+                WHEN length(lf.sup_m2::character varying::text) = 7 THEN replace(to_char(lf.sup_m2, 'FM9G999G999'::text), ','::text, ' '::text) || ' m²'::text
+                WHEN length(lf.sup_m2::character varying::text) = 8 THEN replace(to_char(lf.sup_m2, 'FM99G999G999'::text), ','::text, ' '::text) || ' m²'::text
+                ELSE NULL::text
+            END
+        END AS etiquette,
+    lf.geom
+   FROM m_economie.geo_v_lot_eco lf
+     LEFT JOIN (m_economie.lk_localsiret lk
+     LEFT JOIN m_economie.an_sa_etab em ON em.idsiret::text = lk.siret::text
+     LEFT JOIN s_sirene.an_etablissement_api s ON s.siret::text = lk.siret::text
+     LEFT JOIN s_sirene.an_unitelegale_api ul ON ul.siren::text = "left"(lk.siret::text, 9)
+     LEFT JOIN m_economie.geo_sa_etabp ep ON ep.idgeoet::text = lk.siret::text) ON lk.idgeoloc = lf.idgeolf
+  WHERE NOT (EXISTS ( SELECT lo.idgeolf
+           FROM m_economie.geo_sa_local lo
+          WHERE lf.idgeolf = lo.idgeolf))
+  GROUP BY lf.idgeolf, lf.geom, lf.sup_m2, lf.l_occupant, lf.l_lnom
+  ORDER BY 1 DESC
+WITH DATA;
+
+ALTER TABLE x_apps.xapps_geo_vmr_local
+  OWNER TO sig_create;
+
+
+-- Index: x_apps.idx_xapps_geo_vmr_local_idgeo
+
+-- DROP INDEX x_apps.idx_xapps_geo_vmr_local_idgeo;
+
+CREATE INDEX idx_xapps_geo_vmr_local_idgeo
+  ON x_apps.xapps_geo_vmr_local
+  USING btree
+  (idgeo);
+
+
+-- ########################################################### Vue générant la liste des sites (activité et mixte (sans geom) #########################
+
+-- View: x_apps.xapps_an_v_site_liste
+
+-- DROP VIEW x_apps.xapps_an_v_site_liste;
+
+CREATE OR REPLACE VIEW x_apps.xapps_an_v_site_liste AS 
+ SELECT geo_v_site_eco.idsite,
+    geo_v_site_eco.idpole,
+    geo_v_site_eco.site_nom
+   FROM m_economie.geo_v_site_eco
+UNION ALL
+ SELECT geo_v_site_mixte.idsite,
+    geo_v_site_mixte.idpole,
+    geo_v_site_mixte.site_nom
+   FROM m_amenagement.geo_v_site_mixte;
+
+ALTER TABLE x_apps.xapps_an_v_site_liste
+  OWNER TO sig_create;
+GRANT ALL ON TABLE x_apps.xapps_an_v_site_liste TO sig_create;
+GRANT ALL ON TABLE x_apps.xapps_an_v_site_liste TO create_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE x_apps.xapps_an_v_site_liste TO edit_sig;
+GRANT SELECT ON TABLE x_apps.xapps_an_v_site_liste TO read_sig;
+COMMENT ON VIEW x_apps.xapps_an_v_site_liste
+  IS 'Vue alphanumérique contenant la liste des sites économiques et mixtes pour affichage dans la fiche établissement dans GEO';
+	
 
