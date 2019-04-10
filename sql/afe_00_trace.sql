@@ -18,5 +18,11 @@
 #################################################################### SUIVI CODE SQL ####################################################################
 -- Le développement originel a débuté en 2015. Le développement a évolué et a été optimisé depuis sans qu'il n'y est de documentation.
 -- 2019-01-21 : GB / initialisation du code
+-- 2019-04-10 : GB / modification du code suite au changement de diffusion des données SIRENE de l'Insee via une API. Cette transformation
+--              a été suivi d'un changement de structure des données.
+--              La localisation des établissements a également été modifiée, elle est désormais au point d'adresse depuis notre
+--              base adresse locale.
+--              La gestion a l'échelle d'un local d'activité a également été initié seulement. Celle-ci devrait se poursuivre dans
+--              un second temps.
 
 */
