@@ -718,10 +718,6 @@ GRANT SELECT ON TABLE x_apps.xapps_geo_vmr_local TO read_sig;
 
 -- #################################################################### FUNCTION TRIGGER  ####################################################################
 
-GRANT EXECUTE ON FUNCTION s_sirene.ft_m_modif_an_etablissement() TO public;
-GRANT EXECUTE ON FUNCTION s_sirene.ft_m_modif_an_etablissement() TO sig_create;
-GRANT EXECUTE ON FUNCTION s_sirene.ft_m_modif_an_etablissement() TO create_sig;
-
 GRANT EXECUTE ON FUNCTION r_objet.ft_geo_etab_objet_idsite() TO create_sig;
 GRANT EXECUTE ON FUNCTION r_objet.ft_geo_etab_objet_idsite() TO sig_create;
 GRANT EXECUTE ON FUNCTION r_objet.ft_geo_etab_objet_idsite() TO public;
@@ -774,6 +770,10 @@ GRANT EXECUTE ON FUNCTION r_objet.ft_m_update_proc() TO create_sig;
 GRANT EXECUTE ON FUNCTION r_objet.ft_m_update_proc() TO sig_create;
 GRANT EXECUTE ON FUNCTION r_objet.ft_m_update_proc() TO public
 
+GRANT EXECUTE ON FUNCTION r_objet.ft_m_etiquette_local() TO create_sig;
+GRANT EXECUTE ON FUNCTION r_objet.ft_m_etiquette_local() TO sig_create;
+GRANT EXECUTE ON FUNCTION r_objet.ft_m_etiquette_local() TO public
+
 GRANT EXECUTE ON FUNCTION r_objet.ft_m_vm_site() TO create_sig;
 GRANT EXECUTE ON FUNCTION r_objet.ft_m_vm_site() TO sig_create;
 GRANT EXECUTE ON FUNCTION r_objet.ft_m_vm_site() TO public;
@@ -814,25 +814,13 @@ GRANT EXECUTE ON FUNCTION m_foncier.ft_m_cess_nlot_update() TO sig_create;
 GRANT EXECUTE ON FUNCTION m_foncier.ft_m_cess_nlot_update() TO create_sig;
 GRANT EXECUTE ON FUNCTION m_foncier.ft_m_cess_nlot_update() TO edit_sig;
 
-GRANT EXECUTE ON FUNCTION m_economie.ft_m_geo_v_etab_objet() TO public;
-GRANT EXECUTE ON FUNCTION m_economie.ft_m_geo_v_etab_objet() TO sig_create;
-GRANT EXECUTE ON FUNCTION m_economie.ft_m_geo_v_etab_objet() TO create_sig;
-
-GRANT EXECUTE ON FUNCTION m_economie.ft_m_geo_v_etab_att() TO public;
-GRANT EXECUTE ON FUNCTION m_economie.ft_m_geo_v_etab_att() TO sig_create;
-GRANT EXECUTE ON FUNCTION m_economie.ft_m_geo_v_etab_att() TO create_sig;
-
-GRANT EXECUTE ON FUNCTION m_economie.ft_m_geo_v_etab_objet() TO public;
-GRANT EXECUTE ON FUNCTION m_economie.ft_m_geo_v_etab_objet() TO sig_create;
-GRANT EXECUTE ON FUNCTION m_economie.ft_m_geo_v_etab_objet() TO create_sig;
-
-GRANT EXECUTE ON FUNCTION m_economie.ft_m_geo_v_etab_oldsirene() TO public;
-GRANT EXECUTE ON FUNCTION m_economie.ft_m_geo_v_etab_oldsirene() TO sig_create;
-GRANT EXECUTE ON FUNCTION m_economie.ft_m_geo_v_etab_oldsirene() TO create_sig;
-
 GRANT EXECUTE ON FUNCTION m_economie.ft_m_an_sa_etab_date_null() TO public;
 GRANT EXECUTE ON FUNCTION m_economie.ft_m_an_sa_etab_date_null() TO sig_create;
 GRANT EXECUTE ON FUNCTION m_economie.ft_m_an_sa_etab_date_null() TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_economie.ft_m_etiquette_local() TO public;
+GRANT EXECUTE ON FUNCTION m_economie.ft_m_etiquette_local() TO sig_create;
+GRANT EXECUTE ON FUNCTION m_economie.ft_m_etiquette_local() TO create_sig;
 
 GRANT EXECUTE ON FUNCTION m_economie.ft_m_bal_insert() TO public;
 GRANT EXECUTE ON FUNCTION m_economie.ft_m_bal_insert() TO sig_create;
@@ -880,6 +868,32 @@ GRANT EXECUTE ON FUNCTION m_economie.ft_m_source_eff_etab() TO create_sig;
 GRANT EXECUTE ON FUNCTION m_economie.ft_r_suivi_audit() TO public;
 GRANT EXECUTE ON FUNCTION m_economie.ft_r_suivi_audit() TO sig_create;
 GRANT EXECUTE ON FUNCTION m_economie.ft_r_suivi_audit() TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_economie.ft_m_local_insert_update() TO public;
+GRANT EXECUTE ON FUNCTION m_economie.ft_m_local_insert_update() TO sig_create;
+GRANT EXECUTE ON FUNCTION m_economie.ft_m_local_insert_update() TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_economie.ft_m_local_delete_etab() TO public;
+GRANT EXECUTE ON FUNCTION m_economie.ft_m_local_delete_etab() TO sig_create;
+GRANT EXECUTE ON FUNCTION m_economie.ft_m_local_delete_etab() TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_economie.ft_m_lk_adresseetablissement_siret_update() TO public;
+GRANT EXECUTE ON FUNCTION m_economie.ft_m_lk_adresseetablissement_siret_update() TO sig_create;
+GRANT EXECUTE ON FUNCTION m_economie.ft_m_lk_adresseetablissement_siret_update() TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_economie.ft_m_lk_adresseetablissement_idsite() TO public;
+GRANT EXECUTE ON FUNCTION m_economie.ft_m_lk_adresseetablissement_idsite() TO sig_create;
+GRANT EXECUTE ON FUNCTION m_economie.ft_m_lk_adresseetablissement_idsite() TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_economie.ft_m_lk_adresseetablissement_idsite_delete() TO public;
+GRANT EXECUTE ON FUNCTION m_economie.ft_m_lk_adresseetablissement_idsite_delete() TO sig_create;
+GRANT EXECUTE ON FUNCTION m_economie.ft_m_lk_adresseetablissement_idsite_delete() TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_economie.ft_m_lk_adresseetablissement() TO public;
+GRANT EXECUTE ON FUNCTION m_economie.ft_m_lk_adresseetablissement() TO sig_create;
+GRANT EXECUTE ON FUNCTION m_economie.ft_m_lk_adresseetablissement() TO create_sig;
+
+
 
 GRANT EXECUTE ON FUNCTION m_amenagement.ft_m_delete_lot_equ() TO public;
 GRANT EXECUTE ON FUNCTION m_amenagement.ft_m_delete_lot_equ() TO sig_create;
