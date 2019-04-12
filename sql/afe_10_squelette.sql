@@ -1938,19 +1938,6 @@ CREATE TRIGGER t_t3_foncier_l_nom
   FOR EACH ROW
   EXECUTE PROCEDURE r_objet.ft_m_foncier_l_nom();
 
--- Trigger: t_t4_suivi on r_objet.geo_objet_fon_lot
-
--- DROP TRIGGER t_t4_suivi ON r_objet.geo_objet_fon_lot;
-
-CREATE TRIGGER t_t4_suivi
-  AFTER INSERT OR UPDATE OR DELETE
-  ON r_objet.geo_objet_fon_lot
-  FOR EACH ROW
-  EXECUTE PROCEDURE m_economie.ft_m_suivi_audit();
-ALTER TABLE r_objet.geo_objet_fon_lot DISABLE TRIGGER t_t4_suivi;
-
-
-
 -- Function: r_objet.ft_m_foncier_l_nom()
 
 -- DROP FUNCTION r_objet.ft_m_foncier_l_nom();
@@ -1971,28 +1958,6 @@ ALTER FUNCTION r_objet.ft_m_foncier_l_nom()
   OWNER TO sig_create;
 
 COMMENT ON FUNCTION r_objet.ft_m_foncier_l_nom() IS 'Fonction dont l''objet de forcer à null le champ l_nom après effacement par exemple pour éviter les doubles cotes';
-
--- Trigger: ft_m_foncier_l_nom on r_objet.geo_objet_fon_lot
-
--- DROP TRIGGER ft_m_foncier_l_nom ON r_objet.geo_objet_fon_lot;
-
-CREATE TRIGGER t_t3_foncier_l_nom
-  BEFORE INSERT OR UPDATE OF l_nom
-  ON r_objet.geo_objet_fon_lot
-  FOR EACH ROW
-  EXECUTE PROCEDURE r_objet.ft_m_foncier_l_nom();
-
--- Trigger: t_t3_modif_surfbrt on r_objet.geo_objet_fon_lot
-
--- DROP TRIGGER t_t3_modif_surfbrt ON r_objet.geo_objet_fon_lot;
-
-CREATE TRIGGER t_t3_modif_surfbrt
-  BEFORE UPDATE OF geom
-  ON r_objet.geo_objet_fon_lot
-  FOR EACH ROW
-  EXECUTE PROCEDURE public.ft_r_sup_m2_maj();
-ALTER TABLE r_objet.geo_objet_fon_lot DISABLE TRIGGER t_t3_modif_surfbrt;
-COMMENT ON TRIGGER t_t3_modif_surfbrt ON r_objet.geo_objet_fon_lot IS 'En doublon avec le le t2 ?';
 
 -- Trigger: t_t4_suivi on r_objet.geo_objet_fon_lot
 
@@ -2142,6 +2107,31 @@ CREATE TRIGGER t_t5_xapps_geo_vmr_proc
   ON r_objet.geo_objet_ope
   FOR EACH ROW
   EXECUTE PROCEDURE r_objet.ft_m_geo_vmr_proc();
+			 
+-- Function: r_objet.ft_m_geo_vmr_proc()
+
+-- DROP FUNCTION r_objet.ft_m_geo_vmr_proc();
+
+CREATE OR REPLACE FUNCTION r_objet.ft_m_geo_vmr_proc()
+  RETURNS trigger AS
+$BODY$
+
+BEGIN
+
+    REFRESH MATERIALIZED VIEW x_apps.xapps_geo_vmr_proc;
+
+    return new;
+
+END
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION r_objet.ft_m_geo_vmr_proc()
+  OWNER TO sig_create;
+GRANT EXECUTE ON FUNCTION r_objet.ft_m_geo_vmr_proc() TO public;
+GRANT EXECUTE ON FUNCTION r_objet.ft_m_geo_vmr_proc() TO sig_create;
+GRANT EXECUTE ON FUNCTION r_objet.ft_m_geo_vmr_proc() TO create_sig;
+
 
 -- ################################################# Classe des objets sites reconstitués ##################################
 
@@ -3260,424 +3250,172 @@ CREATE TRIGGER t_t5_suivi
 				 
 -- ################################################# Classe des objets des établissements spécifiques ##################################
 
--- Table: m_economie.geo_sa_etabp
+-- Table: m_economie.geo_sa_local
 
--- DROP TABLE m_economie.geo_sa_etabp;
+-- DROP TABLE m_economie.geo_sa_local;
 
-CREATE TABLE m_economie.geo_sa_etabp
+CREATE TABLE m_economie.geo_sa_local
 (
-  idgeoet integer NOT NULL, -- Identifiant géographique unique
-  idsiren character varying(9), -- Numéro SIRENE de l'établissement (si connu)
-  idsiret character varying(14), -- Numéro SIRET de l'établissement (si connu)
-  idsite character varying(10), -- Identifiant du site d'activité d'appartenance
-  date_sai timestamp without time zone DEFAULT now(), -- Date de saisie par le producteur
-  op_sai character varying(80), -- Libellé de l'opérateur de Saisie
-  org_sai character varying(80), -- Libellé de l'organisme dont dépend l'opérateur de saisie
-  l_nom character varying(255), -- Libellé du nom de l'établissement spécifique
-  eff_etab integer, -- Effectif total de l'établissement
-  source_eff character varying(50), -- Source de l'effectif de l'établissement
-  date_eff date, -- Date de l'effectif
-  l_ape character varying(5), -- Code APE de l'établissement
-  l_nom_dir character varying(50), -- Libellé du nom du dirigeant de l'établissement par l'ARC
-  date_maj_dir date, -- Date de mise à jour du dirigeant
-  source_maj_dir character varying(50), -- Source de la mise à jour du dirigeant
-  l_tel character varying(15), -- Numéro de téléphone de l'établissement
-  l_mail character varying(80), -- Adresse mail du dirigeant de l'établissement
-  l_observ character varying(255), -- Commentaires
-  geom geometry(Point,2154) NOT NULL, -- Champ contenant la géométrie des objets
-  date_maj timestamp without time zone, -- Date de mise à jour
-  l_compte boolean DEFAULT true, -- Prise en compte de l'établissement pour le calcul des statistiques (nombre d'établissements et effectifs) dans les informations de synthèse....
-  l_tel_dir character varying(15), -- Numéro de téléphone direct du dirigeant
-  l_telp_dir character varying(15), -- Numéro de téléphone portable direct du dirigeant
-  l_mail_dir character varying(80), -- Adresse email du dirigeant
-  l_nom_drh character varying(255), -- Nom du DRH
-  l_tel_drh character varying(15), -- Numéro de téléphone direct du DRH
-  l_mail_drh character varying(80), -- Adresse email du DRH
-  l_nom_ad character varying(255), -- Nom de l'assistante de direction
-  l_tel_ad character varying(15), -- Numéro de téléphone direct de l'assistante de direction
-  l_mail_ad character varying(80), -- Adresse email de l'assistante de direction
-  l_url character varying(500), -- Lien du site internet de l'entreprise
-  l_url_bil character varying(500), -- Lien vers le bilan en ligne de l'entreprise
-  l_comp_ad character varying(100), -- Complément d'adresse (ex : nom du bâtiment)
-  src_geom character varying(2) DEFAULT '20'::character varying, -- Référentiel spatial utilisé pour la saisie
-  insee character varying(5),
-  commune character varying(80),
-  l_titre character varying(100), -- Titre du contact
-  eff_etab_d character varying(200), -- Précision (en détail) du nombre de CDD, CDI, intérim, ....
-  l_nom_aut character varying(255), -- Nom d'un autre responsable
-  l_titre_aut character varying(255), -- Titre de l'autre responsable
-  l_tel_aut character varying(15), -- Téléphone de l'autre responsable
-  l_mail_aut character varying(80), -- Email de l'autre responsable
-  date_maj_drh timestamp without time zone, -- Date de mise à jour du nom du DRH
-  date_maj_ad timestamp without time zone, -- Date de mise à jour de l'assistant(e) de direction
-  date_maj_aut timestamp without time zone, -- Date de mise à jour du nom de l'autre contact
-  l_titre_drh character varying(100), -- Titre du DRH
-  l_titre_ad character varying(100), -- Titre de l'assistant(e) de direction
-  l_drh_ss boolean DEFAULT true, -- Information sur le fait que la DRH soit sur le site (par défaut oui)
-  l_drh_ad character varying(150), -- Adresse extérieure de la DRH si pas sur le site
-  l_telp_aut character varying(15), -- Téléphone portable de l'autre responsable
-  CONSTRAINT geo_sa_etabp_pkey PRIMARY KEY (idgeoet),
-  CONSTRAINT geo_sa_etabp_srcgeom_fkey FOREIGN KEY (src_geom)
-      REFERENCES r_objet.lt_src_geom (code) MATCH SIMPLE
-      ON UPDATE NO ACTION ON DELETE NO ACTION
+  idgeoloc integer NOT NULL DEFAULT nextval('idgeo_seq'::regclass), -- Identifiant unique du local
+  idgeolf integer, -- Identifiant unique du lot foncier d'appartenance
+  usage character varying(100), -- Usage du local si pas d'occupants identifiés
+  sup_m2 double precision, -- Surface en m² du local
+  geom geometry(Polygon,2154), -- Champ stockant la géométrie des objets
+  l_occupp character varying(255), -- Libellé du bâtiment ou occupant principale
+  CONSTRAINT geo_sa_local_pkey PRIMARY KEY (idgeoloc)
 )
 WITH (
   OIDS=FALSE
 );
-ALTER TABLE m_economie.geo_sa_etabp
+ALTER TABLE m_economie.geo_sa_local
   OWNER TO sig_create;
 
-COMMENT ON TABLE m_economie.geo_sa_etabp
-  IS 'Données métiers sur les établissements non présent dans SIRENE (transition dans l''attente de leur intégration dans ce même fichier)';
-COMMENT ON COLUMN m_economie.geo_sa_etabp.idgeoet IS 'Identifiant géographique unique';
-COMMENT ON COLUMN m_economie.geo_sa_etabp.idsiren IS 'Numéro SIRENE de l''établissement (si connu)';
-COMMENT ON COLUMN m_economie.geo_sa_etabp.idsiret IS 'Numéro SIRET de l''établissement (si connu)';
-COMMENT ON COLUMN m_economie.geo_sa_etabp.idsite IS 'Identifiant du site d''activité d''appartenance';
-COMMENT ON COLUMN m_economie.geo_sa_etabp.date_sai IS 'Date de saisie par le producteur';
-COMMENT ON COLUMN m_economie.geo_sa_etabp.op_sai IS 'Libellé de l''opérateur de Saisie';
-COMMENT ON COLUMN m_economie.geo_sa_etabp.org_sai IS 'Libellé de l''organisme dont dépend l''opérateur de saisie';
-COMMENT ON COLUMN m_economie.geo_sa_etabp.l_nom IS 'Libellé du nom de l''établissement spécifique';
-COMMENT ON COLUMN m_economie.geo_sa_etabp.eff_etab IS 'Effectif total de l''établissement';
-COMMENT ON COLUMN m_economie.geo_sa_etabp.source_eff IS 'Source de l''effectif de l''établissement';
-COMMENT ON COLUMN m_economie.geo_sa_etabp.date_eff IS 'Date de l''effectif';
-COMMENT ON COLUMN m_economie.geo_sa_etabp.l_ape IS 'Code APE de l''établissement';
-COMMENT ON COLUMN m_economie.geo_sa_etabp.l_nom_dir IS 'Libellé du nom du dirigeant de l''établissement par l''ARC';
-COMMENT ON COLUMN m_economie.geo_sa_etabp.date_maj_dir IS 'Date de mise à jour du dirigeant';
-COMMENT ON COLUMN m_economie.geo_sa_etabp.source_maj_dir IS 'Source de la mise à jour du dirigeant';
-COMMENT ON COLUMN m_economie.geo_sa_etabp.l_tel IS 'Numéro de téléphone de l''établissement';
-COMMENT ON COLUMN m_economie.geo_sa_etabp.l_mail IS 'Adresse mail du dirigeant de l''établissement';
-COMMENT ON COLUMN m_economie.geo_sa_etabp.l_observ IS 'Commentaires';
-COMMENT ON COLUMN m_economie.geo_sa_etabp.geom IS 'Champ contenant la géométrie des objets';
-COMMENT ON COLUMN m_economie.geo_sa_etabp.date_maj IS 'Date de mise à jour';
-COMMENT ON COLUMN m_economie.geo_sa_etabp.l_compte IS 'Prise en compte de l''établissement pour le calcul des statistiques (nombre d''établissements et effectifs) dans les informations de synthèse.
-Par défaut TRUE et laisse le choix à l''administrateur de la donnée de modifier cette valeur.';
-COMMENT ON COLUMN m_economie.geo_sa_etabp.l_tel_dir IS 'Numéro de téléphone direct du dirigeant';
-COMMENT ON COLUMN m_economie.geo_sa_etabp.l_telp_dir IS 'Numéro de téléphone portable direct du dirigeant';
-COMMENT ON COLUMN m_economie.geo_sa_etabp.l_mail_dir IS 'Adresse email du dirigeant';
-COMMENT ON COLUMN m_economie.geo_sa_etabp.l_nom_drh IS 'Nom du DRH';
-COMMENT ON COLUMN m_economie.geo_sa_etabp.l_tel_drh IS 'Numéro de téléphone direct du DRH';
-COMMENT ON COLUMN m_economie.geo_sa_etabp.l_mail_drh IS 'Adresse email du DRH';
-COMMENT ON COLUMN m_economie.geo_sa_etabp.l_nom_ad IS 'Nom de l''assistante de direction';
-COMMENT ON COLUMN m_economie.geo_sa_etabp.l_tel_ad IS 'Numéro de téléphone direct de l''assistante de direction';
-COMMENT ON COLUMN m_economie.geo_sa_etabp.l_mail_ad IS 'Adresse email de l''assistante de direction';
-COMMENT ON COLUMN m_economie.geo_sa_etabp.l_url IS 'Lien du site internet de l''entreprise';
-COMMENT ON COLUMN m_economie.geo_sa_etabp.l_url_bil IS 'Lien vers le bilan en ligne de l''entreprise';
-COMMENT ON COLUMN m_economie.geo_sa_etabp.l_comp_ad IS 'Complément d''adresse (ex : nom du bâtiment)';
-COMMENT ON COLUMN m_economie.geo_sa_etabp.src_geom IS 'Référentiel spatial utilisé pour la saisie';
-COMMENT ON COLUMN m_economie.geo_sa_etabp.l_titre IS 'Titre du contact';
-COMMENT ON COLUMN m_economie.geo_sa_etabp.eff_etab_d IS 'Précision (en détail) du nombre de CDD, CDI, intérim, ....';
-COMMENT ON COLUMN m_economie.geo_sa_etabp.l_nom_aut IS 'Nom d''un autre responsable';
-COMMENT ON COLUMN m_economie.geo_sa_etabp.l_titre_aut IS 'Titre de l''autre responsable';
-COMMENT ON COLUMN m_economie.geo_sa_etabp.l_tel_aut IS 'Téléphone de l''autre responsable';
-COMMENT ON COLUMN m_economie.geo_sa_etabp.l_mail_aut IS 'Email de l''autre responsable';
-COMMENT ON COLUMN m_economie.geo_sa_etabp.date_maj_drh IS 'Date de mise à jour du nom du DRH';
-COMMENT ON COLUMN m_economie.geo_sa_etabp.date_maj_ad IS 'Date de mise à jour de l''assistant(e) de direction';
-COMMENT ON COLUMN m_economie.geo_sa_etabp.date_maj_aut IS 'Date de mise à jour du nom de l''autre contact';
-COMMENT ON COLUMN m_economie.geo_sa_etabp.l_titre_drh IS 'Titre du DRH';
-COMMENT ON COLUMN m_economie.geo_sa_etabp.l_titre_ad IS 'Titre de l''assistant(e) de direction';
-COMMENT ON COLUMN m_economie.geo_sa_etabp.l_drh_ss IS 'Information sur le fait que la DRH soit sur le site (par défaut oui)';
-COMMENT ON COLUMN m_economie.geo_sa_etabp.l_drh_ad IS 'Adresse extérieure de la DRH si pas sur le site';
-COMMENT ON COLUMN m_economie.geo_sa_etabp.l_telp_aut IS 'Téléphone portable de l''autre responsable';
+COMMENT ON TABLE m_economie.geo_sa_local
+  IS 'Table géographique contenant la localisation des locaux. Par défaut les objets reprennent ceux des lots fonciers. Au besoin des sous-découpages sont créés (galerie commerciale, division de lots, ...)';
+COMMENT ON COLUMN m_economie.geo_sa_local.idgeoloc IS 'Identifiant unique du local';
+COMMENT ON COLUMN m_economie.geo_sa_local.idgeolf IS 'Identifiant unique du lot foncier d''appartenance';
+COMMENT ON COLUMN m_economie.geo_sa_local.usage IS 'Usage du local si pas d''occupants identifiés';
+COMMENT ON COLUMN m_economie.geo_sa_local.sup_m2 IS 'Surface en m² du local';
+COMMENT ON COLUMN m_economie.geo_sa_local.geom IS 'Champ stockant la géométrie des objets';
+COMMENT ON COLUMN m_economie.geo_sa_local.l_occupp IS 'Libellé du bâtiment ou occupant principale';
 
 
--- Index: m_economie.geo_sa_etabp_geom_idx
+-- Trigger: t_t1_local_insert_update_etab on m_economie.geo_sa_local
 
--- DROP INDEX m_economie.geo_sa_etabp_geom_idx;
+-- DROP TRIGGER t_t1_local_insert_update_etab ON m_economie.geo_sa_local;
 
-CREATE INDEX geo_sa_etabp_geom_idx
-  ON m_economie.geo_sa_etabp
-  USING gist
-  (geom);
-
-
--- Trigger: t_t1_etabp_insert on m_economie.geo_sa_etabp
-
--- DROP TRIGGER t_t1_etabp_insert ON m_economie.geo_sa_etabp;
-
-CREATE TRIGGER t_t1_etabp_insert
-  BEFORE INSERT
-  ON m_economie.geo_sa_etabp
-  FOR EACH ROW
-  EXECUTE PROCEDURE m_economie.ft_m_etabp_insert();
-
--- Function: m_economie.ft_m_etabp_insert()
-
--- DROP FUNCTION m_economie.ft_m_etabp_insert();
-
-CREATE OR REPLACE FUNCTION m_economie.ft_m_etabp_insert()
-  RETURNS trigger AS
-$BODY$
-
-DECLARE v_idgeoet integer;
-
-BEGIN
-    v_idgeoet := (SELECT nextval('idgeo_seq'::regclass));
-    new.idgeoet = v_idgeoet;
-    -- insertion du numéro du site
-    new.idsite = (SELECT DISTINCT
-				an_sa_site.idsite 
-		  FROM 
-				m_economie.an_sa_site, r_objet.geo_objet_ope
-		  WHERE
-				geo_objet_ope.idsite=an_sa_site.idsite
-		  AND
-				st_intersects(geo_objet_ope.geom,new.geom) = true
-		  );
-
--- mise à jour des appartenances des établissements au local dans la table lk_localsiret
--- si le point est dans un local alors
-IF
-(
-	SELECT count(*) FROM m_economie.geo_sa_local l
-	WHERE st_intersects(new.geom,l.geom)
-) > 0
-THEN
-INSERT INTO m_economie.lk_localsiret (idgeoloc,siret)
-SELECT DISTINCT l.idgeoloc,v_idgeoet FROM m_economie.geo_sa_local l
-WHERE st_intersects(l.geom,new.geom);
-
--- sinon dans un lot
-ELSE
-INSERT INTO m_economie.lk_localsiret (idgeoloc,siret)
-SELECT DISTINCT l.idgeolf,v_idgeoet FROM r_objet.geo_objet_fon_lot l
-WHERE st_intersects(l.geom,new.geom) AND l.l_voca='20';
-
-END IF;
-
-
-    return new ;
-END;
-
-$BODY$
-  LANGUAGE plpgsql VOLATILE
-  COST 100;
-ALTER FUNCTION m_economie.ft_m_etabp_insert()
-  OWNER TO sig_create;
-
-
-				 
--- Trigger: t_t2_etabp_insert_date_maj on m_economie.geo_sa_etabp
-
--- DROP TRIGGER t_t2_etabp_insert_date_maj ON m_economie.geo_sa_etabp;
-
-CREATE TRIGGER t_t2_etabp_insert_date_maj
-  BEFORE INSERT
-  ON m_economie.geo_sa_etabp
-  FOR EACH ROW
-  EXECUTE PROCEDURE public.ft_r_timestamp_maj();
-
--- Trigger: t_t3_etabp_insert_date_sai on m_economie.geo_sa_etabp
-
--- DROP TRIGGER t_t3_etabp_insert_date_sai ON m_economie.geo_sa_etabp;
-
-CREATE TRIGGER t_t3_etabp_insert_date_sai
-  BEFORE INSERT
-  ON m_economie.geo_sa_etabp
-  FOR EACH ROW
-  EXECUTE PROCEDURE public.ft_r_timestamp_sai();
-
--- Trigger: t_t5_etabp_update on m_economie.geo_sa_etabp
-
--- DROP TRIGGER t_t5_etabp_update ON m_economie.geo_sa_etabp;
-
-CREATE TRIGGER t_t5_etabp_update
-  BEFORE UPDATE
-  ON m_economie.geo_sa_etabp
-  FOR EACH ROW
-  EXECUTE PROCEDURE m_economie.ft_m_etabp_update();
-
--- Function: m_economie.ft_m_etabp_update()
-
--- DROP FUNCTION m_economie.ft_m_etabp_update();
-
-CREATE OR REPLACE FUNCTION m_economie.ft_m_etabp_update()
-  RETURNS trigger AS
-$BODY$
-
-BEGIN
-
-    -- insertion du numéro du site
-    new.idsite = (SELECT DISTINCT
-				an_sa_site.idsite 
-		  FROM 
-				m_economie.an_sa_site, r_objet.geo_objet_ope
-		  WHERE
-				geo_objet_ope.idsite=an_sa_site.idsite
-		  AND
-				st_intersects(geo_objet_ope.geom,new.geom) = true
-		  );
-	
- 
-
--- mise à jour des appartenances des établissements au local dans la table lk_localsiret
--- si le point est dans un local alors
-
-IF
-
-(
-	SELECT count(*) FROM m_economie.geo_sa_local l
-	WHERE st_intersects(new.geom,l.geom)
-) > 0
-THEN
-DELETE FROM m_economie.lk_localsiret WHERE siret = new.idgeoet::character varying; 
-INSERT INTO m_economie.lk_localsiret (idgeoloc,siret)
-SELECT DISTINCT l.idgeoloc,new.idgeoet FROM m_economie.geo_sa_local l
-WHERE st_intersects(l.geom,new.geom);
-
--- sinon dans un lot
-ELSE
-IF
-(
-	SELECT count(*) FROM r_objet.geo_objet_fon_lot l
-	WHERE st_intersects(new.geom,l.geom) AND l.l_voca='20'
-) > 0
-THEN
-DELETE FROM m_economie.lk_localsiret WHERE siret = new.idgeoet::character varying; 
-INSERT INTO m_economie.lk_localsiret (idgeoloc,siret)
-SELECT DISTINCT l.idgeolf,new.idgeoet FROM r_objet.geo_objet_fon_lot l
-WHERE st_intersects(l.geom,new.geom) AND l.l_voca='20';
-
-ELSE
-DELETE FROM m_economie.lk_localsiret WHERE siret = new.idgeoet::character varying;
-
-END IF;
-END IF;
-
-
-return new ;
-
-END;
-
-
-
-
-$BODY$
-  LANGUAGE plpgsql VOLATILE
-  COST 100;
-ALTER FUNCTION m_economie.ft_m_etabp_update()
-  OWNER TO sig_create;
-
- 
-				 
--- Trigger: t_t6_etabp_update_datemaj on m_economie.geo_sa_etabp
-
--- DROP TRIGGER t_t6_etabp_update_datemaj ON m_economie.geo_sa_etabp;
-
-CREATE TRIGGER t_t6_etabp_update_datemaj
-  BEFORE UPDATE
-  ON m_economie.geo_sa_etabp
-  FOR EACH ROW
-  EXECUTE PROCEDURE public.ft_r_timestamp_maj();
-
--- Trigger: t_t7_geo_sa_etabp_insee on m_economie.geo_sa_etabp
-
--- DROP TRIGGER t_t7_geo_sa_etabp_insee ON m_economie.geo_sa_etabp;
-
-CREATE TRIGGER t_t7_geo_sa_etabp_insee
+CREATE TRIGGER t_t1_local_insert_update_etab
   BEFORE INSERT OR UPDATE OF geom
-  ON m_economie.geo_sa_etabp
+  ON m_economie.geo_sa_local
   FOR EACH ROW
-  EXECUTE PROCEDURE public.ft_r_commune_pl();
+  EXECUTE PROCEDURE m_economie.ft_m_local_insert_update();
 
--- Trigger: t_t8_geo_sa_etabp_delete on m_economie.geo_sa_etabp
+-- Trigger: t_t2_local_delete_etab on m_economie.geo_sa_local
 
--- DROP TRIGGER t_t8_geo_sa_etabp_delete ON m_economie.geo_sa_etabp;
+-- DROP TRIGGER t_t2_local_delete_etab ON m_economie.geo_sa_local;
 
-CREATE TRIGGER t_t8_geo_sa_etabp_delete
+CREATE TRIGGER t_t2_local_delete_etab
   AFTER DELETE
-  ON m_economie.geo_sa_etabp
+  ON m_economie.geo_sa_local
   FOR EACH ROW
-  EXECUTE PROCEDURE m_economie.ft_m_geo_sa_etabp_delete();
+  EXECUTE PROCEDURE m_economie.ft_m_local_delete_etab();
 
--- Function: m_economie.ft_m_geo_sa_etabp_delete()
+-- Trigger: t_t3_etiquette_local_refresh on m_economie.geo_sa_local
 
--- DROP FUNCTION m_economie.ft_m_geo_sa_etabp_delete();
+-- DROP TRIGGER t_t3_etiquette_local_refresh ON m_economie.geo_sa_local;
 
-CREATE OR REPLACE FUNCTION m_economie.ft_m_geo_sa_etabp_delete()
-  RETURNS trigger AS
-$BODY$BEGIN
-
--- supression dans la table de relation local siret
-DELETE FROM m_economie.lk_localsiret WHERE siret = old.idgeoet::character varying;
-
-return new;
-END$BODY$
-  LANGUAGE plpgsql VOLATILE
-  COST 100;
-ALTER FUNCTION m_economie.ft_m_geo_sa_etabp_delete()
-  OWNER TO sig_create;
-
-COMMENT ON FUNCTION m_economie.ft_m_geo_sa_etabp_delete() IS 'Fonction dont l''objet de supprimer l''établissement spécifique affecté à un local après suppression. La récupération des informations spécifiques s''effectue via la fiche établissement après affectation de celui-ci à la bonne adresse
-lors de son apparition dans le ficher SIRENE';
-
-				 
--- Trigger: t_t8_suivi on m_economie.geo_sa_etabp
-
--- DROP TRIGGER t_t8_suivi ON m_economie.geo_sa_etabp;
-
-CREATE TRIGGER t_t8_suivi
-  AFTER INSERT OR UPDATE OR DELETE
-  ON m_economie.geo_sa_etabp
-  FOR EACH ROW
-  EXECUTE PROCEDURE m_economie.ft_m_suivi_audit();
-ALTER TABLE m_economie.geo_sa_etabp DISABLE TRIGGER t_t8_suivi;
-
--- Trigger: t_t91_etabp_null on m_economie.geo_sa_etabp
-
--- DROP TRIGGER t_t91_etabp_null ON m_economie.geo_sa_etabp;
-
-CREATE TRIGGER t_t91_etabp_null
+CREATE TRIGGER t_t3_etiquette_local_refresh
   AFTER INSERT OR UPDATE
-  ON m_economie.geo_sa_etabp
-  FOR EACH ROW
-  EXECUTE PROCEDURE m_economie.ft_m_etabp_null();
-
--- Function: m_economie.ft_m_etabp_null()
-
--- DROP FUNCTION m_economie.ft_m_etabp_null();
-
-CREATE OR REPLACE FUNCTION m_economie.ft_m_etabp_null()
-  RETURNS trigger AS
-$BODY$
-
-BEGIN
-
-    -- insertion du numéro du site
-    UPDATE m_economie.geo_sa_etabp SET idsiren = null WHERE idsiren='';
-    UPDATE m_economie.geo_sa_etabp SET idsiret = null WHERE idsiret='';
-    UPDATE m_economie.geo_sa_etabp SET op_sai = null WHERE op_sai='';
-    UPDATE m_economie.geo_sa_etabp SET org_sai = null WHERE org_sai='';
-    UPDATE m_economie.geo_sa_etabp SET l_nom = null WHERE l_nom='';
-    UPDATE m_economie.geo_sa_etabp SET source_eff = null WHERE source_eff='';
-    UPDATE m_economie.geo_sa_etabp SET l_ape = null WHERE l_ape='';
-    UPDATE m_economie.geo_sa_etabp SET l_nom_dir = null WHERE l_nom_dir='';
-    UPDATE m_economie.geo_sa_etabp SET source_maj_dir = null WHERE source_maj_dir='';
-    UPDATE m_economie.geo_sa_etabp SET l_tel = null WHERE l_tel='';
-    UPDATE m_economie.geo_sa_etabp SET l_mail = null WHERE l_mail='';
-    UPDATE m_economie.geo_sa_etabp SET l_observ = null WHERE l_observ='';
-    return new ;
-END;
-
-
-
-
-$BODY$
-  LANGUAGE plpgsql VOLATILE
-  COST 100;
-ALTER FUNCTION m_economie.ft_m_etabp_null()
-  OWNER TO sig_create;
-
-
-				 
--- Trigger: t_t9_etiquette_local_refresh on m_economie.geo_sa_etabp
-
--- DROP TRIGGER t_t9_etiquette_local_refresh ON m_economie.geo_sa_etabp;
-
-CREATE TRIGGER t_t9_etiquette_local_refresh
-  AFTER INSERT OR UPDATE OR DELETE
-  ON m_economie.geo_sa_etabp
+  ON m_economie.geo_sa_local
   FOR EACH ROW
   EXECUTE PROCEDURE m_economie.ft_m_etiquette_local();
+
+-- Function: m_economie.ft_m_local_insert_update()
+
+-- DROP FUNCTION m_economie.ft_m_local_insert_update();
+
+CREATE OR REPLACE FUNCTION m_economie.ft_m_local_insert_update()
+  RETURNS trigger AS
+$BODY$
+
+
+DECLARE v_idgeolf integer;
+BEGIN
+
+
+
+	-- mise à jour des appartenances des établissements à l'adresse dans la table lk_localsiret
+	-- si le local ne contient pas d'adresse, ne supprime pas les relations du local avec les établissements si non oui 
+
+        -- à la mise à jour
+        IF (TG_OP = 'UPDATE') THEN
+	-- si il n'y a pas d'adresse sur le lot je ne fais rien pour conserver éventuellement les établissements affectés à ce local manuellement dans GEO
+	IF 
+		(SELECT count(*) FROM m_economie.geo_sa_local l , x_apps.xapps_geo_vmr_adresse a
+		WHERE st_intersects(new.geom,a.geom))= 0
+	THEN
+		INSERT INTO m_economie.lk_localsiret (idgeoloc,siret)
+		SELECT DISTINCT new.idgeoloc,lk.siret FROM m_economie.geo_sa_local l , x_apps.xapps_geo_vmr_adresse a , m_economie.lk_adresseetablissement lk
+		WHERE st_intersects(new.geom,a.geom) AND a.id_adresse = lk.idadresse;
+
+
+        ELSE 
+		DELETE FROM m_economie.lk_localsiret lk WHERE lk.idgeoloc = old.idgeoloc;
+		INSERT INTO m_economie.lk_localsiret (idgeoloc,siret)
+		SELECT DISTINCT new.idgeoloc, lk.siret FROM m_economie.geo_sa_local l , x_apps.xapps_geo_vmr_adresse a , m_economie.lk_adresseetablissement lk
+		WHERE st_intersects(new.geom,a.geom) AND a.id_adresse = lk.idadresse;
+	END IF;
+	END IF;
+
+	-- à l'insertion
+	IF (TG_OP = 'INSERT') THEN
+	        v_idgeolf = (SELECT l.idgeolf FROM r_objet.geo_objet_fon_lot l WHERE st_intersects(l.geom,st_pointonsurface(new.geom)));
+		-- mise à jour des appartenances des établissements à l'adresse dans la table lk_localsiret
+                new.idgeolf = v_idgeolf;
+                -- si il existe des siret accrochés à l'ancien lot foncier les réaafecter à ce local si non j'insère par défaut
+                -- si il n'y a pas d'adresse sur le lot je ne fais rien pour conserver éventuellement les établissements affectés à ce local manuellement dans GEO
+		IF 
+			
+			(SELECT count(*) FROM m_economie.geo_sa_local l , x_apps.xapps_geo_vmr_adresse a
+			WHERE st_intersects(new.geom,a.geom)) = 0
+		THEN
+
+			UPDATE m_economie.lk_localsiret SET idgeoloc = new.idgeoloc WHERE idgeoloc = v_idgeolf;
+
+
+		ELSE
+			DELETE FROM m_economie.lk_localsiret WHERE idgeoloc = v_idgeolf;
+			INSERT INTO m_economie.lk_localsiret (idgeoloc,siret)
+			SELECT DISTINCT new.idgeoloc, lk.siret FROM m_economie.geo_sa_local l , x_apps.xapps_geo_vmr_adresse a , m_economie.lk_adresseetablissement lk
+			WHERE st_intersects(new.geom,a.geom) AND a.id_adresse = lk.idadresse;
+			
+		END IF;
+		
+
+
+
+	END IF ;
+
+RETURN NEW;
+END;$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION m_economie.ft_m_local_insert_update()
+  OWNER TO sig_create;
+
+COMMENT ON FUNCTION m_economie.ft_m_local_insert_update() IS 'Fonction dont l''objet de rechercher les établissements dans le local si celui-ci croise une adresse et de les intégrer dans la table lk_localsiret';
+
+					    
+-- Function: m_economie.ft_m_local_delete_etab()
+
+-- DROP FUNCTION m_economie.ft_m_local_delete_etab();
+
+CREATE OR REPLACE FUNCTION m_economie.ft_m_local_delete_etab()
+  RETURNS trigger AS
+$BODY$
+
+
+
+BEGIN
+
+	DELETE FROM m_economie.lk_localsiret WHERE idgeoloc = old.idgeoloc;
+		IF old.idgeolf is not NULL THEN
+			INSERT INTO m_economie.lk_localsiret (idgeoloc,siret)
+			SELECT DISTINCT old.idgeolf,lk.siret FROM r_objet.geo_objet_fon_lot l , x_apps.xapps_geo_vmr_adresse a , m_economie.lk_adresseetablissement lk
+			WHERE st_intersects(l.geom,a.geom) AND l.l_voca='20' AND a.id_adresse = lk.idadresse AND l.idgeolf = old.idgeolf;
+		END IF;
+	REFRESH MATERIALIZED VIEW x_apps.xapps_geo_vmr_local;
+
+        
+
+RETURN NEW;
+END;$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION m_economie.ft_m_local_delete_etab()
+  OWNER TO sig_create;
+
+COMMENT ON FUNCTION m_economie.ft_m_local_delete_etab() IS 'Fonction dont l''objet est de supprimer dans la table lk_localsiret les relations du local avec les établissements présents';
 
 -- Function: m_economie.ft_m_etiquette_local()
 
@@ -3703,6 +3441,7 @@ $BODY$
   COST 100;
 ALTER FUNCTION m_economie.ft_m_etiquette_local()
   OWNER TO sig_create;
+
 
 
 
@@ -3961,21 +3700,12 @@ COMMENT ON COLUMN m_economie.geo_sa_local.geom IS 'Champ stockant la géométrie
 COMMENT ON COLUMN m_economie.geo_sa_local.l_occupp IS 'Libellé du bâtiment ou occupant principale';
 
 
--- Trigger: t_t1_local_insert_surf on m_economie.geo_sa_local
 
--- DROP TRIGGER t_t1_local_insert_surf ON m_economie.geo_sa_local;
+-- Trigger: t_t1_local_insert_update_etab on m_economie.geo_sa_local
 
-CREATE TRIGGER t_t1_local_insert_surf
-  BEFORE INSERT OR UPDATE OF geom
-  ON m_economie.geo_sa_local
-  FOR EACH ROW
-  EXECUTE PROCEDURE public.ft_r_sup_m2_maj();
+-- DROP TRIGGER t_t1_local_insert_update_etab ON m_economie.geo_sa_local;
 
--- Trigger: t_t2_local_insert_update_etab on m_economie.geo_sa_local
-
--- DROP TRIGGER t_t2_local_insert_update_etab ON m_economie.geo_sa_local;
-
-CREATE TRIGGER t_t2_local_insert_update_etab
+CREATE TRIGGER t_t1_local_insert_update_etab
   BEFORE INSERT OR UPDATE OF geom
   ON m_economie.geo_sa_local
   FOR EACH ROW
@@ -3993,7 +3723,7 @@ $BODY$
 DECLARE v_idgeolf integer;
 BEGIN
 
-
+	NEW.sup_m2=round(cast(st_area(new.geom) as numeric),0);
 
 	-- mise à jour des appartenances des établissements à l'adresse dans la table lk_localsiret
 	-- si le local ne contient pas d'adresse, ne supprime pas les relations du local avec les établissements si non oui 
@@ -4057,11 +3787,11 @@ ALTER FUNCTION m_economie.ft_m_local_insert_update()
 COMMENT ON FUNCTION m_economie.ft_m_local_insert_update() IS 'Fonction dont l''objet de rechercher les établissements dans le local si celui-ci croise une adresse et de les intégrer dans la table lk_localsiret';
 
 				 
--- Trigger: t_t3_local_delete_etab on m_economie.geo_sa_local
+-- Trigger: t_t2_local_delete_etab on m_economie.geo_sa_local
 
--- DROP TRIGGER t_t3_local_delete_etab ON m_economie.geo_sa_local;
+-- DROP TRIGGER t_t2_local_delete_etab ON m_economie.geo_sa_local;
 
-CREATE TRIGGER t_t3_local_delete_etab
+CREATE TRIGGER t_t2_local_delete_etab
   AFTER DELETE
   ON m_economie.geo_sa_local
   FOR EACH ROW
@@ -4099,11 +3829,11 @@ ALTER FUNCTION m_economie.ft_m_local_delete_etab()
 COMMENT ON FUNCTION m_economie.ft_m_local_delete_etab() IS 'Fonction dont l''objet est de supprimer dans la table lk_localsiret les relations du local avec les établissements présents';
 					    
 
--- Trigger: t_t4_etiquette_local_refresh on m_economie.geo_sa_local
+-- Trigger: t_t3_etiquette_local_refresh on m_economie.geo_sa_local
 
--- DROP TRIGGER t_t4_etiquette_local_refresh ON m_economie.geo_sa_local;
+-- DROP TRIGGER t_t3_etiquette_local_refresh ON m_economie.geo_sa_local;
 
-CREATE TRIGGER t_t4_etiquette_local_refresh
+CREATE TRIGGER t_t3_etiquette_local_refresh
   AFTER INSERT OR UPDATE OR DELETE
   ON m_economie.geo_sa_local
   FOR EACH ROW
@@ -4344,41 +4074,6 @@ END IF;
 
 END IF;
 
--- rafraichissement de la vue matérialisée à chaque insertion, suppression ou mise à jour de l'adressage d'un établissement
-REFRESH MATERIALIZED VIEW x_apps.xapps_geo_vmr_etab_api;
-
-return new;
-
-END;
-
-
-$BODY$
-  LANGUAGE plpgsql VOLATILE
-  COST 100;
-ALTER FUNCTION m_economie.ft_m_lk_adresseetablissement()
-  OWNER TO sig_create;
-
-
-								       
--- Trigger: t_t5_etiquette_local_refresh on m_economie.lk_adresseetablissement
-
--- DROP TRIGGER t_t5_etiquette_local_refresh ON m_economie.lk_adresseetablissement;
-
-CREATE TRIGGER t_t5_etiquette_local_refresh
-  AFTER INSERT OR UPDATE OR DELETE
-  ON m_economie.lk_adresseetablissement
-  FOR EACH ROW
-  EXECUTE PROCEDURE m_economie.ft_m_etiquette_local();
-
--- Function: m_economie.ft_m_etiquette_local()
-
--- DROP FUNCTION m_economie.ft_m_etiquette_local();
-
-CREATE OR REPLACE FUNCTION m_economie.ft_m_etiquette_local()
-  RETURNS trigger AS
-$BODY$
-
-BEGIN
 -- rafraichissement de la vue matérialisée des locaux pour affichage étiquette des noms
 REFRESH MATERIALIZED VIEW x_apps.xapps_geo_vmr_local;
 -- refraichissement de la vue matérialisée des points établissements à l'adresse
@@ -4392,8 +4087,9 @@ END;
 $BODY$
   LANGUAGE plpgsql VOLATILE
   COST 100;
-ALTER FUNCTION m_economie.ft_m_etiquette_local()
+ALTER FUNCTION m_economie.ft_m_lk_adresseetablissement()
   OWNER TO sig_create;
+
 
 -- ################################# Classe des objets des liens entre local et établissements ############################					    
 					    
@@ -4417,41 +4113,6 @@ COMMENT ON TABLE m_economie.lk_localsiret
 COMMENT ON COLUMN m_economie.lk_localsiret.idgeoloc IS 'Identifiant du local';
 COMMENT ON COLUMN m_economie.lk_localsiret.siret IS 'N° SIRET de l''établissement';
 
-
--- Trigger: t_t1_lk_localsiret_refresch on m_economie.lk_localsiret
-
--- DROP TRIGGER t_t1_lk_localsiret_refresch ON m_economie.lk_localsiret;
-
-CREATE TRIGGER t_t1_lk_localsiret_refresch
-  AFTER INSERT OR UPDATE OR DELETE
-  ON m_economie.lk_localsiret
-  FOR EACH ROW
-  EXECUTE PROCEDURE m_economie.ft_m_etiquette_local_lk();
-
--- Function: m_economie.ft_m_etiquette_local_lk()
-
--- DROP FUNCTION m_economie.ft_m_etiquette_local_lk();
-
-CREATE OR REPLACE FUNCTION m_economie.ft_m_etiquette_local_lk()
-  RETURNS trigger AS
-$BODY$
-
-BEGIN
--- rafraichissement de la vue matérialisée des locaux pour affichage étiquette des noms
-REFRESH MATERIALIZED VIEW x_apps.xapps_geo_vmr_local;
--- refraichissement de la vue matérialisée des points établissements à l'adresse
-REFRESH MATERIALIZED VIEW x_apps.xapps_geo_vmr_etab_api;
-
-return new;
-
-END;
-
-
-$BODY$
-  LANGUAGE plpgsql VOLATILE
-  COST 100;
-ALTER FUNCTION m_economie.ft_m_etiquette_local_lk()
-  OWNER TO sig_create;
 
 
 					    
