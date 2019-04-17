@@ -1632,7 +1632,6 @@ COMMENT ON COLUMN s_sirene.lt_etatadmin.code IS 'Code de l''état administratif 
 COMMENT ON COLUMN s_sirene.lt_etatadmin.valeur IS 'Libellé de l''état administratif de l''établissement';
 
 -- ################################################################# Domaine valeur - Tranche d'effectif ###############################################
-
 -- Table: s_sirene.lt_trancheeff
 
 -- DROP TABLE s_sirene.lt_trancheeff;
@@ -1641,6 +1640,7 @@ CREATE TABLE s_sirene.lt_trancheeff
 (
   code character varying(2) NOT NULL, -- Code des tranches d'effectifs des établissements
   valeur character varying(50), -- Libellé des tranches d'effectifs des établissements
+  mediane integer, -- Nombre d'emploi affecté par défaut à eff_etab dans la table an_sa_etab à la mise à jour (si pas d'effectifs en source ARC) et à l'intégration des données SIRENE
   CONSTRAINT lt_trancheeff_pkey PRIMARY KEY (code)
 )
 WITH (
@@ -1653,6 +1653,9 @@ COMMENT ON TABLE s_sirene.lt_trancheeff
   IS 'Libélé des tranches d''effectifs des établissements (source : SIRENE API)';
 COMMENT ON COLUMN s_sirene.lt_trancheeff.code IS 'Code des tranches d''effectifs des établissements';
 COMMENT ON COLUMN s_sirene.lt_trancheeff.valeur IS 'Libellé des tranches d''effectifs des établissements';
+COMMENT ON COLUMN s_sirene.lt_trancheeff.mediane IS 'Nombre d''emploi affecté par défaut à eff_etab dans la table an_sa_etab à la mise à jour (si pas d''effectifs en source ARC) et à l''intégration des données SIRENE';
+
+
 
 
 
