@@ -3791,12 +3791,10 @@ BEGIN
 
      -- mise à jour du code du nom de lot dans la table objet
 
-	IF ST_Disjoint(new.geom,(SELECT c.geom FROM r_osm.geo_vm_osm_contour_arc c)) = true OR (SELECT count(*) FROM r_objet.geo_objet_fon_lot o WHERE st_intersects(st_buffer(new.geom,-1),o.geom) AND idgeolf <> old.idgeolf ) >= 1  THEN
-
+	IF ST_Equals(new.geom,old.geom) is false THEN
+						 
 	RAISE EXCEPTION 'Le lot ne peut pas être modifié en géométrie. Faire une demande de modification au Service Information Géographique.'; --(générer un message pour GEO afficher dans la fiche d'information
-
-
-     
+    
 
      ELSE
 
