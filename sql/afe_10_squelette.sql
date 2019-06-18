@@ -4116,7 +4116,44 @@ COMMENT ON TABLE m_economie.lk_localsiret
 COMMENT ON COLUMN m_economie.lk_localsiret.idgeoloc IS 'Identifiant du local';
 COMMENT ON COLUMN m_economie.lk_localsiret.siret IS 'N° SIRET de l''établissement';
 
+-- Function: m_economie.ft_m_lk_localsiret()
 
+-- DROP FUNCTION m_economie.ft_m_lk_localsiret();
+
+CREATE OR REPLACE FUNCTION m_economie.ft_m_lk_localsiret()
+  RETURNS trigger AS
+$BODY$
+
+BEGIN
+-- rafraichissement de la vue matérialisée des locaux pour affichage étiquette des noms
+REFRESH MATERIALIZED VIEW x_apps.xapps_geo_vmr_local;
+
+
+return new;
+
+END;
+
+
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION m_economie.ft_m_lk_localsiret()
+  OWNER TO sig_create;
+GRANT EXECUTE ON FUNCTION m_economie.ft_m_lk_localsiret() TO public;
+GRANT EXECUTE ON FUNCTION m_economie.ft_m_lk_localsiret() TO sig_create;
+GRANT EXECUTE ON FUNCTION m_economie.ft_m_lk_localsiret() TO create_sig;
+GRANT EXECUTE ON FUNCTION m_economie.ft_m_lk_localsiret() TO edit_sig;
+
+
+-- Trigger: t_t1_lk_localsiret on m_economie.lk_localsiret
+
+-- DROP TRIGGER t_t1_lk_localsiret ON m_economie.lk_localsiret;
+
+CREATE TRIGGER t_t1_lk_localsiret
+  AFTER INSERT OR UPDATE OR DELETE
+  ON m_economie.lk_localsiret
+  FOR EACH ROW
+  EXECUTE PROCEDURE m_economie.ft_m_lk_localsiret();
 
 					    
 -- ################################################# Du schéma m_amenagement ##################################
