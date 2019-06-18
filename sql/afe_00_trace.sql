@@ -24,5 +24,5 @@
 --              base adresse locale.
 --              La gestion a l'échelle d'un local d'activité a également été initié seulement. Celle-ci devrait se poursuivre dans
 --              un second temps.
--- 2019-06-18 : GB / modification sur le fonctionnement des mises à jour liées aux adresses et aux locaux
+-- 2019-06-18 : GB / modification sur le fonctionnement (trigger) des mises à jour liées aux adresses et aux locaux
 */
