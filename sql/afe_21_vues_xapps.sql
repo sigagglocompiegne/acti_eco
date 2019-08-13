@@ -936,7 +936,7 @@ CREATE INDEX idx_xapps_an_vmr_synt_site_mixte_api_idsite
 
 CREATE OR REPLACE VIEW x_apps.xapps_geo_v_etab_api_export AS 
  WITH req_e AS (
-         SELECT e.idsiret,
+         SELECT DISTINCT e.idsiret,
             e.idsite,
             e.l_nom,
             e.l_nom_dir,
@@ -955,6 +955,7 @@ CREATE OR REPLACE VIEW x_apps.xapps_geo_v_etab_api_export AS
             e.source_eff,
             e.l_date_eff,
             e.annee_eff,
+            e.l_compte,
                 CASE
                     WHEN se.site_nom IS NOT NULL THEN se.site_nom
                     WHEN sm.site_nom IS NOT NULL THEN sm.site_nom
@@ -965,9 +966,8 @@ CREATE OR REPLACE VIEW x_apps.xapps_geo_v_etab_api_export AS
              LEFT JOIN m_economie.lk_adresseetablissement l ON e.idsiret::text = l.siret::text
              LEFT JOIN m_economie.an_sa_site se ON se.idsite::text = e.idsite::text
              LEFT JOIN m_amenagement.an_amt_site_mixte sm ON sm.idsite::text = e.idsite::text
-          WHERE e.l_compte = true
         ), req_si AS (
-         SELECT s.siret,
+         SELECT DISTINCT s.siret,
             s.numerovoieetablissement::text ||
                 CASE
                     WHEN s.indicerepetitionetablissement IS NULL OR s.indicerepetitionetablissement::text <> ''::text THEN s.indicerepetitionetablissement
@@ -984,22 +984,25 @@ CREATE OR REPLACE VIEW x_apps.xapps_geo_v_etab_api_export AS
             s.codepostaletablissement AS code_postal,
             s.denominationusuelleetablissement,
             s.enseigne1etablissement,
+            s.datecreationetablissement,
+            s.etatadministratifetablissement,
+            s.datederniertraitementetablissement,
             ul.denominationunitelegale,
             ul.denominationusuelle1unitelegale,
             ul.nomunitelegale,
             (ul.nomusageunitelegale::text || ' '::text) || ul.prenom1unitelegale::text AS personnephysique,
             s.activiteprincipaleetablissement AS apet700,
             n.valeur AS libapet700
-           FROM s_sirene.an_etablissement_api s,
-            s_sirene.an_unitelegale_api ul,
-            s_sirene.lt_nafrev2 n
-          WHERE s.siren::text = ul.siren::text AND n.code::text = s.activiteprincipaleetablissement::text AND s.etatadministratifetablissement::text = 'A'::text
+           FROM s_sirene.an_etablissement_api s
+             LEFT JOIN s_sirene.an_unitelegale_api ul ON s.siren::text = ul.siren::text
+             LEFT JOIN s_sirene.lt_nafrev2 n ON n.code::text = s.activiteprincipaleetablissement::text
         )
- SELECT e.idsiret,
+ SELECT DISTINCT e.idsiret,
     si.denominationusuelleetablissement,
     si.enseigne1etablissement,
     si.denominationunitelegale,
     si.denominationusuelle1unitelegale,
+    si.nomunitelegale,
     si.personnephysique,
     e.l_nom,
     e.l_nom_dir,
@@ -1017,6 +1020,10 @@ CREATE OR REPLACE VIEW x_apps.xapps_geo_v_etab_api_export AS
     e.source_eff,
     e.l_date_eff,
     e.annee_eff::character varying AS annee_eff,
+    e.l_compte,
+    si.datecreationetablissement,
+    si.etatadministratifetablissement,
+    si.datederniertraitementetablissement,
     si.numvoie,
     si.libvoie,
     si.complementadresse,
@@ -1043,6 +1050,7 @@ UNION ALL
     'non renseignée'::character varying AS enseigne1etablissement,
     'non renseignée'::character varying AS denominationunitelegale,
     'non renseignée'::character varying AS denominationusuelle1unitelegale,
+    'non renseignée'::character varying AS nomunitelegale,
     'non renseignée'::character varying AS personnephysique,
     sp.l_nom,
     sp.l_nom_dir,
@@ -1060,6 +1068,10 @@ UNION ALL
     sp.source_eff,
     sp.date_eff AS l_date_eff,
     'non renseignée'::character varying AS annee_eff,
+    sp.l_compte,
+    NULL::timestamp without time zone AS datecreationetablissement,
+    'A'::character varying AS etatadministratifetablissement,
+    NULL::timestamp without time zone AS datederniertraitementetablissement,
     ''::character varying AS numvoie,
     ''::character varying AS libvoie,
     sp.l_comp_ad AS complementadresse,
@@ -1081,7 +1093,10 @@ UNION ALL
 
 ALTER TABLE x_apps.xapps_geo_v_etab_api_export
   OWNER TO sig_create;
-
+GRANT ALL ON TABLE x_apps.xapps_geo_v_etab_api_export TO sig_create;
+GRANT ALL ON TABLE x_apps.xapps_geo_v_etab_api_export TO create_sig;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE x_apps.xapps_geo_v_etab_api_export TO edit_sig;
+GRANT SELECT ON TABLE x_apps.xapps_geo_v_etab_api_export TO read_sig;
 COMMENT ON VIEW x_apps.xapps_geo_v_etab_api_export
   IS 'Vue géographique composée des éléments sur les établissements actifs (API Sirene) permettant de gérer des exports de listes par commune, par site dans GEO (Recherche d''établissements par commune, par site)';
 
