@@ -4146,6 +4146,7 @@ BEGIN
 
      INSERT INTO r_objet.geo_objet_fon_lot SELECT v_idgeolf,new.op_sai,new.ref_spa,null,'20',new.geom,now(),null,new.l_nom;
      INSERT INTO m_amenagement.an_amt_lot_stade SELECT v_idgeolf,
+                                                 CASE WHEN new.idsite IS NULL or new.idsite = '' THEN
 						 (
 							SELECT DISTINCT
 								idsite 
@@ -4154,7 +4155,11 @@ BEGIN
 							WHERE
 								st_intersects(geo_objet_ope.geom,ST_PointOnSurface(new.geom)) = true
 								
-						  ),
+						  )
+						  ELSE
+						  new.idsite
+						  END
+						  ,
 						  new.stade_amng,
 						  new.l_amng2,
 						  new.stade_comm,
@@ -4169,7 +4174,7 @@ BEGIN
     
 
 						INSERT INTO m_economie.an_sa_lot SELECT v_idgeolf,
-						 
+						 CASE WHEN new.idsite IS NULL or new.idsite = '' THEN
 						 (
 							SELECT DISTINCT
 								idsite 
@@ -4178,7 +4183,11 @@ BEGIN
 							WHERE
 								st_intersects(geo_objet_ope.geom,ST_PointOnSurface(new.geom)) = true
 								
-						  ) , -- recherche idsite
+						  ) 
+                                                  ELSE
+						  new.idsite
+						  END   
+						  , -- recherche idsite
 
 						  lot_surf,
 						
@@ -4282,6 +4291,7 @@ BEGIN
 						null,
 						null,
 						null,
+						CASE WHEN new.idsite IS NULL or new.idsite = '' THEN
 						(SELECT DISTINCT
 								idsite 
 							FROM 
@@ -4289,7 +4299,11 @@ BEGIN
 							WHERE
 								st_intersects(geo_objet_ope.geom,st_pointonsurface(new.geom)) = true
 								
-							),
+							)
+						  ELSE
+						  new.idsite
+						  END
+						,
 							null
 						);
 
@@ -4309,7 +4323,7 @@ ALTER FUNCTION m_economie.ft_m_insert_lot_eco()
   OWNER TO sig_create;
 
 COMMENT ON FUNCTION m_economie.ft_m_insert_lot_eco() IS 'Fonction gérant la mise à jour des données correspondant à la gestion des lots à vocation économique';
- 
+
 				 
 -- Trigger: t_t3_modif_lot_eco on m_economie.geo_v_lot_eco
 
@@ -5110,6 +5124,7 @@ BEGIN
      INSERT INTO r_objet.geo_objet_fon_lot SELECT v_idgeolf,new.op_sai,new.ref_spa,null,'10',new.geom,null,null,new.l_nom_lot;
 
      INSERT INTO m_amenagement.an_amt_lot_stade SELECT v_idgeolf,
+						 CASE WHEN new.idsite IS NULL or new.idsite = '' THEN
 						 (
 							SELECT DISTINCT
 								idsite 
@@ -5118,7 +5133,11 @@ BEGIN
 							WHERE
 								st_intersects(geo_objet_ope.geom,ST_PointOnSurface(new.geom)) = true
 								
-						  ),
+						  )
+						  ELSE
+						  new.idsite
+						  END
+						  ,
 						  new.stade_amng,
 						  new.l_amng2,
 						  new.stade_comm,
@@ -5133,6 +5152,7 @@ BEGIN
     
 
 						INSERT INTO m_amenagement.an_amt_lot_equ SELECT v_idgeolf,
+							CASE WHEN new.idsite IS NULL or new.idsite = '' THEN
 							(
 							SELECT DISTINCT
 								idsite 
@@ -5141,7 +5161,11 @@ BEGIN
 							WHERE
 								st_intersects(geo_objet_ope.geom,new.geom) = true
 								
-							),-- recherche auto de l'IDSITE
+							)
+							ELSE
+							new.idsite
+							END
+							,-- recherche auto de l'IDSITE
 							new.op_sai,
 							new.org_sai,
 							new.l_nom,
@@ -5216,6 +5240,7 @@ BEGIN
 						null,
 						null,
 						null,
+						CASE WHEN new.idsite IS NULL or new.idsite = '' THEN
 						(SELECT DISTINCT
 								idsite 
 							FROM 
@@ -5223,7 +5248,12 @@ BEGIN
 							WHERE
 								st_intersects(geo_objet_ope.geom,st_pointonsurface(new.geom)) = true
 								
-							),
+							)
+						  ELSE
+						  new.idsite
+						  END
+
+							,
 							null
 						);
 
@@ -5655,15 +5685,20 @@ BEGIN
      INSERT INTO r_objet.geo_objet_fon_lot SELECT v_idgeolf,new.op_sai,new.ref_spa,null,'30',new.geom,null,null,new.l_nom;
 
      INSERT INTO m_amenagement.an_amt_lot_stade SELECT v_idgeolf,
+						 CASE WHEN new.idsite IS NULL or new.idsite = '' THEN
 						 (
 							SELECT DISTINCT
 								idsite 
 							FROM 
 								r_objet.geo_objet_ope
 							WHERE
-								st_intersects(geo_objet_ope.geom,ST_PointOnSurface(new.geom)) = true
+								st_intersects(geo_objet_ope.geom,ST_PointOnSurface(new.geom)) = true AND destdomi='01'
 								
-						  ),
+						  )
+						  ELSE
+						  new.idsite
+						  END
+						  ,
 						  new.stade_amng,
 						  new.l_amng2,
 						  new.stade_comm,
@@ -5678,15 +5713,20 @@ BEGIN
     
 
 						INSERT INTO m_amenagement.an_amt_lot_hab SELECT v_idgeolf,
+					         CASE WHEN new.idsite IS NULL or new.idsite = '' THEN
 						 (
 							SELECT DISTINCT
 								idsite 
 							FROM 
 								r_objet.geo_objet_ope
 							WHERE
-								st_intersects(geo_objet_ope.geom,ST_PointOnSurface(new.geom)) = true
+								st_intersects(geo_objet_ope.geom,ST_PointOnSurface(new.geom)) = true AND destdomi='01'
 								
-						  ), -- recherche idsite
+						  )
+						  ELSE
+						  new.idsite
+						  END
+						  , -- recherche idsite
 						  lot_surf,
 						
 								   CASE WHEN length(cast (lot_surf as character varying)) >= 1 and length(cast (lot_surf as character varying)) <= 3 THEN lot_surf || 'm²'
@@ -5778,14 +5818,19 @@ BEGIN
 						null,
 						null,
 						null,
+					        CASE WHEN new.idsite IS NULL or new.idsite = '' THEN
 						(SELECT DISTINCT
 								idsite 
 							FROM 
 								r_objet.geo_objet_ope
 							WHERE
-								st_intersects(geo_objet_ope.geom,st_pointonsurface(new.geom)) = true
+								st_intersects(geo_objet_ope.geom,st_pointonsurface(new.geom)) = true AND destdomi='01'
 								
-							),
+							)
+						  ELSE
+						  new.idsite
+						  END
+							,
 							null
 						);
 
