@@ -19,7 +19,8 @@ Etape 1 - A la saisie d'un objet (terrain ou local), il faut choisir le bien sai
 ![picto](../img/choix_1.png)
 
 Etape 2- En fonction du bien saisi, la fiche propose un ensemble d'attributs disponible à la saisie
-Etape 2.1 - Si je saisi un terrain
+
+Etape 2.1 - Si je saisi un terrain, 
 
 ![picto](../img/choix_211.png)
 
