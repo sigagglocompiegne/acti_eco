@@ -20,7 +20,7 @@ Ensemble des éléments constituant la mise en oeuvre de la base de données urb
   * [Création des vues open data](sql/afe_23_vues_xopendata.sql)
   * [Création des privilèges](sql/afe_99_grant.sql)
   
-- [Documentation d'administration de la base](doc/doc_admin_bd_amt_fon_eco.md) (hors [Suivi du marché de l'immobilier d'entreprises](../../../marcheimmo/edit/master/README.md))
+- [Documentation d'administration de la base](doc/doc_admin_bd_amt_fon_eco.md) (hors [Suivi du marché de l'immobilier d'entreprises](../../../marcheimmo/edit/master/doc/doc_admin_bd_immo.md))
 - [Documentation d'administration de l'application FONCIER](doc/doc_admin_app_fon.md)
 - [Documentation d'administration de l'application ACTIVITE ECONOMIQUE](doc/doc_admin_app_eco.md)
 - [Documentation d'administration de l'application AMENAGEMENT](doc/doc_admin_app_amt.md)
