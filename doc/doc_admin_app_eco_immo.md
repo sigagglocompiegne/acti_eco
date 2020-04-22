@@ -42,3 +42,14 @@ Particularité(s) à noter :
 * même si le bien est un terrain, un établissement peut l'occuper sans avoir de bâtiment
 * le bouton "AJOUTER" permet de sélectionner un établissement par son SIRET, nom de l'établissement ou de son unité légale
 * 0 ou n établissements peuvent être ajoutés
+* l'icône "fiche" à gauche permet d'accéder à la fiche de l'établissement
+* l'icôbe "poubelle" permet de supprimer l'établissement de la liste
+
+#### Etape 2.1.4 - L'onglet "Commercialisation" permet de rendre le bien disponible à la vente ou à la location
+
+ATTENTION : par défaut un bien du patrimoine saisi n'est pas concerné par cette disponiblité si celle-ci n'est pas modifiée.
+
+![picto](../img/choix_2141.png)
+
+Particularité(s) à noter :
+* lorsqu'un bien n'est pas mis en disponiblité, seules ces informations financières d'occupation actuelles sont accessibles
