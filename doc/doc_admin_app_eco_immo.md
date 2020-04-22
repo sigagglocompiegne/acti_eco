@@ -91,7 +91,7 @@ Particularité(s) à noter :
 Particularité(s) à noter :
 * un fonctionnel permettra d'indiquer si la propriété est commune au bien (local) saisi, ce qui automatisera la saisie
 
-### Etape 2.2.2 - L'onglet description permet d'indiquer les éléments patrimoniaux du bien.
+#### Etape 2.2.2 - L'onglet description permet d'indiquer les éléments patrimoniaux du bien.
 
 ![picto](../img/choix_222.png)
 
@@ -103,7 +103,7 @@ Particularité(s) à noter :
 * l'attribut "Lien vers un site présentant le terrain " sera renommé "Lien vers un site présentant le bien"
 * l'attribut "Surface (en ha)" sera supprimé
 
-### Etape 2.2.3 - Les onglets "Propriété du bien", "Occupants-Occupations" et "Commercialisation" 
+#### Etape 2.2.3 - Les onglets "Propriété du bien", "Occupants-Occupations" et "Commercialisation" 
 
 Ces onglets sont identiques à la saisie d'un terrain donc pas de rappel ici, cf Etape 2.1.
 
@@ -181,11 +181,21 @@ Cliquez sur l'icône `AJOUTER` en bas à droite de la fiche du bien de l'onglet 
 
 ![picto](../img/choix_243b.png)
 
+##### Etape 2.4.3.1 - Saisir les informations du local
+
+![picto](../img/choix_2431.png)
+
+Renseignez les informations du local dans chaque onglet et sauvegardez.  
+
+Particularité(s) à noter :
+* bug fonctionnel à l'enregistrement ici. En cours de résolution.
+
+
 ### Etape 3 : Les métadonnées
 
 ![picto](../img/choix_0.png)
 
-Pour tous biens saisis, un onglet "Métadonnée" est disponible au niveau supérieur de la fiche.
+Pour tous biens saisis, un onglet "Métadonnée" est disponible au niveau supérieur de la fiche. Les informations du local doivent s'afficher en liste comme à l'étape 2.4.2.2.
 
 ### Etape 4: La médiathèque
 
