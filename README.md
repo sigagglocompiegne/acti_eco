@@ -11,7 +11,7 @@ Ensemble des éléments constituant la mise en oeuvre de la base de données urb
   - [ ] finaliser
   - [ ] révision
 
-- Script d'initialisation de la base de données (hors [Suivi du marché de l'immobilier d'entreprises](https://github.com/sigagglocompiegne/marcheimmo)
+- Script d'initialisation de la base de données (hors [Suivi du marché de l'immobilier d'entreprises](https://github.com/sigagglocompiegne/marcheimmo))
   * [Suivi des modifications](sql/afe_00_trace.sql)
   * [Création  de la structure initiale](sql/afe_10_squelette.sql)
   * [Création des vues de gestion](sql/afe_20_vues_gestion.sql)
