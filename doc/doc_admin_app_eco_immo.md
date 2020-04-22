@@ -177,7 +177,7 @@ Particularité(s) à noter :
 
 Cliquez sur l'icône `AJOUTER` en bas à droite de la fiche du bien de l'onglet "Description des biens (locaux)".
 
-![picto](../img/choix_243.png)
+![picto](../img/choix_243b.png)
 
 ### Etape 3 : Les métadonnées
 
