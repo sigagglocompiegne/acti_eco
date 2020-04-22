@@ -11,7 +11,8 @@ Ensemble des éléments constituant la mise en oeuvre de la base de données urb
   - [ ] finaliser
   - [ ] révision
 
-- Script d'initialisation de la base de données
+- Script d'initialisation de la base de données (hors [Suivi du marché de l'immobilier d'entreprises](../marcheimmo/edit/master/README.md)
+)
   * [Suivi des modifications](sql/afe_00_trace.sql)
   * [Création  de la structure initiale](sql/afe_10_squelette.sql)
   * [Création des vues de gestion](sql/afe_20_vues_gestion.sql)
@@ -20,8 +21,6 @@ Ensemble des éléments constituant la mise en oeuvre de la base de données urb
   * [Création des vues open data](sql/afe_23_vues_xopendata.sql)
   * [Création des privilèges](sql/afe_99_grant.sql)
   
-  * [Suivi du marché de l'immobilier d'entreprises](/marcheimmo/edit/master/README.md)
-
 - [Documentation d'administration de la base](doc/doc_admin_bd_amt_fon_eco.md)
 - [Documentation d'administration de l'application FONCIER](doc/doc_admin_app_fon.md)
 - [Documentation d'administration de l'application ACTIVITE ECONOMIQUE](doc/doc_admin_app_eco.md)
