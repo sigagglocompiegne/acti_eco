@@ -67,3 +67,9 @@ Particularité(s) à noter :
 ![picto](../img/choix_21421.png)
 
 ![picto](../img/choix_21422.png)
+
+
+
+### Métadonnée - Pour tous biens saisis, un onglet "Métadonnée" est disponible au niveau supérieur de la fiche.
+
+![picto](../img/choix_0.png)
