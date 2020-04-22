@@ -103,6 +103,13 @@ Particularité(s) à noter :
 
 Ces onglets sont identiques à la saisie d'un terrain donc pas de rappel ici, cf Etape 2.1.
 
+### Etape 2.3 - Si je saisi un "local indépendant divisé", il s'agit ici d'un local bien identifié dans un bâtiment comprenant d'autres locaux bien identifié
+
+![picto](../img/choix_223.png)
+
+Particularité(s) à noter :
+* 3 attributs supplémentaires par rapport à la saisi d'un terrain : `Type de bien`, `description` et `pas-de-porte`
+
 ### Métadonnée - Pour tous biens saisis, un onglet "Métadonnée" est disponible au niveau supérieur de la fiche.
 
 ![picto](../img/choix_0.png)
