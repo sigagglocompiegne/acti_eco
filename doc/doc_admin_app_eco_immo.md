@@ -146,6 +146,36 @@ Cliquez sur l'icône `Fiche` à gauche de la liste présentée pour afficher la 
 
 ![picto](../img/choix_2421.png)
 
+Particularité(s) à noter :
+* Chaque onglet de cette fiche fonctionne comme les autres types de bien. Reportez-vous aux parties correspondantes pour le fonctionnement de chaque onglet.
+
+Après l'enregistrement de cete fiche local, toutes les informations sont répercutées dans chaque onglet de la fiche du bien comme ci-dessous.
+
+* Onglet "Description des biens (locaux)"
+
+![picto](../img/choix_24211.png)
+
+* Onglet "Propriété des biens (locaux)"
+
+![picto](../img/choix_24212.png)
+
+* Onglet "Occupants - Occupation"
+
+![picto](../img/choix_24213.png)
+
+* Onglet "Commercialisation"
+
+![picto](../img/choix_24214.png)
+
+Particularité(s) à noter :
+* pour ce dernier onglet, il reste à intégrer un onglet sur les conditons financières d'occupation actuelle
+
+##### Etape 2.4.2.2 - Ouvrir la fiche du local et modifier ces informations
+
+Cliquez sur l'icône `Fiche` à gauche de la liste présentée pour afficher la fiche du local ci-dessous. 
+
+![picto](../img/choix_2421.png)
+
 ### Etape 3 : Les métadonnées
 
 ![picto](../img/choix_0.png)
