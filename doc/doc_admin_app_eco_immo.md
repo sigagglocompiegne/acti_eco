@@ -49,7 +49,21 @@ Particularité(s) à noter :
 
 ATTENTION : par défaut un bien du patrimoine saisi n'est pas concerné par cette disponiblité si celle-ci n'est pas modifiée.
 
+##### Etape 2.1.4.1 - Cas d'un bien non concerné par une disponibilité
+
 ![picto](../img/choix_2141.png)
 
 Particularité(s) à noter :
 * lorsqu'un bien n'est pas mis en disponiblité, seules ces informations financières d'occupation actuelles sont accessibles
+
+##### Etape 2.1.4.2 - Cas d'un bien concerné par une disponibilité de vente (vacant ou occupé)
+
+![picto](../img/choix_2142.png)
+
+Particularité(s) à noter :
+* l'onglet "Conditions financières d'occupation" est toujours disponibles
+* 2 nouveaux onglets : "Conditions financières de commercialisation" et "Contact" sont accessibles
+
+![picto](../img/choix_21421.png)
+
+![picto](../img/choix_21422.png)
