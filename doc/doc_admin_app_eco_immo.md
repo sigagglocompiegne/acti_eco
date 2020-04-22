@@ -142,7 +142,7 @@ Particularité(s) à noter :
 
 ##### Etape 2.4.2.1 - Ouvrir la fiche du local et modifier ces informations
 
-Cliquez sur l'icône `Fiche` à gauche de la liste présentée pour afficher la fiche du local. 
+Cliquez sur l'icône `Fiche` à gauche de la liste présentée pour afficher la fiche du local ci-dessous. 
 
 ![picto](../img/choix_2421.png)
 
