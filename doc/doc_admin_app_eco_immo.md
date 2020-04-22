@@ -187,9 +187,6 @@ Cliquez sur l'icône `AJOUTER` en bas à droite de la fiche du bien de l'onglet 
 
 Renseignez les informations du local dans chaque onglet et sauvegardez.  
 
-Particularité(s) à noter :
-* bug fonctionnel à l'enregistrement ici. En cours de résolution.
-
 
 ### Etape 3 : Les métadonnées
 
