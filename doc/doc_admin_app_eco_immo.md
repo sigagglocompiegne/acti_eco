@@ -94,7 +94,8 @@ Particularité(s) à noter :
 ![picto](../img/choix_222.png)
 
 Particularité(s) à noter :
-* 2 attributs supplémentaires par rapport à la saisi d'un terrain : `description` et `pas-de-porte`
+* 3 attributs supplémentaires par rapport à la saisi d'un terrain : `Type de bien`, `description` et `pas-de-porte`
+* le type de bien permet de sélectionner dans une liste de valeur `Activité`, `Bureau` ou `Commerce`
 * la partie description est à revoir comme pour les bâtiments pour une mise en cohérence
 * l'information "pas-de-porte" est intégrée ici avec une valeur `false` par défaut et permettra de développer ce suivi sur les commerces de centre-ville
 
