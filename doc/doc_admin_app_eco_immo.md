@@ -33,3 +33,10 @@ Particularité(s) à noter :
 #### Etape 2.1.2 - L'onglet propriété permet d'indiquer les éléments concernant le propriétaire du terrain
 
 ![picto](../img/choix_212.png)
+
+#### Etape 2.1.3 - L'onglet "Occupants - Occupation" permet d'ajouter un ou des établissements occupants le bien
+
+![picto](../img/choix_213.png)
+
+Particularité(s) à noter :
+* même si le bien est un terrain, un établissement peut l'occuper sans avoir de bâtiment
