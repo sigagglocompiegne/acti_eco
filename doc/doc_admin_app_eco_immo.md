@@ -70,12 +70,27 @@ Particularité(s) à noter :
 
 ### Etape 2.2 - Si je saisi un "local (Bâtiment non divisé)", il s'agit ici d'un bien (local d'activité) qui correspondant aux bâtiments
 
-#### Etape 2.2.1 - L'onglet description (du bâtiment) permet d'indiquer les éléments descriptifs du bâtiment contenant le patrimoine du bien.
+#### Etape 2.2.1 - L'onglet "Bâtiment" permet de renseigner les éléments du bâtiment contenant le bien (non présent pour un terrain)
+
+##### Etape 2.2.1.1 - L'onglet "Bâtiment" description (du bâtiment) permet d'indiquer les éléments descriptifs du bâtiment contenant le patrimoine du bien.
 
 ![picto](../img/choix_221.png)
 
 Particularité(s) à noter :
 * Contraitement au terrain, un onglet supplémentaite est disponible permettant de décrire le bâtiment
+* les éléments descriptifs du bâtiment seront modifiés pour se limiter aux éléments consitutant le bâtiment et non des éléments partoculier à des locaux.
+* Plusieurs éléments descriptifs sont sélectionnables
+* le nombre de locaux saisis correspond aux nombres de bien déclaré dans ce bâtiment. Dans ce cas présent, le nombre sera de 1. Ce calcul sera automatisé dans la base de données
+
+##### Etape 2.2.1.2 - L'onglet "Propriété" renseigne sur la propriété du bâtiment
+
+![picto](../img/choix_2212.png)
+
+Particularité(s) à noter :
+* un fonctionnel permettra d'indiquer si la propriété est commune au bien (local) saisi, ce qui automatisera la saisie
+
+
+
 
 ### Métadonnée - Pour tous biens saisis, un onglet "Métadonnée" est disponible au niveau supérieur de la fiche.
 
