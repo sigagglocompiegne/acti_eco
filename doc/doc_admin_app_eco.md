@@ -16,5 +16,5 @@
 * Partie commune applicatice
 * Suivi de la commercialisation des lots d'activité
 * Base de données des établissements
-* [Suivi du marché de l'immobilier d'entreprises](doc/doc_admin_app_eco_immo.md)
+* [Suivi du marché de l'immobilier d'entreprises](doc_admin_app_eco_immo.md)
 
