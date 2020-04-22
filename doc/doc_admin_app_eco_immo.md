@@ -140,6 +140,12 @@ Particularité(s) à noter :
 Particularité(s) à noter :
 * A ce stade, toutes les informations à renseigner dans les onglets peuvent être effectués à partir de l'onglet "Description des biens (locaux)" à partir d'une fiche complémentaire. Ces informations seront répercuter par défaut dans le reste de la fiche du bien. Ce fonctionnel a été mis en place car il s'agit ici d'affecter plusieurs locaux (non géographique) à une même entité graphique représentant le bâtiment. Par conséquent tous les onglets (sauf "Bâtiment") présenteront leurs informations sous forme de liste avec la possibilité d'accéder à une fiche détaillant quant à elle le bien en question.
 
+##### Etape 2.4.2.1 - Ouvrir la fiche du local et modifier ces informations
+
+Cliquez sur l'icône `Fiche` à gauche de la liste présentée pour afficher la fiche du local. 
+
+![picto](../img/choix_2421.png)
+
 ### Etape 3 : Les métadonnées
 
 ![picto](../img/choix_0.png)
