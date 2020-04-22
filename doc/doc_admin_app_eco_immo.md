@@ -149,7 +149,9 @@ Cliquez sur l'icône `Fiche` à gauche de la liste présentée pour afficher la 
 Particularité(s) à noter :
 * Chaque onglet de cette fiche fonctionne comme les autres types de bien. Reportez-vous aux parties correspondantes pour le fonctionnement de chaque onglet.
 
-Après l'enregistrement de cete fiche local, toutes les informations sont répercutées dans chaque onglet de la fiche du bien comme ci-dessous.
+##### Etape 2.4.2.2 - Accédez aux informations dans les différents onglets de la fiche du bien
+
+Après l'enregistrement de cette fiche local (étape 2.4.2.1), toutes les informations sont répercutées dans chaque onglet de la fiche du bien comme ci-dessous. En cliquant sur l'icône `Fiche` à gauche de la liste présentée dans n'importe quel onglet, vous permet d'accéder à la fiche du local et de la modifier.
 
 * Onglet "Description des biens (locaux)"
 
@@ -170,11 +172,12 @@ Après l'enregistrement de cete fiche local, toutes les informations sont réper
 Particularité(s) à noter :
 * pour ce dernier onglet, il reste à intégrer un onglet sur les conditons financières d'occupation actuelle
 
-##### Etape 2.4.2.2 - Ouvrir la fiche du local et modifier ces informations
 
-Cliquez sur l'icône `Fiche` à gauche de la liste présentée pour afficher la fiche du local ci-dessous. 
+#### Etape 2.4.3 - Ajourer un local
 
-![picto](../img/choix_2421.png)
+Cliquez sur l'icône `AJOUTER` en bas à droite de la fiche du bien de l'onglet "Description des biens (locaux)".
+
+![picto](../img/choix_243.png)
 
 ### Etape 3 : Les métadonnées
 
