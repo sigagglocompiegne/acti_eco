@@ -106,3 +106,8 @@ Ces onglets sont identiques à la saisie d'un terrain donc pas de rappel ici, cf
 ### Métadonnée - Pour tous biens saisis, un onglet "Métadonnée" est disponible au niveau supérieur de la fiche.
 
 ![picto](../img/choix_0.png)
+
+### RESTE A INTEGRER
+
+* un troisième onglet au niveau des 2 onglets supérieurs de la fiche sera intégré pour gérer l'intégration de documents. Cet onglet sera nommé "Médiathèque"
+
