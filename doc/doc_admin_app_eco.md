@@ -5,7 +5,7 @@
 # Généralité
 
 * Statut
-  - [] à rédiger
+  - [ ] à rédiger
   - [x] en cours de rédaction
   - [ ] relecture
   - [ ] finaliser
@@ -16,5 +16,5 @@
 * Partie commune applicatice
 * Suivi de la commercialisation des lots d'activité
 * Base de données des établissements
-* [Suivi du marché de l'immobilier d'entreprises](sql/IMMO_00_trace.sql)
+* [Suivi du marché de l'immobilier d'entreprises](sql/doc_admin_app_eco_immo.md)
 
