@@ -29,6 +29,8 @@ Ici vous est présenté, temporairement, les premiers tests fonctionnels depuis 
 Particularité(s) à noter :
 * l'attribut "Occupant ou type d'occupation" permet de spécifier un usage si l'onglet "Occupants - Occupation" ne peut être complété. Exemple d'un parking d'entreprise, on pourra indiquer ici Parking de ....
 * L'attribut "Identifiant de la base Adresse" permettra de lier le bien à une adresse de la BAL (fonctionnalité à développer). Dans le cas contraire, la saisie d'une adresese libre est possible.
+* l'attribut "Lien vers un site présentant le terrain " sera renommé "Lien vers un site présentant le bien"
+* l'attribut "Surface (en ha)" sera supprimé
 
 #### Etape 2.1.2 - L'onglet propriété permet d'indiquer les éléments concernant le propriétaire du terrain
 
@@ -98,6 +100,8 @@ Particularité(s) à noter :
 * le type de bien permet de sélectionner dans une liste de valeur `Activité`, `Bureau` ou `Commerce`
 * la partie description est à revoir comme pour les bâtiments pour une mise en cohérence
 * l'information "pas-de-porte" est intégrée ici avec une valeur `false` par défaut et permettra de développer ce suivi sur les commerces de centre-ville
+* l'attribut "Lien vers un site présentant le terrain " sera renommé "Lien vers un site présentant le bien"
+* l'attribut "Surface (en ha)" sera supprimé
 
 ### Etape 2.2.3 - Les onglets "Propriété du bien", "Occupants-Occupations" et "Commercialisation" 
 
@@ -108,7 +112,9 @@ Ces onglets sont identiques à la saisie d'un terrain donc pas de rappel ici, cf
 ![picto](../img/choix_223.png)
 
 Particularité(s) à noter :
-* 3 attributs supplémentaires par rapport à la saisi d'un terrain : `Type de bien`, `description` et `pas-de-porte`
+* une fonctionnalité avancée sera intégrée ici pour sélectionner le bâtiment d'appartenance. Par défaut la reconstitution du bâtiment pour s'effectuer par la fusion des géométries des biens appartenant à un même bâtiment (à développer).
+
+Tous les autres onglets sont identiques à la saisie d'un "local (Bâtiment non divisé)" donc pas de rappel ici, cf Etape 2.2.
 
 ### Métadonnée - Pour tous biens saisis, un onglet "Métadonnée" est disponible au niveau supérieur de la fiche.
 
