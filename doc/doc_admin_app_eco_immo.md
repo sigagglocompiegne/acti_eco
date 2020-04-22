@@ -80,7 +80,7 @@ Particularité(s) à noter :
 * Contraitement au terrain, un onglet supplémentaite est disponible permettant de décrire le bâtiment
 * les éléments descriptifs du bâtiment seront modifiés pour se limiter aux éléments consitutant le bâtiment et non des éléments partoculier à des locaux.
 * Plusieurs éléments descriptifs sont sélectionnables
-* le nombre de locaux saisis correspond aux nombres de bien déclaré dans ce bâtiment. Dans ce cas présent, le nombre sera de 1. Ce calcul sera automatisé dans la base de données
+* le nombre de locaux saisis correspond aux nombres de bien déclaré dans ce bâtiment. Dans ce cas présent, le nombre sera de 1. Ce calcul sera automatisé dans la base de données.
 
 ##### Etape 2.2.1.2 - L'onglet "Propriété" renseigne sur la propriété du bâtiment
 
@@ -89,7 +89,14 @@ Particularité(s) à noter :
 Particularité(s) à noter :
 * un fonctionnel permettra d'indiquer si la propriété est commune au bien (local) saisi, ce qui automatisera la saisie
 
+### Etape 2.2.2 - L'onglet description permet d'indiquer les éléments patrimoniaux du bien.
 
+![picto](../img/choix_222.png)
+
+Particularité(s) à noter :
+* 2 attributs supplémentaires par rapport à la saisi d'un terrain : `description` et `pas-de-porte`
+* la partie description est à revoir comme pour les bâtiments pour une mise en cohérence
+* l'information "pas-de-porte" est intégrée ici avec une valeur `false` par défaut et permettra de développer ce suivi sur les commerces de centre-ville
 
 
 ### Métadonnée - Pour tous biens saisis, un onglet "Métadonnée" est disponible au niveau supérieur de la fiche.
