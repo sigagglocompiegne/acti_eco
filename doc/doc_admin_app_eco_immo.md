@@ -40,3 +40,5 @@ Particularité(s) à noter :
 
 Particularité(s) à noter :
 * même si le bien est un terrain, un établissement peut l'occuper sans avoir de bâtiment
+* le bouton "AJOUTER" permet de sélectionner un établissement par son SIRET, nom de l'établissement ou de son unité légale
+* 0 ou n établissements peuvent être ajoutés
