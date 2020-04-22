@@ -14,7 +14,7 @@
 
 Ici vous est présenté, temporairement, les premiers tests fonctionnels depuis l'application WebSIG permettant de gérer les données.
 
-Etape 1 - A la saisie d'un objet (terrain ou local), il faut choisir le bien saisi
+### Etape 1 - A la saisie d'un objet (terrain ou local), il faut choisir le bien saisi
 
 ![picto](../img/choix_1.png)
 
