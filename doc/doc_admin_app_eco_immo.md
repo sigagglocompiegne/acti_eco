@@ -16,5 +16,5 @@ Ici vous est présenté, temporairement, les premiers tests fonctionnels depuis 
 
 Etape 1 - A la saisie d'un objet (terrain ou local), il faut choisir le bien saisi
 
-![picto](img/choix_1.png)
+![picto](../img/choix_1.png)
 
