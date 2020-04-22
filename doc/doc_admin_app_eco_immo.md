@@ -98,6 +98,9 @@ Particularité(s) à noter :
 * la partie description est à revoir comme pour les bâtiments pour une mise en cohérence
 * l'information "pas-de-porte" est intégrée ici avec une valeur `false` par défaut et permettra de développer ce suivi sur les commerces de centre-ville
 
+### Etape 2.2.3 - Les onglets "Propriété du bien", "Occupants-Occupations" et "Commercialisation" 
+
+Ces onglets sont identiques à la saisie d'un terrain donc pas de rappel ici, cf Etape 2.1.
 
 ### Métadonnée - Pour tous biens saisis, un onglet "Métadonnée" est disponible au niveau supérieur de la fiche.
 
