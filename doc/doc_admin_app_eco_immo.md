@@ -135,6 +135,8 @@ Particularité(s) à noter :
 
 #### Etape 2.4.2 - Modifier les informations d'un local existant
 
+En cliquant sur l'icône `Fiche` à gauche de la liste présentée, ouvrez la fiche du local et modifiez la.
+
 ![picto](../img/choix_242.png)
 
 Particularité(s) à noter :
