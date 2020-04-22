@@ -109,7 +109,7 @@ Ces onglets sont identiques à la saisie d'un terrain donc pas de rappel ici, cf
 
 ### Etape 2.3 - Si je saisi un "local indépendant divisé", il s'agit ici d'un local bien identifié dans un bâtiment comprenant d'autres locaux bien identifié
 
-![picto](../img/choix_223.png)
+![picto](../img/choix_23.png)
 
 Particularité(s) à noter :
 * une fonctionnalité avancée sera intégrée ici pour sélectionner le bâtiment d'appartenance. Par défaut la reconstitution du bâtiment pour s'effectuer par la fusion des géométries des biens appartenant à un même bâtiment (à développer).
@@ -121,12 +121,14 @@ Tous les autres onglets sont identiques à la saisie d'un "local (Bâtiment non 
 
 ### Etape 2.4 - Si je saisi un "local non identifié dans un bâtiment divisible", il s'agit ici d'un ensemble de locaux contenu dans un bâtiment sans pouvoir en saisir leurs géométries. Tous ces locaux seront donc rattachés à la géométriu du bâtiment.
 
-![picto](../img/choix_224.png)
+![picto](../img/choix_24.png)
 
 Particularité(s) à noter :
 * tous les onglets sont identiques à la saise d'un autre type de local, sauf que la saisie peut-être multiple. La présentatation de certains onglets est donc sous forme de liste de valeurs possibles. Se reporter aux parties ci-après détaillant ce fonctionnement.
 
+#### Etape 2.4.1 - Un préalable, je dois renseigner et enregistrer les données concernant le bâtiment avant de pouvoir y affecter des locaux. Par défaut à l'enregistrement du bâtiment un local est créé. 
 
+![picto](../img/choix_241.png)
 
 ### Etape 3 : Les métadonnées
 
