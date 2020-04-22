@@ -119,16 +119,26 @@ Particularité(s) à noter :
 
 Tous les autres onglets sont identiques à la saisie d'un "local (Bâtiment non divisé)" donc pas de rappel ici, cf Etape 2.2.
 
-### Etape 2.4 - Si je saisi un "local non identifié dans un bâtiment divisible", il s'agit ici d'un ensemble de locaux contenu dans un bâtiment sans pouvoir en saisir leurs géométries. Tous ces locaux seront donc rattachés à la géométriu du bâtiment.
+### Etape 2.4 - Si je saisi un "local non identifié dans un bâtiment divisible", il s'agit ici d'un ensemble de locaux contenu dans un bâtiment sans pouvoir en saisir leurs géométries. Tous ces locaux seront donc rattachés à la géométrie du bâtiment.
 
 ![picto](../img/choix_24.png)
 
 Particularité(s) à noter :
 * tous les onglets sont identiques à la saise d'un autre type de local, sauf que la saisie peut-être multiple. La présentatation de certains onglets est donc sous forme de liste de valeurs possibles. Se reporter aux parties ci-après détaillant ce fonctionnement.
 
-#### Etape 2.4.1 - Un préalable, je dois renseigner et enregistrer les données concernant le bâtiment avant de pouvoir y affecter des locaux. Par défaut à l'enregistrement du bâtiment un local est créé. 
+#### Etape 2.4.1 - Un préalable, je dois renseigner et enregistrer les données concernant le bâtiment (description et propriété) avant de pouvoir y affecter des locaux. Par défaut à l'enregistrement du bâtiment un local est créé. 
 
 ![picto](../img/choix_241.png)
+
+Particularité(s) à noter :
+* Avant de pouvoir saisir des locaux, je dois sauvegarder la fiche. Un local par défaut sera créé. Il faut ré-éditer la fiche pour pouvoir modifier les informations du local et en ajouter d'autres.
+
+#### Etape 2.4.2 - Modifier les informations d'un local existant
+
+![picto](../img/choix_242.png)
+
+Particularité(s) à noter :
+* A ce stade, toutes les informations à renseigner dans les onglets peuvent être effectués à partir de l'onglet "Description des biens (locaux)" à partir d'une fiche complémentaire. Ces informations seront répercuter par défaut dans le reste de la fiche du bien. Ce fonctionnel a été mis en place car il s'agit ici d'affecter plusieurs locaux (non géographique) à une même entité graphique représentant le bâtiment. Par conséquent tous les onglets (sauf "Bâtiment") présenteront leurs informations sous forme de liste avec la possibilité d'accéder à une fiche détaillant quant à elle le bien en question.
 
 ### Etape 3 : Les métadonnées
 
