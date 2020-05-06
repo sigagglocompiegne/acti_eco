@@ -109,11 +109,10 @@ Ces onglets sont identiques à la saisie d'un terrain donc pas de rappel ici, cf
 
 ### Etape 2.3 - Si je saisi un "local indépendant divisé", il s'agit ici d'un local bien identifié dans un bâtiment comprenant d'autres locaux bien identifié
 
-![picto](../img/choix_23.png)
+![picto](../img/choix_23v2.png)
 
 Particularité(s) à noter :
-* une fonctionnalité avancée sera intégrée ici pour sélectionner le bâtiment d'appartenance. Par défaut la reconstitution du bâtiment pour s'effectuer par la fusion des géométries des biens appartenant à un même bâtiment (à développer).
-* les éléments descriptifs du bâtiment seront modifiés pour se limiter aux éléments consitutant le bâtiment et non des éléments partoculier à des locaux.
+* les éléments descriptifs du bâtiment seront modifiés pour se limiter aux éléments consitutant le bâtiment et non des éléments particulier à des locaux.
 * Plusieurs éléments descriptifs sont sélectionnables
 * le nombre de locaux saisis correspond aux nombres de bien déclaré dans ce bâtiment. Dans ce cas présent, le nombre sera de 1. Ce calcul sera automatisé dans la base de données.
 
