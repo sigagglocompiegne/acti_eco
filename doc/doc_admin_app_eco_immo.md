@@ -110,6 +110,7 @@ Ces onglets sont identiques à la saisie d'un terrain donc pas de rappel ici, cf
 ### Etape 2.3 - Si je saisi un "local indépendant divisé", il s'agit ici d'un local bien identifié dans un bâtiment comprenant d'autres locaux bien identifié
 
 ![picto](../img/choix_23v2.png)
+Ici, je peux soit affecter un bâtiment déjà saisi (dans la liste déroulante), ou créer un bâtiment en ajoutant une valeur dans la liste. Il faut ensuite enregistrer la fiche puis la rendre de nouveau éditable pour compléter les éléments descriptif du bâtiment. Ces éléments seront ensuite disponible pour un autre bien identifié dans le même bâtiment. Dans ce dernier cas, il faudra simplement sélectionner le nom du bâtiment dans la liste.
 
 Particularité(s) à noter :
 * les éléments descriptifs du bâtiment seront modifiés pour se limiter aux éléments consitutant le bâtiment et non des éléments particulier à des locaux.
