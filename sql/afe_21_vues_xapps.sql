@@ -401,9 +401,14 @@ COMMENT ON MATERIALIZED VIEW x_apps.xapps_an_vmr_synt_pole_api
 -- ########################################################### Synthèse des sites d'activités #########################
 -- Materialized View: x_apps.xapps_an_vmr_synt_site_act_api
 
--- DROP MATERIALIZED VIEW x_apps.xapps_an_vmr_synt_site_act_api;
+-- View: x_apps.xapps_an_vmr_synt_site_act_api
 
-CREATE MATERIALIZED VIEW x_apps.xapps_an_vmr_synt_site_act_api AS 
+--DROP MATERIALIZED VIEW x_apps.xapps_an_vmr_synt_site_act_api;
+
+CREATE MATERIALIZED VIEW x_apps.xapps_an_vmr_synt_site_act_api
+TABLESPACE pg_default
+AS
+
  WITH req_a AS (
          SELECT an_sa_site.idsite,
             an_sa_site.site_nom,
@@ -430,11 +435,12 @@ CREATE MATERIALIZED VIEW x_apps.xapps_an_vmr_synt_site_act_api AS
            FROM m_economie.an_sa_site
           ORDER BY an_sa_site.site_nom
         ), req_f AS (
-         SELECT an_sa_site.idsite,
+ 		SELECT an_sa_site.idsite,
             count(*) AS nb_etab_sirene
            FROM m_economie.an_sa_etab,
-            m_economie.an_sa_site
-          WHERE an_sa_etab.idsite::text = an_sa_site.idsite::text AND an_sa_etab.l_compte = true
+            m_economie.an_sa_site,s_sirene.an_etablissement_api
+          WHERE an_sa_etab.idsite::text = an_sa_site.idsite::text AND an_sa_etab.l_compte = true AND an_sa_etab.idsiret=an_etablissement_api.siret
+		  AND an_etablissement_api.etatadministratifetablissement = 'A' 
           GROUP BY an_sa_site.idsite
         ), req_g AS (
          SELECT an_sa_site.idsite,
@@ -447,8 +453,9 @@ CREATE MATERIALIZED VIEW x_apps.xapps_an_vmr_synt_site_act_api AS
          SELECT an_sa_site.idsite,
             sum(an_sa_etab.eff_etab)::integer AS eff_globaux_sirene
            FROM m_economie.an_sa_etab,
-            m_economie.an_sa_site
-          WHERE an_sa_etab.idsite::text = an_sa_site.idsite::text AND an_sa_etab.l_compte = true
+            m_economie.an_sa_site,s_sirene.an_etablissement_api
+          WHERE an_sa_etab.idsite::text = an_sa_site.idsite::text AND an_sa_etab.l_compte = true AND an_sa_etab.idsiret=an_etablissement_api.siret
+		  AND an_etablissement_api.etatadministratifetablissement = 'A' 
           GROUP BY an_sa_site.idsite
         ), req_i AS (
          SELECT an_sa_site.idsite,
@@ -597,7 +604,7 @@ CREATE MATERIALIZED VIEW x_apps.xapps_an_vmr_synt_site_act_api AS
     a.site_nom AS "Libellé du site",
     a.dest AS "Destination du site",
     a.voca AS "Vocation du site",
-    a.date_extract AS "Date d'extraction des données",
+    a.date_extract AS "Extraction des données le",
         CASE
             WHEN f.nb_etab_sirene::integer >= 0 AND g.nb_etab_spe::integer >= 0 THEN (f.nb_etab_sirene::integer + g.nb_etab_spe::integer)::text
             WHEN f.nb_etab_sirene::integer >= 0 AND g.nb_etab_spe::integer IS NULL THEN f.nb_etab_sirene::text
@@ -617,7 +624,7 @@ CREATE MATERIALIZED VIEW x_apps.xapps_an_vmr_synt_site_act_api AS
         CASE
             WHEN k.surf_dedie_act IS NOT NULL THEN k.surf_dedie_act::character varying
             ELSE 'Aucune ou non disponible'::character varying
-        END AS "Surface dédiée à l'activité",
+        END AS "Surface dédiée pour des activités",
         CASE
             WHEN k1.surf_reserve_projet IS NOT NULL THEN k1.surf_reserve_projet::character varying
             ELSE ' Aucune ou non disponible'::character varying
@@ -738,22 +745,34 @@ CREATE MATERIALIZED VIEW x_apps.xapps_an_vmr_synt_site_act_api AS
      LEFT JOIN req_l2009 l2009 ON a.idsite::text = l2009.idsite::text
      LEFT JOIN req_l2008 l2008 ON a.idsite::text = l2008.idsite::text
      LEFT JOIN req_l2007 l2007 ON a.idsite::text = l2007.idsite::text
+
 WITH DATA;
 
 ALTER TABLE x_apps.xapps_an_vmr_synt_site_act_api
-  OWNER TO sig_create;
+    OWNER TO sig_create;
 
 COMMENT ON MATERIALIZED VIEW x_apps.xapps_an_vmr_synt_site_act_api
-  IS 'Vue matérialisée présentant les données de synthèses à l''échelle du site d''activité  (données sur l''environnement économique et statistiques foncières présentes sur le fiche d''information du site dans l''application métier GEO). Cette vue est rafraichie toutes les nuits par une tache CRON sur le serveur sig-sgbd.';
+    IS 'Vue matérialisée présentant les données de synthèses à l''échelle du site d''activité  (données sur l''environnement économique et statistiques foncières présentes sur le fiche d''information du site dans l''application métier GEO). Cette vue est rafraichie toutes les nuits par une tache CRON sur le serveur sig-sgbd.';
 
+GRANT SELECT ON TABLE x_apps.xapps_an_vmr_synt_site_act_api TO read_sig;
+GRANT ALL ON TABLE x_apps.xapps_an_vmr_synt_site_act_api TO sig_create;
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE x_apps.xapps_an_vmr_synt_site_act_api TO edit_sig;
+GRANT ALL ON TABLE x_apps.xapps_an_vmr_synt_site_act_api TO create_sig;
+
+CREATE INDEX "idx_xapps_an_vmr_synt_site_act_api_Identifiant_du_site"
+    ON x_apps.xapps_an_vmr_synt_site_act_api USING btree
+    ("Identifiant du site" COLLATE pg_catalog."default")
+    TABLESPACE pg_default;
+	
 
 -- ########################################################### Synthèse des sites mixtes #########################
 
 -- Materialized View: x_apps.xapps_an_vmr_synt_site_mixte_api
+--DROP MATERIALIZED VIEW x_apps.xapps_an_vmr_synt_site_mixte_api;
 
--- DROP MATERIALIZED VIEW x_apps.xapps_an_vmr_synt_site_mixte_api;
-
-CREATE MATERIALIZED VIEW x_apps.xapps_an_vmr_synt_site_mixte_api AS 
+CREATE MATERIALIZED VIEW x_apps.xapps_an_vmr_synt_site_mixte_api
+TABLESPACE pg_default
+AS
  WITH req_a AS (
          SELECT an_amt_site_mixte.idsite,
             an_amt_site_mixte.site_nom,
@@ -783,8 +802,8 @@ CREATE MATERIALIZED VIEW x_apps.xapps_an_vmr_synt_site_mixte_api AS
          SELECT an_amt_site_mixte.idsite,
             count(*) AS nb_etab_sirene
            FROM m_economie.an_sa_etab,
-            m_amenagement.an_amt_site_mixte
-          WHERE an_sa_etab.idsite::text = an_amt_site_mixte.idsite::text AND an_sa_etab.l_compte = true
+            m_amenagement.an_amt_site_mixte, s_sirene.an_etablissement_api
+          WHERE an_sa_etab.idsite::text = an_amt_site_mixte.idsite::text AND an_sa_etab.l_compte = true AND an_sa_etab.idsiret::text = an_etablissement_api.siret::text AND an_etablissement_api.etatadministratifetablissement::text = 'A'::text
           GROUP BY an_amt_site_mixte.idsite
         ), req_g AS (
          SELECT an_amt_site_mixte.idsite,
@@ -797,8 +816,8 @@ CREATE MATERIALIZED VIEW x_apps.xapps_an_vmr_synt_site_mixte_api AS
          SELECT an_amt_site_mixte.idsite,
             sum(an_sa_etab.eff_etab)::integer AS eff_globaux_sirene
            FROM m_amenagement.an_amt_site_mixte,
-            m_economie.an_sa_etab
-          WHERE an_sa_etab.l_compte = true AND an_sa_etab.idsite::text = an_amt_site_mixte.idsite::text
+            m_economie.an_sa_etab, s_sirene.an_etablissement_api
+          WHERE an_sa_etab.l_compte = true AND an_sa_etab.idsite::text = an_amt_site_mixte.idsite::text AND an_sa_etab.idsiret::text = an_etablissement_api.siret::text AND an_etablissement_api.etatadministratifetablissement::text = 'A'::text
           GROUP BY an_amt_site_mixte.idsite
         ), req_i AS (
          SELECT an_amt_site_mixte.idsite,
@@ -875,7 +894,7 @@ CREATE MATERIALIZED VIEW x_apps.xapps_an_vmr_synt_site_mixte_api AS
     a.site_nom AS "Libellé du site",
     a.dest AS "Destination du site",
     a.voca AS "Vocation du site",
-    a.date_extract AS "Date d''extraction des données",
+    a.date_extract AS "Extraction des données le ",
         CASE
             WHEN f.nb_etab_sirene::integer > 0 AND g.nb_etab_spe::integer > 0 THEN (f.nb_etab_sirene::integer + g.nb_etab_spe::integer)::text
             WHEN f.nb_etab_sirene::integer > 0 AND g.nb_etab_spe::integer IS NULL THEN f.nb_etab_sirene::text
@@ -895,7 +914,7 @@ CREATE MATERIALIZED VIEW x_apps.xapps_an_vmr_synt_site_mixte_api AS
         CASE
             WHEN k.surf_dedie_act IS NOT NULL THEN k.surf_dedie_act::character varying
             ELSE 'Aucune ou non disponible'::character varying
-        END AS "Surface dédiée à l''activité",
+        END AS "Surface dédiée pour des activités",
         CASE
             WHEN k1.surf_reserve_projet IS NOT NULL THEN k1.surf_reserve_projet::character varying
             ELSE ' Aucune ou non disponible'::character varying
@@ -911,19 +930,20 @@ CREATE MATERIALIZED VIEW x_apps.xapps_an_vmr_synt_site_mixte_api AS
 WITH DATA;
 
 ALTER TABLE x_apps.xapps_an_vmr_synt_site_mixte_api
-  OWNER TO sig_create;
+    OWNER TO sig_create;
 
 COMMENT ON MATERIALIZED VIEW x_apps.xapps_an_vmr_synt_site_mixte_api
-  IS 'Vue matérialisée présentant les données de synthèses à l''échelle du site mixte  (données sur l''environnement économique et statistiques foncières présentes sur le fiche d''information du site dans l''application métier GEO). Cette vue est rafraichie toutes les nuits par une tache CRON sur le serveur sig-sgbd.';
+    IS 'Vue matérialisée présentant les données de synthèses à l''échelle du site mixte  (données sur l''environnement économique et statistiques foncières présentes sur le fiche d''information du site dans l''application métier GEO). Cette vue est rafraichie toutes les nuits par une tache CRON sur le serveur sig-sgbd.';
 
--- Index: x_apps.idx_xapps_an_vmr_synt_site_mixte_api_idsite
-
--- DROP INDEX x_apps.idx_xapps_an_vmr_synt_site_mixte_api_idsite;
+GRANT SELECT ON TABLE x_apps.xapps_an_vmr_synt_site_mixte_api TO read_sig;
+GRANT ALL ON TABLE x_apps.xapps_an_vmr_synt_site_mixte_api TO sig_create;
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE x_apps.xapps_an_vmr_synt_site_mixte_api TO edit_sig;
+GRANT ALL ON TABLE x_apps.xapps_an_vmr_synt_site_mixte_api TO create_sig;
 
 CREATE INDEX idx_xapps_an_vmr_synt_site_mixte_api_idsite
-  ON x_apps.xapps_an_vmr_synt_site_mixte_api
-  USING btree
-  ("Identifiant du site" COLLATE pg_catalog."default");
+    ON x_apps.xapps_an_vmr_synt_site_mixte_api USING btree
+    ("Identifiant du site" COLLATE pg_catalog."default")
+    TABLESPACE pg_default;
 
 
 
