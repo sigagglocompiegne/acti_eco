@@ -24,6 +24,12 @@ Durant cette phase de pré-production, consistant à intégrer le patrimoine des
 
 Une fois cette période réalisée, l'ensemble du dispostif sera intégré à l'applicatif "Activité économique" actuellement en production.
 
+**Fonctionnalités génériques à développer par le service SIG**
+
+* L'attribut "Identifiant de la base Adresse" permettra de lier le bien à une adresse de la BAL (fonctionnalité à développer). Dans le cas contraire, la saisie d'une adresese libre est possible.
+* Sélection des occupants à partir de la liste des établissements géolocalisés à l'adresse.
+* Revoir la gestion des attributs liés à la surface (entre SIG, surface du bâtiments, surface des locaux, ...). En fonction des cas, la surface par défaut est celle du SIG, l'utilisateur peut saisir une surface propre, mais si cette surface est supprimée doit revenir par défaut à la surface SIG.
+
 ### Etape 1 - A la saisie d'un objet (terrain ou local), il faut choisir le bien saisi
 
 ![picto](../img/choix_1.png)
@@ -45,7 +51,8 @@ Une fois cette période réalisée, l'ensemble du dispostif sera intégré à l'
 
 **Fonctionnalité à développer par le service SIG**
 
-* L'attribut "Identifiant de la base Adresse" permettra de lier le bien à une adresse de la BAL (fonctionnalité à développer). Dans le cas contraire, la saisie d'une adresese libre est possible.
+* Cf Fonctionnalités génériques en début de page (adressage)
+
 
 **Rôle du service du développement économique**
 
@@ -72,7 +79,7 @@ Particularité(s) à noter :
 
 **Fonctionnalité à développer par le service SIG**
 
-* Si le fonctionnel d'adressage fonctionne (Etape 2.1.1), tester la recherche des établissements affectés à ce terrain dans les établissements déjà géolocalisés à l'adresse dans l'application Activité Economique. Créer une table de relation permettant l'affectation d'un SIRET à un local.
+* * Cf Fonctionnalités génériques en début de page (sélection des occupants)
 
 **Rôle du service du développement économique**
 
@@ -80,8 +87,6 @@ Particularité(s) à noter :
 
 
 #### Etape 2.1.4 - L'onglet "Commercialisation" permet de rendre le bien disponible à la vente ou à la location
-
-ATTENTION : par défaut un bien du patrimoine saisi n'est pas concerné par cette disponiblité si celle-ci n'est pas modifiée.
 
 ##### Etape 2.1.4.1 - Cas d'un bien non concerné par une disponibilité
 
@@ -95,12 +100,16 @@ Particularité(s) à noter :
 ![picto](../img/choix_2142.png)
 
 Particularité(s) à noter :
-* l'onglet "Conditions financières d'occupation" est toujours disponibles
+* l'onglet "Conditions financières d'occupation" est maintenant disponible mais dans un second temps pour la cas d'une mise en vente ou en location
 * 2 nouveaux onglets : "Conditions financières de commercialisation" et "Contact" sont accessibles
 
 ![picto](../img/choix_21421.png)
 
 ![picto](../img/choix_21422.png)
+
+**Rôle du service du développement économique**
+
+* valider les attributs
 
 ### Etape 2.2 - Si je saisi un "local (Bâtiment non divisé)", il s'agit ici d'un bien (local d'activité) qui correspondant aux bâtiments
 
@@ -114,26 +123,41 @@ Particularité(s) à noter :
 * Contraitement au terrain, un onglet supplémentaite est disponible permettant de décrire le bâtiment
 * les éléments descriptifs du bâtiment seront modifiés pour se limiter aux éléments consitutant le bâtiment et non des éléments partoculier à des locaux.
 * Plusieurs éléments descriptifs sont sélectionnables
+
+**Fonctionnalité à développer par le service SIG**
+
 * le nombre de locaux saisis correspond aux nombres de bien déclaré dans ce bâtiment. Dans ce cas présent, le nombre sera de 1. Ce calcul sera automatisé dans la base de données.
 
-##### Etape 2.2.1.2 - L'onglet "Propriété" renseigne sur la propriété du bâtiment
 
-![picto](../img/choix_2212.png)
+**Rôle du service du développement économique**
 
-Particularité(s) à noter :
-* un fonctionnel permettra d'indiquer si la propriété est commune au bien (local) saisi, ce qui automatisera la saisie
+* Revoir la liste des descriptions. Ne garder ici que les éléments décrivant le bâtiment. Les autres éléments décrivant le local devront être disponible dans l'onglet Description du bien.
+* valider les attributs
+
+
+**Fonctionnalité à développer par le service SIG**
+
+* Ici rendre le sous-onglet invisible, les données de propriété sont à renseigner dans l'onglet "Propriété du bien"
+
+**Rôle du service du développement économique**
+
+* valider les attributs
 
 #### Etape 2.2.2 - L'onglet description permet d'indiquer les éléments patrimoniaux du bien.
 
 ![picto](../img/choix_222.png)
 
 Particularité(s) à noter :
-* 3 attributs supplémentaires par rapport à la saisi d'un terrain : `Type de bien`, `description` et `pas-de-porte`
+* 3 attributs supplémentaires par rapport à la saisi d'un terrain ont été ajoutés : `Type de bien`, `description` et `pas-de-porte`
 * le type de bien permet de sélectionner dans une liste de valeur `Activité`, `Bureau` ou `Commerce`
-* la partie description est à revoir comme pour les bâtiments pour une mise en cohérence
 * l'information "pas-de-porte" est intégrée ici avec une valeur `false` par défaut et permettra de développer ce suivi sur les commerces de centre-ville
-* l'attribut "Lien vers un site présentant le terrain " sera renommé "Lien vers un site présentant le bien"
-* l'attribut "Surface (en ha)" sera supprimé
+* l'attribut "Lien vers un site présentant le terrain " a été renommé "Lien vers un site présentant le bien"
+
+**Rôle du service du développement économique**
+
+* Revoir la liste des descriptions. Ne garder ici que les éléments décrivant le bien (en lien avec la description du bâtiment)
+* Revoir la liste des type de bien
+* valider les attributs
 
 #### Etape 2.2.3 - Les onglets "Propriété du bien", "Occupants-Occupations" et "Commercialisation" 
 
@@ -146,9 +170,16 @@ Ces onglets sont identiques à la saisie d'un terrain donc pas de rappel ici, cf
 Ici, je peux soit affecter un bâtiment déjà saisi (dans la liste déroulante), ou créer un bâtiment en ajoutant une valeur dans la liste. Il faut ensuite enregistrer la fiche puis la rendre de nouveau éditable pour compléter les éléments descriptif du bâtiment. Ces éléments seront ensuite disponible pour un autre bien identifié dans le même bâtiment. Dans ce dernier cas, il faudra simplement sélectionner le nom du bâtiment dans la liste.
 
 Particularité(s) à noter :
-* les éléments descriptifs du bâtiment seront modifiés pour se limiter aux éléments consitutant le bâtiment et non des éléments particulier à des locaux.
 * Plusieurs éléments descriptifs sont sélectionnables
+
+**Fonctionnalité à développer par le service SIG**
+
 * le nombre de locaux saisis correspond aux nombres de bien déclaré dans ce bâtiment. Dans ce cas présent, le nombre sera de 1. Ce calcul sera automatisé dans la base de données.
+* Revoir ici le fonctionnel de la propriété du bâtiment qui ne fonctionne pas
+
+**Rôle du service du développement économique**
+
+* Revoir la liste des descriptions. Ne garder ici que les éléments décvrivant le bâtiment. Les autres éléments décrivant le local devront être disponible dans l'onglet Description du bien.
 
 Tous les autres onglets sont identiques à la saisie d'un "local (Bâtiment non divisé)" donc pas de rappel ici, cf Etape 2.2.
 
@@ -159,12 +190,19 @@ Tous les autres onglets sont identiques à la saisie d'un "local (Bâtiment non 
 Particularité(s) à noter :
 * tous les onglets sont identiques à la saise d'un autre type de local, sauf que la saisie peut-être multiple. La présentatation de certains onglets est donc sous forme de liste de valeurs possibles. Se reporter aux parties ci-après détaillant ce fonctionnement.
 
+**Fonctionnalité à développer par le service SIG**
+
+* le nombre de locaux saisis correspond aux nombres de bien déclaré dans ce bâtiment. Dans ce cas présent, le nombre sera de 1. Ce calcul sera automatisé dans la base de données.
+
+**Rôle du service du développement économique**
+
+* Revoir la liste des descriptions. Ne garder ici que les éléments décvrivant le bâtiment. Les autres éléments décrivant le local devront être disponible dans l'onglet Description du bien.
+
 #### Etape 2.4.1 - Un préalable, je dois renseigner et enregistrer les données concernant le bâtiment (description et propriété) avant de pouvoir y affecter des locaux. Par défaut à l'enregistrement du bâtiment un local est créé. 
 
-![picto](../img/choix_241.png)
+**ATTENTION : ce préalable n'est plus nécessaire, tout peut-être fait en une seule fois depuis la mise à jour fonctionnelle de l'outil**
 
-Particularité(s) à noter :
-* Avant de pouvoir saisir des locaux, je dois sauvegarder la fiche. Un local par défaut sera créé. Il faut ré-éditer la fiche pour pouvoir modifier les informations du local et en ajouter d'autres.
+![picto](../img/choix_241.png)
 
 #### Etape 2.4.2 - Modifier les informations d'un local existant
 
@@ -194,8 +232,6 @@ Après l'enregistrement de cette fiche local (étape 2.4.2.1), toutes les inform
 
 * Onglet "Propriété des biens (locaux)"
 
-![picto](../img/choix_24212.png)
-
 * Onglet "Occupants - Occupation"
 
 ![picto](../img/choix_24213.png)
@@ -205,7 +241,7 @@ Après l'enregistrement de cette fiche local (étape 2.4.2.1), toutes les inform
 ![picto](../img/choix_24214.png)
 
 Particularité(s) à noter :
-* pour ce dernier onglet, il reste à intégrer un onglet sur les conditons financières d'occupation actuelle
+* pour ce dernier onglet, a été intégré un sous-onglet sur les conditons financières d'occupation actuelle et sur les contacts
 
 
 #### Etape 2.4.3 - Ajourer un local
@@ -220,14 +256,23 @@ Cliquez sur l'icône `AJOUTER` en bas à droite de la fiche du bien de l'onglet 
 
 Renseignez les informations du local dans chaque onglet et sauvegardez.  
 
+**Rôle du service du développement économique**
+
+* Revoir la liste des descriptions. 
+* Valider les attributs
+* Précisez ici si un souhait d'avoir un onglet médiathèque pour gérer les documents spécifiques à un local.
+
 
 ### Etape 3 : Les métadonnées
 
 ![picto](../img/choix_0.png)
 
-Pour tous biens saisis, un onglet "Métadonnée" est disponible au niveau supérieur de la fiche. Les informations du local doivent s'afficher en liste comme à l'étape 2.4.2.2.
+Pour tous biens saisis, un onglet "Métadonnée" est disponible au niveau supérieur de la fiche. La référentiel de saisie PCI Vecteur a été mis par défaut. La date du référentiel peut être indiqué.
 
 ### Etape 4: La médiathèque
 
-* un troisième onglet au niveau des 2 onglets supérieurs de la fiche sera intégré pour gérer l'intégration de documents. Cet onglet sera nommé "Médiathèque"
+* un troisième onglet au niveau des 2 onglets supérieurs de la fiche a été intégré pour gérer l'intégration de documents. Cet onglet sera nommé "Médiathèque"
 
+**Rôle du service du développement économique**
+
+* Précisez ici si un souhait d'avoir un onglet médiathèque pour gérer les documents spécifiques à un local dans le cas des locaux non identifiés dans un même bâtiment
