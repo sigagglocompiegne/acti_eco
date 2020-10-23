@@ -30,6 +30,13 @@ Une fois cette période réalisée, l'ensemble du dispostif sera intégré à l'
 * Sélection des occupants à partir de la liste des établissements géolocalisés à l'adresse.
 * Revoir la gestion des attributs liés à la surface (entre SIG, surface du bâtiments, surface des locaux, ...). En fonction des cas, la surface par défaut est celle du SIG, l'utilisateur peut saisir une surface propre, mais si cette surface est supprimée doit revenir par défaut à la surface SIG.
 
+**Fonctionnalités spécifiques à developper (liste non exhaustives en attente retour du service développement économique)**
+
+* Gestion des bâtiments comprenant x locaux identifiés (prévoir une fonctionnalité permettant d'accéder à une fiche pour changer le nom du bâtiment qui apparaît dans la liste des bâtiments d'affectation pour un local identifié)
+* Cartographie : afficher la présence d'une vente ou d'une location par un applat de couleur
+
+
+
 ### Etape 1 - A la saisie d'un objet (terrain ou local), il faut choisir le bien saisi
 
 ![picto](../img/choix_1.png)
@@ -276,3 +283,5 @@ Pour tous biens saisis, un onglet "Métadonnée" est disponible au niveau supér
 **Rôle du service du développement économique**
 
 * Précisez ici si un souhait d'avoir un onglet médiathèque pour gérer les documents spécifiques à un local dans le cas des locaux non identifiés dans un même bâtiment
+
+
