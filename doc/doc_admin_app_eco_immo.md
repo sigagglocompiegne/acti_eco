@@ -36,11 +36,20 @@ Une fois cette période réalisée, l'ensemble du dispostif sera intégré à l'
 
 ![picto](../img/choix_211.png)
 
-Particularité(s) à noter :
-* l'attribut "Occupant ou type d'occupation" permet de spécifier un usage si l'onglet "Occupants - Occupation" ne peut être complété. Exemple d'un parking d'entreprise, on pourra indiquer ici Parking de ....
+*Particularité(s) à noter :*
+
+* l'attribut "Occupant ou type d'occupation" a été supprimé ici
+* l'attribut "Lien vers un site présentant le terrain " a été renommé "Lien vers un site présentant le bien"
+* l'attribut "Surface (en ha)" a été supprimé
+
+
+*Fonctionnalité à développer par le service SIG*
+
 * L'attribut "Identifiant de la base Adresse" permettra de lier le bien à une adresse de la BAL (fonctionnalité à développer). Dans le cas contraire, la saisie d'une adresese libre est possible.
-* l'attribut "Lien vers un site présentant le terrain " sera renommé "Lien vers un site présentant le bien"
-* l'attribut "Surface (en ha)" sera supprimé
+
+*Rôle du service du développement économique*
+
+* valider les attributs
 
 #### Etape 2.1.2 - L'onglet propriété permet d'indiquer les éléments concernant le propriétaire du terrain
 
