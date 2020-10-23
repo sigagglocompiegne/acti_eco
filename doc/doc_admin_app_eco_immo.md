@@ -36,18 +36,18 @@ Une fois cette période réalisée, l'ensemble du dispostif sera intégré à l'
 
 ![picto](../img/choix_211.png)
 
-*Particularité(s) à noter :*
+**Particularité(s) à noter :**
 
 * l'attribut "Occupant ou type d'occupation" a été supprimé ici
 * l'attribut "Lien vers un site présentant le terrain " a été renommé "Lien vers un site présentant le bien"
 * l'attribut "Surface (en ha)" a été supprimé
 
 
-*Fonctionnalité à développer par le service SIG*
+**Fonctionnalité à développer par le service SIG**
 
 * L'attribut "Identifiant de la base Adresse" permettra de lier le bien à une adresse de la BAL (fonctionnalité à développer). Dans le cas contraire, la saisie d'une adresese libre est possible.
 
-*Rôle du service du développement économique*
+**Rôle du service du développement économique**
 
 * valider les attributs
 
