@@ -24,6 +24,10 @@ Durant cette phase de pré-production, consistant à intégrer le patrimoine des
 
 Une fois cette période réalisée, l'ensemble du dispostif sera intégré à l'applicatif "Activité économique" actuellement en production.
 
+**Rappel du principe de gestions des biens immobilier**
+
+![picto](../img/principe_fonctionnel_bien_immo.png)
+
 **Fonctionnalités génériques à développer par le service SIG**
 
 * L'attribut "Identifiant de la base Adresse" permettra de lier le bien à une adresse de la BAL (fonctionnalité à développer). Dans le cas contraire, la saisie d'une adresese libre est possible.
@@ -37,7 +41,6 @@ Une fois cette période réalisée, l'ensemble du dispostif sera intégré à l'
 
 * Gestion des bâtiments comprenant x locaux identifiés (prévoir une fonctionnalité permettant d'accéder à une fiche pour changer le nom du bâtiment qui apparaît dans la liste des bâtiments d'affectation pour un local identifié)
 * Cartographie : afficher la présence d'une vente ou d'une location par un applat de couleur
-
 
 
 ### Etape 1 - A la saisie d'un objet (terrain ou local), il faut choisir le bien saisi
