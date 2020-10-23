@@ -55,6 +55,10 @@ Une fois cette période réalisée, l'ensemble du dispostif sera intégré à l'
 
 ![picto](../img/choix_212.png)
 
+**Rôle du service du développement économique**
+
+* valider les attributs
+
 #### Etape 2.1.3 - L'onglet "Occupants - Occupation" permet d'ajouter un ou des établissements occupants le bien
 
 ![picto](../img/choix_213.png)
@@ -65,6 +69,15 @@ Particularité(s) à noter :
 * 0 ou n établissements peuvent être ajoutés
 * l'icône "fiche" à gauche permet d'accéder à la fiche de l'établissement
 * l'icôbe "poubelle" permet de supprimer l'établissement de la liste
+
+**Fonctionnalité à développer par le service SIG**
+
+* Si le fonctionnel d'adressage fonctionne (Etape 2.1.1), tester la recherche des établissements affectés à ce terrain dans les établissements déjà géolocalisés à l'adresse dans l'application Activité Economique. Créer une table de relation permettant l'affectation d'un SIRET à un local.
+
+**Rôle du service du développement économique**
+
+* valider les attributs
+
 
 #### Etape 2.1.4 - L'onglet "Commercialisation" permet de rendre le bien disponible à la vente ou à la location
 
