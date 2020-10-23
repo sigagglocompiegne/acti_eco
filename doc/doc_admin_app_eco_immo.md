@@ -30,6 +30,8 @@ Une fois cette période réalisée, l'ensemble du dispostif sera intégré à l'
 * Sélection des occupants à partir de la liste des établissements géolocalisés à l'adresse.
 * Revoir la gestion des attributs liés à la surface (entre SIG, surface du bâtiments, surface des locaux, ...). En fonction des cas, la surface par défaut est celle du SIG, l'utilisateur peut saisir une surface propre, mais si cette surface est supprimée doit revenir par défaut à la surface SIG.
 * Pouvoir sélectionner un bâtiment du cadastre pour le copier en tant que bâtiment contenant 1 seul local ou x locaux non identifiés.
+* A la mise à jour des établissements SIRENE, si l'établissement est fermé, le supprimer de l'affectation du local ou indiquer son état administratif (actif ou non)
+* * A la mise à jour des établissements SIRENE, intégrer un onglet supplémentaire dans le fichier de synthyse envoyé au service indiquant les établissements fermés qui auraient été affectés à un local pour en informer le service du développement économique
 
 **Fonctionnalités spécifiques à developper (liste non exhaustives en attente retour du service développement économique)**
 
