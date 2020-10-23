@@ -2,7 +2,6 @@
 
 # Documentation d'administration de l'application #
 
-
 * Statut
   - [ ] à rédiger
   - [x] en cours de rédaction
@@ -12,7 +11,18 @@
 
 # Fonctionnel de gestion du patrimoine des biens de l'immobiler d'entreprises et leur mise en disponiblité sur le marché
 
-Ici vous est présenté, temporairement, les premiers tests fonctionnels depuis l'application WebSIG permettant de gérer les données.
+Une réunion intermédiaire avec le service du développement économique a eu lieu le 23 octobre 2020 pour présenter ce premier fonctionnel et les étapes à venir.
+Cette solution convient au service mais un certain nombre de points fonctionnels ou de contenus attributaires restent encore à finaliser ou à stabiliser.
+
+Les étapes ci-après présentent le fonctionnement applicatif et indique le rôle du service SIG et celui du service du développement économique pour la suite du projet.
+
+Il a été convenu de conserver le principe fonctionnel présenté. Le service du développement économique doit encore valider l'ensemble des attributs de gestion, et tester le fonctionnel. Il doit également réfléchir aux fonctionnels applicatifs de recherches, de présentation cartographique, d'exports et de tableaux de bord.
+
+L'applicatif sera mis en mode de pré-prodcution une fois tous les éléments validés par le service du développement économique et la finalisation du fonctionnel par le service SIG.
+
+Durant cette phase de pré-production, consistant à intégrer le patrimoine des locaux immobiliers, l'application spécifique sur l'immobilier d'entreprises sera conservé. Cette phase permettra également au service de tester l'applicatif et éventuellement de réaliser des ajustements. Les différentes fonctionnalités seront ensuite ajoutées au fur et à mesure.
+
+Une fois cette période réalisée, l'ensemble du dispostif sera intégré à l'applicatif "Activité économique" actuellement en production.
 
 ### Etape 1 - A la saisie d'un objet (terrain ou local), il faut choisir le bien saisi
 
