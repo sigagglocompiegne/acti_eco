@@ -955,6 +955,254 @@ CREATE INDEX idx_xapps_an_vmr_synt_site_mixte_api_idsite
 CREATE MATERIALIZED VIEW x_apps.xapps_geo_vmr_etab_api_export
 TABLESPACE pg_default
 AS
+ WITH req_tot AS (
+         WITH req_e AS (
+                 SELECT DISTINCT e.idsiret,
+                    e.idsite,
+                    e.l_nom,
+                    e.l_nom_dir,
+                    e.l_titre,
+                    e.date_maj_dir,
+                    e.l_mail,
+                    e.l_mail_dir,
+                    e.l_tel,
+                    e.l_tel_dir,
+                    e.l_telp_dir,
+                        CASE
+                            WHEN e.eff_etab IS NOT NULL THEN e.eff_etab::character varying
+                            ELSE 'n.r'::character varying
+                        END AS eff_etab,
+                    e.eff_etab AS eff_etab_n,
+                    e.source_eff,
+                    e.l_date_eff,
+                    e.annee_eff,
+                    e.l_compte,
+                        CASE
+                            WHEN se.site_nom IS NOT NULL THEN se.site_nom
+                            WHEN sm.site_nom IS NOT NULL THEN sm.site_nom
+                            ELSE NULL::character varying
+                        END AS site,
+                    l.idadresse
+                   FROM m_economie.an_sa_etab e
+                     LEFT JOIN m_economie.lk_adresseetablissement l ON e.idsiret::text = l.siret::text
+                     LEFT JOIN m_economie.an_sa_site se ON se.idsite::text = e.idsite::text
+                     LEFT JOIN m_amenagement.an_amt_site_mixte sm ON sm.idsite::text = e.idsite::text
+                ), req_si AS (
+                 SELECT DISTINCT s.siret,
+                    s.numerovoieetablissement::text ||
+                        CASE
+                            WHEN s.indicerepetitionetablissement IS NULL OR s.indicerepetitionetablissement::text <> ''::text THEN s.indicerepetitionetablissement
+                            ELSE ''::character varying
+                        END::text AS numvoie,
+                    (
+                        CASE
+                            WHEN s.typevoieetablissement IS NULL OR s.typevoieetablissement::text <> ''::text THEN s.typevoieetablissement
+                            ELSE ''::character varying
+                        END::text || ' '::text) || s.libellevoieetablissement::text AS libvoie,
+                    s.codecommuneetablissement,
+                    s.complementadresseetablissement AS complementadresse,
+                    s.distributionspecialeetablissement AS boite_postale,
+                    s.codepostaletablissement AS code_postal,
+                    s.denominationusuelleetablissement,
+                    s.enseigne1etablissement,
+                    s.datecreationetablissement,
+                    s.etatadministratifetablissement,
+                    s.datederniertraitementetablissement,
+                    ul.denominationunitelegale,
+                    ul.denominationusuelle1unitelegale,
+                    ul.nomunitelegale,
+                    (ul.nomusageunitelegale::text || ' '::text) || ul.prenom1unitelegale::text AS personnephysique,
+                    s.activiteprincipaleetablissement AS apet700,
+                    n.valeur AS libapet700
+                   FROM s_sirene.an_etablissement_api s
+                     LEFT JOIN s_sirene.an_unitelegale_api ul ON s.siren::text = ul.siren::text
+                     LEFT JOIN s_sirene.lt_nafrev2 n ON n.code::text = s.activiteprincipaleetablissement::text
+                )
+         SELECT DISTINCT e.idsiret,
+            si.denominationusuelleetablissement,
+            si.enseigne1etablissement,
+            si.denominationunitelegale,
+            si.denominationusuelle1unitelegale,
+            si.nomunitelegale,
+            si.personnephysique,
+            e.l_nom,
+            e.l_nom_dir,
+            e.l_titre,
+            e.date_maj_dir,
+            e.l_mail,
+            e.l_mail_dir,
+            e.l_tel,
+            e.l_tel_dir,
+            e.l_telp_dir,
+            si.apet700,
+            si.libapet700,
+            e.eff_etab,
+            e.eff_etab_n,
+            e.source_eff,
+            e.l_date_eff,
+            e.annee_eff::character varying AS annee_eff,
+            e.l_compte,
+                CASE
+                    WHEN to_char(si.datecreationetablissement, 'YYYY'::text)::integer IS NULL THEN 0
+                    ELSE to_char(si.datecreationetablissement, 'YYYY'::text)::integer
+                END AS datecreationetablissement,
+            si.etatadministratifetablissement,
+                CASE
+                    WHEN to_char(si.datederniertraitementetablissement, 'YYYY'::text)::integer IS NULL THEN 0
+                    ELSE to_char(si.datederniertraitementetablissement, 'YYYY'::text)::integer
+                END AS datederniertraitementetablissement,
+            (((
+                CASE
+                    WHEN si.numvoie IS NOT NULL THEN si.numvoie || ' '::text
+                    ELSE ' '::text
+                END ||
+                CASE
+                    WHEN si.libvoie IS NOT NULL THEN si.libvoie || ' '::text
+                    ELSE ' '::text
+                END) ||
+                CASE
+                    WHEN si.complementadresse IS NOT NULL THEN (si.complementadresse::text || ' '::text)::character varying
+                    ELSE ' '::character varying
+                END::text) ||
+                CASE
+                    WHEN si.boite_postale IS NOT NULL THEN (si.boite_postale::text || ' '::text)::character varying
+                    ELSE ' '::character varying
+                END::text) ||
+                CASE
+                    WHEN si.code_postal IS NOT NULL THEN si.code_postal
+                    ELSE ''::character varying
+                END::text AS adresse_sirene,
+            g.libgeo AS commune,
+            g.lib_epci AS epci,
+            e.site,
+                CASE
+                    WHEN e.idadresse IS NULL OR e.idadresse::text = ''::text THEN 'Etablissement non localisé à l''adresse'::character varying::text
+                    ELSE ( SELECT (((((xapps_geo_vmr_adresse.numero::text ||
+                            CASE
+                                WHEN xapps_geo_vmr_adresse.repet IS NOT NULL THEN xapps_geo_vmr_adresse.repet
+                                ELSE ' '::character varying
+                            END::text) || xapps_geo_vmr_adresse.libvoie_c::text) ||
+                            CASE
+                                WHEN xapps_geo_vmr_adresse.complement IS NOT NULL THEN (' '::text || xapps_geo_vmr_adresse.complement::text) || ' '::text
+                                ELSE ' '::text
+                            END) || xapps_geo_vmr_adresse.codepostal::text) || ' '::text) || xapps_geo_vmr_adresse.commune::text
+                       FROM x_apps.xapps_geo_vmr_adresse
+                      WHERE xapps_geo_vmr_adresse.id_adresse = e.idadresse)
+                END AS adresse_loc,
+            a.x_l93,
+            a.y_l93,
+            a.geom
+           FROM req_si si
+             JOIN req_e e ON e.idsiret::text = si.siret::text
+             LEFT JOIN x_apps.xapps_geo_vmr_adresse a ON e.idadresse = a.id_adresse
+             LEFT JOIN r_administratif.an_geo g ON g.insee::text = si.codecommuneetablissement::text
+        UNION ALL
+         SELECT sp.idsiret,
+            'non renseignée'::character varying AS denominationusuelleetablissement,
+            'non renseignée'::character varying AS enseigne1etablissement,
+            'non renseignée'::character varying AS denominationunitelegale,
+            'non renseignée'::character varying AS denominationusuelle1unitelegale,
+            'non renseignée'::character varying AS nomunitelegale,
+            'non renseignée'::character varying AS personnephysique,
+            sp.l_nom,
+            sp.l_nom_dir,
+            sp.l_titre,
+            sp.date_maj_dir,
+            sp.l_mail,
+            sp.l_mail_dir,
+            sp.l_tel,
+            sp.l_tel_dir,
+            sp.l_telp_dir,
+            'Non renseignée'::character varying AS apet700,
+            'Non renseignée'::character varying AS libapet700,
+            sp.eff_etab::character varying AS eff_etab,
+            sp.eff_etab AS eff_etab_n,
+            sp.source_eff,
+            sp.date_eff AS l_date_eff,
+            'non renseignée'::character varying AS annee_eff,
+            sp.l_compte,
+            0 AS datecreationetablissement,
+            'A'::character varying AS etatadministratifetablissement,
+            0 AS datederniertraitementetablissement,
+            'Non renseignée'::character varying AS adresse_sirene,
+            g.libgeo AS commune,
+            g.lib_epci AS epci,
+                CASE
+                    WHEN se.site_nom IS NOT NULL THEN se.site_nom
+                    WHEN sm.site_nom IS NOT NULL THEN sm.site_nom
+                    ELSE NULL::character varying
+                END AS site,
+                CASE
+                    WHEN sp.l_comp_ad IS NOT NULL THEN sp.l_comp_ad
+                    ELSE 'Non renseignée'::character varying
+                END AS adresse_loc,
+            st_x(sp.geom) AS x_l93,
+            st_y(sp.geom) AS y_l93,
+            sp.geom
+           FROM m_economie.geo_sa_etabp sp
+             LEFT JOIN m_economie.an_sa_site se ON se.idsite::text = sp.idsite::text
+             LEFT JOIN m_amenagement.an_amt_site_mixte sm ON sm.idsite::text = sp.idsite::text
+             LEFT JOIN r_administratif.an_geo g ON g.insee::text = sp.insee::text
+        )
+ SELECT row_number() OVER () AS gid,
+    req_tot.idsiret,
+    req_tot.denominationusuelleetablissement,
+    req_tot.enseigne1etablissement,
+    req_tot.denominationunitelegale,
+    req_tot.denominationusuelle1unitelegale,
+    req_tot.nomunitelegale,
+    req_tot.personnephysique,
+    req_tot.l_nom,
+    req_tot.l_nom_dir,
+    req_tot.l_titre,
+    req_tot.date_maj_dir,
+    req_tot.l_mail,
+    req_tot.l_mail_dir,
+    req_tot.l_tel,
+    req_tot.l_tel_dir,
+    req_tot.l_telp_dir,
+    req_tot.apet700,
+    req_tot.libapet700,
+    req_tot.eff_etab,
+    req_tot.eff_etab_n,
+    req_tot.source_eff,
+    req_tot.l_date_eff,
+    req_tot.annee_eff,
+    req_tot.l_compte,
+    req_tot.datecreationetablissement,
+    req_tot.etatadministratifetablissement,
+    req_tot.datederniertraitementetablissement,
+    req_tot.adresse_sirene,
+    req_tot.commune,
+    req_tot.epci,
+    req_tot.site,
+    req_tot.adresse_loc,
+    req_tot.x_l93,
+    req_tot.y_l93,
+    req_tot.geom
+   FROM req_tot
+WITH DATA;
+
+ALTER TABLE x_apps.xapps_geo_vmr_etab_api_export
+    OWNER TO sig_create;
+
+COMMENT ON MATERIALIZED VIEW x_apps.xapps_geo_vmr_etab_api_export
+    IS 'Vue géographique matérialisée (rafraichie ttes les nuits) composée des éléments sur les établissements actifs (API Sirene) permettant de gérer des exports de listes par commune, par site dans GEO (Recherche d''établissements par commune, par site)';
+
+GRANT ALL ON TABLE x_apps.xapps_geo_vmr_etab_api_export TO sig_create;
+GRANT SELECT ON TABLE x_apps.xapps_geo_vmr_etab_api_export TO read_sig;
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE x_apps.xapps_geo_vmr_etab_api_export TO edit_sig;
+GRANT ALL ON TABLE x_apps.xapps_geo_vmr_etab_api_export TO create_sig;
+
+-- ########################################################### Vue (même que la vue matérialisée plus utilisé) d'export des établissements depuis GEO #########################
+
+-- View: x_apps.xapps_geo_v_etab_api_export
+
+-- DROP VIEW x_apps.xapps_geo_v_etab_api_export;
+
+CREATE OR REPLACE VIEW x_apps.xapps_geo_v_etab_api_export
+ AS
+  WITH req_tot AS (
  WITH req_e AS (
          SELECT DISTINCT e.idsiret,
             e.idsite,
@@ -1142,215 +1390,45 @@ UNION ALL
      LEFT JOIN m_economie.an_sa_site se ON se.idsite::text = sp.idsite::text
      LEFT JOIN m_amenagement.an_amt_site_mixte sm ON sm.idsite::text = sp.idsite::text
      LEFT JOIN r_administratif.an_geo g ON g.insee::text = sp.insee::text
-WITH DATA;
-
-ALTER TABLE x_apps.xapps_geo_vmr_etab_api_export
-    OWNER TO sig_create;
-
-COMMENT ON MATERIALIZED VIEW x_apps.xapps_geo_vmr_etab_api_export
-    IS 'Vue géographique matérialisée (rafraichie ttes les nuits) composée des éléments sur les établissements actifs (API Sirene) permettant de gérer des exports de listes par commune, par site dans GEO (Recherche d''établissements par commune, par site)';
-
-GRANT ALL ON TABLE x_apps.xapps_geo_vmr_etab_api_export TO sig_create;
-GRANT SELECT ON TABLE x_apps.xapps_geo_vmr_etab_api_export TO read_sig;
-GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE x_apps.xapps_geo_vmr_etab_api_export TO edit_sig;
-GRANT ALL ON TABLE x_apps.xapps_geo_vmr_etab_api_export TO create_sig;
-
--- ########################################################### Vue (même que la vue matérialisée plus utilisé) d'export des établissements depuis GEO #########################
-
--- View: x_apps.xapps_geo_v_etab_api_export
-
--- DROP VIEW x_apps.xapps_geo_v_etab_api_export;
-
-CREATE OR REPLACE VIEW x_apps.xapps_geo_v_etab_api_export
- AS
- WITH req_e AS (
-         SELECT DISTINCT e.idsiret,
-            e.idsite,
-            e.l_nom,
-            e.l_nom_dir,
-            e.l_titre,
-            e.date_maj_dir,
-            e.l_mail,
-            e.l_mail_dir,
-            e.l_tel,
-            e.l_tel_dir,
-            e.l_telp_dir,
-                CASE
-                    WHEN e.eff_etab IS NOT NULL THEN e.eff_etab::character varying
-                    ELSE 'n.r'::character varying
-                END AS eff_etab,
-            e.eff_etab AS eff_etab_n,
-            e.source_eff,
-            e.l_date_eff,
-            e.annee_eff,
-            e.l_compte,
-                CASE
-                    WHEN se.site_nom IS NOT NULL THEN se.site_nom
-                    WHEN sm.site_nom IS NOT NULL THEN sm.site_nom
-                    ELSE NULL::character varying
-                END AS site,
-            l.idadresse
-           FROM m_economie.an_sa_etab e
-             LEFT JOIN m_economie.lk_adresseetablissement l ON e.idsiret::text = l.siret::text
-             LEFT JOIN m_economie.an_sa_site se ON se.idsite::text = e.idsite::text
-             LEFT JOIN m_amenagement.an_amt_site_mixte sm ON sm.idsite::text = e.idsite::text
-        ), req_si AS (
-         SELECT DISTINCT s.siret,
-            s.numerovoieetablissement::text ||
-                CASE
-                    WHEN s.indicerepetitionetablissement IS NULL OR s.indicerepetitionetablissement::text <> ''::text THEN s.indicerepetitionetablissement
-                    ELSE ''::character varying
-                END::text AS numvoie,
-            (
-                CASE
-                    WHEN s.typevoieetablissement IS NULL OR s.typevoieetablissement::text <> ''::text THEN s.typevoieetablissement
-                    ELSE ''::character varying
-                END::text || ' '::text) || s.libellevoieetablissement::text AS libvoie,
-            s.codecommuneetablissement,
-            s.complementadresseetablissement AS complementadresse,
-            s.distributionspecialeetablissement AS boite_postale,
-            s.codepostaletablissement AS code_postal,
-            s.denominationusuelleetablissement,
-            s.enseigne1etablissement,
-            s.datecreationetablissement,
-            s.etatadministratifetablissement,
-            s.datederniertraitementetablissement,
-            ul.denominationunitelegale,
-            ul.denominationusuelle1unitelegale,
-            ul.nomunitelegale,
-            (ul.nomusageunitelegale::text || ' '::text) || ul.prenom1unitelegale::text AS personnephysique,
-            s.activiteprincipaleetablissement AS apet700,
-            n.valeur AS libapet700
-           FROM s_sirene.an_etablissement_api s
-             LEFT JOIN s_sirene.an_unitelegale_api ul ON s.siren::text = ul.siren::text
-             LEFT JOIN s_sirene.lt_nafrev2 n ON n.code::text = s.activiteprincipaleetablissement::text
-        )
- SELECT DISTINCT e.idsiret,
-    si.denominationusuelleetablissement,
-    si.enseigne1etablissement,
-    si.denominationunitelegale,
-    si.denominationusuelle1unitelegale,
-    si.nomunitelegale,
-    si.personnephysique,
-    e.l_nom,
-    e.l_nom_dir,
-    e.l_titre,
-    e.date_maj_dir,
-    e.l_mail,
-    e.l_mail_dir,
-    e.l_tel,
-    e.l_tel_dir,
-    e.l_telp_dir,
-    si.apet700,
-    si.libapet700,
-    e.eff_etab,
-    e.eff_etab_n,
-    e.source_eff,
-    e.l_date_eff,
-    e.annee_eff::character varying AS annee_eff,
-    e.l_compte,
-        CASE
-            WHEN to_char(si.datecreationetablissement, 'YYYY'::text)::integer IS NULL THEN 0
-            ELSE to_char(si.datecreationetablissement, 'YYYY'::text)::integer
-        END AS datecreationetablissement,
-    si.etatadministratifetablissement,
-        CASE
-            WHEN to_char(si.datederniertraitementetablissement, 'YYYY'::text)::integer IS NULL THEN 0
-            ELSE to_char(si.datederniertraitementetablissement, 'YYYY'::text)::integer
-        END AS datederniertraitementetablissement,
-    (((
-        CASE
-            WHEN si.numvoie IS NOT NULL THEN si.numvoie || ' '::text
-            ELSE ' '::text
-        END ||
-        CASE
-            WHEN si.libvoie IS NOT NULL THEN si.libvoie || ' '::text
-            ELSE ' '::text
-        END) ||
-        CASE
-            WHEN si.complementadresse IS NOT NULL THEN (si.complementadresse::text || ' '::text)::character varying
-            ELSE ' '::character varying
-        END::text) ||
-        CASE
-            WHEN si.boite_postale IS NOT NULL THEN (si.boite_postale::text || ' '::text)::character varying
-            ELSE ' '::character varying
-        END::text) ||
-        CASE
-            WHEN si.code_postal IS NOT NULL THEN si.code_postal
-            ELSE ''::character varying
-        END::text AS adresse_sirene,
-    g.libgeo AS commune,
-    g.lib_epci AS epci,
-    e.site,
-        CASE
-            WHEN e.idadresse IS NULL OR e.idadresse::text = ''::text THEN 'Etablissement non localisé à l''adresse'::character varying::text
-            ELSE ( SELECT (((((xapps_geo_vmr_adresse.numero::text ||
-                    CASE
-                        WHEN xapps_geo_vmr_adresse.repet IS NOT NULL THEN xapps_geo_vmr_adresse.repet
-                        ELSE ' '::character varying
-                    END::text) || xapps_geo_vmr_adresse.libvoie_c::text) ||
-                    CASE
-                        WHEN xapps_geo_vmr_adresse.complement IS NOT NULL THEN (' '::text || xapps_geo_vmr_adresse.complement::text) || ' '::text
-                        ELSE ' '::text
-                    END) || xapps_geo_vmr_adresse.codepostal::text) || ' '::text) || xapps_geo_vmr_adresse.commune::text
-               FROM x_apps.xapps_geo_vmr_adresse
-              WHERE xapps_geo_vmr_adresse.id_adresse = e.idadresse)
-        END AS adresse_loc,
-    a.x_l93,
-    a.y_l93,
-    a.geom
-   FROM req_si si
-     JOIN req_e e ON e.idsiret::text = si.siret::text
-     LEFT JOIN x_apps.xapps_geo_vmr_adresse a ON e.idadresse = a.id_adresse
-     LEFT JOIN r_administratif.an_geo g ON g.insee::text = si.codecommuneetablissement::text
-UNION ALL
- SELECT sp.idsiret,
-    'non renseignée'::character varying AS denominationusuelleetablissement,
-    'non renseignée'::character varying AS enseigne1etablissement,
-    'non renseignée'::character varying AS denominationunitelegale,
-    'non renseignée'::character varying AS denominationusuelle1unitelegale,
-    'non renseignée'::character varying AS nomunitelegale,
-    'non renseignée'::character varying AS personnephysique,
-    sp.l_nom,
-    sp.l_nom_dir,
-    sp.l_titre,
-    sp.date_maj_dir,
-    sp.l_mail,
-    sp.l_mail_dir,
-    sp.l_tel,
-    sp.l_tel_dir,
-    sp.l_telp_dir,
-    'Non renseignée'::character varying AS apet700,
-    'Non renseignée'::character varying AS libapet700,
-    sp.eff_etab::character varying AS eff_etab,
-    sp.eff_etab AS eff_etab_n,
-    sp.source_eff,
-    sp.date_eff AS l_date_eff,
-    'non renseignée'::character varying AS annee_eff,
-    sp.l_compte,
-    0 AS datecreationetablissement,
-    'A'::character varying AS etatadministratifetablissement,
-    0 AS datederniertraitementetablissement,
-    'Non renseignée'::character varying AS adresse_sirene,
-    g.libgeo AS commune,
-    g.lib_epci AS epci,
-        CASE
-            WHEN se.site_nom IS NOT NULL THEN se.site_nom
-            WHEN sm.site_nom IS NOT NULL THEN sm.site_nom
-            ELSE NULL::character varying
-        END AS site,
-        CASE
-            WHEN sp.l_comp_ad IS NOT NULL THEN sp.l_comp_ad
-            ELSE 'Non renseignée'::character varying
-        END AS adresse_loc,
-    st_x(sp.geom) AS x_l93,
-    st_y(sp.geom) AS y_l93,
-    sp.geom
-   FROM m_economie.geo_sa_etabp sp
-     LEFT JOIN m_economie.an_sa_site se ON se.idsite::text = sp.idsite::text
-     LEFT JOIN m_amenagement.an_amt_site_mixte sm ON sm.idsite::text = sp.idsite::text
-     LEFT JOIN r_administratif.an_geo g ON g.insee::text = sp.insee::text;
-
+       )
+ SELECT row_number() OVER () AS gid,
+    req_tot.idsiret,
+    req_tot.denominationusuelleetablissement,
+    req_tot.enseigne1etablissement,
+    req_tot.denominationunitelegale,
+    req_tot.denominationusuelle1unitelegale,
+    req_tot.nomunitelegale,
+    req_tot.personnephysique,
+    req_tot.l_nom,
+    req_tot.l_nom_dir,
+    req_tot.l_titre,
+    req_tot.date_maj_dir,
+    req_tot.l_mail,
+    req_tot.l_mail_dir,
+    req_tot.l_tel,
+    req_tot.l_tel_dir,
+    req_tot.l_telp_dir,
+    req_tot.apet700,
+    req_tot.libapet700,
+    req_tot.eff_etab,
+    req_tot.eff_etab_n,
+    req_tot.source_eff,
+    req_tot.l_date_eff,
+    req_tot.annee_eff,
+    req_tot.l_compte,
+    req_tot.datecreationetablissement,
+    req_tot.etatadministratifetablissement,
+    req_tot.datederniertraitementetablissement,
+    req_tot.adresse_sirene,
+    req_tot.commune,
+    req_tot.epci,
+    req_tot.site,
+    req_tot.adresse_loc,
+    req_tot.x_l93,
+    req_tot.y_l93,
+    req_tot.geom
+   FROM req_tot
+ ;
 ALTER TABLE x_apps.xapps_geo_v_etab_api_export
     OWNER TO sig_create;
 COMMENT ON VIEW x_apps.xapps_geo_v_etab_api_export
@@ -1360,6 +1438,7 @@ GRANT ALL ON TABLE x_apps.xapps_geo_v_etab_api_export TO sig_create;
 GRANT SELECT ON TABLE x_apps.xapps_geo_v_etab_api_export TO read_sig;
 GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE x_apps.xapps_geo_v_etab_api_export TO edit_sig;
 GRANT ALL ON TABLE x_apps.xapps_geo_v_etab_api_export TO create_sig;
+
 
 
 -- ########################################################### Vue d'extraction des lots par stade de commercialisation #########################
