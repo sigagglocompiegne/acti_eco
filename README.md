@@ -28,7 +28,7 @@ L’ARC privilégie donc une organisation dans laquelle l’Interface Homme Mach
 - [Standard régional d'échange des données sur l'activité économique (V2 2015)](https://geo.compiegnois.fr/documents/metiers/eco/modele_groupe_activite_economique_version2_2015.pdf)
 
 
-## Jeu de données consolidé (hors [Suivi du marché de l'immobilier d'entreprises](https://github.com/sigagglocompiegne/marcheimmoent))
+## Jeu de données consolidé
 
 Vous pouvez retrouver plusieurs jeux de données à l'échelle de l'Agglomération de la Région de Compiègne :
  * [Les pôles d'activités](https://geo.compiegnois.fr/geonetwork/srv/fre/catalog.search#/metadata/8db8e6ee-0f87-4926-a559-4769c01ddb28)
