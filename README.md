@@ -12,7 +12,7 @@ Ensemble des éléments constituant la mise en oeuvre de la base de données urb
   * [Création des vues applicatives gd public](bdd/afe_22_vues_xapps_public.sql)
   * [Création des vues open data](bdd/afe_23_vues_xopendata.sql)
   * [Création des privilèges](bdd/afe_99_grant.sql)  
-- [Documentation d'administration de la base](bdd/doc_admin_bd_amt_fon_eco.md) (hors [Suivi du marché de l'immobilier d'entreprises](https://github.com/sigagglocompiegne/marcheimmoent/blob/master/doc/doc_admin_bd_immo.md))
+- [Documentation d'administration de la base](bdd/doc_admin_bd_amt_fon_eco.md) (hors Suivi du marché de l'immobilier d'entreprises
 - [Documentation d'administration de l'application FONCIER](app/doc_admin_app_fon.md)
 - [Documentation d'administration de l'application ACTIVITE ECONOMIQUE](app/doc_admin_app_eco.md)
 - [Documentation d'administration de l'application AMENAGEMENT](app/doc_admin_app_amt.md)
@@ -26,7 +26,7 @@ L’ARC privilégie donc une organisation dans laquelle l’Interface Homme Mach
 ## Voir aussi
 
 - [Standard régional d'échange des données sur l'activité économique (V2 2015)](https://geo.compiegnois.fr/documents/metiers/eco/modele_groupe_activite_economique_version2_2015.pdf)
-
+- [Documentation d'administration de la base du marché de l'immobilier d'entreprises](https://github.com/sigagglocompiegne/marcheimmoent/blob/master/doc/doc_admin_bd_immo.md))
 
 ## Jeu de données consolidé
 
