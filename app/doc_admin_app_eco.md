@@ -14,7 +14,7 @@
 
 |Représentation| Nom de l'application |Résumé|
 |:---|:---|:---|
-|![picto](picto_appli_eco.png)|Activité économique|Cette application est dédiée à la consultation des données et à la gestion des données en lien avec l'activité économique (suivi des sites d'activités, de la commercialisation des terrains à vocation économique, des établissements, gestion d'un fichier de contacts, connaissance des bâtiments et locaux d'activité, suivi du marché immobilier. **Ici le module Marché immobilier n'est pas intégré. Se référer au Github [suivant](https://github.com/sigagglocompiegne/marcheimmoent/blob/master/app/doc_admin_app_eco_immo.md)**|
+|![picto](picto_appli_eco.png)|Activité économique|Cette application est dédiée à la consultation des données et à la gestion des données en lien avec l'activité économique (suivi des sites d'activités, de la commercialisation des terrains à vocation économique, des établissements, gestion d'un fichier de contacts, connaissance des bâtiments et locaux d'activité, suivi du marché immobilier. **Ici le module Marché immobilier n'est pas intégré, se référer au Github [suivant](https://github.com/sigagglocompiegne/marcheimmoent/blob/master/app/doc_admin_app_eco_immo.md).**|
 
 # Accès
 
