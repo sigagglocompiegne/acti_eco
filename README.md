@@ -4,6 +4,7 @@
 
 Ensemble des éléments constituant la mise en oeuvre de la base de données urbanisées sur les thématiques d'aménagement, de foncier et d'activités économiques ainsi que l'exploitation de ces données dans les différentes applications :
 
+- [Lire la documentation du standard](gabarit/livrables.md)
 - Script d'initialisation de la base de données (hors [Suivi du marché de l'immobilier d'entreprises](https://github.com/sigagglocompiegne/marcheimmo))
   * [Suivi des modifications](bdd/afe_00_trace.sql)
   * [Création  de la structure initiale](bdd/afe_10_squelette.sql)
