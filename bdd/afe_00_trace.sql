@@ -25,4 +25,5 @@
 --              La gestion a l'échelle d'un local d'activité a également été initié seulement. Celle-ci devrait se poursuivre dans
 --              un second temps.
 -- 2019-06-18 : GB / modification sur le fonctionnement (trigger) des mises à jour liées aux adresses et aux locaux
+-- 2021-05-20 : GB / ajout des coordonnées x et y du centre de la commune pour les établissements non géolocalisés dans les fonctionnalités d'export
 */
