@@ -955,8 +955,9 @@ CREATE INDEX idx_xapps_an_vmr_synt_site_mixte_api_idsite
 CREATE MATERIALIZED VIEW x_apps.xapps_geo_vmr_etab_api_export
 TABLESPACE pg_default
 AS
+
  WITH req_tot AS (
-         WITH req_e AS (
+          WITH req_e AS (
                  SELECT DISTINCT e.idsiret,
                     e.idsite,
                     e.l_nom,
@@ -1089,13 +1090,19 @@ AS
                        FROM x_apps.xapps_geo_vmr_adresse
                       WHERE xapps_geo_vmr_adresse.id_adresse = e.idadresse)
                 END AS adresse_loc,
-            a.x_l93,
-            a.y_l93,
+            CASE WHEN a.x_l93 IS NOT NULL THEN a.x_l93 ELSE 
+	 			(SELECT round(st_x(st_pointonsurface(c.geom))::numeric,2) FROM r_osm.geo_vm_osm_commune_apc c WHERE c.insee = si.codecommuneetablissement) 
+	 		    END AS x_l93,
+            CASE WHEN a.y_l93 IS NOT NULL THEN a.y_l93 ELSE 
+	 			(SELECT round(st_y(st_pointonsurface(c.geom))::numeric,2) FROM r_osm.geo_vm_osm_commune_apc c WHERE c.insee = si.codecommuneetablissement) 
+	 		    END AS y_l93,
+            
             a.geom
            FROM req_si si
              JOIN req_e e ON e.idsiret::text = si.siret::text
              LEFT JOIN x_apps.xapps_geo_vmr_adresse a ON e.idadresse = a.id_adresse
              LEFT JOIN r_administratif.an_geo g ON g.insee::text = si.codecommuneetablissement::text
+	   
         UNION ALL
          SELECT sp.idsiret,
             'non renseignée'::character varying AS denominationusuelleetablissement,
@@ -1181,18 +1188,16 @@ AS
     req_tot.y_l93,
     req_tot.geom
    FROM req_tot
+   
 WITH DATA;
 
 ALTER TABLE x_apps.xapps_geo_vmr_etab_api_export
-    OWNER TO sig_create;
+    OWNER TO create_sig;
 
 COMMENT ON MATERIALIZED VIEW x_apps.xapps_geo_vmr_etab_api_export
     IS 'Vue géographique matérialisée (rafraichie ttes les nuits) composée des éléments sur les établissements actifs (API Sirene) permettant de gérer des exports de listes par commune, par site dans GEO (Recherche d''établissements par commune, par site)';
 
-GRANT ALL ON TABLE x_apps.xapps_geo_vmr_etab_api_export TO sig_create;
-GRANT SELECT ON TABLE x_apps.xapps_geo_vmr_etab_api_export TO read_sig;
-GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE x_apps.xapps_geo_vmr_etab_api_export TO edit_sig;
-GRANT ALL ON TABLE x_apps.xapps_geo_vmr_etab_api_export TO create_sig;
+
 
 -- ########################################################### Vue (même que la vue matérialisée plus utilisé) d'export des établissements depuis GEO #########################
 
