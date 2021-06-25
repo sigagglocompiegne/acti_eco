@@ -326,13 +326,16 @@ CREATE TRIGGER t_t2_foncier_insert
   FOR EACH ROW
   EXECUTE PROCEDURE r_objet.ft_m_foncier_insert();
 
--- Function: r_objet.ft_m_foncier_insert()
+-- FUNCTION: r_objet.ft_m_foncier_insert()
 
 -- DROP FUNCTION r_objet.ft_m_foncier_insert();
 
-CREATE OR REPLACE FUNCTION r_objet.ft_m_foncier_insert()
-  RETURNS trigger AS
-$BODY$
+CREATE FUNCTION r_objet.ft_m_foncier_insert()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$
 DECLARE v_idgeolf integer;
 DECLARE v_idces integer;
 DECLARE lot_surf integer;
@@ -350,7 +353,7 @@ BEGIN
 							FROM 
 								r_objet.geo_objet_ope
 							WHERE
-								st_intersects(geo_objet_ope.geom,ST_PointOnSurface(new.geom)) = true
+								st_intersects(geo_objet_ope.geom,ST_PointOnSurface(new.geom)) = true AND idsite <> '60159ak' AND idsite <> '60159hc'
 								
 						  ),
 						  new.stade_amng,
@@ -374,7 +377,7 @@ BEGIN
 							FROM 
 								r_objet.geo_objet_ope
 							WHERE
-								st_intersects(geo_objet_ope.geom,ST_PointOnSurface(new.geom)) = true
+								st_intersects(geo_objet_ope.geom,ST_PointOnSurface(new.geom)) = true AND idsite <> '60159ak' AND idsite <> '60159hc'
 								
 						  ) , -- recherche idsite
 
@@ -424,7 +427,6 @@ BEGIN
 					
      end if;
 
-
      -- insertion des lots uniquement à vocation d'équipement dans la table métier équipement	
      if new.l_voca='10' then
 	INSERT INTO m_amenagement.an_amt_lot_equ SELECT v_idgeolf,
@@ -434,7 +436,7 @@ BEGIN
 							FROM 
 								r_objet.geo_objet_ope
 							WHERE
-								st_intersects(geo_objet_ope.geom,new.geom) = true
+								st_intersects(geo_objet_ope.geom,new.geom) = true AND idsite <> '60159ak' AND idsite <> '60159hc'
 								
 							),-- recherche auto de l'IDSITE
 							null,
@@ -464,7 +466,7 @@ BEGIN
 							FROM 
 								r_objet.geo_objet_ope
 							WHERE
-								st_intersects(geo_objet_ope.geom,st_pointonsurface(new.geom)) = true
+								st_intersects(geo_objet_ope.geom,st_pointonsurface(new.geom)) = true AND idsite <> '60159ak' AND idsite <> '60159hc'
 								
 						  ), -- recherche auto de l'IDSITE
 
@@ -509,7 +511,7 @@ BEGIN
 							FROM 
 								r_objet.geo_objet_ope
 							WHERE
-								st_intersects(geo_objet_ope.geom,new.geom) = true
+								st_intersects(geo_objet_ope.geom,new.geom) = true AND idsite <> '60159ak' AND idsite <> '60159hc'
 								
 							),-- recherche auto de l'IDSITE
 							null,
@@ -541,7 +543,7 @@ BEGIN
 							FROM 
 								r_objet.geo_objet_ope
 							WHERE
-								st_intersects(geo_objet_ope.geom,ST_PointOnSurface(new.geom)) = true
+								st_intersects(geo_objet_ope.geom,ST_PointOnSurface(new.geom)) = true AND idsite <> '60159ak' AND idsite <> '60159hc'
 								
 						  ), -- recherche idsite
 						  lot_surf,
@@ -584,13 +586,11 @@ BEGIN
 					
      end if;
 
-
      -- calcul de l'identifiant du dossier de cession
      v_idces := (SELECT nextval('m_foncier.ces_seq'::regclass));
 
      -- insertion de tous lots fonciers dans la table métier foncier
      INSERT INTO m_foncier.lk_cession_lot SELECT v_idgeolf, v_idces;	
-
 
      -- insertion d'une ligne dans an_cession en créant un idces qui est lui même réinjecté dans lk_cession_lot
 
@@ -645,33 +645,30 @@ BEGIN
 							FROM 
 								r_objet.geo_objet_ope
 							WHERE
-								st_intersects(geo_objet_ope.geom,st_pointonsurface(new.geom)) = true
+								st_intersects(geo_objet_ope.geom,st_pointonsurface(new.geom)) = true AND idsite <> '60159ak' AND idsite <> '60159hc'
 								
 							),
 							null
 						);
 
-
-	-- mise à jour des appartenances des établissements à l'adresse dans la table lk_localsiret
-	INSERT INTO m_economie.lk_localsiret (idgeoloc,siret)
-	SELECT DISTINCT v_idgeolf,lk.siret FROM r_objet.geo_objet_fon_lot l , x_apps.xapps_geo_vmr_adresse a , m_economie.lk_adresseetablissement lk
-	WHERE st_intersects(new.geom,a.geom) AND new.l_voca='20' AND a.id_adresse = lk.idadresse;
+-- refraichissement de la vue matérialisée des points établissements à l'adresse
+REFRESH MATERIALIZED VIEW x_apps.xapps_geo_vmr_etab_api;
 
     return new ;
 END;
 
+$BODY$;
 
-
-
-$BODY$
-  LANGUAGE plpgsql VOLATILE
-  COST 100;
 ALTER FUNCTION r_objet.ft_m_foncier_insert()
-  OWNER TO sig_create;
+    OWNER TO create_sig;
 
-COMMENT ON FUNCTION r_objet.ft_m_foncier_insert() IS 'Fonction gérant l''intégration des informations des lots en fonction de leur vocation à la saisie des objets';
-								      
-				 
+GRANT EXECUTE ON FUNCTION r_objet.ft_m_foncier_insert() TO PUBLIC;
+
+GRANT EXECUTE ON FUNCTION r_objet.ft_m_foncier_insert() TO create_sig;
+
+COMMENT ON FUNCTION r_objet.ft_m_foncier_insert()
+    IS 'Fonction gérant l''intégration des informations des lots en fonction de leur vocation à la saisie des objets';
+			 
 						 
 -- Trigger: t_t3_foncier_update on r_objet.geo_v_lot
 
@@ -2259,13 +2256,16 @@ CREATE TRIGGER t_t1_delete_proc
   EXECUTE PROCEDURE r_objet.ft_m_delete_proc();
 
 										     
--- Function: r_objet.ft_m_insert_proc()
+-- FUNCTION: r_objet.ft_m_insert_proc()
 
 -- DROP FUNCTION r_objet.ft_m_insert_proc();
 
-CREATE OR REPLACE FUNCTION r_objet.ft_m_insert_proc()
-  RETURNS trigger AS
-$BODY$
+CREATE FUNCTION r_objet.ft_m_insert_proc()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$
 
 DECLARE v_idgeopo integer;
 
@@ -2275,7 +2275,6 @@ BEGIN
 
      INSERT INTO r_objet.geo_objet_ope SELECT v_idgeopo, new.idsite,new.op_sai_obj,new.ref_spa,round(cast(st_area(new.geom) as numeric),0),new.proced,new.destdomi,new.geom,now(),now();
      
-
 
      -- gérer l'insertion ici dans la table métier si proced=true ou proced=false
     -- insertion dans la tablé métier HABITAT et PROCED (avec insert ci-dessus)
@@ -2308,7 +2307,17 @@ BEGIN
 						     new.l_ref_compta,--l_ref_compta
 						     new.l_observ,--l_observ
 						     now(),--date_sai
-						     now()--date_maj
+						     now(),--date_maj
+						     null, -- surface cessible en ha
+						     null, -- date cloture de l'opération
+						     null, -- nb de logements programmés
+						     null, -- nb de logements individuels programmés
+						     null, -- nb de logements individuels groupés programmés
+						     null, -- nb de logemebts collectifs programmés
+						     null, -- Nombre total de logements aidés programmés
+						     null, -- Nombre total de logements aidés en location programmés
+						     null, -- Nombre total de logements en accession en location programmés
+					             null -- Nom du chef de projet suivant la procédure
 						     ;	
 	 INSERT INTO m_amenagement.an_amt_site_habitat SELECT
 								v_idgeopo, -- identifiant géographique
@@ -2360,7 +2369,18 @@ BEGIN
 						     new.l_ref_compta,--l_ref_compta
 						     new.l_observ,--l_observ
 						     now(),--date_sai
-						     now()--date_maj
+						     now(),--date_maj
+			     null, -- surface cessible en ha
+						     null, -- date cloture de l'opération
+						     null, -- nb de logements programmés
+						     null, -- nb de logements individuels programmés
+						     null, -- nb de logements individuels groupés programmés
+						     null, -- nb de logemebts collectifs programmés
+						     null, -- Nombre total de logements aidés programmés
+						     null, -- Nombre total de logements aidés en location programmés
+						     null, -- Nombre total de logements en accession en location programmés
+					             null -- Nom du chef de projet suivant la procédure
+					             
 						     ;	
 	INSERT INTO m_economie.an_sa_site SELECT 	
 							new.idsite,--idsite
@@ -2482,8 +2502,19 @@ BEGIN
 						     new.l_ref_compta,--l_ref_compta
 						     new.l_observ,--l_observ
 						     now(),--date_sai
-						     now()--date_maj
+						     now(),--date_maj
+				     null, -- surface cessible en ha
+						     null, -- date cloture de l'opération
+						     null, -- nb de logements programmés
+						     null, -- nb de logements individuels programmés
+						     null, -- nb de logements individuels groupés programmés
+						     null, -- nb de logemebts collectifs programmés
+						     null, -- Nombre total de logements aidés programmés
+						     null, -- Nombre total de logements aidés en location programmés
+						     null, -- Nombre total de logements en accession en location programmés
+					             null -- Nom du chef de projet suivant la procédure
 						     ;	
+
 	INSERT INTO m_amenagement.an_amt_site_mixte SELECT v_idgeopo,
 							new.idsite,--idsite
 							(
@@ -2585,8 +2616,19 @@ BEGIN
 						     new.l_ref_compta,--l_ref_compta
 						     new.l_observ,--l_observ
 						     now(),--date_sai
-						     now()--date_maj
+						     now(),--date_maj
+			     null, -- surface cessible en ha
+						     null, -- date cloture de l'opération
+						     null, -- nb de logements programmés
+						     null, -- nb de logements individuels programmés
+						     null, -- nb de logements individuels groupés programmés
+						     null, -- nb de logemebts collectifs programmés
+						     null, -- Nombre total de logements aidés programmés
+						     null, -- Nombre total de logements aidés en location programmés
+						     null, -- Nombre total de logements en accession en location programmés
+					             null -- Nom du chef de projet suivant la procédure
 						     ;	
+
 	INSERT INTO m_amenagement.an_amt_site_equ SELECT v_idgeopo,
 							new.idsite, -- identifiant du site
 							null, -- libellé
@@ -2630,7 +2672,6 @@ BEGIN
 								now(), -- date de saisie
 								now() -- date de mise à jour
 								;
-
 
     end if;
     if new.proced = false and new.destdomi='02'
@@ -2726,7 +2767,6 @@ BEGIN
 							false
 							;
 
-
     end if;
     if new.proced = false and new.destdomi='03'
     and
@@ -2799,8 +2839,8 @@ BEGIN
 							null,--serv_autre
 							null,--serv coll
 							null, -- aide_pb
-							null, -- date d aide
-							null, -- date f aide
+							null, -- date d aide début
+							null, -- date d aide fin
 							now(), -- date de saisie
 							now() -- date de mise à jour
 							;
@@ -2831,11 +2871,16 @@ BEGIN
     end if;
      return new;
 END
-$BODY$
-  LANGUAGE plpgsql VOLATILE
-  COST 100;
+$BODY$;
+
 ALTER FUNCTION r_objet.ft_m_insert_proc()
-  OWNER TO sig_create;
+    OWNER TO create_sig;
+
+GRANT EXECUTE ON FUNCTION r_objet.ft_m_insert_proc() TO PUBLIC;
+
+GRANT EXECUTE ON FUNCTION r_objet.ft_m_insert_proc() TO create_sig;
+
+
 
 
 
@@ -2928,9 +2973,11 @@ CREATE TRIGGER t_t3_update_proc
 
 
 -- View: m_foncier.geo_v_cession
+
 -- DROP VIEW m_foncier.geo_v_cession;
 
- CREATE OR REPLACE VIEW m_foncier.geo_v_cession AS
+CREATE OR REPLACE VIEW m_foncier.geo_v_cession
+ AS
  SELECT o.idgeolf,
     c.idces,
     c.idces AS idces_lk,
@@ -2940,7 +2987,6 @@ CREATE TRIGGER t_t3_update_proc
     c.l_etat,
     o.l_voca AS voca_ces,
     o.l_nom,
-    -- insertion d'attribut temporaire pour la ventilation des informations de lots à l'enregistrement diune cession saisie dans GEO
     ''::character varying AS lot_l_nom,
     NULL::integer AS lhab_nb_log,
     NULL::integer AS lhab_nb_logind,
@@ -2956,7 +3002,6 @@ CREATE TRIGGER t_t3_update_proc
     NULL::integer AS lhab_nb_logaide_loc_r,
     NULL::integer AS lhab_nb_logaide_acc_r,
     '00'::character varying AS llot_tact,
-    -- attribut temporairement reconstitué pour gérer l'affichage de l'état de cession au niveau de la cartographie de GEO
         CASE
             WHEN c.l_etat::text = '10'::text OR c.l_etat::text = '20'::text OR c.l_etat::text = '30'::text OR c.l_etat::text = '50'::text THEN 'En cours de cession'::text
             WHEN c.l_etat::text = '40'::text THEN 'Cédé'::text
@@ -2969,6 +3014,7 @@ CREATE TRIGGER t_t3_update_proc
     c.d_delib_1,
     c.d_delib_2,
     c.d_delib_3,
+    c.d_delib_4,
     c.insee,
     c.l_date_i,
     c.l_voca,
@@ -3003,19 +3049,47 @@ CREATE TRIGGER t_t3_update_proc
     c.l_type_b,
     c.l_type_c,
     c.l_observ,
-    c.d_maj,
+    c.date_sai,
+    c.date_maj,
     c.idsite,
+    c.op_sai,
     o.geom
-
    FROM m_foncier.an_cession c,
     m_foncier.lk_cession_lot lc,
     r_objet.geo_objet_fon_lot o
   WHERE c.idces::text = lc.idces::text AND lc.idgeolf = o.idgeolf;
 
 ALTER TABLE m_foncier.geo_v_cession
-  OWNER TO sig_create;
+    OWNER TO create_sig;
 COMMENT ON VIEW m_foncier.geo_v_cession
-  IS 'Vue éditable des cessions de lots et possibilité d''ajout d''un lot par le service foncier';
+    IS 'Vue éditable des cessions de lots et possibilité d''ajout d''un lot par le service foncier';
+
+GRANT ALL ON TABLE m_foncier.geo_v_cession TO sig_create;
+GRANT SELECT ON TABLE m_foncier.geo_v_cession TO sig_read;
+GRANT ALL ON TABLE m_foncier.geo_v_cession TO create_sig;
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_foncier.geo_v_cession TO sig_edit;
+
+CREATE TRIGGER t_t1_cess_nlot_delete
+    INSTEAD OF DELETE
+    ON m_foncier.geo_v_cession
+    FOR EACH ROW
+    EXECUTE PROCEDURE m_foncier.ft_m_cess_nlot_delete();
+
+
+CREATE TRIGGER t_t2_cess_nlot
+    INSTEAD OF INSERT
+    ON m_foncier.geo_v_cession
+    FOR EACH ROW
+    EXECUTE PROCEDURE m_foncier.ft_m_cess_nlot_insert();
+
+
+CREATE TRIGGER t_t3_cess_nlot
+    INSTEAD OF UPDATE 
+    ON m_foncier.geo_v_cession
+    FOR EACH ROW
+    EXECUTE PROCEDURE m_foncier.ft_m_cess_nlot_update();
+
+
 
 				  
 -- Function: m_foncier.ft_m_cess_nlot_delete()
@@ -3060,13 +3134,16 @@ CREATE TRIGGER t_t1_cess_nlot_delete
   FOR EACH ROW
   EXECUTE PROCEDURE m_foncier.ft_m_cess_nlot_delete();
 
--- Function: m_foncier.ft_m_cess_nlot_insert()
+-- FUNCTION: m_foncier.ft_m_cess_nlot_insert()
 
 -- DROP FUNCTION m_foncier.ft_m_cess_nlot_insert();
 
-CREATE OR REPLACE FUNCTION m_foncier.ft_m_cess_nlot_insert()
-  RETURNS trigger AS
-$BODY$
+CREATE FUNCTION m_foncier.ft_m_cess_nlot_insert()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$
 
 -- déclaration de variable pré-calculée avant intégration dans la base ou servant de tests de condition
 DECLARE v_l_comm2 character varying;
@@ -3075,7 +3152,6 @@ DECLARE v_l_amng2 character varying;
 DECLARE v_idgeolf integer;
 DECLARE v_idces integer;
 DECLARE lot_surf integer;
-
 
 BEGIN
 
@@ -3144,14 +3220,11 @@ lot_surf:=round(cast(st_area(new.geom) as numeric),0);
 	v_l_amng2 := '00';
 	END IF;
 
-
-
 -- pré-test pour vérifier si le lot est bien sur l'ARC et pas sur un autre lot, si non renvoie une exception et ne fait rien (dans GEO il faut créer un message pour l'utilisateur)
 
 IF ST_Disjoint(new.geom,(SELECT c.geom FROM r_osm.geo_vm_osm_contour_arc c)) = true OR (SELECT count(*) FROM r_objet.geo_objet_fon_lot o WHERE st_intersects(st_buffer(new.geom,-1),o.geom) AND idgeolf <> v_idgeolf ) >= 1  THEN
 
 RAISE EXCEPTION 'La cession saisie est dans une opération d''aménagements. Vous pouvez seulement saisir un lot hors de ces zones. Merci de vous rapprochez du service Information Géographique pour la saisie de votre cession.';
-
 
 ELSE
 -- insertion des informations dans les tables correspondants selon la vocation saisie
@@ -3161,7 +3234,6 @@ ELSE
 
 	RAISE EXCEPTION 'La vocation ne peut pas être non renseignée ici.'; --(générer un message pour GEO afficher dans la fiche d'information
 
-
 	END IF;
 
 	-- si la vocation est un équipement public, insertion dans geo_objet_fon_lot, an_amt_lot_stade,an_amt_lot_equ, lk_cession_lot et an_cession
@@ -3169,7 +3241,9 @@ ELSE
                 -- insertion dans la table objet
 		INSERT INTO r_objet.geo_objet_fon_lot SELECT v_idgeolf,'Service foncier','11',null,'10',new.geom,null,null,new.l_nom;
                 -- insertion dans la table des stades d'aménagement et de commercialisation
-	        INSERT INTO m_amenagement.an_amt_lot_stade SELECT v_idgeolf, (SELECT DISTINCT idsite FROM r_objet.geo_objet_ope WHERE st_intersects(geo_objet_ope.geom,ST_PointOnSurface(new.geom)) = true), v_stade_amng, v_l_amng2, null, v_l_comm2, null,'00';
+	        INSERT INTO m_amenagement.an_amt_lot_stade SELECT v_idgeolf, 
+		(SELECT DISTINCT idsite FROM r_objet.geo_objet_ope WHERE st_intersects(geo_objet_ope.geom,ST_PointOnSurface(new.geom)) = true AND idsite <> '60159ak')
+		, v_stade_amng, v_l_amng2, null, v_l_comm2, null,'00';
                 -- insertion dans la table des lots thématiques
                 INSERT INTO m_amenagement.an_amt_lot_equ SELECT v_idgeolf,(SELECT DISTINCT idsite FROM r_objet.geo_objet_ope WHERE st_intersects(geo_objet_ope.geom,ST_PointOnSurface(new.geom)) = true),
 							'Service Foncier',
@@ -3230,7 +3304,7 @@ ELSE
 						new.l_type_b,
 						new.l_type_c,
 						new.l_observ,
-						now(),
+						null,
 						new.l_mfrais_g_ttc,
 						new.l_mfrais_n_ttc,
 						new.l_mfrais_a_ttc,
@@ -3240,9 +3314,14 @@ ELSE
 								r_objet.geo_objet_ope
 							WHERE
 								st_intersects(geo_objet_ope.geom,new.geom) = true
+						AND idsite <> '60159ak'
 								
 							),
-						null
+						null,
+						new.d_delib_4,
+			null,
+			null,
+			null
 						);
 	END IF;
 
@@ -3251,7 +3330,8 @@ ELSE
                 -- insertion dans la table objet
 		INSERT INTO r_objet.geo_objet_fon_lot SELECT v_idgeolf,'Service foncier','11',null,'20',new.geom,null,null,new.l_nom;
                 -- insertion dans la table des stades d'aménagement et de commercialisation
-	        INSERT INTO m_amenagement.an_amt_lot_stade SELECT v_idgeolf, (SELECT DISTINCT idsite FROM r_objet.geo_objet_ope WHERE st_intersects(geo_objet_ope.geom,ST_PointOnSurface(new.geom)) = true), v_stade_amng, v_l_amng2, null, v_l_comm2, null,'00';
+	        INSERT INTO m_amenagement.an_amt_lot_stade SELECT v_idgeolf, 
+		(SELECT DISTINCT idsite FROM r_objet.geo_objet_ope WHERE st_intersects(geo_objet_ope.geom,ST_PointOnSurface(new.geom)) = true AND idsite <> '60159ak'), v_stade_amng, v_l_amng2, null, v_l_comm2, null,'00';
 		-- insertion dans la table des lots thématiques
 		INSERT INTO m_economie.an_sa_lot SELECT v_idgeolf,
 						 
@@ -3261,7 +3341,7 @@ ELSE
 							FROM 
 								r_objet.geo_objet_ope
 							WHERE
-								st_intersects(geo_objet_ope.geom,ST_PointOnSurface(new.geom)) = true
+								st_intersects(geo_objet_ope.geom,ST_PointOnSurface(new.geom)) = true AND idsite <> '60159ak'
 								
 						  ) , -- recherche idsite
 
@@ -3349,7 +3429,7 @@ ELSE
 						new.l_type_b,
 						new.l_type_c,
 						new.l_observ,
-						now(),
+						null,
 						new.l_mfrais_g_ttc,
 						new.l_mfrais_n_ttc,
 						new.l_mfrais_a_ttc,
@@ -3358,20 +3438,23 @@ ELSE
 							FROM 
 								r_objet.geo_objet_ope
 							WHERE
-								st_intersects(geo_objet_ope.geom,st_pointonsurface(new.geom)) = true
+								st_intersects(geo_objet_ope.geom,new.geom) = true AND idsite <> '60159ak'
 								
 							),
-						null
+						null,
+						new.d_delib_4,
+			null,
+				null,
+				null
 						);
 	END IF;
-
 
 	-- si la vocation est habitat, insertion dans geo_objet_fon_lot, an_amt_lot_stade,an_amt_lot_hab, lk_cession_lot  et an_cession
 	IF new.voca_ces = '30' THEN
 		-- insertion dans la table objet
 		INSERT INTO r_objet.geo_objet_fon_lot SELECT v_idgeolf,'Service foncier','11',null,'30',new.geom,null,null,new.l_nom;
                 -- insertion dans la table des stades d'aménagement et de commercialisation
-	        INSERT INTO m_amenagement.an_amt_lot_stade SELECT v_idgeolf, (SELECT DISTINCT idsite FROM r_objet.geo_objet_ope WHERE st_intersects(geo_objet_ope.geom,ST_PointOnSurface(new.geom)) = true), v_stade_amng, v_l_amng2, null, v_l_comm2, null,'00';
+	        INSERT INTO m_amenagement.an_amt_lot_stade SELECT v_idgeolf, (SELECT DISTINCT idsite FROM r_objet.geo_objet_ope WHERE st_intersects(geo_objet_ope.geom,ST_PointOnSurface(new.geom)) = true AND idsite <> '60159ak'), v_stade_amng, v_l_amng2, null, v_l_comm2, null,'00';
 		-- insertion dans la table des lots thématiques
 		INSERT INTO m_amenagement.an_amt_lot_hab SELECT v_idgeolf,
 						 (
@@ -3380,7 +3463,7 @@ ELSE
 							FROM 
 								r_objet.geo_objet_ope
 							WHERE
-								st_intersects(geo_objet_ope.geom,ST_PointOnSurface(new.geom)) = true
+								st_intersects(geo_objet_ope.geom,ST_PointOnSurface(new.geom)) = true AND idsite <> '60159ak'
 								
 						  ), -- recherche idsite
 						  lot_surf,
@@ -3457,7 +3540,7 @@ ELSE
 						new.l_type_b,
 						new.l_type_c,
 						new.l_observ,
-						now(),
+						null,
 						new.l_mfrais_g_ttc,
 						new.l_mfrais_n_ttc,
 						new.l_mfrais_a_ttc,
@@ -3466,10 +3549,14 @@ ELSE
 							FROM 
 								r_objet.geo_objet_ope
 							WHERE
-								st_intersects(geo_objet_ope.geom,new.geom) = true
+								st_intersects(geo_objet_ope.geom,new.geom) = true AND idsite <> '60159ak'
 								
 							),
-						null
+						null,
+						new.d_delib_4,
+				null,
+				null,
+				null
 						);
 	END IF;
 
@@ -3478,7 +3565,7 @@ ELSE
 		-- insertion dans la table objet
 		INSERT INTO r_objet.geo_objet_fon_lot SELECT v_idgeolf,'Service foncier','11',null,'40',new.geom,null,null,new.l_nom;
                 -- insertion dans la table des stades d'aménagement et de commercialisation
-	        INSERT INTO m_amenagement.an_amt_lot_stade SELECT v_idgeolf, (SELECT DISTINCT idsite FROM r_objet.geo_objet_ope WHERE st_intersects(geo_objet_ope.geom,ST_PointOnSurface(new.geom)) = true), v_stade_amng, v_l_amng2, null, v_l_comm2, null,'00';
+	        INSERT INTO m_amenagement.an_amt_lot_stade SELECT v_idgeolf, (SELECT DISTINCT idsite FROM r_objet.geo_objet_ope WHERE st_intersects(geo_objet_ope.geom,ST_PointOnSurface(new.geom)) = true AND idsite <> '60159ak'), v_stade_amng, v_l_amng2, null, v_l_comm2, null,'00';
 		-- insertion dans la table des lots thématiques
 		INSERT INTO m_amenagement.an_amt_lot_divers SELECT v_idgeolf,
 							(
@@ -3487,8 +3574,8 @@ ELSE
 							FROM 
 								r_objet.geo_objet_ope
 							WHERE
-								st_intersects(geo_objet_ope.geom,new.geom) = true
-								
+								st_intersects(geo_objet_ope.geom,new.geom) = true AND idsite <> '60159ak'
+								 
 							),-- recherche auto de l'IDSITE
 							'Service foncier',
 							'ARC',
@@ -3548,7 +3635,7 @@ ELSE
 						new.l_type_b,
 						new.l_type_c,
 						new.l_observ,
-						now(),
+						null,
 						new.l_mfrais_g_ttc,
 						new.l_mfrais_n_ttc,
 						new.l_mfrais_a_ttc,
@@ -3557,10 +3644,14 @@ ELSE
 							FROM 
 								r_objet.geo_objet_ope
 							WHERE
-								st_intersects(geo_objet_ope.geom,new.geom) = true
+								st_intersects(geo_objet_ope.geom,new.geom) = true AND idsite <> '60159ak'
 								
 							),
-						null
+						null,
+						new.d_delib_4,
+				null,
+				null,
+				null
 						);
 	END IF;
 
@@ -3569,7 +3660,10 @@ ELSE
 		-- insertion dans la table objet
 		INSERT INTO r_objet.geo_objet_fon_lot SELECT v_idgeolf,'Service foncier','11',null,'50',new.geom,null,null,new.l_nom;
                 -- insertion dans la table des stades d'aménagement et de commercialisation
-	        INSERT INTO m_amenagement.an_amt_lot_stade SELECT v_idgeolf, (SELECT DISTINCT idsite FROM r_objet.geo_objet_ope WHERE st_intersects(geo_objet_ope.geom,ST_PointOnSurface(new.geom)) = true), v_stade_amng, v_l_amng2, null, v_l_comm2, null,'00';
+	        INSERT INTO m_amenagement.an_amt_lot_stade SELECT v_idgeolf, 
+		(SELECT DISTINCT idsite FROM r_objet.geo_objet_ope WHERE 
+		st_intersects(geo_objet_ope.geom,ST_PointOnSurface(new.geom)) = true AND idsite <> '60159ak')
+		, v_stade_amng, v_l_amng2, null, v_l_comm2, null,'00';
 		
 		-- insertion dans la table de relation lot/cession
 		INSERT INTO m_foncier.lk_cession_lot SELECT v_idgeolf, v_idces;	
@@ -3614,7 +3708,7 @@ ELSE
 						new.l_type_b,
 						new.l_type_c,
 						new.l_observ,
-						now(),
+						null,
 						new.l_mfrais_g_ttc,
 						new.l_mfrais_n_ttc,
 						new.l_mfrais_a_ttc,
@@ -3623,10 +3717,14 @@ ELSE
 							FROM 
 								r_objet.geo_objet_ope
 							WHERE
-								st_intersects(geo_objet_ope.geom,new.geom) = true
+								st_intersects(geo_objet_ope.geom,new.geom) = true AND idsite <> '60159ak'
 								
 							),
-						null
+						null,
+						new.d_delib_4,
+				null,
+				null,
+				null
 						);
 	END IF;
 
@@ -3635,7 +3733,7 @@ ELSE
 		-- insertion dans la table objet
 		INSERT INTO r_objet.geo_objet_fon_lot SELECT v_idgeolf,'Service foncier','11',null,'60',new.geom,null,null,new.l_nom;
                 -- insertion dans la table des stades d'aménagement et de commercialisation
-	        INSERT INTO m_amenagement.an_amt_lot_stade SELECT v_idgeolf, (SELECT DISTINCT idsite FROM r_objet.geo_objet_ope WHERE st_intersects(geo_objet_ope.geom,ST_PointOnSurface(new.geom)) = true), v_stade_amng, v_l_amng2, null, v_l_comm2, null,'00';
+	        INSERT INTO m_amenagement.an_amt_lot_stade SELECT v_idgeolf, (SELECT DISTINCT idsite FROM r_objet.geo_objet_ope WHERE st_intersects(geo_objet_ope.geom,ST_PointOnSurface(new.geom)) = true AND idsite <> '60159ak'), v_stade_amng, v_l_amng2, null, v_l_comm2, null,'00';
 
 		-- insertion dans la table des lots thématiques
 		INSERT INTO m_amenagement.an_amt_lot_mixte SELECT v_idgeolf,
@@ -3645,7 +3743,7 @@ ELSE
 							FROM 
 								r_objet.geo_objet_ope
 							WHERE
-								st_intersects(geo_objet_ope.geom,ST_PointOnSurface(new.geom)) = true
+								st_intersects(geo_objet_ope.geom,ST_PointOnSurface(new.geom)) = true AND idsite <> '60159ak'
 								
 						  ), -- recherche idsite
 						  lot_surf,
@@ -3726,7 +3824,7 @@ ELSE
 						new.l_type_b,
 						new.l_type_c,
 						new.l_observ,
-						now(),
+						null,
 						new.l_mfrais_g_ttc,
 						new.l_mfrais_n_ttc,
 						new.l_mfrais_a_ttc,
@@ -3735,30 +3833,36 @@ ELSE
 							FROM 
 								r_objet.geo_objet_ope
 							WHERE
-								st_intersects(geo_objet_ope.geom,new.geom) = true
+								st_intersects(geo_objet_ope.geom,st_pointonsurface(new.geom)) = true AND idsite <> '60159ak'
 								
 							),
+						null,
+						new.d_delib_4,
+						null,
+						null,
 						null
 						);
 	END IF;
 
 END IF;
 
-
 	
      return new ;
 
 END;
 
-$BODY$
-  LANGUAGE plpgsql VOLATILE
-  COST 100;
+$BODY$;
+
 ALTER FUNCTION m_foncier.ft_m_cess_nlot_insert()
-  OWNER TO sig_create;
+    OWNER TO create_sig;
 
-COMMENT ON FUNCTION m_foncier.ft_m_cess_nlot_insert() IS 'Fonction gérant l''insertion des cessions (lots) dans le tissu (hors zone d''aménagement)';
+GRANT EXECUTE ON FUNCTION m_foncier.ft_m_cess_nlot_insert() TO PUBLIC;
 
-				  
+GRANT EXECUTE ON FUNCTION m_foncier.ft_m_cess_nlot_insert() TO create_sig;
+
+COMMENT ON FUNCTION m_foncier.ft_m_cess_nlot_insert()
+    IS 'Fonction gérant l''insertion des cessions (lots) dans le tissu (hors zone d''aménagement)';
+			  
 -- Trigger: t_t2_cess_nlot on m_foncier.geo_v_cession
 -- DROP TRIGGER t_t2_cess_nlot ON m_foncier.geo_v_cession;
 
@@ -3768,19 +3872,19 @@ CREATE TRIGGER t_t2_cess_nlot
   FOR EACH ROW
   EXECUTE PROCEDURE m_foncier.ft_m_cess_nlot_insert();
 
--- Function: m_foncier.ft_m_cess_nlot_update()
+-- FUNCTION: m_foncier.ft_m_cess_nlot_update()
 
 -- DROP FUNCTION m_foncier.ft_m_cess_nlot_update();
 
-CREATE OR REPLACE FUNCTION m_foncier.ft_m_cess_nlot_update()
-  RETURNS trigger AS
-$BODY$
-
+CREATE FUNCTION m_foncier.ft_m_cess_nlot_update()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$
 
 BEGIN
 /* A REVOIR */
-
-
 
      -- vérification du changement de la référence du dossier et qu'il s'agisse d'un dossier comportant au moins 2 lots
      if (old.idces <> new.idces_lk) and old.l_rel='10' and new.l_rel='20' then
@@ -3792,9 +3896,10 @@ BEGIN
      -- mise à jour du code du nom de lot dans la table objet
 
 	IF ST_Equals(new.geom,old.geom) is false THEN
-						 
+
 	RAISE EXCEPTION 'Le lot ne peut pas être modifié en géométrie. Faire une demande de modification au Service Information Géographique.'; --(générer un message pour GEO afficher dans la fiche d'information
-    
+
+     
 
      ELSE
 
@@ -3812,6 +3917,7 @@ BEGIN
 	d_delib_1 = new.d_delib_1,
 	d_delib_2 = new.d_delib_2,
 	d_delib_3 = new.d_delib_3,
+	d_delib_4 = new.d_delib_4,
 	insee = new.insee,
 	l_date_i = new.l_date_i,
 	l_voca = new.l_voca,
@@ -3840,10 +3946,8 @@ BEGIN
 	l_type_b = new.l_type_b,
 	l_type_c = new.l_type_c,
 	l_observ = new.l_observ,
-	d_maj = now(),
 	idsite=new.idsite
 	WHERE an_cession.idces=new.idces;
-
 
         -- automatisation de l'état de commercialisation pour les lots
 	IF new.l_etat ='01' THEN
@@ -3871,19 +3975,22 @@ BEGIN
 	update m_amenagement.an_amt_lot_stade set l_comm2='00',stade_amng='00',l_amng2 = '00' where idgeolf IN  (select idgeolf from m_foncier.lk_cession_lot where idces=new.idces);
 	END IF;
 
-
 	
      return new ;
 
 END;
 
-$BODY$
-  LANGUAGE plpgsql VOLATILE
-  COST 100;
-ALTER FUNCTION m_foncier.ft_m_cess_nlot_update()
-  OWNER TO sig_create;
+$BODY$;
 
-COMMENT ON FUNCTION m_foncier.ft_m_cess_nlot_update() IS 'Fonction gérant la mise à jour des données des cessions foncières et la gestion des stades d''aménagement et de commercilaisation des lots en cas de cession vendu';
+ALTER FUNCTION m_foncier.ft_m_cess_nlot_update()
+    OWNER TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_foncier.ft_m_cess_nlot_update() TO PUBLIC;
+
+GRANT EXECUTE ON FUNCTION m_foncier.ft_m_cess_nlot_update() TO create_sig;
+
+COMMENT ON FUNCTION m_foncier.ft_m_cess_nlot_update()
+    IS 'Fonction gérant la mise à jour des données des cessions foncières et la gestion des stades d''aménagement et de commercilaisation des lots en cas de cession vendu';
 
 						 
 -- Trigger: t_t3_cess_nlot on m_foncier.geo_v_cession
