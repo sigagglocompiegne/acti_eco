@@ -120,7 +120,7 @@ CREATE MATERIALIZED VIEW x_apps.xapps_an_vmr_bilan_procedure AS
           GROUP BY geo_fon_acqui.idsite
         ), date_c AS (
          SELECT geo_v_cession.idsite,
-            max(geo_v_cession.d_maj) AS date_maj_c
+            max(geo_v_cession.date_maj) AS date_maj_c
            FROM m_foncier.geo_v_cession
           WHERE geo_v_cession.idsite IS NOT NULL
           GROUP BY geo_v_cession.idsite
