@@ -4955,12 +4955,14 @@ CREATE TABLE m_foncier.an_cession
   l_type_b boolean DEFAULT false, -- Typologie du montant de cession : bâti
   l_type_c boolean DEFAULT false, -- Typologie du montant de cession : SHON
   l_observ character varying(255), -- Commentaires
-  d_maj timestamp without time zone, -- Date de mise à jour des informations
   l_mfrais_g_ttc double precision, -- Montant des frais de géomètre TTC
   l_mfrais_n_ttc double precision, -- Montant des frais de notaires ttc
   l_mfrais_a_ttc double precision, -- Montant des autres frais (agence, ...)
   idsite character varying(10), -- Identifiant du site
   idces_d character varying(10), -- Ancien numéro de cession DynMap
+  date_maj timestamp without time zone, -- Date de mise à jour des informations
+  date_sai timestamp without time zone, -- Date de saisie des informations
+  op_sai character varying(80), -- Opérateur de saisie
   CONSTRAINT an_cession_pkey PRIMARY KEY (idces)
   
 )
@@ -5011,7 +5013,9 @@ COMMENT ON COLUMN m_foncier.an_cession.l_type_a IS 'Typologie du montant de cess
 COMMENT ON COLUMN m_foncier.an_cession.l_type_b IS 'Typologie du montant de cession : bâti';
 COMMENT ON COLUMN m_foncier.an_cession.l_type_c IS 'Typologie du montant de cession : SHON';
 COMMENT ON COLUMN m_foncier.an_cession.l_observ IS 'Commentaires';
-COMMENT ON COLUMN m_foncier.an_cession.d_maj IS 'Date de mise à jour des informations';
+COMMENT ON COLUMN m_foncier.an_cession.date_maj IS 'Date de mise à jour des informations';
+COMMENT ON COLUMN m_foncier.an_cession.date_sai IS 'Date de saisie des informations';
+COMMENT ON COLUMN m_foncier.an_cession.op_sai IS 'Opérateur de saisie';
 COMMENT ON COLUMN m_foncier.an_cession.l_mfrais_g_ttc IS 'Montant des frais de géomètre TTC';
 COMMENT ON COLUMN m_foncier.an_cession.l_mfrais_n_ttc IS 'Montant des frais de notaires ttc';
 COMMENT ON COLUMN m_foncier.an_cession.l_mfrais_a_ttc IS 'Montant des autres frais (agence, ...)';
@@ -5019,16 +5023,25 @@ COMMENT ON COLUMN m_foncier.an_cession.idsite IS 'Identifiant du site';
 COMMENT ON COLUMN m_foncier.an_cession.idces_d IS 'Ancien numéro de cession DynMap';
 
 
--- Trigger: t_t1_suivi on m_foncier.an_cession
+-- Trigger: t_t1_an_cession_date_sai
 
--- DROP TRIGGER t_t1_suivi ON m_foncier.an_cession;
+-- DROP TRIGGER t_t1_an_cession_date_sai ON m_foncier.an_cession;
 
-CREATE TRIGGER t_t1_suivi
-  AFTER INSERT OR UPDATE OR DELETE
-  ON m_foncier.an_cession
-  FOR EACH ROW
-  EXECUTE PROCEDURE m_economie.ft_r_suivi_audit();
-ALTER TABLE m_foncier.an_cession DISABLE TRIGGER t_t1_suivi;
+CREATE TRIGGER t_t1_an_cession_date_sai
+    BEFORE INSERT
+    ON m_foncier.an_cession
+    FOR EACH ROW
+    EXECUTE PROCEDURE public.ft_r_timestamp_sai();
+    
+-- Trigger: t_t2_an_cession_date_maj
+
+-- DROP TRIGGER t_t2_an_cession_date_maj ON m_foncier.an_cession;
+
+CREATE TRIGGER t_t2_an_cession_date_maj
+    BEFORE UPDATE 
+    ON m_foncier.an_cession
+    FOR EACH ROW
+    EXECUTE PROCEDURE public.ft_r_timestamp_maj();
 
 			  
 -- ################################################# Classe des objets document de cessions ##################################
@@ -5130,6 +5143,8 @@ CREATE TABLE m_foncier.geo_fon_acqui
   l_observ character varying(255), -- Observations diverses
   src_geom character varying DEFAULT '20'::character varying, -- Référentiel spatial utilisé pour la saisie
   idsite character varying(10), -- Identifiant unique du site
+  date_sai timestamp without time zone, -- Date de saisie des données
+  op_sai character varying(80), -- opérateur de saisie
   CONSTRAINT geo_fon_acqui_pkey PRIMARY KEY (idgeoaf)
   
 )
@@ -5176,6 +5191,8 @@ COMMENT ON COLUMN m_foncier.geo_fon_acqui.l_type_a IS 'Type de montant : terrain
 COMMENT ON COLUMN m_foncier.geo_fon_acqui.l_type_b IS 'Type de montant : bâti';
 COMMENT ON COLUMN m_foncier.geo_fon_acqui.l_type_c IS 'Type de montant : surface de plancher';
 COMMENT ON COLUMN m_foncier.geo_fon_acqui.date_maj IS 'Date de mise à jour des données';
+COMMENT ON COLUMN m_foncier.geo_fon_acqui.date_sai IS 'Date de saisie des données';
+COMMENT ON COLUMN m_foncier.geo_fon_acqui.op_sai IS 'Opérateur de saisie';
 COMMENT ON COLUMN m_foncier.geo_fon_acqui.l_observ IS 'Observations diverses';
 COMMENT ON COLUMN m_foncier.geo_fon_acqui.src_geom IS 'Référentiel spatial utilisé pour la saisie';
 COMMENT ON COLUMN m_foncier.geo_fon_acqui.idsite IS 'Identifiant unique du site';
