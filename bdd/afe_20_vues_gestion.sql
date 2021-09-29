@@ -684,17 +684,93 @@ CREATE TRIGGER t_t3_foncier_update
 
 -- DROP FUNCTION r_objet.ft_m_foncier_update();
 
+-- FUNCTION: r_objet.ft_m_foncier_update()
+
+-- DROP FUNCTION r_objet.ft_m_foncier_update();
+
 CREATE OR REPLACE FUNCTION r_objet.ft_m_foncier_update()
-  RETURNS trigger AS
-$BODY$
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$
 
 DECLARE lot_surf integer;
 
 BEGIN
 
+lot_surf:=round(cast(st_area(new.geom) as numeric),0);
+
    UPDATE r_objet.geo_objet_fon_lot SET geom = new.geom, date_maj = now(), src_geom = new.ref_spa, op_sai=new.op_sai, l_voca = new.l_voca, l_nom = new.l_nom WHERE idgeolf = new.idgeolf; 
 
    UPDATE m_amenagement.an_amt_lot_stade SET stade_amng = new.stade_amng, l_amng2 = new.l_amng2, stade_comm = new.stade_comm, l_comm2 = new.l_comm2, l_comm2_12 = new.l_comm2_12, etat_occup =  new.etat_occup WHERE idgeolf = new.idgeolf;
+
+  -- si mise à jour lot équipement public, modifier la surface
+  IF new.l_voca='10' THEN
+  UPDATE m_amenagement.an_amt_lot_equ SET surf = st_area(new.geom), 
+  l_surf_l = CASE WHEN length(cast (lot_surf as character varying)) >= 1 and length(cast (lot_surf as character varying)) <= 3 THEN lot_surf || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 4 THEN replace(to_char(lot_surf,'FM9G999'),',',' ') || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 5 THEN replace(to_char(lot_surf,'FM99G999'),',',' ') || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 6 THEN replace(to_char(lot_surf,'FM999G999'),',',' ') || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 7 THEN replace(to_char(lot_surf,'FM9G999G999'),',',' ') || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 8 THEN replace(to_char(lot_surf,'FM99G999G999'),',',' ') || 'm²'
+								   END
+  WHERE idgeolf = NEW.idgeolf;
+  END IF;
+  
+    -- si mise à jour lot économique, modifier la surface
+  IF new.l_voca='20' THEN
+  UPDATE m_economie.an_sa_lot SET surf = st_area(new.geom), 
+  l_surf_l = CASE WHEN length(cast (lot_surf as character varying)) >= 1 and length(cast (lot_surf as character varying)) <= 3 THEN lot_surf || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 4 THEN replace(to_char(lot_surf,'FM9G999'),',',' ') || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 5 THEN replace(to_char(lot_surf,'FM99G999'),',',' ') || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 6 THEN replace(to_char(lot_surf,'FM999G999'),',',' ') || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 7 THEN replace(to_char(lot_surf,'FM9G999G999'),',',' ') || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 8 THEN replace(to_char(lot_surf,'FM99G999G999'),',',' ') || 'm²'
+								   END
+  WHERE idgeolf = NEW.idgeolf;
+  END IF;
+
+  -- si mise à jour lot habitat, modifier la surface
+  IF new.l_voca='30' THEN
+  UPDATE m_amenagement.an_amt_lot_hab SET surf = st_area(new.geom), 
+  l_surf_l = CASE WHEN length(cast (lot_surf as character varying)) >= 1 and length(cast (lot_surf as character varying)) <= 3 THEN lot_surf || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 4 THEN replace(to_char(lot_surf,'FM9G999'),',',' ') || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 5 THEN replace(to_char(lot_surf,'FM99G999'),',',' ') || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 6 THEN replace(to_char(lot_surf,'FM999G999'),',',' ') || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 7 THEN replace(to_char(lot_surf,'FM9G999G999'),',',' ') || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 8 THEN replace(to_char(lot_surf,'FM99G999G999'),',',' ') || 'm²'
+								   END
+  WHERE idgeolf = NEW.idgeolf;
+  END IF;
+  
+    -- si mise à jour lot divers, modifier la surface
+  IF new.l_voca='40' THEN
+  UPDATE m_amenagement.an_amt_lot_divers SET surf = st_area(new.geom), 
+  l_surf_l = CASE WHEN length(cast (lot_surf as character varying)) >= 1 and length(cast (lot_surf as character varying)) <= 3 THEN lot_surf || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 4 THEN replace(to_char(lot_surf,'FM9G999'),',',' ') || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 5 THEN replace(to_char(lot_surf,'FM99G999'),',',' ') || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 6 THEN replace(to_char(lot_surf,'FM999G999'),',',' ') || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 7 THEN replace(to_char(lot_surf,'FM9G999G999'),',',' ') || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 8 THEN replace(to_char(lot_surf,'FM99G999G999'),',',' ') || 'm²'
+								   END
+  WHERE idgeolf = NEW.idgeolf;
+  END IF;
+
+
+  
+      -- si mise à jour lot mixte, modifier la surface
+  IF new.l_voca='60' THEN
+  UPDATE m_amenagement.an_amt_lot_mixte SET surf = st_area(new.geom), 
+  l_surf_l = CASE WHEN length(cast (lot_surf as character varying)) >= 1 and length(cast (lot_surf as character varying)) <= 3 THEN lot_surf || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 4 THEN replace(to_char(lot_surf,'FM9G999'),',',' ') || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 5 THEN replace(to_char(lot_surf,'FM99G999'),',',' ') || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 6 THEN replace(to_char(lot_surf,'FM999G999'),',',' ') || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 7 THEN replace(to_char(lot_surf,'FM9G999G999'),',',' ') || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 8 THEN replace(to_char(lot_surf,'FM99G999G999'),',',' ') || 'm²'
+								   END
+  WHERE idgeolf = NEW.idgeolf;
+  END IF;
 
 /* ******************************************* */
 /* GESTION DES LOTS MUTANTS DE NON DEFINI VERS */
@@ -702,7 +778,7 @@ BEGIN
 
     -- si ma vocation foncière passe de non définie à équipement, insertion d'une ligne dans la table métier
     if old.l_voca='00' and new.l_voca='10' then
-	lot_surf:=round(cast(st_area(new.geom) as numeric),0);
+
 	INSERT INTO m_amenagement.an_amt_lot_equ SELECT new.idgeolf,
 							(
 							SELECT DISTINCT
@@ -732,7 +808,7 @@ BEGIN
 
     -- si ma vocation foncière passe de non définie à économique, insertion d'une ligne dans la table métier
     if old.l_voca='00' and new.l_voca='20' then
-	lot_surf:=round(cast(st_area(new.geom) as numeric),0);
+	
 
 	INSERT INTO m_economie.an_sa_lot SELECT new.idgeolf,
 						 
@@ -792,7 +868,7 @@ BEGIN
     -- si ma vocation foncière passe de non définie à habitat, insertion d'une ligne dans la table métier (à faire lorsque cette thématique sera abordée
     
     if old.l_voca='00' and new.l_voca='30' then
-        lot_surf:=round(cast(st_area(new.geom) as numeric),0);
+        
 	INSERT INTO m_amenagement.an_amt_lot_hab SELECT new.idgeolf,
 						 (
 							SELECT DISTINCT
@@ -838,7 +914,7 @@ BEGIN
 
     -- si ma vocation foncière passe de non définie à divers, insertion d'une ligne dans la table métier
     if old.l_voca='00' and new.l_voca='40' then
-	lot_surf:=round(cast(st_area(new.geom) as numeric),0);
+	
 	INSERT INTO m_amenagement.an_amt_lot_divers SELECT new.idgeolf,
 							(
 							SELECT DISTINCT
@@ -872,7 +948,7 @@ BEGIN
 
     -- si ma vocation foncière passe de non définie à mixte, insertion d'une ligne dans la table métier
 	if old.l_voca='00' and new.l_voca='60' then
-        lot_surf:=round(cast(st_area(new.geom) as numeric),0);
+        
 	INSERT INTO m_amenagement.an_amt_lot_mixte SELECT new.idgeolf,
 						 (
 							SELECT DISTINCT
@@ -931,7 +1007,7 @@ BEGIN
 
 -- si ma vocation foncière passe d'équipements à économie, suppression de la ligne dans la table métier équipement et insertion dans économie
     if old.l_voca='10' and new.l_voca='20' then
-	lot_surf:=round(cast(st_area(new.geom) as numeric),0);
+	
 	DELETE FROM m_amenagement.an_amt_lot_equ WHERE idgeolf=old.idgeolf;
 
 	INSERT INTO m_economie.an_sa_lot SELECT new.idgeolf,
@@ -992,7 +1068,7 @@ BEGIN
      -- si ma vocation foncière passe d'équipements à habitat, suppression de la ligne dans la table métier équipement et insertion dans habitat 
     
     if old.l_voca='10' and new.l_voca='30' then
-	lot_surf:=round(cast(st_area(new.geom) as numeric),0);
+	
 	DELETE FROM m_amenagement.an_amt_lot_equ WHERE idgeolf=old.idgeolf;
 	INSERT INTO m_amenagement.an_amt_lot_hab SELECT new.idgeolf,
 						 (
@@ -1040,7 +1116,7 @@ BEGIN
      -- si ma vocation foncière passe d'équipements à divers, suppression de la ligne dans la table métier équipement et insertion dans divers 
     
     if old.l_voca='10' and new.l_voca='40' then
-	lot_surf:=round(cast(st_area(new.geom) as numeric),0);
+	
 	DELETE FROM m_amenagement.an_amt_lot_equ WHERE idgeolf=old.idgeolf;
 	INSERT INTO m_amenagement.an_amt_lot_divers SELECT new.idgeolf,
 							(
@@ -1077,7 +1153,7 @@ BEGIN
    -- si ma vocation foncière passe d'équipements à mixte, suppression de la ligne dans la table métier équipement et insertion dans habitat 
     
     if old.l_voca='10' and new.l_voca='60' then
-	lot_surf:=round(cast(st_area(new.geom) as numeric),0);
+	
 	DELETE FROM m_amenagement.an_amt_lot_equ WHERE idgeolf=old.idgeolf;
 	INSERT INTO m_amenagement.an_amt_lot_mixte SELECT new.idgeolf,
 						 (
@@ -1137,7 +1213,7 @@ BEGIN
 
     -- si ma vocation foncière passe d'économie à équipements, suppression de la ligne dans la table métier économie et insertion dans équipement
     if old.l_voca='20' and new.l_voca='10' then
-	lot_surf:=round(cast(st_area(new.geom) as numeric),0);
+	
 	DELETE FROM m_economie.an_sa_lot WHERE idgeolf=old.idgeolf;
 
 	INSERT INTO m_amenagement.an_amt_lot_equ SELECT new.idgeolf,
@@ -1167,11 +1243,10 @@ BEGIN
 							;
     end if;
 
-
     -- si ma vocation foncière passe d'économie à habitat, suppression de la ligne dans la table métier économie et insertion dans habitat
     
     if (old.l_voca='20') and (new.l_voca='30') then
-	lot_surf:=round(cast(st_area(new.geom) as numeric),0);
+	
 	DELETE FROM m_economie.an_sa_lot WHERE idgeolf=old.idgeolf;
 	INSERT INTO m_amenagement.an_amt_lot_hab SELECT new.idgeolf,
 						 (
@@ -1218,7 +1293,7 @@ BEGIN
 
     -- si ma vocation foncière passe d'économie à divers, suppression de la ligne dans la table métier économie et insertion dans équipement
     if old.l_voca='20' and new.l_voca='40' then
-	lot_surf:=round(cast(st_area(new.geom) as numeric),0);
+	
 	DELETE FROM m_economie.an_sa_lot WHERE idgeolf=old.idgeolf;
 
 	INSERT INTO m_amenagement.an_amt_lot_divers SELECT new.idgeolf,
@@ -1256,7 +1331,7 @@ BEGIN
 -- si ma vocation foncière passe d'économie à mixte, suppression de la ligne dans la table métier économie et insertion dans mixte
     
     if (old.l_voca='20') and (new.l_voca='60') then
-	lot_surf:=round(cast(st_area(new.geom) as numeric),0);
+	
 	DELETE FROM m_economie.an_sa_lot WHERE idgeolf=old.idgeolf;
 	INSERT INTO m_amenagement.an_amt_lot_mixte SELECT new.idgeolf,
 						 (
@@ -1305,8 +1380,6 @@ BEGIN
 						  ;
     end if;
 
-
-
 /* **************************************** */
 /* GESTION DES LOTS MUTANTS DE HABITAT VERS */
 /* **************************************** */
@@ -1319,7 +1392,7 @@ BEGIN
 
     -- si ma vocation foncière passe d'habitat à équipements, suppression de la ligne dans la table métier habitat et insertion dans équipement 
     if (old.l_voca='30') and (new.l_voca='10') then
-	lot_surf:=round(cast(st_area(new.geom) as numeric),0);
+	
 	DELETE FROM m_amenagement.an_amt_lot_hab WHERE idgeolf=old.idgeolf;
 	INSERT INTO m_amenagement.an_amt_lot_equ SELECT new.idgeolf,
 							(
@@ -1348,10 +1421,9 @@ BEGIN
 							;
     end if;
 
-
      -- si ma vocation foncière passe d'habitat à économie, suppression de la ligne dans la table métier habitat et insertion dans économie 
     if (old.l_voca='30') and (new.l_voca='20') then
-	lot_surf:=round(cast(st_area(new.geom) as numeric),0);
+	
 	DELETE FROM m_amenagement.an_amt_lot_hab WHERE idgeolf=old.idgeolf;
 	INSERT INTO m_economie.an_sa_lot SELECT new.idgeolf,
 						 
@@ -1411,7 +1483,7 @@ BEGIN
     
      -- si ma vocation foncière passe d'habitat à divers, suppression de la ligne dans la table métier habitat et insertion dans divers 
     if (old.l_voca='30') and (new.l_voca='40') then
-	lot_surf:=round(cast(st_area(new.geom) as numeric),0);
+	
 	DELETE FROM m_amenagement.an_amt_lot_hab WHERE idgeolf=old.idgeolf;
 	INSERT INTO m_amenagement.an_amt_lot_divers SELECT new.idgeolf,
 							(
@@ -1440,10 +1512,9 @@ BEGIN
 							;
     end if;
 
-
    -- si ma vocation foncière passe d'habitat à mixte, suppression de la ligne dans la table métier habitat et insertion dans mixte 
     if (old.l_voca='30') and (new.l_voca='60') then
-	lot_surf:=round(cast(st_area(new.geom) as numeric),0);
+	
 	DELETE FROM m_amenagement.an_amt_lot_hab WHERE idgeolf=old.idgeolf;
 	INSERT INTO m_amenagement.an_amt_lot_mixte SELECT new.idgeolf,
 						 (
@@ -1504,7 +1575,7 @@ BEGIN
 
     -- si ma vocation foncière passe de divers à équipements, suppression de la ligne dans la table métier divers et insertion dans équipement 
     if (old.l_voca='40') and (new.l_voca='10') then
-	lot_surf:=round(cast(st_area(new.geom) as numeric),0);
+	
 	DELETE FROM m_amenagement.an_amt_lot_divers WHERE idgeolf=old.idgeolf;
 	INSERT INTO m_amenagement.an_amt_lot_equ SELECT new.idgeolf,
 							(
@@ -1533,10 +1604,9 @@ BEGIN
 							;
     end if;
 
-
      -- si ma vocation foncière passe de divers à économie, suppression de la ligne dans la table métier divers et insertion dans économie 
     if (old.l_voca='40') and (new.l_voca='20') then
-	lot_surf:=round(cast(st_area(new.geom) as numeric),0);
+	
 	DELETE FROM m_amenagement.an_amt_lot_divers WHERE idgeolf=old.idgeolf;
 	INSERT INTO m_economie.an_sa_lot SELECT new.idgeolf,
 						 
@@ -1596,7 +1666,7 @@ BEGIN
     
      -- si ma vocation foncière passe de divers à habitat, suppression de la ligne dans la table métier divers et insertion dans habitat 
     if (old.l_voca='40') and (new.l_voca='30') then
-	lot_surf:=round(cast(st_area(new.geom) as numeric),0);
+	
 	DELETE FROM m_amenagement.an_amt_lot_divers WHERE idgeolf=old.idgeolf;
 	INSERT INTO m_amenagement.an_amt_lot_hab SELECT new.idgeolf,
 						 (
@@ -1641,10 +1711,9 @@ BEGIN
 						  ;
     end if;
 
-
    -- si ma vocation foncière passe de divers à mixte, suppression de la ligne dans la table métier divers et insertion dans mixte 
     if (old.l_voca='40') and (new.l_voca='60') then
-	lot_surf:=round(cast(st_area(new.geom) as numeric),0);
+	
 	DELETE FROM m_amenagement.an_amt_lot_divers WHERE idgeolf=old.idgeolf;
 	INSERT INTO m_amenagement.an_amt_lot_mixte SELECT new.idgeolf,
 						 (
@@ -1693,7 +1762,6 @@ BEGIN
 						  ;
     end if;
 
-
 /* ********************************************** */
 /* GESTION DES LOTS MUTANTS DE ESPACE PUBLIC VERS */
 /* ********************************************** */
@@ -1704,7 +1772,7 @@ BEGIN
 
     -- si ma vocation foncière passe de espace publique à équipements, nsertion dans équipement 
     if (old.l_voca='50') and (new.l_voca='10') then
-	lot_surf:=round(cast(st_area(new.geom) as numeric),0);
+	
 	INSERT INTO m_amenagement.an_amt_lot_equ SELECT new.idgeolf,
 							(
 							SELECT DISTINCT
@@ -1732,10 +1800,9 @@ BEGIN
 							;
     end if;
 
-
      -- si ma vocation foncière passe de espace public à économie, insertion dans économie 
     if (old.l_voca='50') and (new.l_voca='20') then
-	lot_surf:=round(cast(st_area(new.geom) as numeric),0);
+	
 	INSERT INTO m_economie.an_sa_lot SELECT new.idgeolf,
 						 
 						 (
@@ -1794,7 +1861,7 @@ BEGIN
     
      -- si ma vocation foncière passe de espace public à habitat, insertion dans habitat 
     if (old.l_voca='50') and (new.l_voca='30') then
-	lot_surf:=round(cast(st_area(new.geom) as numeric),0);
+	
 	INSERT INTO m_amenagement.an_amt_lot_hab SELECT new.idgeolf,
 						 (
 							SELECT DISTINCT
@@ -1840,7 +1907,7 @@ BEGIN
 
     -- si ma vocation foncière passe de espace public à divers, insertion dans divers 
     if (old.l_voca='50') and (new.l_voca='40') then
-	lot_surf:=round(cast(st_area(new.geom) as numeric),0);
+	
 	INSERT INTO m_amenagement.an_amt_lot_divers SELECT new.idgeolf,
 							(
 							SELECT DISTINCT
@@ -1870,7 +1937,7 @@ BEGIN
 
    -- si ma vocation foncière passe de espace public à mixte, insertion dans mixte 
     if (old.l_voca='50') and (new.l_voca='60') then
-	lot_surf:=round(cast(st_area(new.geom) as numeric),0);
+	
 	INSERT INTO m_amenagement.an_amt_lot_mixte SELECT new.idgeolf,
 						 (
 							SELECT DISTINCT
@@ -1918,7 +1985,6 @@ BEGIN
 						  ;
     end if;
 
-
 /* ************************************** */
 /* GESTION DES LOTS MUTANTS DE MIXTE VERS */
 /* ************************************** */
@@ -1931,7 +1997,7 @@ BEGIN
 
     -- si ma vocation foncière passe de mixte à équipements, suppression de la ligne dans la table métier mixte et insertion dans équipement 
     if (old.l_voca='60') and (new.l_voca='10') then
-	lot_surf:=round(cast(st_area(new.geom) as numeric),0);
+	
 	DELETE FROM m_amenagement.an_amt_lot_mixte WHERE idgeolf=old.idgeolf;
 	INSERT INTO m_amenagement.an_amt_lot_equ SELECT new.idgeolf,
 							(
@@ -1960,10 +2026,9 @@ BEGIN
 							;
     end if;
 
-
      -- si ma vocation foncière passe de mixte à économie, suppression de la ligne dans la table métier mixte et insertion dans économie 
     if (old.l_voca='60') and (new.l_voca='20') then
-	lot_surf:=round(cast(st_area(new.geom) as numeric),0);
+	
 	DELETE FROM m_amenagement.an_amt_lot_mixte WHERE idgeolf=old.idgeolf;
 	INSERT INTO m_economie.an_sa_lot SELECT new.idgeolf,
 						 
@@ -2023,7 +2088,7 @@ BEGIN
     
      -- si ma vocation foncière passe de mixte à habitat, suppression de la ligne dans la table métier mixte et insertion dans habitat 
     if (old.l_voca='60') and (new.l_voca='30') then
-	lot_surf:=round(cast(st_area(new.geom) as numeric),0);
+	
 	DELETE FROM m_amenagement.an_amt_lot_mixte WHERE idgeolf=old.idgeolf;
 	INSERT INTO m_amenagement.an_amt_lot_hab SELECT new.idgeolf,
 						 (
@@ -2068,10 +2133,9 @@ BEGIN
 						  ;
     end if;
 
-
    -- si ma vocation foncière passe de mixte à divers, suppression de la ligne dans la table métier mxite et insertion dans divers 
     if (old.l_voca='60') and (new.l_voca='40') then
-	lot_surf:=round(cast(st_area(new.geom) as numeric),0);
+	
 	DELETE FROM m_amenagement.an_amt_lot_mixte WHERE idgeolf=old.idgeolf;
 	INSERT INTO m_amenagement.an_amt_lot_divers SELECT new.idgeolf,
 							(
@@ -2100,34 +2164,22 @@ BEGIN
 							;
     end if;
 
-	-- mise à jour des appartenances des établissements à l'adresse dans la table lk_localsiret
-	-- si le lot ne contient pas d'adresse, ne supprime pas les relations du lot avec les établissements si non oui 
-	IF 
-		(SELECT count(*) FROM r_objet.geo_objet_fon_lot l , x_apps.xapps_geo_vmr_adresse a , m_economie.lk_adresseetablissement lk
-		WHERE st_intersects(new.geom,a.geom) AND new.l_voca='20' AND a.id_adresse = lk.idadresse AND l.idgeolf = new.idgeolf) = 0
-	THEN
-		INSERT INTO m_economie.lk_localsiret (idgeoloc,siret)
-		SELECT DISTINCT new.idgeolf,lk.siret FROM r_objet.geo_objet_fon_lot l , x_apps.xapps_geo_vmr_adresse a , m_economie.lk_adresseetablissement lk
-		WHERE st_intersects(new.geom,a.geom) AND new.l_voca='20' AND a.id_adresse = lk.idadresse;
-        ELSE
-		DELETE FROM m_economie.lk_localsiret lk WHERE lk.idgeoloc = old.idgeolf;
-		INSERT INTO m_economie.lk_localsiret (idgeoloc,siret)
-		SELECT DISTINCT new.idgeolf,lk.siret FROM r_objet.geo_objet_fon_lot l , x_apps.xapps_geo_vmr_adresse a , m_economie.lk_adresseetablissement lk
-		WHERE st_intersects(new.geom,a.geom) AND new.l_voca='20' AND a.id_adresse = lk.idadresse;
-	END IF;
+	
+-- refraichissement de la vue matérialisée des points établissements à l'adresse
+REFRESH MATERIALIZED VIEW x_apps.xapps_geo_vmr_etab_api;
 
     return new ;
 END;
 
-$BODY$
-  LANGUAGE plpgsql VOLATILE
-  COST 100;
+$BODY$;
+
 ALTER FUNCTION r_objet.ft_m_foncier_update()
-  OWNER TO sig_create;
+    OWNER TO create_sig;
 
-COMMENT ON FUNCTION r_objet.ft_m_foncier_update() IS 'Fonction gérant la mise à jour des informations des lots en fonction de leur vocation à la modification de la vocation des objets';
 
-										     
+COMMENT ON FUNCTION r_objet.ft_m_foncier_update()
+    IS 'Fonction gérant la mise à jour des informations des lots en fonction de leur vocation à la modification de la vocation des objets';
+									     
 -- Trigger: t_t5_etiquette_local_refresh on r_objet.geo_v_lot
 
 -- DROP TRIGGER t_t5_etiquette_local_refresh ON r_objet.geo_v_lot;
