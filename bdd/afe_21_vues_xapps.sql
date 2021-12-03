@@ -955,9 +955,8 @@ CREATE INDEX idx_xapps_an_vmr_synt_site_mixte_api_idsite
 CREATE MATERIALIZED VIEW x_apps.xapps_geo_vmr_etab_api_export
 TABLESPACE pg_default
 AS
-
  WITH req_tot AS (
-          WITH req_e AS (
+         WITH req_e AS (
                  SELECT DISTINCT e.idsiret,
                     e.idsite,
                     e.l_nom,
@@ -1014,10 +1013,12 @@ AS
                     ul.nomunitelegale,
                     (ul.nomusageunitelegale::text || ' '::text) || ul.prenom1unitelegale::text AS personnephysique,
                     s.activiteprincipaleetablissement AS apet700,
-                    n.valeur AS libapet700
+                    n.valeur AS libapet700,
+                    cj.valeur AS cate_juri
                    FROM s_sirene.an_etablissement_api s
                      LEFT JOIN s_sirene.an_unitelegale_api ul ON s.siren::text = ul.siren::text
                      LEFT JOIN s_sirene.lt_nafrev2 n ON n.code::text = s.activiteprincipaleetablissement::text
+                     LEFT JOIN s_sirene.lt_catejuri_n3 cj ON cj.code::text = ul.categoriejuridiqueunitelegale::text
                 )
          SELECT DISTINCT e.idsiret,
             si.denominationusuelleetablissement,
@@ -1037,6 +1038,7 @@ AS
             e.l_telp_dir,
             si.apet700,
             si.libapet700,
+            si.cate_juri,
             e.eff_etab,
             e.eff_etab_n,
             e.source_eff,
@@ -1090,19 +1092,23 @@ AS
                        FROM x_apps.xapps_geo_vmr_adresse
                       WHERE xapps_geo_vmr_adresse.id_adresse = e.idadresse)
                 END AS adresse_loc,
-            CASE WHEN a.x_l93 IS NOT NULL THEN a.x_l93 ELSE 
-	 			(SELECT round(st_x(st_pointonsurface(c.geom))::numeric,2) FROM r_osm.geo_vm_osm_commune_apc c WHERE c.insee = si.codecommuneetablissement) 
-	 		    END AS x_l93,
-            CASE WHEN a.y_l93 IS NOT NULL THEN a.y_l93 ELSE 
-	 			(SELECT round(st_y(st_pointonsurface(c.geom))::numeric,2) FROM r_osm.geo_vm_osm_commune_apc c WHERE c.insee = si.codecommuneetablissement) 
-	 		    END AS y_l93,
-            
+                CASE
+                    WHEN a.x_l93 IS NOT NULL THEN a.x_l93
+                    ELSE ( SELECT round(st_x(st_pointonsurface(c.geom))::numeric, 2) AS round
+                       FROM r_osm.geo_vm_osm_commune_apc c
+                      WHERE c.insee::text = si.codecommuneetablissement::text)
+                END AS x_l93,
+                CASE
+                    WHEN a.y_l93 IS NOT NULL THEN a.y_l93
+                    ELSE ( SELECT round(st_y(st_pointonsurface(c.geom))::numeric, 2) AS round
+                       FROM r_osm.geo_vm_osm_commune_apc c
+                      WHERE c.insee::text = si.codecommuneetablissement::text)
+                END AS y_l93,
             a.geom
            FROM req_si si
              JOIN req_e e ON e.idsiret::text = si.siret::text
              LEFT JOIN x_apps.xapps_geo_vmr_adresse a ON e.idadresse = a.id_adresse
              LEFT JOIN r_administratif.an_geo g ON g.insee::text = si.codecommuneetablissement::text
-	   
         UNION ALL
          SELECT sp.idsiret,
             'non renseignée'::character varying AS denominationusuelleetablissement,
@@ -1122,6 +1128,7 @@ AS
             sp.l_telp_dir,
             'Non renseignée'::character varying AS apet700,
             'Non renseignée'::character varying AS libapet700,
+            'Non renseignée'::character varying AS cate_juri,
             sp.eff_etab::character varying AS eff_etab,
             sp.eff_etab AS eff_etab_n,
             sp.source_eff,
@@ -1170,6 +1177,7 @@ AS
     req_tot.l_telp_dir,
     req_tot.apet700,
     req_tot.libapet700,
+    req_tot.cate_juri,
     req_tot.eff_etab,
     req_tot.eff_etab_n,
     req_tot.source_eff,
@@ -1188,7 +1196,6 @@ AS
     req_tot.y_l93,
     req_tot.geom
    FROM req_tot
-   
 WITH DATA;
 
 ALTER TABLE x_apps.xapps_geo_vmr_etab_api_export
