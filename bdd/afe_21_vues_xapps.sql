@@ -1014,11 +1014,13 @@ AS
                     (ul.nomusageunitelegale::text || ' '::text) || ul.prenom1unitelegale::text AS personnephysique,
                     s.activiteprincipaleetablissement AS apet700,
                     n.valeur AS libapet700,
-                    cj.valeur AS cate_juri
+                    cj.valeur AS cate_juri,
+					(SELECT count(*) FROM m_economie.an_sa_etab_rad ra WHERE ra.siren = ul.siren) AS nb_rad
                    FROM s_sirene.an_etablissement_api s
                      LEFT JOIN s_sirene.an_unitelegale_api ul ON s.siren::text = ul.siren::text
                      LEFT JOIN s_sirene.lt_nafrev2 n ON n.code::text = s.activiteprincipaleetablissement::text
                      LEFT JOIN s_sirene.lt_catejuri_n3 cj ON cj.code::text = ul.categoriejuridiqueunitelegale::text
+					-- LEFT JOIN m_economie.an_sa_etab_rad ra ON ra.siren = ul.siren
                 )
          SELECT DISTINCT e.idsiret,
             si.denominationusuelleetablissement,
@@ -1045,6 +1047,7 @@ AS
             e.l_date_eff,
             e.annee_eff::character varying AS annee_eff,
             e.l_compte,
+	 	    si.nb_rad,
                 CASE
                     WHEN to_char(si.datecreationetablissement, 'YYYY'::text)::integer IS NULL THEN 0
                     ELSE to_char(si.datecreationetablissement, 'YYYY'::text)::integer
@@ -1135,6 +1138,7 @@ AS
             sp.date_eff AS l_date_eff,
             'non renseignée'::character varying AS annee_eff,
             sp.l_compte,
+	 	    '0' AS nb_rad,
             0 AS datecreationetablissement,
             'A'::character varying AS etatadministratifetablissement,
             0 AS datederniertraitementetablissement,
@@ -1184,6 +1188,7 @@ AS
     req_tot.l_date_eff,
     req_tot.annee_eff,
     req_tot.l_compte,
+	req_tot.nb_rad,
     req_tot.datecreationetablissement,
     req_tot.etatadministratifetablissement,
     req_tot.datederniertraitementetablissement,
