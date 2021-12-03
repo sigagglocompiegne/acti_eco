@@ -28,4 +28,5 @@
 -- 2021-05-20 : GB / ajout des coordonnées x et y du centre de la commune pour les établissements non géolocalisés dans les fonctionnalités d'export
 -- 2021-06-24 : GB / Adaptation fonction trigger sur saisie procédure foncière suite à un bug
 -- 2021-06-25 : GB / modification gestion des cessions et acquisitions foncières (ajout op_sai et date_sai)
+-- 2021-12-03 : GB / modification des attributs exportés des établissements
 */
