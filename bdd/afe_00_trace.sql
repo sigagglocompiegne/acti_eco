@@ -29,4 +29,5 @@
 -- 2021-06-24 : GB / Adaptation fonction trigger sur saisie procédure foncière suite à un bug
 -- 2021-06-25 : GB / modification gestion des cessions et acquisitions foncières (ajout op_sai et date_sai)
 -- 2021-12-03 : GB / modification des attributs exportés des établissements
+-- 2022-01-19 : GB / modification trigger de gestion des lots à la mise à jour sur (geo_v_lot_eco), correctif sur gestion des surfaces des lots
 */
