@@ -4494,13 +4494,16 @@ CREATE TRIGGER t_t3_modif_lot_eco
   FOR EACH ROW
   EXECUTE PROCEDURE m_economie.ft_m_modif_lot_eco();
 
--- Function: m_economie.ft_m_modif_lot_eco()
+-- FUNCTION: m_economie.ft_m_modif_lot_eco()
 
 -- DROP FUNCTION m_economie.ft_m_modif_lot_eco();
 
 CREATE OR REPLACE FUNCTION m_economie.ft_m_modif_lot_eco()
-  RETURNS trigger AS
-$BODY$
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$
 
 DECLARE DECLARE lot_surf integer;
 
@@ -4514,14 +4517,14 @@ lot_surf:=round(cast(st_area(new.geom) as numeric),0);
 		UPDATE m_amenagement.an_amt_lot_stade SET stade_amng = new.stade_amng, l_amng2 = new.l_amng2, stade_comm = new.stade_comm, l_comm2 = new.l_comm2, l_comm2_12 = new.l_comm2_12, etat_occup =  new.etat_occup WHERE idgeolf = new.idgeolf;
 
 		UPDATE m_economie.an_sa_lot SET
-							surf = new.surf,
+							surf = CASE WHEN (new.surf IS NULL OR St_equals(new.geom,old.geom) IS FALSE) THEN lot_surf ELSE new.surf END ,
 							l_surf_l = 
-								   CASE WHEN length(cast (new.surf as character varying)) >= 1 and length(cast (new.surf as character varying)) <= 3 THEN new.surf || 'm²'
-								   WHEN length(cast (new.surf as character varying)) = 4 THEN replace(to_char(new.surf,'FM9G999'),',',' ') || 'm²'
-								   WHEN length(cast (new.surf as character varying)) = 5 THEN replace(to_char(new.surf,'FM99G999'),',',' ') || 'm²'
-								   WHEN length(cast (new.surf as character varying)) = 6 THEN replace(to_char(new.surf,'FM999G999'),',',' ') || 'm²'
-								   WHEN length(cast (new.surf as character varying)) = 7 THEN replace(to_char(new.surf,'FM9G999G999'),',',' ') || 'm²'
-								   WHEN length(cast (new.surf as character varying)) = 8 THEN replace(to_char(new.surf,'FM99G999G999'),',',' ') || 'm²'
+								   CASE WHEN length(cast ((CASE WHEN (new.surf IS NULL OR St_equals(new.geom,old.geom) IS FALSE) THEN lot_surf ELSE new.surf END) as character varying)) >= 1 and length(cast ((CASE WHEN (new.surf IS NULL OR St_equals(new.geom,old.geom) IS FALSE) THEN lot_surf ELSE new.surf END) as character varying)) <= 3 THEN (CASE WHEN (new.surf IS NULL OR St_equals(new.geom,old.geom) IS FALSE) THEN lot_surf ELSE new.surf END) || 'm²'
+								   WHEN length(cast ((CASE WHEN (new.surf IS NULL OR St_equals(new.geom,old.geom) IS FALSE) THEN lot_surf ELSE new.surf END) as character varying)) = 4 THEN replace(to_char((CASE WHEN (new.surf IS NULL OR St_equals(new.geom,old.geom) IS FALSE) THEN lot_surf ELSE new.surf END),'FM9G999'),',',' ') || 'm²'
+								   WHEN length(cast ((CASE WHEN (new.surf IS NULL OR St_equals(new.geom,old.geom) IS FALSE) THEN lot_surf ELSE new.surf END) as character varying)) = 5 THEN replace(to_char((CASE WHEN (new.surf IS NULL OR St_equals(new.geom,old.geom) IS FALSE) THEN lot_surf ELSE new.surf END),'FM99G999'),',',' ') || 'm²'
+								   WHEN length(cast ((CASE WHEN (new.surf IS NULL OR St_equals(new.geom,old.geom) IS FALSE) THEN lot_surf ELSE new.surf END) as character varying)) = 6 THEN replace(to_char((CASE WHEN (new.surf IS NULL OR St_equals(new.geom,old.geom) IS FALSE) THEN lot_surf ELSE new.surf END),'FM999G999'),',',' ') || 'm²'
+								   WHEN length(cast ((CASE WHEN (new.surf IS NULL OR St_equals(new.geom,old.geom) IS FALSE) THEN lot_surf ELSE new.surf END) as character varying)) = 7 THEN replace(to_char((CASE WHEN (new.surf IS NULL OR St_equals(new.geom,old.geom) IS FALSE) THEN lot_surf ELSE new.surf END),'FM9G999G999'),',',' ') || 'm²'
+								   WHEN length(cast ((CASE WHEN (new.surf IS NULL OR St_equals(new.geom,old.geom) IS FALSE) THEN lot_surf ELSE new.surf END) as character varying)) = 8 THEN replace(to_char((CASE WHEN (new.surf IS NULL OR St_equals(new.geom,old.geom) IS FALSE) THEN lot_surf ELSE new.surf END),'FM99G999G999'),',',' ') || 'm²'
 								   END,
 							date_maj = now(),
 							op_sai = new.op_sai_att,
@@ -4552,33 +4555,18 @@ lot_surf:=round(cast(st_area(new.geom) as numeric),0);
 							l_descrip=new.l_descrip
 		WHERE an_sa_lot.idgeolf=new.idgeolf;
 
-	-- mise à jour des appartenances des établissements à l'adresse dans la table lk_localsiret
-	-- si le lot ne contient pas d'adresse, ne supprime pas les relations du lot avec les établissements si non oui 
-
-
-   
-	IF 
-		(SELECT count(*) FROM r_objet.geo_objet_fon_lot l , x_apps.xapps_geo_vmr_adresse a , m_economie.lk_adresseetablissement lk
-		WHERE st_intersects(new.geom,a.geom) AND new.l_voca='20' AND a.id_adresse = lk.idadresse AND l.idgeolf = new.idgeolf) = 0
-	THEN
-		INSERT INTO m_economie.lk_localsiret (idgeoloc,siret)
-		SELECT DISTINCT new.idgeolf,lk.siret FROM r_objet.geo_objet_fon_lot l , x_apps.xapps_geo_vmr_adresse a , m_economie.lk_adresseetablissement lk
-		WHERE st_intersects(new.geom,a.geom) AND new.l_voca='20' AND a.id_adresse = lk.idadresse;
-        ELSE
-		DELETE FROM m_economie.lk_localsiret lk WHERE lk.idgeoloc = old.idgeolf;
-		INSERT INTO m_economie.lk_localsiret (idgeoloc,siret)
-		SELECT DISTINCT new.idgeolf,lk.siret FROM r_objet.geo_objet_fon_lot l , x_apps.xapps_geo_vmr_adresse a , m_economie.lk_adresseetablissement lk
-		WHERE st_intersects(new.geom,a.geom) AND new.l_voca='20' AND a.id_adresse = lk.idadresse;
-	END IF;
-
-
      return new;
 END
-$BODY$
-  LANGUAGE plpgsql VOLATILE
-  COST 100;
+$BODY$;
+
 ALTER FUNCTION m_economie.ft_m_modif_lot_eco()
-  OWNER TO sig_create;
+    OWNER TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_economie.ft_m_modif_lot_eco() TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_economie.ft_m_modif_lot_eco() TO PUBLIC;
+
+
 
 
 						 
