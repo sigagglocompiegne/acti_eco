@@ -12,7 +12,7 @@ Ensemble des éléments constituant la mise en oeuvre de la base de données urb
   * [Création  de la structure initiale](bdd/afe_10_squelette.sql)
   * [Création des vues de gestion](bdd/afe_20_vues_gestion.sql)
   * [Création des vues applicatives](bdd/afe_21_vues_xapps.sql)
-  * [Création des vues applicatives gd public](bdd/afe_22_vues_xapps_public.sql)
+  * [Création des vues applicatives gd public](bdd/afe_22_vues_xapps_pub.sql)
   * [Création des vues open data](bdd/afe_23_vues_xopendata.sql)
   * [Création des privilèges](bdd/afe_99_grant.sql)  
 - [Documentation d'administration de la base](bdd/doc_admin_bd_amt_fon_eco.md) (hors Suivi du marché de l'immobilier d'entreprises)
