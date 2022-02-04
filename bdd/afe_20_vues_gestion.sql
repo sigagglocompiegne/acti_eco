@@ -4227,7 +4227,8 @@ CREATE OR REPLACE VIEW m_economie.geo_v_lot_eco AS
     f.l_oripro,
     f.l_descrip,
     f.commune,
-    o.geom
+    o.geom,
+    false AS maj_plan
    FROM m_economie.an_sa_lot f,
     r_objet.geo_objet_fon_lot o,
     m_amenagement.an_amt_lot_stade s
@@ -4593,6 +4594,13 @@ BEGIN
 REFRESH MATERIALIZED VIEW x_apps.xapps_geo_vmr_local;
 -- refraichissement de la vue matérialisée des points établissements à l'adresse
 REFRESH MATERIALIZED VIEW x_apps.xapps_geo_vmr_etab_api;
+
+-- si l'utilisateur à cocher la case refraichir le plan dans l'onglet "Commercialisation" de la fiche des lots ECO alors je lance la VM
+IF new.maj_plan IS TRUE THEN
+
+REFRESH MATERIALIZED VIEW x_apps.xapps_geo_vmr_za_lot_plan_situation;
+	
+END IF;
 
 return new;
 
