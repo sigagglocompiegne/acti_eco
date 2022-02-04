@@ -2034,3 +2034,72 @@ COMMENT ON VIEW x_apps.xapps_an_v_site_liste
   IS 'Vue alphanumérique contenant la liste des sites économiques et mixtes pour affichage dans la fiche établissement dans GEO';
 	
 
+-- ########################################################### Vue générant les lots afficher dans le plan de situation en fonction des bati d'activité et d'un même occupant sur lot non bati #########################
+
+-- View: x_apps.xapps_geo_vmr_za_lot_plan_situation
+
+-- DROP MATERIALIZED VIEW x_apps.xapps_geo_vmr_za_lot_plan_situation;
+
+CREATE MATERIALIZED VIEW x_apps.xapps_geo_vmr_za_lot_plan_situation
+TABLESPACE pg_default
+AS
+ WITH req_lot AS (
+         SELECT DISTINCT o.idgeolf,
+            o.l_voca,
+                CASE
+                    WHEN f.l_cnom IS NULL OR f.l_cnom::text = ''::text THEN f.l_lnom
+                    ELSE f.l_cnom
+                END AS l_nom,
+            f.l_occupant,
+            f.idsite,
+                CASE
+                    WHEN s.l_comm2::text = '11'::text OR s.l_comm2::text = '12'::text THEN '1112'::character varying
+                    WHEN s.l_comm2::text = '99'::text THEN '99'::character varying
+                    ELSE '9999'::character varying
+                END AS carto,
+            o.geom
+           FROM m_economie.an_sa_lot f,
+            r_objet.geo_objet_fon_lot o,
+            m_amenagement.an_amt_lot_stade s
+          WHERE f.idgeolf = o.idgeolf AND o.idgeolf = s.idgeolf AND f.idsite IS NOT NULL
+        ), req_bati AS (
+         SELECT DISTINCT l_1.idgeolf
+           FROM m_economie.geo_v_lot_eco l_1,
+            m_economie.geo_immo_bien b_1
+          WHERE l_1.idsite::text = b_1.idsite::text AND st_intersects(l_1.geom, st_pointonsurface(b_1.geom)) IS TRUE
+        )
+ SELECT row_number() OVER () AS gid,
+    l.l_voca,
+    l.idsite,
+    string_agg(DISTINCT CASE WHEN l.l_nom = l.l_occupant THEN l.l_nom::text ELSE l.l_occupant::text END, chr(10)) AS l_nom,
+    l.l_occupant,
+        CASE
+            WHEN sum(b.idgeolf) IS NULL THEN 'non'::text
+            ELSE 'oui'::text
+        END AS bati,
+    l.carto,
+        CASE
+            WHEN length(round(st_area(st_union(l.geom))::numeric, 0)::character varying::text) >= 1 AND length(round(st_area(st_union(l.geom))::numeric, 0)::character varying::text) <= 3 THEN round(st_area(st_union(l.geom))::numeric, 0) || 'm²'::text
+            WHEN length(round(st_area(st_union(l.geom))::numeric, 0)::character varying::text) = 4 THEN replace(to_char(round(st_area(st_union(l.geom))::numeric, 0), 'FM9G999'::text), ','::text, ' '::text) || 'm²'::text
+            WHEN length(round(st_area(st_union(l.geom))::numeric, 0)::character varying::text) = 5 THEN replace(to_char(round(st_area(st_union(l.geom))::numeric, 0), 'FM99G999'::text), ','::text, ' '::text) || 'm²'::text
+            WHEN length(round(st_area(st_union(l.geom))::numeric, 0)::character varying::text) = 6 THEN replace(to_char(round(st_area(st_union(l.geom))::numeric, 0), 'FM999G999'::text), ','::text, ' '::text) || 'm²'::text
+            WHEN length(round(st_area(st_union(l.geom))::numeric, 0)::character varying::text) = 7 THEN replace(to_char(round(st_area(st_union(l.geom))::numeric, 0), 'FM9G999G999'::text), ','::text, ' '::text) || 'm²'::text
+            WHEN length(round(st_area(st_union(l.geom))::numeric, 0)::character varying::text) = 8 THEN replace(to_char(round(st_area(st_union(l.geom))::numeric, 0), 'FM99G999G999'::text), ','::text, ' '::text) || 'm²'::text
+            ELSE NULL::text
+        END AS l_surf_l,
+    st_union(l.geom) AS geom
+   FROM req_lot l
+     LEFT JOIN req_bati b ON l.idgeolf = b.idgeolf
+  GROUP BY l.l_occupant, l.l_voca, l.idsite, l.carto
+WITH DATA;
+
+ALTER TABLE x_apps.xapps_geo_vmr_za_lot_plan_situation
+    OWNER TO create_sig;
+
+COMMENT ON MATERIALIZED VIEW x_apps.xapps_geo_vmr_za_lot_plan_situation
+    IS 'Vue géographique des lots fonciers dans les ZAE avec les informations de stade d''aménagement et si informations immobilère présentes (pour la cartographie des plans de situation dans GEO de l''application)';
+
+GRANT SELECT ON TABLE x_apps.xapps_geo_vmr_za_lot_plan_situation TO sig_create;
+GRANT SELECT ON TABLE x_apps.xapps_geo_vmr_za_lot_plan_situation TO sig_read;
+GRANT ALL ON TABLE x_apps.xapps_geo_vmr_za_lot_plan_situation TO create_sig;
+GRANT SELECT ON TABLE x_apps.xapps_geo_vmr_za_lot_plan_situation TO sig_edit;
