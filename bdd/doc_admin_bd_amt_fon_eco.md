@@ -31,3 +31,77 @@ Pour rappel des grands principes :
 ## Schéma fonctionnel
 
 (en refonte)
+
+## Modèle conceptuel simplifié
+
+(en refonte)
+
+## Dépendances
+
+Cette base de donnnées est dépendante ....
+
+
+## Classes d'objets
+
+L'ensemble des classes d'objets de gestion sont stockés .... ,et celles applicatives dans les schémas x_apps (pour les applications pro) ou x_apps_public (pour les applications grands publiques).
+
+ ### classes d'objets de gestion :
+  
+`[schema].[table]` : table ...
+   
+|Nom attribut | Définition | Type | Valeurs par défaut |
+|:---|:---|:---|:---|
+
+
+Particularité(s) à noter :
+
+  
+---
+
+ 
+
+### classes d'objets applicatives métiers sont classés dans le schéma x_apps :
+ 
+
+
+### classes d'objets applicatives grands publics sont classés dans le schéma x_apps_public :
+
+
+
+### classes d'objets opendata sont classés dans le schéma x_opendata :
+
+
+
+## Liste de valeurs
+
+`[schema].[table]` : Liste des valeurs permettant de décrire ....
+
+|Nom attribut | Définition | Type  | Valeurs par défaut |
+|:---|:---|:---|:---|    
+
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ code 
+
+Valeurs possibles :
+
+|Code|Valeur|
+|:---|:---|
+
+
+---
+
+
+
+## Projet QGIS pour la gestion
+
+
+## Traitement automatisé mis en place (Workflow de l'ETL FME)
+
+
+## Export Open Data
+
+
+
+
+---
