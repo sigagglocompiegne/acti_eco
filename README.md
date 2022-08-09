@@ -34,7 +34,7 @@ L’ARC privilégie donc une organisation dans laquelle l’Interface Homme Mach
 ## Voir aussi
 
 - [Standard régional d'échange des données sur l'activité économique (V2 2015)](https://geo.compiegnois.fr/documents/metiers/eco/modele_groupe_activite_economique_version2_2015.pdf)
-- [Documentation d'administration de la base du marché de l'immobilier d'entreprises](https://github.com/sigagglocompiegne/marcheimmoent/blob/master/doc/doc_admin_bd_immo.md)
+
 
 ## Jeu de données consolidé (ancienne structure toujours en production)
 
