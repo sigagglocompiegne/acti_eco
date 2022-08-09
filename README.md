@@ -17,7 +17,7 @@ Ensemble des éléments constituant la mise en oeuvre de la base de données urb
   * [ancienne vues open data](bdd/afe_23_vues_xopendate.sql)
   * [ancien privilèges](bdd/afe_99_grant.sql)  
 - [Documentation d'administration de la base](bdd/doc_admin_bd_amt_fon_eco.md) (hors Suivi du marché de l'immobilier d'entreprises)
-- [Documentation d'administration de l'application FONCIER](app/doc_admin_app_fon.md)
+
 
 
 ## Contexte
