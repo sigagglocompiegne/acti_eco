@@ -2,8 +2,6 @@
 
 # Urbanisation des données aménagements / foncières (cessions/acquisitions) / activités économiques
 
-# Documentation du standard
-
 # Changelog
 
 - 01/12/2015 : description initiale de production de la base de données urbanisée
