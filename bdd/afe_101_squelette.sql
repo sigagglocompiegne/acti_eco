@@ -28,7 +28,7 @@ DROP SEQUENCE IF EXISTS m_activite_eco.an_eco_pole_seq;
 -- SCHEMA: m_activite_eco
 
 -- DROP SCHEMA m_activite_eco ;
-
+/*
 CREATE SCHEMA m_activite_eco
     AUTHORIZATION create_sig;
 
@@ -46,7 +46,7 @@ GRANT ALL ON TABLES TO create_sig;
 ALTER DEFAULT PRIVILEGES IN SCHEMA m_activite_eco
 GRANT INSERT, SELECT, UPDATE, DELETE ON TABLES TO sig_edit;
 
-
+*/
 
 -- ####################################################################################################################################################
 -- ###                                                                                                                                              ###
@@ -72,6 +72,23 @@ ALTER SEQUENCE m_activite_eco.an_eco_pole_seq
 
 GRANT ALL ON SEQUENCE m_activite_eco.an_eco_pole_seq TO PUBLIC;
 GRANT ALL ON SEQUENCE m_activite_eco.an_eco_pole_seq TO create_sig;
+
+-- SEQUENCE: m_activite_eco.geo_eco_site_seq
+
+-- DROP SEQUENCE m_activite_eco.geo_eco_site_seq;
+
+CREATE SEQUENCE m_activite_eco.geo_eco_site_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+
+ALTER SEQUENCE m_activite_eco.geo_eco_site_seq
+    OWNER TO create_sig;
+
+GRANT ALL ON SEQUENCE m_activite_eco.geo_eco_site_seq TO PUBLIC;
+GRANT ALL ON SEQUENCE m_activite_eco.geo_eco_site_seq TO create_sig;
 
 
 -- ####################################################################################################################################################
@@ -117,7 +134,17 @@ COMMENT ON COLUMN m_activite_eco.lt_eco_dest.code
 COMMENT ON COLUMN m_activite_eco.lt_eco_dest.valeur
     IS 'Libellé de la destination principale du site ou du Pôle';
 
-
+INSERT INTO m_activite_eco.lt_eco_dest(
+            code, valeur)
+    VALUES
+    ('00','Non renseigné'),
+    ('10','Artisanat'),
+    ('20','Industrie ou R&D'),
+    ('30','Tertiaire'),
+    ('40','Transport et logistique'),
+    ('50','Commerce'),
+    ('60','Agriculture'),
+    ('70','Service/Négoce');
 
 
 
@@ -207,8 +234,8 @@ CREATE TABLE m_activite_eco.geo_eco_site
     idsite integer NOT NULL nextval('m_activite_eco.geo_eco_site_seq'::regclass),
     idsitereg character varying(7) COLLATE pg_catalog."default",
     idpole integer,
-    site_voca character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
     site_nom character varying(80) COLLATE pg_catalog."default",
+    site_voca character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
     site_etat character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
 
     typsite character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
@@ -216,13 +243,15 @@ CREATE TABLE m_activite_eco.geo_eco_site
     typo character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
     dest character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
 	
-    dest character varying(254) COLLATE pg_catalog."default",
+    dest_autre character varying(254) COLLATE pg_catalog."default",
 	
     date_crea integer,
+    
+    p_implant character varying(10) COLLATE pg_catalog."default",
 	
     commune character varying(255) COLLATE pg_catalog."default",
 	
-    p_implant character varying(10) COLLATE pg_catalog."default",
+    
     surf_brt double precision,
     surf_occ double precision,
     surf_equ double precision,
@@ -243,7 +272,7 @@ CREATE TABLE m_activite_eco.geo_eco_site
     z_paysage boolean DEFAULT false,
     z_rehab boolean DEFAULT false,
     z_epu boolean DEFAULT false,
-    z_dechet boolean DEFAULT false,
+    z_dechet character varying(80) COLLATE pg_catalog."default",
     z_tr_slect boolean DEFAULT false,
     res_ass boolean DEFAULT false,
     res_pluvia boolean DEFAULT false,
@@ -256,12 +285,12 @@ CREATE TABLE m_activite_eco.geo_eco_site
 	
     z_auto character varying(10) COLLATE pg_catalog."default",
 	
-    dauto character varying(100) COLLATE pg_catalog."default"
+    d_auto character varying(100) COLLATE pg_catalog."default"
 	
     z_dst_auto integer,
     z_tps_auto integer,
     z_ar_f character varying(80) COLLATE pg_catalog."default",
-    z_dst_ar_f double precision,
+    z_dst_ar_f integer,
     z_ar_v character varying(80) COLLATE pg_catalog."default",
     z_dst_ar_v integer,
     l_dst_ar_v integer,
@@ -272,16 +301,13 @@ CREATE TABLE m_activite_eco.geo_eco_site
     z_pmm boolean DEFAULT false,
     z_dst_pmm integer,
     serv_tc boolean DEFAULT false,
+    serv_tc_g boolean DEFAULT false,	
     circ_douce boolean DEFAULT false,
     serv_rest integer,
     serv_crech integer,
     serv_autre character varying(1000) COLLATE pg_catalog."default",
     z_aide_pb boolean DEFAULT false,
-    
-    serv_tc_g boolean NOT NULL DEFAULT false,
-    serv_tc_lig character varying(50) COLLATE pg_catalog."default",
-    serv_tc_pas integer,
-	
+
     src_geom character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
     src_date character varying(4) COLLATE pg_catalog."default" NOT NULL DEFAULT '0000'::bpchar,
     date_sai timestamp without time zone,
@@ -292,352 +318,258 @@ CREATE TABLE m_activite_eco.geo_eco_site
     observ character varying(1000) COLLATE pg_catalog."default",
     geom geometry(MultiPolygon,2154) NOT NULL,
 	
-    CONSTRAINT an_sa_site_pkey PRIMARY KEY (idsite),
-    CONSTRAINT an_sa_site_etat_fkey FOREIGN KEY (site_etat)
-        REFERENCES m_amenagement.lt_sa_etat (code) MATCH SIMPLE
+    CONSTRAINT geo_eco_site_pkey PRIMARY KEY (idsite),
+    CONSTRAINT geo_eco_site_etat_fkey FOREIGN KEY (site_etat)
+        REFERENCES m_activite_eco.lt_eco_etat (code) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION,
-    CONSTRAINT lt_sa_aidepb_fkey FOREIGN KEY (z_aide_pb)
-        REFERENCES m_economie.lt_sa_aidepb (z_aide_pb) MATCH SIMPLE
+    CONSTRAINT lt_eco_dest_fkey FOREIGN KEY (dest)
+        REFERENCES m_activite_eco.lt_eco_dest (code) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION,
-    CONSTRAINT lt_sa_dest_fkey FOREIGN KEY (dest)
-        REFERENCES m_economie.lt_sa_dest (dest) MATCH SIMPLE
+    CONSTRAINT lt_eco_typo_fkey FOREIGN KEY (typo)
+        REFERENCES m_activite_eco.lt_sa_typo (code) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION,
-    CONSTRAINT lt_sa_typo_fkey FOREIGN KEY (typo)
-        REFERENCES m_economie.lt_sa_typo (typo) MATCH SIMPLE
+    CONSTRAINT lt_eco_voca_fkey FOREIGN KEY (site_voca)
+        REFERENCES m_activite_eco.lt_eco_voca (code) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION,
-    CONSTRAINT lt_sa_voca_fkey FOREIGN KEY (site_voca)
-        REFERENCES m_economie.lt_sa_voca (site_voca) MATCH SIMPLE
+    CONSTRAINT lt_eco_typsite_fkey FOREIGN KEY (typsite)
+        REFERENCES m_activite_eco.lt_eco_typsite (code) MATCH SIMPLE
         ON UPDATE NO ACTION
-        ON DELETE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT lt_src_geom_fkey FOREIGN KEY (src_geom)
+        REFERENCES r_objet.lt_src_geom (code) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION	
 )
 WITH (
     OIDS = FALSE
 )
 TABLESPACE pg_default;
 
-ALTER TABLE m_economie.an_sa_site
+ALTER TABLE m_activite_eco.geo_eco_site
     OWNER to create_sig;
 
-GRANT ALL ON TABLE m_economie.an_sa_site TO sig_create;
+GRANT ALL ON TABLE m_activite_eco.geo_eco_site TO sig_create;
 
-GRANT SELECT ON TABLE m_economie.an_sa_site TO sig_read;
+GRANT SELECT ON TABLE m_activite_eco.geo_eco_site TO sig_read;
 
-GRANT ALL ON TABLE m_economie.an_sa_site TO create_sig;
+GRANT ALL ON TABLE m_activite_eco.geo_eco_site TO create_sig;
 
-GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_economie.an_sa_site TO sig_edit;
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_activite_eco.geo_eco_site TO sig_edit;
 
-COMMENT ON TABLE m_economie.an_sa_site
-    IS 'Information alphanumérique sur les Sites d''activités économiques. Les objets virtuels de référence sont gérés dans le schéma r_objet';
+COMMENT ON TABLE m_activite_eco.geo_eco_site
+    IS 'Classe des objets Sites d''activités économiques.';
 
-COMMENT ON COLUMN m_economie.an_sa_site.idsite
-    IS 'Identifiant du site d''activités';
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.idsite
+    IS 'Identifiant interne des site d''activités';
 
-COMMENT ON COLUMN m_economie.an_sa_site.idpole
-    IS 'Identifiant du pôle d''appartenance';
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.idsite
+    IS 'Identifiant régional des site d''activités';
 
-COMMENT ON COLUMN m_economie.an_sa_site.site_voca
-    IS 'Code de la vocation simplifiée de la zone';
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.idpole
+    IS 'Identifiant interne du pôle d''appartenance';
 
-COMMENT ON COLUMN m_economie.an_sa_site.site_nom
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.site_nom
     IS 'Libellé du site';
 
-COMMENT ON COLUMN m_economie.an_sa_site.site_etat
-    IS 'Code de l''état du site';
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.site_voca
+    IS 'Code de la vocation simplifiée de la zone (ZI, ZA, Zone commerciale, ...)';
 
-COMMENT ON COLUMN m_economie.an_sa_site.date_int
-    IS 'Date d''intégration par GéoPicardie dans la base (permet de connaître la dernière donnée intégrée)';
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.site_etat
+    IS 'Code de l''état du site (existant, création, déclassé, ...)';
 
-COMMENT ON COLUMN m_economie.an_sa_site.op_sai
-    IS 'Libellé de la personne ayant saisie la mise à jour';
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.typsite
+    IS 'Code des différents type de sites (ZAE, autre site d''activités hors ZAE, autre site, ...)';
 
-COMMENT ON COLUMN m_economie.an_sa_site.org_sai
-    IS 'Organisme de saisie dont dépend l''opérateur de saisie';
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.typo
+    IS 'Code de la typologie du site (site mononfonctionnel, ...)';
 
-COMMENT ON COLUMN m_economie.an_sa_site.typo
-    IS 'Typologie du site';
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.dest
+    IS 'Code de la destination initiale du site (défini dans les documents d''urbanisme)';
 
-COMMENT ON COLUMN m_economie.an_sa_site.dest
-    IS 'Destination initiale du site (défini dans les documents d''urbanisme)';
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.dest_autre
+    IS 'Autres distantions ou précisions sur la destination';
 
-COMMENT ON COLUMN m_economie.an_sa_site.p_implant
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.date_crea
+    IS 'Année de création du site';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.p_implant
     IS 'Première implantation des entreprises sur le site (année ou date)';
+	
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.commune
+    IS 'Libellé des communes d''assises du site d''activités';
+	
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.surf_brt
+    IS 'Surface totale du site';
+	
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.surf_occ
+    IS 'Surface totale du foncier occupé par des opérateurs économiques';
 
-COMMENT ON COLUMN m_economie.an_sa_site.z_mai_ouvr
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.surf_equ
+    IS 'Surface totale du site allouée aux espaces et équipements publics et voiries';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.surf_net
+    IS 'Surface totale du foncier disponible sur le site à vocation économique';
+	
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.surf_res
+    IS 'Surface totale du foncier réservé sur le site à vocation économique';
+
+	
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.nbetab
+    IS 'Nombre d''établissements présent sur le site';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.nbemploi
+    IS 'Nombre d''emplois présent sur le site';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.z_mai_ouvr
     IS 'Nom du maître d''ouvrage';
 
-COMMENT ON COLUMN m_economie.an_sa_site.z_compet
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.z_compet
     IS 'Nom de la collectivité ayant dans ses compétences le développement de la zone';
 
-COMMENT ON COLUMN m_economie.an_sa_site.z_amng
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.z_amng
     IS 'Nom de l''aménageur de la zone';
 
-COMMENT ON COLUMN m_economie.an_sa_site.z_gest
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.z_gest
     IS 'Nom du gestionnaire de la zone';
 
-COMMENT ON COLUMN m_economie.an_sa_site.z_anim
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.z_anim
     IS 'Nom de l''animateur de la zone';
 
-COMMENT ON COLUMN m_economie.an_sa_site.z_comm
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.z_comm
     IS 'Structure de contact pour la commercialisation';
 
-COMMENT ON COLUMN m_economie.an_sa_site.contact
-    IS 'Libellé de la personne contact pour la commercialisation';
-
-COMMENT ON COLUMN m_economie.an_sa_site.z_cession
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.z_cession
     IS 'Conditions de cession en HT (euro/m²)';
 
-COMMENT ON COLUMN m_economie.an_sa_site.z_env
-    IS 'Démarche environnementale';
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.z_env
+    IS 'Démarche environnementale engagée sur le site';
 
-COMMENT ON COLUMN m_economie.an_sa_site.z_paysage
-    IS 'Démarche paysagère';
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.z_paysage
+    IS 'Démarche paysagère engagée sur le site';
 
-COMMENT ON COLUMN m_economie.an_sa_site.z_rehab
-    IS 'Procédure de réhabilitaion du site';
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.z_rehab
+    IS 'Procédure de réhabilitaion du site en cours ou à venir ou réalisé';
 
-COMMENT ON COLUMN m_economie.an_sa_site.z_epu
-    IS 'Traitement de l''eau d''épuration';
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.z_epu
+    IS 'Présence d''un traitement de l''eau d''épuration';
 
-COMMENT ON COLUMN m_economie.an_sa_site.z_dechet
-    IS 'Libellé du gestionnaire des déchets';
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.z_dechet
+    IS 'Libellé du gestionnaire des déchets si différents de la collectivité';
 
-COMMENT ON COLUMN m_economie.an_sa_site.z_tr_slect
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.z_tr_slect
     IS 'Présence d''un tri sélectif sur le site';
 
-COMMENT ON COLUMN m_economie.an_sa_site.res_ass
-    IS 'Linéaire de réseau d''assainissement';
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.res_ass
+    IS 'Présence d''un réseau d''assainissement';
 
-COMMENT ON COLUMN m_economie.an_sa_site.res_pluvia
-    IS 'Linéaire de réseau d''eau pluviale';
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.res_pluvia
+    IS 'Présence d''un réseau d''eau pluviale';
 
-COMMENT ON COLUMN m_economie.an_sa_site.res_eau
-    IS 'Débit du réseau d''eau potable';
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.res_eau
+    IS 'Présence d''un réseau d''eau potable';
 
-COMMENT ON COLUMN m_economie.an_sa_site.res_gaz
-    IS 'Débit du réseau de gaz';
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.res_gaz
+    IS 'Présence d''un réseau de gaz';
 
-COMMENT ON COLUMN m_economie.an_sa_site.res_elect
-    IS 'Débit du réseau électrique';
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.res_elect
+    IS 'Présence d''un réseau électrique';
 
-COMMENT ON COLUMN m_economie.an_sa_site.res_net
-    IS 'Type de réseau internet';
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.res_fibre
+    IS 'Présence de la fibre optique';
+	
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.res_autre
+    IS 'Autres services liés au réseau';
 
-COMMENT ON COLUMN m_economie.an_sa_site.res_db_net
-    IS 'Débit internet';
-
-COMMENT ON COLUMN m_economie.an_sa_site.z_auto
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.z_auto
     IS 'Libellé de l''autoroute la plus proche';
-
-COMMENT ON COLUMN m_economie.an_sa_site.z_dst_auto
-    IS 'Distance en km du diffuseur autoroutier par la route';
-
-COMMENT ON COLUMN m_economie.an_sa_site.z_tps_auto
-    IS 'Temps d''accès en minutes du diffuseur autoroutier par la route';
-
-COMMENT ON COLUMN m_economie.an_sa_site.z_ar_f
-    IS 'Nom de l''aéroport fret le plus proche';
-
-COMMENT ON COLUMN m_economie.an_sa_site.z_dst_ar_f
-    IS 'Distance en km de l''aéroport de fret par la route';
-
-COMMENT ON COLUMN m_economie.an_sa_site.z_ar_v
-    IS 'Nom de l''aéroport de voyageurs le plus proche';
-
-COMMENT ON COLUMN m_economie.an_sa_site.z_dst_ar_v
-    IS 'Distance en km de l''aéroport de voyageurs par la route';
-
-COMMENT ON COLUMN m_economie.an_sa_site.z_fr_f
-    IS 'Gare de fret la plus proche';
-
-COMMENT ON COLUMN m_economie.an_sa_site.z_dst_fr_f
-    IS 'Distance en km de la gare de fret la plus proche par la route';
-
-COMMENT ON COLUMN m_economie.an_sa_site.z_fr_v
-    IS 'Gare de voyageurs la plus proche';
-
-COMMENT ON COLUMN m_economie.an_sa_site.z_dst_fr_v
-    IS 'Distance en km de la gare de voyageurs la plus proche par la route';
-
-COMMENT ON COLUMN m_economie.an_sa_site.z_pmm
-    IS 'Présence d''une plate-forme multimodale';
-
-COMMENT ON COLUMN m_economie.an_sa_site.z_dst_pmm
-    IS 'Distance en km de la plate-forme multimodale la plus proche par la route';
-
-COMMENT ON COLUMN m_economie.an_sa_site.serv_tc
-    IS 'Nombre de ligne de transport en commun desservant le site';
-
-COMMENT ON COLUMN m_economie.an_sa_site.circ_douce
-    IS 'Accès aux sites par un mode doux (pistes cyclables)';
-
-COMMENT ON COLUMN m_economie.an_sa_site.serv_rest
-    IS 'Nombre de restaurants ou à proximité immédiate';
-
-COMMENT ON COLUMN m_economie.an_sa_site.serv_crech
-    IS 'Nombre de crèches ou à proximité immédiate';
-
-COMMENT ON COLUMN m_economie.an_sa_site.serv_autre
-    IS 'Libellé des autres services disponibles sur le site';
-
-COMMENT ON COLUMN m_economie.an_sa_site.serv_collt
-    IS 'Services collectifs présent sur le site (mutualisation, partage de services)';
-
-COMMENT ON COLUMN m_economie.an_sa_site.z_aide_pb
-    IS 'Code de valeurs des aides publiques appliquées sur le site (AFR, ZFU, ZRR, aucun)';
-
-COMMENT ON COLUMN m_economie.an_sa_site.l_dated_aide_pb
-    IS 'Date de début de la période des aides publiques';
-
-COMMENT ON COLUMN m_economie.an_sa_site.l_datef_aide_pb
-    IS 'Date de fin de la période des aides publiques';
-
-COMMENT ON COLUMN m_economie.an_sa_site.date_sai
-    IS 'Date de saisie des données attributaires';
-
-COMMENT ON COLUMN m_economie.an_sa_site.date_maj
-    IS 'Date de mise à jour des données attributaires';
-
-COMMENT ON COLUMN m_economie.an_sa_site.d_paris
-    IS 'Distance en km de paris';
-
-COMMENT ON COLUMN m_economie.an_sa_site.t_paris
-    IS 'Temps d''accès à Paris en minutes';
-
-COMMENT ON COLUMN m_economie.an_sa_site.d_lille
-    IS 'Distance en km d''accès à Lille';
-
-COMMENT ON COLUMN m_economie.an_sa_site.t_lille
-    IS 'Temps d''accès à Lille en minutes';
-
-COMMENT ON COLUMN m_economie.an_sa_site.l_dauto
+	
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.d_auto
     IS 'Libellé du diffuseur autoroutier le plus proche';
 
-COMMENT ON COLUMN m_economie.an_sa_site.l_dtgvhp
-    IS 'Distance de la gare RGV Haute Picardie';
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.z_dst_auto
+    IS 'Distance en km du diffuseur autoroutier par la route';
 
-COMMENT ON COLUMN m_economie.an_sa_site.l_ttgvhp
-    IS 'Temps d''accès à la gare TGV Haute Picardie';
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.z_tps_auto
+    IS 'Temps d''accès en minutes du diffuseur autoroutier par la route';
 
-COMMENT ON COLUMN m_economie.an_sa_site.l_dtgvcdg
-    IS 'Distance de la Gare TGV Roissy-Charles de Gaulle';
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.z_ar_f
+    IS 'Nom de l''aéroport fret le plus proche';
 
-COMMENT ON COLUMN m_economie.an_sa_site.l_ttgvcdg
-    IS 'Temps d''accès à la Gare TGV Roissy-Charles de Gaulle';
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.z_dst_ar_f
+    IS 'Distance en km de l''aéroport de fret par la route';
 
-COMMENT ON COLUMN m_economie.an_sa_site.l_tgcomp
-    IS 'Temps d''accès à la gare de Compiègne';
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.z_ar_v
+    IS 'Nom de l''aéroport de voyageurs le plus proche';
 
-COMMENT ON COLUMN m_economie.an_sa_site.l_dtille
-    IS 'Distance de l''aéroport de Beauvais-Tillé';
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.z_dst_ar_v
+    IS 'Distance en km de l''aéroport de voyageurs par la route';
 
-COMMENT ON COLUMN m_economie.an_sa_site.l_ttille
-    IS 'Temps d''accès à l''aéroport de Beauvais-Tillé';
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.z_fr_f
+    IS 'Gare de fret la plus proche';
 
-COMMENT ON COLUMN m_economie.an_sa_site.l_dcdg
-    IS 'Distance de l''aéroport de Roissy-Charles de Gaulle';
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.z_dst_fr_f
+    IS 'Distance en km de la gare de fret la plus proche par la route';
 
-COMMENT ON COLUMN m_economie.an_sa_site.l_tcdg
-    IS 'Temps d''accès à l''aéroport de Roissy-Charles de Gaulle';
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.z_fr_v
+    IS 'Gare de voyageurs la plus proche';
 
-COMMENT ON COLUMN m_economie.an_sa_site.l_dlesquin
-    IS 'Distance de l''aéroport de Lille-Lesquin';
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.z_dst_fr_v
+    IS 'Distance en km de la gare de voyageurs la plus proche par la route';
 
-COMMENT ON COLUMN m_economie.an_sa_site.l_tlesquin
-    IS 'Temps d''accès à l''aéroport Lille-Lesquin';
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.z_pmm
+    IS 'Présence d''une plate-forme multimodale';
 
-COMMENT ON COLUMN m_economie.an_sa_site.zae
-    IS 'Information sur le fait que le site soit une ZAE (sauf celle indiquée dans la table m_amenagement.geo_amt_zae)  ou non (compétence ARC selon la délibération du CA du 21 décembre 2017). Cette donnée permet de créer une vue matérialisée des ZAE complètes (geo_vmr_zae) avec les informations de la table m_amenagement.geo_amt_zae';
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.z_dst_pmm
+    IS 'Distance en km de la plate-forme multimodale la plus proche par la route';
 
-COMMENT ON COLUMN m_economie.an_sa_site.l_cc_aep_lib
-    IS 'Nom du concessionnaire de l''eau potable';
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.serv_tc
+    IS 'Présence de transport en commun desservant le site';
 
-COMMENT ON COLUMN m_economie.an_sa_site.l_cc_aep_nom
-    IS 'Nom du contact du concessionnaire d''eau potable';
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.serv_tc_g
+    IS 'Gratuité des transports en commun';
 
-COMMENT ON COLUMN m_economie.an_sa_site.l_cc_aep_poste
-    IS 'Libellé du poste du contact du concessionnaire d''eau potable';
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.circ_douce
+    IS 'Présence de circulation douce accédant au site (pistes cyclables)';
 
-COMMENT ON COLUMN m_economie.an_sa_site.l_cc_aep_tel
-    IS 'Numéro de téléphone du contact du concessionnaire d''eau potable';
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.serv_rest
+    IS 'Présence de restaurants ou à proximité immédiate';
 
-COMMENT ON COLUMN m_economie.an_sa_site.l_cc_aep_telp
-    IS 'Numéro de téléphone portable du contact du concessionnaire d''eau potable';
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.serv_crech
+    IS 'Présence de crèches ou à proximité immédiate';
 
-COMMENT ON COLUMN m_economie.an_sa_site.l_cc_aep_mail
-    IS 'Mail du contact du concessionnaire d''eau potable';
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.serv_autre
+    IS 'Libellé des autres services disponibles sur le site';
 
-COMMENT ON COLUMN m_economie.an_sa_site.l_cc_elect_lib
-    IS 'Nom du concessionnaire d''électricité';
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.src_geom
+    IS 'Code du référentiel de saisie des objets sites';
 
-COMMENT ON COLUMN m_economie.an_sa_site.l_cc_elect_nom
-    IS 'Nom du contact du concessionnaire d''électricité';
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.src_date
+    IS 'Date du référentiel de saisie des objets sites';
 
-COMMENT ON COLUMN m_economie.an_sa_site.l_cc_elect_poste
-    IS 'Libellé du poste du contact du concessionnaire d''électricité';
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.date_sai
+    IS 'Date de saisie des données attributaires';
 
-COMMENT ON COLUMN m_economie.an_sa_site.l_cc_elect_tel
-    IS 'Numéro de téléphone du contact du concessionnaire d''électricité';
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.date_maj
+    IS 'Date de mise à jour des données attributaires';
 
-COMMENT ON COLUMN m_economie.an_sa_site.l_cc_elect_telp
-    IS 'Numéro de téléphone portable du contact du concessionnaire d''électricité';
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.op_sai
+    IS 'Libellé de la personne ayant saisie l''objet initialisament';
 
-COMMENT ON COLUMN m_economie.an_sa_site.l_cc_elect_mail
-    IS 'Mail du contact du concessionnaire d''électricité';
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.org_sai
+    IS 'Organisme de saisie dont dépend l''opérateur de saisie initial';
 
-COMMENT ON COLUMN m_economie.an_sa_site.l_cc_gaz_lib
-    IS 'Nom du concessionnaire de gaz';
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.epci
+    IS 'Autorité compétente';
 
-COMMENT ON COLUMN m_economie.an_sa_site.l_cc_gaz_nom
-    IS 'Nom du contact du concessionnaire de gaz';
-
-COMMENT ON COLUMN m_economie.an_sa_site.l_cc_gaz_poste
-    IS 'Libellé du poste du contact du concessionnaire de gaz';
-
-COMMENT ON COLUMN m_economie.an_sa_site.l_cc_gaz_tel
-    IS 'Numéro de téléphone du contact du concessionnaire de gaz';
-
-COMMENT ON COLUMN m_economie.an_sa_site.l_cc_gaz_telp
-    IS 'Numéro de téléphone portable du contact du concessionnaire de gaz';
-
-COMMENT ON COLUMN m_economie.an_sa_site.l_cc_gaz_mail
-    IS 'Mail du contact du concessionnaire de gaz';
-
-COMMENT ON COLUMN m_economie.an_sa_site.l_cc_tel_lib
-    IS 'Nom du concessionnaire télécom';
-
-COMMENT ON COLUMN m_economie.an_sa_site.l_cc_tel_nom
-    IS 'Nom du contact du concessionnaire télécom';
-
-COMMENT ON COLUMN m_economie.an_sa_site.l_cc_tel_poste
-    IS 'Libellé du poste du contact du concessionnaire télécom';
-
-COMMENT ON COLUMN m_economie.an_sa_site.l_cc_tel_tel
-    IS 'Numéro de téléphone du contact du concessionnaire télécom';
-
-COMMENT ON COLUMN m_economie.an_sa_site.l_cc_tel_telp
-    IS 'Numéro de téléphone portable du contact du concessionnaire télécom';
-
-COMMENT ON COLUMN m_economie.an_sa_site.l_cc_tel_mail
-    IS 'Mail du contact du concessionnaire télécom';
-
-COMMENT ON COLUMN m_economie.an_sa_site.serv_tc_g
-    IS 'Service de transport en commun gratuit';
-
-COMMENT ON COLUMN m_economie.an_sa_site.serv_tc_lig
-    IS 'Ligne de transport en commun desservant le site';
-
-COMMENT ON COLUMN m_economie.an_sa_site.serv_tc_pas
-    IS 'Nombre de passage quotidien cumulés des lignes de transport en commun desservant le site';
-
-COMMENT ON COLUMN m_economie.an_sa_site.commune
-    IS 'Libellé des communes d''assises du site d''activités';
-COMMENT ON CONSTRAINT an_sa_site_pkey ON m_economie.an_sa_site
-    IS 'Clé primaire de la table geo_sa_p_site';
-
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.observ
+    IS 'Observations diverses';
+	
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.geom
+    IS 'Géométrie des objets sites';
 
 
 
