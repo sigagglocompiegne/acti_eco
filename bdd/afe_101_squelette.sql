@@ -24,7 +24,7 @@ DROP TABLE IF EXISTS m_activite_eco.lt_eco_voca;
 DROP TABLE IF EXISTS m_activite_eco.lt_eco_typo;
 DROP TABLE IF EXISTS m_activite_eco.lt_eco_typsite;
 DROP TABLE IF EXISTS m_activite_eco.lt_eco_tdocmedia;
-DROP TABLE IF EXISTS m_activite_eco.lt_eco_tcontact;
+DROP TABLE IF EXISTS m_activite_eco.lt_eco_typcontact;
 
 /* SEQUENCE */
 DROP SEQUENCE IF EXISTS m_activite_eco.an_eco_pole_seq;
@@ -148,22 +148,22 @@ GRANT ALL ON SEQUENCE m_activite_eco.an_eco_contact_seq TO create_sig;
 
 -- ############################################################## [lk_eco_contact] ##################################################################
 
--- SEQUENCE: m_activite_eco.lk_eco_contact
+-- SEQUENCE: m_activite_eco.lk_eco_contact_seq
 
--- DROP SEQUENCE m_activite_eco.lk_eco_contact;
+-- DROP SEQUENCE m_activite_eco.lk_eco_contact_seq;
 
-CREATE SEQUENCE m_activite_eco.lk_eco_contact
+CREATE SEQUENCE m_activite_eco.lk_eco_contact_seq
     INCREMENT 1
     START 1
     MINVALUE 1
     MAXVALUE 9223372036854775807
     CACHE 1;
 
-ALTER SEQUENCE m_activite_eco.lk_eco_contact
+ALTER SEQUENCE m_activite_eco.lk_eco_contact_seq
     OWNER TO create_sig;
 
-GRANT ALL ON SEQUENCE m_activite_eco.lk_eco_contact TO PUBLIC;
-GRANT ALL ON SEQUENCE m_activite_eco.lk_eco_contact TO create_sig;
+GRANT ALL ON SEQUENCE m_activite_eco.lk_eco_contact_seq TO PUBLIC;
+GRANT ALL ON SEQUENCE m_activite_eco.lk_eco_contact_seq TO create_sig;
 
 -- ####################################################################################################################################################
 -- ###                                                                                                                                              ###
@@ -422,44 +422,44 @@ INSERT INTO m_activite_eco.lt_eco_tdocmedia(
     ('40','Fiche commerciale'),
     ('99','Autre document');
     
--- ################################################################# Domaine valeur - [lt_eco_tcontact]  ##################################################
+-- ################################################################ Domaine valeur - [lt_eco_typcontact]  ################################################
 
--- Table: m_activite_eco.lt_eco_tcontact
+-- Table: m_activite_eco.lt_eco_typcontact
 
--- DROP TABLE m_activite_eco.lt_eco_tcontact;
+-- DROP TABLE m_activite_eco.lt_eco_typcontact;
 
-CREATE TABLE m_activite_eco.lt_eco_tcontact
+CREATE TABLE m_activite_eco.lt_eco_typcontact
 (
     code character varying(2) COLLATE pg_catalog."default" NOT NULL,
     valeur character varying(30) COLLATE pg_catalog."default",
-    CONSTRAINT lt_eco_tcontact_pkkey PRIMARY KEY (code)
+    CONSTRAINT lt_eco_typcontact_pkkey PRIMARY KEY (code)
 )
 WITH (
     OIDS = FALSE
 )
 TABLESPACE pg_default;
 
-ALTER TABLE m_activite_eco.lt_eco_tcontact
+ALTER TABLE m_activite_eco.lt_eco_typcontact
     OWNER to create_sig;
 
-GRANT ALL ON TABLE m_activite_eco.lt_eco_tcontact TO sig_create;
+GRANT ALL ON TABLE m_activite_eco.lt_eco_typcontact TO sig_create;
 
-GRANT SELECT ON TABLE m_activite_eco.lt_eco_tcontact TO sig_read;
+GRANT SELECT ON TABLE m_activite_eco.lt_eco_typcontact TO sig_read;
 
-GRANT ALL ON TABLE m_activite_eco.lt_eco_tcontact TO create_sig;
+GRANT ALL ON TABLE m_activite_eco.lt_eco_typcontact TO create_sig;
 
-GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_activite_eco.lt_eco_tcontact TO sig_edit;
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_activite_eco.lt_eco_typcontact TO sig_edit;
 
-COMMENT ON TABLE m_activite_eco.lt_eco_tcontact
+COMMENT ON TABLE m_activite_eco.lt_eco_typcontact
     IS 'Liste de valeurs des types de contact';
 
-COMMENT ON COLUMN m_activite_eco.lt_eco_tcontact.code
+COMMENT ON COLUMN m_activite_eco.lt_eco_typcontact.code
     IS 'Code du type de contact';
 
-COMMENT ON COLUMN m_activite_eco.lt_eco_tcontact.valeur
+COMMENT ON COLUMN m_activite_eco.lt_eco_typcontact.valeur
     IS 'Libellé du type de contact';
 
-INSERT INTO m_activite_eco.lt_eco_tcontact(
+INSERT INTO m_activite_eco.lt_eco_typcontact(
             code, valeur)
     VALUES
     ('00','Non renseigné'),
@@ -1054,9 +1054,9 @@ CREATE TABLE m_activite_eco.lk_eco_contact
     id integer NOT NULL DEFAULT nextval('m_activite_eco.lk_eco_contact_seq'::regclass),
     idcontact integer NOT NULL,
     idobjet integer NOT NULL,
-    CONSTRAINT an_eco_pole_pkey PRIMARY KEY (idpole),
-    CONSTRAINT an_eco_contact_fkey FOREIGN KEY (idcontact)
-        REFERENCES m_activite_eco.lk_eco_contact (idcontact) MATCH SIMPLE
+    CONSTRAINT lk_eco_contact_pkey PRIMARY KEY (id),
+    CONSTRAINT lk_eco_contact_fkey FOREIGN KEY (idcontact)
+        REFERENCES m_activite_eco.an_eco_contact (idcontact) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
 )
@@ -1087,14 +1087,6 @@ COMMENT ON COLUMN m_activite_eco.lk_eco_contact.idcontact
 
 COMMENT ON COLUMN m_activite_eco.lk_eco_contact.idobjet
     IS 'Identifiant unique non signifiant de l''objet en référence';
-
-				  
--- ####################################################################################################################################################
--- ###                                                                                                                                              ###
--- ###                                                                        FKEY                                                                  ###
--- ###                                                                                                                                              ###
--- ####################################################################################################################################################
-
 
 				  
 -- ####################################################################################################################################################
