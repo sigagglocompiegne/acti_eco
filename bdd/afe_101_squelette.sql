@@ -1006,21 +1006,21 @@ COMMENT ON COLUMN m_activite_eco.an_eco_contact.idcontact
 
 
 COMMENT ON COLUMN m_activite_eco.an_eco_contact.nom
-    IS 'Identifiant unique non signifiant du contact';
+    IS 'Libellé du contact (nom, prénom ou nom de l''entreprise)';
 
 COMMENT ON COLUMN m_activite_eco.an_eco_contact.typcontact
-    IS 'Identifiant unique non signifiant du contact';
+    IS 'Type de contact';
 
 COMMENT ON COLUMN m_activite_eco.an_eco_contact.tel
-    IS 'Identifiant unique non signifiant du contact';
+    IS 'Téléphone du contact';
 
 
 COMMENT ON COLUMN m_activite_eco.an_eco_contact.telp
-    IS 'Identifiant unique non signifiant du contact';
+    IS 'Téléphone portable dui contact';
     
  
 COMMENT ON COLUMN m_activite_eco.an_eco_contact.email
-    IS 'Identifiant unique non signifiant du contact';   
+    IS 'Email du contact';   
     
 COMMENT ON COLUMN m_activite_eco.an_eco_contact.date_sai
     IS 'Date de saisie des données attributaires';
