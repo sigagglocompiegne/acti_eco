@@ -11,6 +11,11 @@
 /* TABLE */
 DROP TABLE IF EXISTS  m_activite_eco.an_eco_pole;
 DROP TABLE IF EXISTS  m_activite_eco.geo_eco_site;
+DROP TABLE IF EXISTS m_activite_eco.an_eco_media;
+DROP TABLE IF EXISTS m_activite_eco.an_eco_contact;
+
+/* TABLE DE RELATION */
+DROP TABLE IF EXISTS m_activite_eco.lk_eco_contact;
 
 /* LISTE DE VALEUR */
 DROP TABLE IF EXISTS m_activite_eco.lt_eco_dest;
@@ -18,10 +23,15 @@ DROP TABLE IF EXISTS m_activite_eco.lt_eco_etat;
 DROP TABLE IF EXISTS m_activite_eco.lt_eco_voca;
 DROP TABLE IF EXISTS m_activite_eco.lt_eco_typo;
 DROP TABLE IF EXISTS m_activite_eco.lt_eco_typsite;
+DROP TABLE IF EXISTS m_activite_eco.lt_eco_tdocmedia;
+DROP TABLE IF EXISTS m_activite_eco.lt_eco_tcontact;
 
 /* SEQUENCE */
 DROP SEQUENCE IF EXISTS m_activite_eco.an_eco_pole_seq;
 DROP SEQUENCE IF EXISTS m_activite_eco.geo_eco_site_seq;
+DROP SEQUENCE IF EXISTS m_activite_eco.an_eco_media_seq;
+DROP SEQUENCE IF EXISTS m_activite_eco.an_eco_contact_seq;
+DROP SEQUENCE IF EXISTS m_activite_eco.lk_eco_contact_seq;
 
 
 -- ####################################################################################################################################################
@@ -97,6 +107,63 @@ ALTER SEQUENCE m_activite_eco.geo_eco_site_seq
 GRANT ALL ON SEQUENCE m_activite_eco.geo_eco_site_seq TO PUBLIC;
 GRANT ALL ON SEQUENCE m_activite_eco.geo_eco_site_seq TO create_sig;
 
+
+-- ############################################################## [an_eco_media_seq] ##################################################################
+
+-- SEQUENCE: m_activite_eco.an_eco_media_seq
+
+-- DROP SEQUENCE m_activite_eco.an_eco_media_seq;
+
+CREATE SEQUENCE m_activite_eco.an_eco_media_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+
+ALTER SEQUENCE m_activite_eco.an_eco_media_seq
+    OWNER TO create_sig;
+
+GRANT ALL ON SEQUENCE m_activite_eco.an_eco_media_seq TO PUBLIC;
+GRANT ALL ON SEQUENCE m_activite_eco.an_eco_media_seq TO create_sig;
+
+-- ############################################################## [an_eco_contact_seq] ##################################################################
+
+-- SEQUENCE: m_activite_eco.an_eco_contact_seq
+
+-- DROP SEQUENCE m_activite_eco.an_eco_contact_seq;
+
+CREATE SEQUENCE m_activite_eco.an_eco_contact_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+
+ALTER SEQUENCE m_activite_eco.an_eco_contact_seq
+    OWNER TO create_sig;
+
+GRANT ALL ON SEQUENCE m_activite_eco.an_eco_contact_seq TO PUBLIC;
+GRANT ALL ON SEQUENCE m_activite_eco.an_eco_contact_seq TO create_sig;
+
+-- ############################################################## [lk_eco_contact] ##################################################################
+
+-- SEQUENCE: m_activite_eco.lk_eco_contact
+
+-- DROP SEQUENCE m_activite_eco.lk_eco_contact;
+
+CREATE SEQUENCE m_activite_eco.lk_eco_contact
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+
+ALTER SEQUENCE m_activite_eco.lk_eco_contact
+    OWNER TO create_sig;
+
+GRANT ALL ON SEQUENCE m_activite_eco.lk_eco_contact TO PUBLIC;
+GRANT ALL ON SEQUENCE m_activite_eco.lk_eco_contact TO create_sig;
 
 -- ####################################################################################################################################################
 -- ###                                                                                                                                              ###
@@ -313,6 +380,95 @@ INSERT INTO m_activite_eco.lt_eco_typsite(
     ('10','ZAE'),
     ('20','Autre site d''activité identifié (hors ZAE)'),
     ('30','Autre secteur (non exclusivement économique)');
+    
+-- ################################################################# Domaine valeur - [lt_eco_tdocmedia]  ##################################################
+
+-- Table: m_activite_eco.lt_eco_tdocmedia
+
+-- DROP TABLE m_activite_eco.lt_eco_tdocmedia;
+
+CREATE TABLE m_activite_eco.lt_eco_tdocmedia
+(
+  code character varying(2) NOT NULL, -- Code du type de site
+  valeur character varying(100), -- Libellé du type de site
+  CONSTRAINT lt_eco_tdocmedia_pkey PRIMARY KEY (code) -- Clé primaire de la table lt_eco_tdocmedia
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE m_activite_eco.lt_eco_tdocmedia
+  OWNER TO sig_create;
+
+GRANT ALL ON TABLE m_activite_eco.lt_eco_tdocmedia TO sig_create;
+
+GRANT SELECT ON TABLE m_activite_eco.lt_eco_tdocmedia TO sig_read;
+
+GRANT ALL ON TABLE m_activite_eco.lt_eco_tdocmedia TO create_sig;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_activite_eco.lt_eco_tdocmedia TO sig_edit;
+
+COMMENT ON TABLE m_activite_eco.lt_eco_tdocmedia
+  IS 'Liste de valeurs des types de médias';
+COMMENT ON COLUMN m_activite_eco.lt_eco_tdocmedia.code IS 'Code du type de média';
+COMMENT ON COLUMN m_activite_eco.lt_eco_tdocmedia.valeur IS 'Libellé du type de média';
+
+INSERT INTO m_activite_eco.lt_eco_tdocmedia(
+            code, valeur)
+    VALUES
+    ('00','Non renseigné'),
+    ('10','Photographie'),
+    ('20','Carte, Plan'),
+    ('30','Présentation'),
+    ('40','Fiche commerciale'),
+    ('99','Autre document');
+    
+-- ################################################################# Domaine valeur - [lt_eco_tcontact]  ##################################################
+
+-- Table: m_activite_eco.lt_eco_tcontact
+
+-- DROP TABLE m_activite_eco.lt_eco_tcontact;
+
+CREATE TABLE m_activite_eco.lt_eco_tcontact
+(
+    code character varying(2) COLLATE pg_catalog."default" NOT NULL,
+    valeur character varying(30) COLLATE pg_catalog."default",
+    CONSTRAINT lt_eco_tcontact_pkkey PRIMARY KEY (code)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE m_activite_eco.lt_eco_tcontact
+    OWNER to create_sig;
+
+GRANT ALL ON TABLE m_activite_eco.lt_eco_tcontact TO sig_create;
+
+GRANT SELECT ON TABLE m_activite_eco.lt_eco_tcontact TO sig_read;
+
+GRANT ALL ON TABLE m_activite_eco.lt_eco_tcontact TO create_sig;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_activite_eco.lt_eco_tcontact TO sig_edit;
+
+COMMENT ON TABLE m_activite_eco.lt_eco_tcontact
+    IS 'Liste de valeurs des types de contact';
+
+COMMENT ON COLUMN m_activite_eco.lt_eco_tcontact.code
+    IS 'Code du type de contact';
+
+COMMENT ON COLUMN m_activite_eco.lt_eco_tcontact.valeur
+    IS 'Libellé du type de contact';
+
+INSERT INTO m_activite_eco.lt_eco_tcontact(
+            code, valeur)
+    VALUES
+    ('00','Non renseigné'),
+    ('10','Entreprise (standard)'),
+    ('11','Directeur - Responsable'),
+    ('12','Assistante'),
+    ('13','DRH'),
+    ('20','Propriétaire'),
+    ('30','Commercialisateur');
 
 -- ####################################################################################################################################################
 -- ###                                                                                                                                              ###
@@ -321,7 +477,7 @@ INSERT INTO m_activite_eco.lt_eco_typsite(
 -- ####################################################################################################################################################
 
 
--- ############################################################## [geo_eco_pole] ######################################################################
+-- ############################################################## [an_eco_pole] ######################################################################
 
 -- Table: m_activite_eco.an_eco_pole
 
@@ -364,7 +520,10 @@ COMMENT ON TABLE m_activite_eco.an_eco_pole
     IS 'Table alphanumérique recensement les pôle d''activités économiques (regroupement de sites). Usage statistique au niveau Régional';
 
 COMMENT ON COLUMN m_activite_eco.an_eco_pole.idpole
-    IS 'Identifiant unique du pôle d''activité';
+    IS 'Identifiant unique non signifiant du pôle d''activité';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_pole.idpolereg
+    IS 'Identifiant unique régional du pôle d''activité';
 
 COMMENT ON COLUMN m_activite_eco.an_eco_pole.nom_pole
     IS 'Libellé du pôle d''activités';
@@ -403,30 +562,20 @@ CREATE TABLE m_activite_eco.geo_eco_site
     site_nom character varying(80) COLLATE pg_catalog."default",
     site_voca character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
     site_etat character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
-
     typsite character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
-	
     typo character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
     dest character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
-	
     dest_autre character varying(254) COLLATE pg_catalog."default",
-	
     date_crea integer,
-    
     p_implant character varying(10) COLLATE pg_catalog."default",
-	
     commune character varying(255) COLLATE pg_catalog."default",
-	
-    
     surf_brt double precision,
     surf_occ double precision,
-    surf_equ double precision,
-	
+    surf_equ double precision,	
     surf_net double precision,
     surf_res double precision,	
     nbetab integer,
-    nbemploi integer,
-	
+    nbemploi integer,	
     z_mai_ouvr character varying(80) COLLATE pg_catalog."default",
     z_compet character varying(80) COLLATE pg_catalog."default",
     z_amng character varying(80) COLLATE pg_catalog."default",
@@ -445,14 +594,10 @@ CREATE TABLE m_activite_eco.geo_eco_site
     res_eau boolean DEFAULT false,
     res_gaz boolean DEFAULT false,
     res_elect boolean DEFAULT false,
-    res_fibre boolean DEFAULT false,
-	
-    res_autre character varying(1000) COLLATE pg_catalog."default",
-	
-    z_auto character varying(10) COLLATE pg_catalog."default",
-	
-    d_auto character varying(100) COLLATE pg_catalog."default",
-	
+    res_fibre boolean DEFAULT false,	
+    res_autre character varying(1000) COLLATE pg_catalog."default",	
+    z_auto character varying(10) COLLATE pg_catalog."default",	
+    d_auto character varying(100) COLLATE pg_catalog."default",	
     z_dst_auto integer,
     z_tps_auto integer,
     z_ar_f character varying(80) COLLATE pg_catalog."default",
@@ -473,7 +618,6 @@ CREATE TABLE m_activite_eco.geo_eco_site
     serv_crech integer,
     serv_autre character varying(1000) COLLATE pg_catalog."default",
     z_aide_pb boolean DEFAULT false,
-
     src_geom character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
     src_date character varying(4) COLLATE pg_catalog."default" NOT NULL DEFAULT '0000'::bpchar,
     date_sai timestamp without time zone,
@@ -482,8 +626,7 @@ CREATE TABLE m_activite_eco.geo_eco_site
     org_sai character varying(80) COLLATE pg_catalog."default",
     epci character varying(10) COLLATE pg_catalog."default",
     observ character varying(1000) COLLATE pg_catalog."default",
-    geom geometry(MultiPolygon,2154) NOT NULL,
-	
+    geom geometry(MultiPolygon,2154) NOT NULL,	
     CONSTRAINT geo_eco_site_pkey PRIMARY KEY (idsite),
     CONSTRAINT geo_eco_site_etat_fkey FOREIGN KEY (site_etat)
         REFERENCES m_activite_eco.lt_eco_etat (code) MATCH SIMPLE
@@ -530,13 +673,13 @@ COMMENT ON TABLE m_activite_eco.geo_eco_site
     IS 'Classe des objets Sites d''activités économiques.';
 
 COMMENT ON COLUMN m_activite_eco.geo_eco_site.idsite
-    IS 'Identifiant interne des site d''activités';
+    IS 'Identifiant interne non signifiant des site d''activités';
 
 COMMENT ON COLUMN m_activite_eco.geo_eco_site.idsite
     IS 'Identifiant régional des site d''activités';
 
 COMMENT ON COLUMN m_activite_eco.geo_eco_site.idpole
-    IS 'Identifiant interne du pôle d''appartenance';
+    IS 'Identifiant interne non signifiant du pôle d''appartenance';
 
 COMMENT ON COLUMN m_activite_eco.geo_eco_site.site_nom
     IS 'Libellé du site';
@@ -582,7 +725,6 @@ COMMENT ON COLUMN m_activite_eco.geo_eco_site.surf_net
 	
 COMMENT ON COLUMN m_activite_eco.geo_eco_site.surf_res
     IS 'Surface totale du foncier réservé sur le site à vocation économique';
-
 	
 COMMENT ON COLUMN m_activite_eco.geo_eco_site.nbetab
     IS 'Nombre d''établissements présent sur le site';
@@ -737,8 +879,214 @@ COMMENT ON COLUMN m_activite_eco.geo_eco_site.observ
 COMMENT ON COLUMN m_activite_eco.geo_eco_site.geom
     IS 'Géométrie des objets sites';
 
+-- ############################################################## [an_eco_media] ##################################################################
+
+-- Table: m_activite_eco.an_eco_media
+
+-- DROP TABLE m_activite_eco.an_eco_media;
+
+CREATE TABLE m_activite_eco.an_eco_media
+(
+    gid integer NOT NULL DEFAULT nextval('m_activite_eco.an_eco_media_seq'::regclass),
+    id text COLLATE pg_catalog."default",
+    media text COLLATE pg_catalog."default",
+    miniature bytea,
+    n_fichier text COLLATE pg_catalog."default",
+    t_fichier text COLLATE pg_catalog."default",
+    op_sai character varying(20) COLLATE pg_catalog."default",
+    date_sai timestamp without time zone,
+    l_doc character varying(100) COLLATE pg_catalog."default",
+    t_doc character varying(2) COLLATE pg_catalog."default" DEFAULT '00',	
+    d_photo timestamp without time zone,	
+    alaune boolean NOT NULL DEFAULT false,
+    CONSTRAINT an_eco_media_pkey PRIMARY KEY (gid),
+    CONSTRAINT an_eco_media_t_doc_fkey FOREIGN KEY (t_doc)
+    REFERENCES m_activite_eco.lt_eco_tdocmedia (code) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE m_activite_eco.an_eco_media
+    OWNER to create_sig;
+
+GRANT ALL ON TABLE m_activite_eco.an_eco_media TO sig_create;
+
+GRANT SELECT ON TABLE m_activite_eco.an_eco_media TO sig_read;
+
+GRANT ALL ON TABLE m_activite_eco.an_eco_media TO create_sig;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_activite_eco.an_eco_media TO sig_edit;
+
+COMMENT ON TABLE m_activite_eco.an_eco_media
+    IS 'Table gérant les documents intégrés pour la gestion des données du marché immobilier d''entreprises';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_media.id
+    IS 'Identifiant interne non signifiant de l''objet saisi';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_media.media
+    IS 'Champ Média de GEO';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_media.miniature
+    IS 'Champ miniature de GEO';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_media.n_fichier
+    IS 'Nom du fichier';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_media.t_fichier
+    IS 'Type de média dans GEO';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_media.op_sai
+    IS 'Opérateur de saisie (par défaut login de connexion à GEO)';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_media.date_sai
+    IS 'Date de la saisie du document';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_media.l_doc
+    IS 'Titre du document ou légère description';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_media.d_photo
+    IS 'Date de la prise de vue';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_media.alaune
+    IS 'Média poussé à la une de l''annonce immobilière';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_media.gid
+    IS 'Compteur (identifiant interne)';
+
+-- ############################################################## [an_eco_contact] ##################################################################
+
+-- Table: m_activite_eco.an_eco_contact
+
+-- DROP TABLE m_activite_eco.an_eco_contact;
+
+CREATE TABLE m_activite_eco.an_eco_contact
+(
+    idcontact integer NOT NULL DEFAULT nextval('m_activite_eco.an_eco_contact_seq'::regclass),
+    nom character varying(100) COLLATE pg_catalog."default",
+    typcontact character varying(2) COLLATE pg_catalog."default",
+    tel character varying(14) COLLATE pg_catalog."default",
+    telp character varying(14) COLLATE pg_catalog."default",
+    email character varying(100) COLLATE pg_catalog."default",
+    date_sai timestamp without time zone,
+    date_maj timestamp without time zone,
+    op_sai character varying(80) COLLATE pg_catalog."default",
+    epci character varying(10) COLLATE pg_catalog."default",
+    observ character varying(1000) COLLATE pg_catalog."default",
+    CONSTRAINT an_eco_contact_pkey PRIMARY KEY (idcontact),
+    CONSTRAINT lt_eco_typcontact_fkey FOREIGN KEY (typcontact)
+        REFERENCES an_eco_contact.lt_eco_typcontact (code) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE m_activite_eco.an_eco_contact
+    OWNER to create_sig;
+
+GRANT ALL ON TABLE m_activite_eco.an_eco_contact TO sig_create;
+
+GRANT SELECT ON TABLE m_activite_eco.an_eco_contact TO sig_read;
+
+GRANT ALL ON TABLE m_activite_eco.an_eco_contact TO create_sig;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_activite_eco.an_eco_contact TO sig_edit;
+
+COMMENT ON TABLE m_activite_eco.an_eco_contact
+    IS 'Table alphanumérique de l''ensemble des contacts liés à la thématique activité économique';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_contact.idcontact
+    IS 'Identifiant unique non signifiant du contact';
 
 
+COMMENT ON COLUMN m_activite_eco.an_eco_contact.nom
+    IS 'Identifiant unique non signifiant du contact';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_contact.typcontact
+    IS 'Identifiant unique non signifiant du contact';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_contact.tel
+    IS 'Identifiant unique non signifiant du contact';
+
+
+COMMENT ON COLUMN m_activite_eco.an_eco_contact.telp
+    IS 'Identifiant unique non signifiant du contact';
+    
+ 
+COMMENT ON COLUMN m_activite_eco.an_eco_contact.email
+    IS 'Identifiant unique non signifiant du contact';   
+    
+COMMENT ON COLUMN m_activite_eco.an_eco_contact.date_sai
+    IS 'Date de saisie des données attributaires';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_contact.date_maj
+    IS 'Date de mise à jour des données attributaires';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_contact.op_sai
+    IS 'Libellé de la personne ayant saisie l''objet initialisament';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_contact.epci
+    IS 'Autorité compétente';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_contact.observ
+    IS 'Observations diverses';
+
+-- ####################################################################################################################################################
+-- ###                                                                                                                                              ###
+-- ###                                                             TABLE DE RELATION                                                                ### 
+-- ###                                                                                                                                              ###
+-- ####################################################################################################################################################
+
+-- ############################################################## [lk_eco_contact] ####################################################################
+
+-- Table: m_activite_eco.lk_eco_contact
+
+-- DROP TABLE m_activite_eco.lk_eco_contact;
+
+CREATE TABLE m_activite_eco.lk_eco_contact
+(
+    id integer NOT NULL DEFAULT nextval('m_activite_eco.lk_eco_contact_seq'::regclass),
+    idcontact integer NOT NULL,
+    idobjet integer NOT NULL,
+    CONSTRAINT an_eco_pole_pkey PRIMARY KEY (idpole),
+    CONSTRAINT an_eco_contact_fkey FOREIGN KEY (idcontact)
+        REFERENCES m_activite_eco.lk_eco_contact (idcontact) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE m_activite_eco.lk_eco_contact
+    OWNER to create_sig;
+
+GRANT ALL ON TABLE m_activite_eco.lk_eco_contact TO sig_create;
+
+GRANT SELECT ON TABLE m_activite_eco.lk_eco_contact TO sig_read;
+
+GRANT ALL ON TABLE m_activite_eco.lk_eco_contact TO create_sig;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_activite_eco.lk_eco_contact TO sig_edit;
+
+COMMENT ON TABLE m_activite_eco.lk_eco_contact
+    IS 'Table alphanumérique de l''ensemble des contacts liés à la thématique activité économique';
+
+COMMENT ON COLUMN m_activite_eco.lk_eco_contact.id
+    IS 'Identifiant unique non signifiant';
+
+COMMENT ON COLUMN m_activite_eco.lk_eco_contact.idcontact
+    IS 'Identifiant unique non signifiant du contact';
+
+COMMENT ON COLUMN m_activite_eco.lk_eco_contact.idobjet
+    IS 'Identifiant unique non signifiant de l''objet en référence';
 
 				  
 -- ####################################################################################################################################################
