@@ -8,6 +8,9 @@
 
 -- NETTOYAGE
 
+/* VIEW */
+DROP VIEW IF EXISTS m_activite_eco.geo_v_eco_lot;
+
 /* TABLE */
 DROP TABLE IF EXISTS  m_activite_eco.an_eco_pole;
 DROP TABLE IF EXISTS  m_activite_eco.geo_eco_site;
@@ -15,6 +18,7 @@ DROP TABLE IF EXISTS m_activite_eco.an_eco_media;
 DROP TABLE IF EXISTS m_activite_eco.an_eco_contact CASCADE;
 DROP TABLE IF EXISTS m_activite_eco.an_eco_evenmt;
 DROP TABLE IF EXISTS m_urbanisme_reg.geo_proced;
+DROP TABLE IF EXISTS m_activite_eco.an_eco_lot;
 
 /* TABLE DE RELATION */
 DROP TABLE IF EXISTS m_activite_eco.lk_eco_contact;
@@ -32,6 +36,7 @@ DROP TABLE IF EXISTS m_urbanisme_reg.lt_proc_typconso;
 DROP TABLE IF EXISTS m_urbanisme_reg.lt_proc_phase;
 DROP TABLE IF EXISTS m_urbanisme_reg.lt_proc_typ;
 DROP TABLE IF EXISTS m_urbanisme_reg.lt_proc_typfon;
+DROP TABLE IF EXISTS m_activite_eco.lt_eco_tact;
 
 /* SEQUENCE */
 DROP SEQUENCE IF EXISTS m_activite_eco.an_eco_pole_seq;
@@ -1806,6 +1811,425 @@ COMMENT ON COLUMN m_activite_eco.an_eco_lot.commune
 -- ####################################################################################################################################################
 -- ###                                                                                                                                              ###
 -- ###                                                                INDEX                                                                         ###
+-- ###                                                                                                                                              ###
+-- ####################################################################################################################################################
+
+-- ####################################################################################################################################################
+-- ###                                                                                                                                              ###
+-- ###                                                                FONCTION                                                                      ###
+-- ###                                                                                                                                              ###
+-- ####################################################################################################################################################
+
+-- FUNCTION: m_activite_eco.ft_m_delete_lot_eco()
+
+-- DROP FUNCTION m_activite_eco.ft_m_delete_lot_eco();
+
+CREATE FUNCTION m_activite_eco.ft_m_delete_lot_eco()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$
+
+
+BEGIN
+
+    DELETE FROM m_foncier.an_cession WHERE idces=(SELECT lf.idces FROM m_foncier.an_cession f, m_foncier.lk_cession_lot lf WHERE f.idces=lf.idces AND lf.idgeolf=old.idgeolf);
+    DELETE FROM m_foncier.lk_cession_lot WHERE idgeolf=old.idgeolf;
+    DELETE FROM m_activite_eco.an_eco_lot WHERE idgeolf=old.idgeolf;
+    DELETE FROM r_objet.geo_objet_fon_lot WHERE idgeolf=old.idgeolf;
+    DELETE FROM m_amenagement.an_amt_lot_stade WHERE idgeolf=old.idgeolf;
+    return new ;
+
+END;
+
+$BODY$;
+
+ALTER FUNCTION m_activite_eco.ft_m_delete_lot_eco()
+    OWNER TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_delete_lot_eco() TO PUBLIC;
+
+GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_delete_lot_eco() TO create_sig;
+
+COMMENT ON FUNCTION m_activite_eco.ft_m_delete_lot_eco()
+    IS 'Fonction gérant la suppression des données correspondant à la gestion des lots à vocation économique';
+
+-- FUNCTION: m_economie.ft_m_insert_lot_eco()
+
+-- DROP FUNCTION m_economie.ft_m_insert_lot_eco();
+
+CREATE FUNCTION m_activite_eco.ft_m_insert_lot_eco()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$
+
+DECLARE v_idces integer;
+DECLARE v_idgeolf integer;
+DECLARE lot_surf integer;
+
+BEGIN
+
+     v_idgeolf := (SELECT nextval('idgeo_seq'::regclass));
+
+     INSERT INTO r_objet.geo_objet_fon_lot SELECT v_idgeolf,new.op_sai,new.ref_spa,null,'20',new.geom,now(),null,new.l_nom;
+     INSERT INTO m_amenagement.an_amt_lot_stade SELECT v_idgeolf,
+                                                 CASE WHEN new.idsite IS NULL or new.idsite = '' THEN
+						 (
+							SELECT DISTINCT
+								idsite 
+							FROM 
+								r_objet.geo_objet_ope
+							WHERE
+								st_intersects(geo_objet_ope.geom,ST_PointOnSurface(new.geom)) = true AND idsite <> '60159ak'
+								
+						  )
+						  ELSE
+						  new.idsite
+						  END
+						  ,
+						  new.stade_amng,
+						  new.l_amng2,
+						  new.stade_comm,
+						  new.l_comm2,
+						  new.l_comm2_12,
+						  new.etat_occup;
+
+     lot_surf:=round(cast(st_area(new.geom) as numeric),0);
+
+    -- insertion des lots uniquements économiques (pour la vente) dans la table métier économie
+    -- recherche si le lot dessiner est dans un site activité : si oui copie une ligne dans le métier eco et foncier, si non copie uniquement dans le métier foncier
+    
+
+						INSERT INTO m_activite_eco.an_eco_lot SELECT v_idgeolf,
+						 CASE WHEN new.idsite IS NULL or new.idsite = '' THEN
+						 (
+							SELECT DISTINCT
+								idsite 
+							FROM 
+								r_objet.geo_objet_ope
+							WHERE
+								st_intersects(geo_objet_ope.geom,ST_PointOnSurface(new.geom)) = true AND idsite <> '60159ak'
+								
+						  ) 
+                                                  ELSE
+						  new.idsite
+						  END   
+						  , -- recherche idsite
+
+						  lot_surf,
+						
+								   CASE WHEN length(cast (lot_surf as character varying)) >= 1 and length(cast (lot_surf as character varying)) <= 3 THEN lot_surf || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 4 THEN replace(to_char(lot_surf,'FM9G999'),',',' ') || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 5 THEN replace(to_char(lot_surf,'FM99G999'),',',' ') || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 6 THEN replace(to_char(lot_surf,'FM999G999'),',',' ') || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 7 THEN replace(to_char(lot_surf,'FM9G999G999'),',',' ') || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 8 THEN replace(to_char(lot_surf,'FM99G999G999'),',',' ') || 'm²'
+								   END,
+						  null,
+						  new.op_sai_att,
+						  new.org_sai_att,
+						  new.tact,
+						  new.tact_99,
+						  new.cnom,
+						  new.lnom,
+						  new.pvente_l,
+						  new.pcess_l,
+						  new.eff_dep,
+						  new.eff_n5,
+						  new.conv,
+						  new.datefin_conv,
+						  new.observ,
+						  now(),
+						  now(),
+						  new.bati,
+						  new.pc_depot,
+						  new.pc_accord,
+						  new.pc_tra,
+						  new.pc_fin,
+						  new.pvente_e,
+						  new.pcess,
+						  null,
+						  null,
+						  null,
+						  null,
+						  new.occupant,
+						  null,
+						  (select string_agg(insee, ', ') from r_osm.geo_osm_commune where st_intersects(st_buffer(new.geom,-1),geom)),
+						  (select string_agg(commune, ', ') from r_osm.geo_osm_commune where st_intersects(st_buffer(new.geom,-1),geom))
+						  ;
+						  
+						  
+						 			
+     
+     
+
+     -- calcul de l'identifiant du dossier de cession
+     v_idces := (SELECT nextval('m_foncier.ces_seq'::regclass));
+
+     -- insertion de tous lots fonciers dans la table métier foncier
+     INSERT INTO m_foncier.lk_cession_lot SELECT v_idgeolf, v_idces;	
+
+     -- insertion d'une ligne dans an_cession en créant un idces qui est lui même réinjecté dans lk_cession_lot
+
+     /* ATTENTION : LEUR DE LA MISE EN PRODUCTION REMETTRE DANS L'ORDRE LES CHAMPS SUIVANTS IDCES, L_COMPO, L_OBSERV ==> cd table an_cession pour vérification */
+     
+     INSERT INTO m_foncier.an_cession VALUES 	(
+						v_idces, -- idces
+						'10',
+						false, -- relation
+						'00',
+						'00',
+						null,
+						null,
+						null,
+						(SELECT insee FROM r_osm.geo_osm_commune WHERE st_intersects(st_pointonsurface(new.geom),geom)),
+						null,
+						'00',
+						new.l_lnom,
+						null,
+						null,
+						null,
+						null,
+						null,
+						null,
+						null,
+						'00',
+						'00',
+						null,
+						null,
+						'00',
+						null,
+						null,
+						null,
+						false,
+						false,
+						false,
+						false,
+						false,
+						null,
+						null,
+						null,
+						false,
+						false,
+						false,
+						null,
+						null,
+						null,
+						null,
+						null,
+						CASE WHEN new.idsite IS NULL or new.idsite = '' THEN
+						(SELECT DISTINCT
+								idsite 
+							FROM 
+								r_objet.geo_objet_ope
+							WHERE
+								st_intersects(geo_objet_ope.geom,st_pointonsurface(new.geom)) = true AND idsite <> '60159ak'
+								
+							)
+						  ELSE
+						  new.idsite
+						  END
+						,
+							null
+						);
+
+     return new ;
+
+END;
+
+$BODY$;
+
+ALTER FUNCTION m_activite_eco.ft_m_insert_lot_eco()
+    OWNER TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_insert_lot_eco() TO PUBLIC;
+
+GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_insert_lot_eco() TO create_sig;
+
+COMMENT ON FUNCTION m_activite_eco.ft_m_insert_lot_eco()
+    IS 'Fonction gérant la mise à jour des données correspondant à la gestion des lots à vocation économique';
+
+
+-- FUNCTION: m_activite_eco.ft_m_modif_lot_eco()
+
+-- DROP FUNCTION m_activite_eco.ft_m_modif_lot_eco();
+
+CREATE FUNCTION m_activite_eco.ft_m_modif_lot_eco()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$
+
+DECLARE DECLARE lot_surf integer;
+
+BEGIN
+
+--calcul de la surface de l'objet
+lot_surf:=round(cast(st_area(new.geom) as numeric),0);
+
+		UPDATE r_objet.geo_objet_fon_lot SET geom = new.geom, date_maj = now(), src_geom = new.ref_spa, op_sai=new.op_sai,l_nom = new.l_nom WHERE idgeolf = new.idgeolf;
+
+		UPDATE m_amenagement.an_amt_lot_stade SET stade_amng = new.stade_amng, l_amng2 = new.l_amng2, stade_comm = new.stade_comm, l_comm2 = new.l_comm2, l_comm2_12 = new.l_comm2_12, etat_occup =  new.etat_occup WHERE idgeolf = new.idgeolf;
+
+		UPDATE m_activite_eco.an_eco_lot SET
+							surf = CASE WHEN (new.surf IS NULL OR St_equals(new.geom,old.geom) IS FALSE) THEN lot_surf ELSE new.surf END ,
+							l_surf_l = 
+								   CASE WHEN length(cast ((CASE WHEN (new.surf IS NULL OR St_equals(new.geom,old.geom) IS FALSE) THEN lot_surf ELSE new.surf END) as character varying)) >= 1 and length(cast ((CASE WHEN (new.surf IS NULL OR St_equals(new.geom,old.geom) IS FALSE) THEN lot_surf ELSE new.surf END) as character varying)) <= 3 THEN (CASE WHEN (new.surf IS NULL OR St_equals(new.geom,old.geom) IS FALSE) THEN lot_surf ELSE new.surf END) || 'm²'
+								   WHEN length(cast ((CASE WHEN (new.surf IS NULL OR St_equals(new.geom,old.geom) IS FALSE) THEN lot_surf ELSE new.surf END) as character varying)) = 4 THEN replace(to_char((CASE WHEN (new.surf IS NULL OR St_equals(new.geom,old.geom) IS FALSE) THEN lot_surf ELSE new.surf END),'FM9G999'),',',' ') || 'm²'
+								   WHEN length(cast ((CASE WHEN (new.surf IS NULL OR St_equals(new.geom,old.geom) IS FALSE) THEN lot_surf ELSE new.surf END) as character varying)) = 5 THEN replace(to_char((CASE WHEN (new.surf IS NULL OR St_equals(new.geom,old.geom) IS FALSE) THEN lot_surf ELSE new.surf END),'FM99G999'),',',' ') || 'm²'
+								   WHEN length(cast ((CASE WHEN (new.surf IS NULL OR St_equals(new.geom,old.geom) IS FALSE) THEN lot_surf ELSE new.surf END) as character varying)) = 6 THEN replace(to_char((CASE WHEN (new.surf IS NULL OR St_equals(new.geom,old.geom) IS FALSE) THEN lot_surf ELSE new.surf END),'FM999G999'),',',' ') || 'm²'
+								   WHEN length(cast ((CASE WHEN (new.surf IS NULL OR St_equals(new.geom,old.geom) IS FALSE) THEN lot_surf ELSE new.surf END) as character varying)) = 7 THEN replace(to_char((CASE WHEN (new.surf IS NULL OR St_equals(new.geom,old.geom) IS FALSE) THEN lot_surf ELSE new.surf END),'FM9G999G999'),',',' ') || 'm²'
+								   WHEN length(cast ((CASE WHEN (new.surf IS NULL OR St_equals(new.geom,old.geom) IS FALSE) THEN lot_surf ELSE new.surf END) as character varying)) = 8 THEN replace(to_char((CASE WHEN (new.surf IS NULL OR St_equals(new.geom,old.geom) IS FALSE) THEN lot_surf ELSE new.surf END),'FM99G999G999'),',',' ') || 'm²'
+								   END,
+							date_maj = now(),
+							op_sai = new.op_sai_att,
+							org_sai = new.org_sai_att,
+							tact = new.tact,
+							tact_99 = new.tact_99,
+							cnom = new.cnom,
+							lnom = new.lnom,
+							pvente_e = new.pvente_e,
+							pvente_l = new.pvente_e || '€/m²',
+							pcess_e = new.pcess,
+							pcess_l = new.pcess || '€/m²',
+							eff_dep = new.eff_dep,
+							eff_n5 = new.eff_n5,
+							conv = new.conv,
+							datefin_conv = new.datefin_conv,
+							observ = new.observ,
+							bati = new.bati,
+							pc_depot = new.pc_depot,
+							pc_accord = new.pc_accord,
+							pc_tra = new.pc_tra,
+							pc_fin = new.pc_fin,
+							pc_num=new.pc_num,
+							pc_mo=new.pc_mo,
+							pers_v=new.pers_v,
+							oripro = new.oripro,
+							occupant=new.occupant,
+							descrip=new.descrip
+		WHERE an_sa_lot.idgeolf=new.idgeolf;
+
+     return new;
+END
+$BODY$;
+
+ALTER FUNCTION m_activite_eco.ft_m_modif_lot_eco()
+    OWNER TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_modif_lot_eco() TO PUBLIC;
+
+GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_modif_lot_eco() TO create_sig;
+
+
+
+-- ####################################################################################################################################################
+-- ###                                                                                                                                              ###
+-- ###                                                                VUE                                                                           ###
+-- ###                                                                                                                                              ###
+-- ####################################################################################################################################################
+
+-- View: m_activite_eco.geo_v_eco_lot
+
+-- DROP VIEW m_activite_eco.geo_v_eco_lot;
+
+CREATE OR REPLACE VIEW m_activite_eco.geo_v_eco_lot
+ AS
+ SELECT o.idgeolf,
+    o.op_sai,
+    o.src_geom AS ref_spa,
+    o.sup_m2,
+    o.l_voca,
+    o.l_nom,
+    o.date_sai,
+    o.date_maj,
+    f.idsite,
+    s.stade_amng,
+    s.l_amng2,
+    s.stade_comm,
+    s.l_comm2,
+    s.l_comm2_12,
+    f.pers_v,
+    s.etat_occup,
+    f.surf,
+    f.surf_l,
+    f.date_sai AS date_sai_att,
+    f.date_maj AS date_maj_att,
+    f.date_int,
+    f.op_sai AS op_sai_att,
+    f.org_sai AS org_sai_att,
+    f.tact,
+    f.tact_99,
+    f.cnom,
+    f.lnom,
+    f.occupant,
+    f.pvente_e,
+    f.pvente_e AS l_pvente,
+    f.pvente_l,
+    f.pcess_e AS l_pcess,
+    f.pcess_l,
+    f.eff_dep,
+    f.eff_n5,
+    f.conv,
+    f.datefin_conv,
+    f.observ,
+    f.bati,
+    f.pc_depot,
+    f.pc_accord,
+    f.pc_tra,
+    f.pc_fin,
+    f.pc_num,
+    f.pc_mo,
+    f.oripro,
+    f.descrip,
+    f.commune,
+    o.geom,
+    false AS maj_plan
+   FROM m_activite_eco.an_eco_lot f,
+    r_objet.geo_objet_fon_lot o,
+    m_amenagement.an_amt_lot_stade s
+  WHERE o.l_voca::text = '20'::text AND f.idgeolf = o.idgeolf AND o.idgeolf = s.idgeolf;
+
+ALTER TABLE m_activite_eco.geo_v_eco_lot
+    OWNER TO create_sig;
+COMMENT ON VIEW m_activite_eco.geo_v_eco_lot
+    IS 'Vue éditable des lots à vocation économique';
+
+GRANT ALL ON TABLE m_activite_eco.geo_v_eco_lot TO sig_create;
+GRANT SELECT ON TABLE m_activite_eco.geo_v_eco_lot TO sig_read;
+GRANT ALL ON TABLE m_activite_eco.geo_v_eco_lot TO create_sig;
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_activite_eco.geo_v_eco_lot TO sig_edit;
+
+CREATE TRIGGER t_t1_delete_lot_eco
+    INSTEAD OF DELETE
+    ON m_activite_eco.geo_v_eco_lot
+    FOR EACH ROW
+    EXECUTE PROCEDURE m_activite_eco.ft_m_delete_lot_eco();
+
+
+CREATE TRIGGER t_t2_insert_lot_eco
+    INSTEAD OF INSERT
+    ON m_activite_eco.geo_v_eco_lot
+    FOR EACH ROW
+    EXECUTE PROCEDURE m_activite_eco.ft_m_insert_lot_eco();
+
+
+CREATE TRIGGER t_t3_modif_lot_eco
+    INSTEAD OF UPDATE 
+    ON m_activite_eco.geo_v_eco_lot
+    FOR EACH ROW
+    EXECUTE PROCEDURE m_activite_eco.ft_m_modif_lot_eco();
+
+
+
+
+-- ####################################################################################################################################################
+-- ###                                                                                                                                              ###
+-- ###                                                          VUE MATERIALISEE                                                                    ###
 -- ###                                                                                                                                              ###
 -- ####################################################################################################################################################
 
