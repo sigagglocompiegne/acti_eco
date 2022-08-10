@@ -34,7 +34,7 @@ DROP SEQUENCE IF EXISTS m_activite_eco.geo_eco_site_seq;
 DROP SEQUENCE IF EXISTS m_activite_eco.an_eco_media_seq;
 DROP SEQUENCE IF EXISTS m_activite_eco.an_eco_contact_seq;
 DROP SEQUENCE IF EXISTS m_activite_eco.lk_eco_contact_seq;
-DROP SEQUENCE IF EXISTS m_activite_eco.lk_eco_evenmt_seq;
+DROP SEQUENCE IF EXISTS m_activite_eco.an_eco_evenmt_seq;
 
 
 -- ####################################################################################################################################################
@@ -1036,7 +1036,7 @@ COMMENT ON COLUMN m_activite_eco.an_eco_media.gid
 
 CREATE TABLE m_activite_eco.an_eco_contact
 (
-    idcontact NOT NULL DEFAULT nextval('m_activite_eco.an_eco_contact_seq'::regclass),
+    idcontact integer NOT NULL DEFAULT nextval('m_activite_eco.an_eco_contact_seq'::regclass),
     nom character varying(100) COLLATE pg_catalog."default",
     typcontact character varying(2) COLLATE pg_catalog."default",
     tel character varying(14) COLLATE pg_catalog."default",
