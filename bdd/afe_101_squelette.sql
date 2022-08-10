@@ -978,7 +978,7 @@ CREATE TABLE m_activite_eco.an_eco_contact
     observ character varying(1000) COLLATE pg_catalog."default",
     CONSTRAINT an_eco_contact_pkey PRIMARY KEY (idcontact),
     CONSTRAINT lt_eco_typcontact_fkey FOREIGN KEY (typcontact)
-        REFERENCES an_eco_contact.lt_eco_typcontact (code) MATCH SIMPLE
+        REFERENCES m_activite_eco.lt_eco_typcontact (code) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
 )
