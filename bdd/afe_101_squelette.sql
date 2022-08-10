@@ -284,7 +284,7 @@ INSERT INTO m_activite_eco.lt_eco_voca(
 CREATE TABLE m_activite_eco.lt_eco_typsite
 (
   code character varying(2) NOT NULL, -- Code du type de site
-  valeur character varying(25), -- Libellé du type de site
+  valeur character varying(100), -- Libellé du type de site
   CONSTRAINT lt_eco_typsite_pkey PRIMARY KEY (code) -- Clé primaire de la table lt_eco_typsite
 )
 WITH (
