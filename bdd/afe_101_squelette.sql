@@ -12,7 +12,8 @@
 DROP TABLE IF EXISTS  m_activite_eco.an_eco_pole;
 DROP TABLE IF EXISTS  m_activite_eco.geo_eco_site;
 DROP TABLE IF EXISTS m_activite_eco.an_eco_media;
-DROP TABLE IF EXISTS m_activite_eco.an_eco_contact;
+DROP TABLE IF EXISTS m_activite_eco.an_eco_contact CASCADE;
+DROP TABLE IF EXISTS m_activite_eco.an_eco_evenmt;
 
 /* TABLE DE RELATION */
 DROP TABLE IF EXISTS m_activite_eco.lk_eco_contact;
@@ -25,6 +26,7 @@ DROP TABLE IF EXISTS m_activite_eco.lt_eco_typo;
 DROP TABLE IF EXISTS m_activite_eco.lt_eco_typsite;
 DROP TABLE IF EXISTS m_activite_eco.lt_eco_tdocmedia;
 DROP TABLE IF EXISTS m_activite_eco.lt_eco_typcontact;
+DROP TABLE IF EXISTS m_activite_eco.lt_eco_typevenmt;
 
 /* SEQUENCE */
 DROP SEQUENCE IF EXISTS m_activite_eco.an_eco_pole_seq;
@@ -32,6 +34,7 @@ DROP SEQUENCE IF EXISTS m_activite_eco.geo_eco_site_seq;
 DROP SEQUENCE IF EXISTS m_activite_eco.an_eco_media_seq;
 DROP SEQUENCE IF EXISTS m_activite_eco.an_eco_contact_seq;
 DROP SEQUENCE IF EXISTS m_activite_eco.lk_eco_contact_seq;
+DROP SEQUENCE IF EXISTS m_activite_eco.lk_eco_evenmt_seq;
 
 
 -- ####################################################################################################################################################
@@ -146,7 +149,7 @@ ALTER SEQUENCE m_activite_eco.an_eco_contact_seq
 GRANT ALL ON SEQUENCE m_activite_eco.an_eco_contact_seq TO PUBLIC;
 GRANT ALL ON SEQUENCE m_activite_eco.an_eco_contact_seq TO create_sig;
 
--- ############################################################## [lk_eco_contact] ##################################################################
+-- ############################################################## [lk_eco_contact_seq] ##################################################################
 
 -- SEQUENCE: m_activite_eco.lk_eco_contact_seq
 
@@ -164,6 +167,26 @@ ALTER SEQUENCE m_activite_eco.lk_eco_contact_seq
 
 GRANT ALL ON SEQUENCE m_activite_eco.lk_eco_contact_seq TO PUBLIC;
 GRANT ALL ON SEQUENCE m_activite_eco.lk_eco_contact_seq TO create_sig;
+
+-- ############################################################## [an_eco_evenmt_seq] ##################################################################
+
+-- SEQUENCE: m_activite_eco.an_eco_evenmt_seq
+
+-- DROP SEQUENCE m_activite_eco.an_eco_evenmt_seq;
+
+CREATE SEQUENCE m_activite_eco.an_eco_evenmt_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+
+ALTER SEQUENCE m_activite_eco.an_eco_evenmt_seq
+    OWNER TO create_sig;
+
+GRANT ALL ON SEQUENCE m_activite_eco.an_eco_evenmt_seq TO PUBLIC;
+GRANT ALL ON SEQUENCE m_activite_eco.an_eco_evenmt_seq TO create_sig;
+
 
 -- ####################################################################################################################################################
 -- ###                                                                                                                                              ###
@@ -432,7 +455,7 @@ CREATE TABLE m_activite_eco.lt_eco_typcontact
 (
     code character varying(2) COLLATE pg_catalog."default" NOT NULL,
     valeur character varying(30) COLLATE pg_catalog."default",
-    CONSTRAINT lt_eco_typcontact_pkkey PRIMARY KEY (code)
+    CONSTRAINT lt_eco_typcontact_pkey PRIMARY KEY (code)
 )
 WITH (
     OIDS = FALSE
@@ -469,6 +492,54 @@ INSERT INTO m_activite_eco.lt_eco_typcontact(
     ('13','DRH'),
     ('20','Propriétaire'),
     ('30','Commercialisateur');
+    
+-- ################################################################ Domaine valeur - [lt_eco_typevenmt]  ################################################
+
+-- Table: m_activite_eco.lt_eco_typevenmt
+
+-- DROP TABLE m_activite_eco.lt_eco_typevenmt;
+
+CREATE TABLE m_activite_eco.lt_eco_typevenmt
+(
+    code character varying(2) COLLATE pg_catalog."default" NOT NULL,
+    valeur character varying(30) COLLATE pg_catalog."default",
+    CONSTRAINT lt_eco_typevenmt_pkey PRIMARY KEY (code)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE m_activite_eco.lt_eco_typevenmt
+    OWNER to create_sig;
+
+GRANT ALL ON TABLE m_activite_eco.lt_eco_typevenmt TO sig_create;
+
+GRANT SELECT ON TABLE m_activite_eco.lt_eco_typevenmt TO sig_read;
+
+GRANT ALL ON TABLE m_activite_eco.lt_eco_typevenmt TO create_sig;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_activite_eco.lt_eco_typevenmt TO sig_edit;
+
+COMMENT ON TABLE m_activite_eco.lt_eco_typevenmt
+    IS 'Liste de valeurs des types de contact';
+
+COMMENT ON COLUMN m_activite_eco.lt_eco_typevenmt.code
+    IS 'Code du type de contact';
+
+COMMENT ON COLUMN m_activite_eco.lt_eco_typevenmt.valeur
+    IS 'Libellé du type de contact';
+
+INSERT INTO m_activite_eco.lt_eco_typevenmt(
+            code, valeur)
+    VALUES
+    ('00','Non renseigné'),
+    ('10','Contact (générique)'),
+    ('11','Contact téléphonique'),
+    ('12','Contact email'),
+    ('20','Réunion'),
+    ('30','Forum, salon'),
+    ('40','Séminaire');
 
 -- ####################################################################################################################################################
 -- ###                                                                                                                                              ###
@@ -477,7 +548,7 @@ INSERT INTO m_activite_eco.lt_eco_typcontact(
 -- ####################################################################################################################################################
 
 
--- ############################################################## [an_eco_pole] ######################################################################
+-- ############################################################## [an_eco_pole] #######################################################################
 
 -- Table: m_activite_eco.an_eco_pole
 
@@ -485,7 +556,7 @@ INSERT INTO m_activite_eco.lt_eco_typcontact(
 
 CREATE TABLE m_activite_eco.an_eco_pole
 (
-    idpole integer NOT NULL DEFAULT nextval('m_activite_eco.an_eco_pole_seq'::regclass),
+    idpole character varying(4) NOT NULL DEFAULT 'P' || nextval('m_activite_eco.an_eco_pole_seq'::regclass),
     idpolereg character varying(7) COLLATE pg_catalog."default",
     nom_pole character varying(100) COLLATE pg_catalog."default",
     dest character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
@@ -556,7 +627,7 @@ COMMENT ON COLUMN m_activite_eco.an_eco_pole.dest
 
 CREATE TABLE m_activite_eco.geo_eco_site
 (
-    idsite integer NOT NULL DEFAULT nextval('m_activite_eco.geo_eco_site_seq'::regclass),
+    idsite character varying(5) NOT NULL DEFAULT 'S' || nextval('m_activite_eco.geo_eco_site_seq'::regclass),
     idsitereg character varying(7) COLLATE pg_catalog."default",
     idpole integer,
     site_nom character varying(80) COLLATE pg_catalog."default",
@@ -965,7 +1036,7 @@ COMMENT ON COLUMN m_activite_eco.an_eco_media.gid
 
 CREATE TABLE m_activite_eco.an_eco_contact
 (
-    idcontact integer NOT NULL DEFAULT nextval('m_activite_eco.an_eco_contact_seq'::regclass),
+    idcontact NOT NULL DEFAULT nextval('m_activite_eco.an_eco_contact_seq'::regclass),
     nom character varying(100) COLLATE pg_catalog."default",
     typcontact character varying(2) COLLATE pg_catalog."default",
     tel character varying(14) COLLATE pg_catalog."default",
@@ -1035,6 +1106,82 @@ COMMENT ON COLUMN m_activite_eco.an_eco_contact.epci
     IS 'Autorité compétente';
 
 COMMENT ON COLUMN m_activite_eco.an_eco_contact.observ
+    IS 'Observations diverses';
+    
+-- ############################################################## [an_eco_evenmt] ##################################################################
+
+-- Table: m_activite_eco.an_eco_evenmt
+
+-- DROP TABLE m_activite_eco.an_eco_evenmt;
+
+CREATE TABLE m_activite_eco.an_eco_evenmt
+(
+    idevenmt integer NOT NULL DEFAULT nextval('m_activite_eco.an_eco_evenmt_seq'::regclass),
+    libelle character varying(254) COLLATE pg_catalog."default",
+    typevenmt character varying(2) COLLATE pg_catalog."default",
+    motif character varying(254) COLLATE pg_catalog."default",
+    date_evenmt	timestamp without time zone,
+    nom_contact character varying(100) COLLATE pg_catalog."default",	
+    date_sai timestamp without time zone,
+    date_maj timestamp without time zone,
+    op_sai character varying(80) COLLATE pg_catalog."default",
+    epci character varying(10) COLLATE pg_catalog."default",
+    observ character varying(1000) COLLATE pg_catalog."default",
+    CONSTRAINT an_eco_evenmt_pkey PRIMARY KEY (idevenmt),
+    CONSTRAINT an_eco_evenmt_fkey FOREIGN KEY (typevenmt)
+   	 REFERENCES m_activite_eco.lt_eco_typevenmt (code) MATCH SIMPLE
+   	 ON UPDATE NO ACTION
+   	 ON DELETE NO ACTION
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE m_activite_eco.an_eco_evenmt
+    OWNER to create_sig;
+
+GRANT ALL ON TABLE m_activite_eco.an_eco_evenmt TO sig_create;
+
+GRANT SELECT ON TABLE m_activite_eco.an_eco_evenmt TO sig_read;
+
+GRANT ALL ON TABLE m_activite_eco.an_eco_evenmt TO create_sig;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_activite_eco.an_eco_evenmt TO sig_edit;
+
+COMMENT ON TABLE m_activite_eco.an_eco_evenmt
+    IS 'Table alphanumérique de l''ensemble des contacts liés à la thématique activité économique';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_evenmt.idevenmt
+    IS 'Identifiant unique non signifiant du contact';
+
+
+COMMENT ON COLUMN m_activite_eco.an_eco_evenmt.libelle
+    IS 'Libellé de l''éveènement';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_evenmt.typevenmt
+    IS 'Type d''évènement';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_evenmt.date_evenmt
+    IS 'Date de l''évènement';
+
+
+COMMENT ON COLUMN m_activite_eco.an_eco_evenmt.nom_contact
+    IS 'Nom du contact';
+    
+COMMENT ON COLUMN m_activite_eco.an_eco_evenmt.date_sai
+    IS 'Date de saisie des données attributaires';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_evenmt.date_maj
+    IS 'Date de mise à jour des données attributaires';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_evenmt.op_sai
+    IS 'Libellé de la personne ayant saisie l''objet initialisament';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_evenmt.epci
+    IS 'Autorité compétente';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_evenmt.observ
     IS 'Observations diverses';
 
 -- ####################################################################################################################################################
