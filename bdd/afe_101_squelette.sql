@@ -27,6 +27,10 @@ DROP TABLE IF EXISTS m_activite_eco.lt_eco_typsite;
 DROP TABLE IF EXISTS m_activite_eco.lt_eco_tdocmedia;
 DROP TABLE IF EXISTS m_activite_eco.lt_eco_typcontact;
 DROP TABLE IF EXISTS m_activite_eco.lt_eco_typevenmt;
+DROP TABLE IF EXISTS m_urbanisme_reg.lt_proc_typconso;
+DROP TABLE IF EXISTS m_urbanisme_reg.lt_proc_phase;
+DROP TABLE IF EXISTS m_urbanisme_reg.lt_proc_typ;
+DROP TABLE IF EXISTS m_urbanisme_reg.lt_proc_typfon;
 
 /* SEQUENCE */
 DROP SEQUENCE IF EXISTS m_activite_eco.an_eco_pole_seq;
@@ -541,6 +545,149 @@ INSERT INTO m_activite_eco.lt_eco_typevenmt(
     ('30','Forum, salon'),
     ('40','Séminaire');
 
+-- ################################################################ Domaine valeur - [lt_proc_typconso]  ################################################
+
+-- Table: m_urbanisme_reg.lt_proc_typconso
+
+-- DROP TABLE m_urbanisme_reg.lt_proc_typconso;
+
+CREATE TABLE m_urbanisme_reg.lt_proc_typconso
+(
+    code character varying(2) COLLATE pg_catalog."default" NOT NULL,
+    valeur character varying(50) COLLATE pg_catalog."default",
+    CONSTRAINT lt_proc_typconso_pkey PRIMARY KEY (code)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE m_urbanisme_reg.lt_proc_typconso
+    OWNER to create_sig;
+
+GRANT ALL ON TABLE m_urbanisme_reg.lt_proc_typconso TO sig_create;
+
+GRANT SELECT ON TABLE m_urbanisme_reg.lt_proc_typconso TO sig_read;
+
+GRANT ALL ON TABLE m_urbanisme_reg.lt_proc_typconso TO create_sig;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_urbanisme_reg.lt_proc_typconso TO sig_edit;
+
+COMMENT ON TABLE m_urbanisme_reg.lt_proc_typconso
+    IS 'Liste de valeurs des types de consommations foncières';
+
+COMMENT ON COLUMN m_urbanisme_reg.lt_proc_typconso.code
+    IS 'Code du type de consommation de surface';
+
+COMMENT ON COLUMN m_urbanisme_reg.lt_proc_typconso.valeur
+    IS 'Libellé du type de consommation de surface';
+    
+INSERT INTO m_urbanisme_reg.lt_proc_typconso(
+            code, valeur)
+    VALUES
+    ('00','Non renseigné'),
+    ('10','Renouvellement'),
+    ('20','Extension'),
+    ('30','Mixte');
+
+-- ################################################################ Domaine valeur - [lt_proc_phase]  ################################################
+
+-- Table: m_urbanisme_reg.lt_proc_phase
+
+-- DROP TABLE m_urbanisme_reg.lt_proc_phase;
+
+CREATE TABLE m_urbanisme_reg.lt_proc_phase
+(
+  code character varying(2) NOT NULL, -- Code de la phase de l'opération
+  valeur character varying(50), -- Libellé de la phase de l'opération
+  CONSTRAINT lt_proc_phase_pkey PRIMARY KEY (code) -- Clé primaire de la table lt_proc_phase
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE m_urbanisme_reg.lt_proc_phase
+  OWNER TO sig_create;
+
+COMMENT ON TABLE m_urbanisme_reg.lt_proc_phase
+  IS 'Liste de valeurs des phases opérationnelles';
+COMMENT ON COLUMN m_urbanisme_reg.lt_proc_phase.code IS 'Code de la phase de l''opération';
+COMMENT ON COLUMN m_urbanisme_reg.lt_proc_phase.valeur IS 'Libellé de la phase de l''opération';
+
+INSERT INTO m_urbanisme_reg.lt_proc_phase(
+            code, valeur)
+    VALUES
+    ('00','Non renseigné'),
+    ('10','Etude de faisabilité'),
+    ('20','Acquisitions engagées - étude préopérationnelle'),
+    ('30','Opérationnelle'),
+    ('40','Achevée');
+
+
+-- ################################################################ Domaine valeur - [lt_proc]  ################################################
+
+-- Table: m_urbanisme_reg.lt_proc
+
+-- DROP TABLE m_urbanisme_reg.lt_proc;
+
+CREATE TABLE m_urbanisme_reg.lt_proc
+(
+  code character varying(2) NOT NULL, -- Code de la procédure
+  valeur character varying(20), -- Libellé de la procédure
+  CONSTRAINT lt_proc_pkey PRIMARY KEY (code) -- Clé primaire de la table lt_proc
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE m_urbanisme_reg.lt_proc
+  OWNER TO sig_create;
+
+COMMENT ON TABLE m_urbanisme_reg.lt_proc
+  IS 'Liste de valeurs des types de procédure';
+COMMENT ON COLUMN m_urbanisme_reg.lt_proc.code IS 'Code de la procédure';
+COMMENT ON COLUMN m_urbanisme_reg.lt_proc.valeur IS 'Libellé de la procédure';
+
+INSERT INTO m_urbanisme_reg.lt_proc(
+            code, valeur)
+    VALUES
+    ('00','Non renseigné'),
+    ('10','ZAC'),
+    ('21','Lotissement PA'),
+    ('22','Lotissement DP'),
+    ('30','PC valant division'),
+    ('40','AFU');
+
+-- ################################################################ Domaine valeur - [lt_proc_typfon]  ################################################
+
+-- Table: m_urbanisme_reg.lt_proc_typfon
+
+-- DROP TABLE m_urbanisme_reg.lt_proc_typfon;
+
+CREATE TABLE m_urbanisme_reg.lt_proc_typfon
+(
+  code character varying(2) NOT NULL, -- Code de la procédure foncière
+  valeur character varying(50), -- Libellé de la procédure foncière
+  CONSTRAINT lt_proc_typfon_pkey PRIMARY KEY (code) -- Clé primaire de la table lt_proc_typfon
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE m_urbanisme_reg.lt_proc_typfon
+  OWNER TO sig_create;
+
+COMMENT ON TABLE m_urbanisme_reg.lt_proc_typfon
+  IS 'Liste de valeurs des procédures foncières';
+COMMENT ON COLUMN m_urbanisme_reg.lt_proc_typfon.code IS 'Code de la procédure foncière';
+COMMENT ON COLUMN m_urbanisme_reg.lt_proc_typfon.valeur IS 'Libellé de la procédure foncière';
+
+INSERT INTO m_urbanisme_reg.lt_proc_typfon(
+            code, valeur)
+    VALUES
+    ('00','Non renseigné'),
+    ('10','DUP'),
+    ('20','Convention EPFLO'),
+    ('30','Acquisitions amiables'),
+    ('40','Opérateur privé');
+
 -- ####################################################################################################################################################
 -- ###                                                                                                                                              ###
 -- ###                                                                TABLE                                                                         ###
@@ -640,6 +787,7 @@ CREATE TABLE m_activite_eco.geo_eco_site
     date_crea integer,
     p_implant character varying(10) COLLATE pg_catalog."default",
     commune character varying(255) COLLATE pg_catalog."default",
+    z_proced booleen DEFAULT false,
     surf_brt double precision,
     surf_occ double precision,
     surf_equ double precision,	
@@ -720,6 +868,10 @@ CREATE TABLE m_activite_eco.geo_eco_site
         ON UPDATE NO ACTION
         ON DELETE NO ACTION,
     CONSTRAINT lt_src_geom_fkey FOREIGN KEY (src_geom)
+        REFERENCES r_objet.lt_src_geom (code) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT geo_am_fkey FOREIGN KEY (src_geom)
         REFERENCES r_objet.lt_src_geom (code) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION	
@@ -949,6 +1101,176 @@ COMMENT ON COLUMN m_activite_eco.geo_eco_site.observ
 	
 COMMENT ON COLUMN m_activite_eco.geo_eco_site.geom
     IS 'Géométrie des objets sites';
+
+-- ############################################################## [geo_proced] ##################################################################
+
+-- Table: m_urbanisme_reg.geo_proced
+
+-- DROP TABLE m_urbanisme_reg.geo_proced;
+
+CREATE TABLE m_urbanisme_reg.geo_proced
+(
+    idproc integer NOT NULL,
+    nom character varying(255) COLLATE pg_catalog."default",
+    alias character varying(255) COLLATE pg_catalog."default",
+    dest character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
+    z_proced character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
+    phase character varying(2) COLLATE pg_catalog."default",
+    moa character varying(80) COLLATE pg_catalog."default",
+    conso_type character varying(2) COLLATE pg_catalog."default",
+    pr_urb boolean NOT NULL DEFAULT false,
+    date_crea date,
+    pr_fon boolean NOT NULL DEFAULT false,
+    pr_fon_date date,
+    surf_ha double precision,
+    existe boolean NOT NULL DEFAULT true,
+    pr_fon_type character varying(2) COLLATE pg_catalog."default",
+    ref_compta character varying(5) COLLATE pg_catalog."default",
+    surf_cess_ha numeric(10,2),
+    date_clo timestamp without time zone,
+    nb_log integer,
+    nb_logind integer,
+    nb_logindgr integer,
+    nb_logcol integer,
+    nb_logaide integer,
+    nb_logaide_loc integer,
+    nb_logaide_acc integer,
+    nom_cp character varying(80) COLLATE pg_catalog."default",
+    op_sai character varying(80) COLLATE pg_catalog."default",
+    observ character varying(255) COLLATE pg_catalog."default",
+    date_sai timestamp without time zone,
+    date_maj timestamp without time zone,
+    epci character varying(10) COLLATE pg_catalog."default",
+    observ character varying(1000) COLLATE pg_catalog."default",
+    CONSTRAINT geo_proced_pkey PRIMARY KEY (idproc),
+    CONSTRAINT geo_proced_consotype_fkey FOREIGN KEY (conso_type)
+        REFERENCES m_urbanisme_reg.lt_proc_typconso (code) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT geo_proced_phase_fkey FOREIGN KEY (ope_phase)
+        REFERENCES m_urbanisme_reg.lt_proc_phase (code) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT geo_proced_prfontype_fkey FOREIGN KEY (pr_fon_type)
+        REFERENCES m_urbanisme_reg.lt_proc_typfon (code) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT geo_proced_z_proced_fkey FOREIGN KEY (z_proced)
+        REFERENCES m_urbanisme_reg.lt_proc_typ (code) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE m_urbanisme_reg.geo_proced
+    OWNER to create_sig;
+
+GRANT ALL ON TABLE m_urbanisme_reg.geo_proced TO sig_create;
+
+GRANT SELECT ON TABLE m_urbanisme_reg.geo_proced TO sig_read;
+
+GRANT ALL ON TABLE m_urbanisme_reg.geo_proced TO create_sig;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_urbanisme_reg.geo_proced TO sig_edit;
+
+COMMENT ON TABLE m_urbanisme_reg.geo_proced
+    IS 'Classe d''objets contenant les données des procédures d''aménagement';
+
+COMMENT ON COLUMN m_urbanisme_reg.geo_proced.ope_nom
+    IS 'Libellé de l''opération';
+
+COMMENT ON COLUMN m_urbanisme_reg.geo_proced.ope_alias
+    IS 'Alias du nom de l''opération';
+
+COMMENT ON COLUMN m_urbanisme_reg.geo_proced.dest
+    IS 'Code de la destination du Site (issu de la liste des valeurs du modèle CNIG sur les PLU)';
+
+COMMENT ON COLUMN m_urbanisme_reg.geo_proced.z_proced
+    IS 'Code de la procédure d''aménagement';
+
+COMMENT ON COLUMN m_urbanisme_reg.geo_proced.op_sai
+    IS 'Libellé de la personne ayant saisie l''objet';
+
+COMMENT ON COLUMN m_urbanisme_reg.geo_proced.ope_phase
+    IS 'Phase de l''opération';
+
+COMMENT ON COLUMN m_urbanisme_reg.geo_proced.ope_moa
+    IS 'Maitrise d''ouvrage de l''opération';
+
+COMMENT ON COLUMN m_urbanisme_reg.geo_proced.conso_type
+    IS 'Type de consommation foncière';
+
+COMMENT ON COLUMN m_urbanisme_reg.geo_proced.pr_urb
+    IS 'Procédure d''urbanisme';
+
+COMMENT ON COLUMN m_urbanisme_reg.an_proced.date_crea
+    IS 'Date de création de la ZAC';
+
+COMMENT ON COLUMN m_urbanisme_reg.geo_proced.l_pr_fon
+    IS 'Procédure foncière';
+
+COMMENT ON COLUMN m_urbanisme_reg.geo_proced.pr_fon_date
+    IS 'Date de la procédure foncière';
+
+COMMENT ON COLUMN m_urbanisme_reg.geo_proced.surf_ha
+    IS 'Superficie totale programmée de l''opération en ha';
+
+COMMENT ON COLUMN m_urbanisme_reg.geo_proced.existe
+    IS 'Existance du site';
+
+COMMENT ON COLUMN m_urbanisme_reg.geo_proced.pr_fon_type
+    IS 'Procédure foncière engagée';
+
+COMMENT ON COLUMN m_urbanisme_reg.geo_proced.ref_compta
+    IS 'Référence comptable du projet';
+
+COMMENT ON COLUMN m_urbanisme_reg.geo_proced.observ
+    IS 'Commentaire';
+
+COMMENT ON COLUMN m_urbanisme_reg.geo_proced.date_sai
+    IS 'Date de saisie des données attributaires';
+
+COMMENT ON COLUMN m_urbanisme_reg.geo_proced.date_maj
+    IS 'Date de mise à jour des données attributaires';
+
+COMMENT ON COLUMN m_urbanisme_reg.geo_proced.surf_cess_ha
+    IS 'Surface cessible programmée en ha';
+
+COMMENT ON COLUMN m_urbanisme_reg.geo_proced.date_clo
+    IS 'Date de cloture de l''opération';
+
+COMMENT ON COLUMN m_urbanisme_reg.geo_proced.nb_log
+    IS 'Nombre total de logements programmés';
+
+COMMENT ON COLUMN m_urbanisme_reg.geo_proced.nb_logind
+    IS 'Nombre de logements individuels programmés';
+
+COMMENT ON COLUMN m_urbanisme_reg.geo_proced.nb_logindgr
+    IS 'Nombre de logements individuels groupés programmés';
+
+COMMENT ON COLUMN m_urbanisme_reg.geo_proced.nb_logcol
+    IS 'Nombre de logements collectifs programmés';
+
+COMMENT ON COLUMN m_urbanisme_reg.geo_proced.nb_logaide
+    IS 'Nombre total de logements aidés programmés';
+
+COMMENT ON COLUMN m_urbanisme_reg.geo_proced.nb_logaide_loc
+    IS 'Nombre total de logements aidés en location programmés';
+
+COMMENT ON COLUMN m_urbanisme_reg.geo_proced.nb_logaide_acc
+    IS 'Nombre total de logements en accession en location programmés';
+
+COMMENT ON COLUMN m_urbanisme_reg.geo_proced.nom_cp
+    IS 'Nom du chef de projet suivant la procédure';
+    
+COMMENT ON COLUMN m_urbanisme_reg.geo_proced.epci
+    IS 'Autorité compétente';
+
+COMMENT ON COLUMN m_urbanisme_reg.geo_proced.observ
+    IS 'Observations diverses';
 
 -- ############################################################## [an_eco_media] ##################################################################
 
