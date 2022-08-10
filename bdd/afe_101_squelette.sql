@@ -14,9 +14,14 @@ DROP TABLE IF EXISTS  m_activite_eco.geo_eco_site;
 
 /* LISTE DE VALEUR */
 DROP TABLE IF EXISTS m_activite_eco.lt_eco_dest;
+DROP TABLE IF EXISTS m_activite_eco.lt_eco_etat;
+DROP TABLE IF EXISTS m_activite_eco.lt_eco_voca;
+DROP TABLE IF EXISTS m_activite_eco.lt_eco_typo;
+DROP TABLE IF EXISTS m_activite_eco.lt_eco_typsite;
 
 /* SEQUENCE */
 DROP SEQUENCE IF EXISTS m_activite_eco.an_eco_pole_seq;
+DROP SEQUENCE IF EXISTS m_activite_eco.geo_eco_site_seq;
 
 
 -- ####################################################################################################################################################
@@ -54,7 +59,7 @@ GRANT INSERT, SELECT, UPDATE, DELETE ON TABLES TO sig_edit;
 -- ###                                                                                                                                              ###
 -- ####################################################################################################################################################
 
--- ################################################# [nom séquence] ##################################
+-- ############################################################## [an_eco_pole_seq] ###################################################################
 
 -- SEQUENCE: m_activite_eco.an_eco_pole_seq
 
@@ -72,6 +77,8 @@ ALTER SEQUENCE m_activite_eco.an_eco_pole_seq
 
 GRANT ALL ON SEQUENCE m_activite_eco.an_eco_pole_seq TO PUBLIC;
 GRANT ALL ON SEQUENCE m_activite_eco.an_eco_pole_seq TO create_sig;
+
+-- ############################################################## [geo_eco_site_seq] ##################################################################
 
 -- SEQUENCE: m_activite_eco.geo_eco_site_seq
 
@@ -97,7 +104,7 @@ GRANT ALL ON SEQUENCE m_activite_eco.geo_eco_site_seq TO create_sig;
 -- ###                                                                                                                                              ###
 -- ####################################################################################################################################################
 
--- ################################################################# Domaine valeur - [lt_eco_dest]  ###############################################
+-- ################################################################# Domaine valeur - [lt_eco_dest]  ##################################################
 
 -- Table: m_activite_eco.lt_eco_dest
 
@@ -146,7 +153,166 @@ INSERT INTO m_activite_eco.lt_eco_dest(
     ('60','Agriculture'),
     ('70','Service/Négoce');
 
+-- ################################################################# Domaine valeur - [lt_eco_etat]  ##################################################
 
+-- Table: m_activite_eco.lt_eco_etat
+
+-- DROP TABLE m_activite_eco.lt_eco_etat;
+
+CREATE TABLE m_activite_eco.lt_eco_etat
+(
+  code character varying(2) NOT NULL, -- Code de la typologie de la situation du site au regard de l'aménagement
+  valeur character varying(25), -- Code de la typologie de la situation du site au regard de l'aménagement
+  CONSTRAINT lt_eco_etat_pkey PRIMARY KEY (code) -- Clé primaire de la table lt_eco_etat
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE m_activite_eco.lt_eco_etat
+  OWNER TO sig_create;
+
+GRANT ALL ON TABLE m_activite_eco.lt_eco_etat TO sig_create;
+
+GRANT SELECT ON TABLE m_activite_eco.lt_eco_etat TO sig_read;
+
+GRANT ALL ON TABLE m_activite_eco.lt_eco_etat TO create_sig;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_activite_eco.lt_eco_etat TO sig_edit;
+
+COMMENT ON TABLE m_activite_eco.lt_eco_etat
+  IS 'Liste des valeurs de l''état du site';
+COMMENT ON COLUMN m_activite_eco.lt_eco_etat.code IS 'Code de la typologie de la situation du site au regard de l''aménagement';
+COMMENT ON COLUMN m_activite_eco.lt_eco_etat.valeur IS 'Code de la typologie de la situation du site au regard de l''aménagement';
+
+INSERT INTO m_activite_eco.lt_eco_etat(
+            code, valeur)
+    VALUES
+    ('00','Non renseigné'),
+    ('10','Existant'),
+    ('20','Extension'),
+    ('30','Création'),
+    ('40','Déclassé'),
+    ('50','Projet de déclassement');
+    
+-- ################################################################# Domaine valeur - [lt_eco_typo]  ##################################################
+
+-- Table: m_activite_eco.lt_eco_typo
+
+-- DROP TABLE m_activite_eco.lt_eco_typo;
+
+CREATE TABLE m_activite_eco.lt_eco_typo
+(
+  code character varying(2) NOT NULL, -- Code de la typologie GéoPicardie du site
+  valeur character varying(40), -- Libellé de la typologie GéoPicardie du site
+  CONSTRAINT lt_eco_typo_pkey PRIMARY KEY (code) -- Clé primaire de la table lt_eco_typo
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE m_activite_eco.lt_eco_typo
+  OWNER TO sig_create;
+  
+
+GRANT ALL ON TABLE m_activite_eco.lt_eco_typo TO sig_create;
+
+GRANT SELECT ON TABLE m_activite_eco.lt_eco_typo TO sig_read;
+
+GRANT ALL ON TABLE m_activite_eco.lt_eco_typo TO create_sig;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_activite_eco.lt_eco_typo TO sig_edit;
+
+COMMENT ON TABLE m_activite_eco.lt_eco_typo
+  IS 'Liste de valeurs de la typologie du site';
+COMMENT ON COLUMN m_activite_eco.lt_eco_typo.code IS 'Code de la typologie GéoPicardie du site';
+COMMENT ON COLUMN m_activite_eco.lt_eco_typo.valeur IS 'Libellé de la typologie GéoPicardie du site';
+
+INSERT INTO m_activite_eco.lt_eco_typo(
+            code, valeur)
+    VALUES
+    ('00','Non renseigné'),
+    ('10','Site monofonctionnel'),
+    ('20','Site plurifonctionnel en périphérie'),
+    ('30','Site plurifonctionnel en centre-ville'),
+    ('40','Etablissement isolé');
+
+-- ################################################################# Domaine valeur - [lt_eco_voca]  ##################################################
+
+-- Table: m_activite_eco.lt_eco_voca
+
+-- DROP TABLE m_activite_eco.lt_eco_voca;
+
+CREATE TABLE m_activite_eco.lt_eco_voca
+(
+  code character varying(2) NOT NULL, -- Code de la vocation du site
+  valeur character varying(25), -- Libellé de la vocation du site
+  CONSTRAINT lt_eco_voca_pkey PRIMARY KEY (code) -- Clé primaire de la table lt_eco_voca
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE m_activite_eco.lt_eco_voca
+  OWNER TO sig_create;
+
+GRANT ALL ON TABLE m_activite_eco.lt_eco_voca TO sig_create;
+
+GRANT SELECT ON TABLE m_activite_eco.lt_eco_voca TO sig_read;
+
+GRANT ALL ON TABLE m_activite_eco.lt_eco_voca TO create_sig;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_activite_eco.lt_eco_voca TO sig_edit;
+
+COMMENT ON TABLE m_activite_eco.lt_eco_voca
+  IS 'Liste de valeurs de vocation simplifiée de la zone';
+COMMENT ON COLUMN m_activite_eco.lt_eco_voca.code IS 'Code de la vocation du site';
+COMMENT ON COLUMN m_activite_eco.lt_eco_voca.valeur IS 'Libellé de la vocation du site';
+
+INSERT INTO m_activite_eco.lt_eco_voca(
+            code, valeur)
+    VALUES
+    ('00','Non renseigné'),
+    ('10','ZI - zone industrielle'),
+    ('20','ZA - zone artisanale'),
+    ('30','ZC - zone commerciale'),
+    ('40','ZM - zone mixte');
+
+-- ################################################################# Domaine valeur - [lt_eco_typsite]  ##################################################
+
+-- Table: m_activite_eco.lt_eco_typsite
+
+-- DROP TABLE m_activite_eco.lt_eco_typsite;
+
+CREATE TABLE m_activite_eco.lt_eco_typsite
+(
+  code character varying(2) NOT NULL, -- Code du type de site
+  valeur character varying(25), -- Libellé du type de site
+  CONSTRAINT lt_eco_typsite_pkey PRIMARY KEY (code) -- Clé primaire de la table lt_eco_typsite
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE m_activite_eco.lt_eco_typsite
+  OWNER TO sig_create;
+
+GRANT ALL ON TABLE m_activite_eco.lt_eco_typsite TO sig_create;
+
+GRANT SELECT ON TABLE m_activite_eco.lt_eco_typsite TO sig_read;
+
+GRANT ALL ON TABLE m_activite_eco.lt_eco_typsite TO create_sig;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_activite_eco.lt_eco_typsite TO sig_edit;
+
+COMMENT ON TABLE m_activite_eco.lt_eco_typsite
+  IS 'Liste de valeurs des types de sites';
+COMMENT ON COLUMN m_activite_eco.lt_eco_typsite.code IS 'Code du type de site';
+COMMENT ON COLUMN m_activite_eco.lt_eco_typsite.valeur IS 'Libellé du type de site';
+
+INSERT INTO m_activite_eco.lt_eco_typsite(
+            code, valeur)
+    VALUES
+    ('00','Non renseigné'),
+    ('10','ZAE'),
+    ('20','Autre site d''activité identifié (hors ZAE)'),
+    ('30','Autre secteur (non exclusivement économique)');
 
 -- ####################################################################################################################################################
 -- ###                                                                                                                                              ###
@@ -231,7 +397,7 @@ COMMENT ON COLUMN m_activite_eco.an_eco_pole.dest
 
 CREATE TABLE m_activite_eco.geo_eco_site
 (
-    idsite integer NOT NULL nextval('m_activite_eco.geo_eco_site_seq'::regclass),
+    idsite integer NOT NULL DEFAULT nextval('m_activite_eco.geo_eco_site_seq'::regclass),
     idsitereg character varying(7) COLLATE pg_catalog."default",
     idpole integer,
     site_nom character varying(80) COLLATE pg_catalog."default",
@@ -285,7 +451,7 @@ CREATE TABLE m_activite_eco.geo_eco_site
 	
     z_auto character varying(10) COLLATE pg_catalog."default",
 	
-    d_auto character varying(100) COLLATE pg_catalog."default"
+    d_auto character varying(100) COLLATE pg_catalog."default",
 	
     z_dst_auto integer,
     z_tps_auto integer,
@@ -328,7 +494,7 @@ CREATE TABLE m_activite_eco.geo_eco_site
         ON UPDATE NO ACTION
         ON DELETE NO ACTION,
     CONSTRAINT lt_eco_typo_fkey FOREIGN KEY (typo)
-        REFERENCES m_activite_eco.lt_sa_typo (code) MATCH SIMPLE
+        REFERENCES m_activite_eco.lt_eco_typo (code) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION,
     CONSTRAINT lt_eco_voca_fkey FOREIGN KEY (site_voca)
