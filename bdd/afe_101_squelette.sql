@@ -16,7 +16,7 @@ DROP TABLE IF EXISTS  m_activite_eco.geo_eco_site;
 DROP TABLE IF EXISTS m_activite_eco.lt_eco_dest;
 
 /* SEQUENCE */
-DROP SEQUENCE IF EXISTS m_activite_eco.geo_eco_pole_seq;
+DROP SEQUENCE IF EXISTS m_activite_eco.an_eco_pole_seq;
 
 
 -- ####################################################################################################################################################
@@ -56,22 +56,22 @@ GRANT INSERT, SELECT, UPDATE, DELETE ON TABLES TO sig_edit;
 
 -- ################################################# [nom séquence] ##################################
 
--- SEQUENCE: m_activite_eco.geo_eco_pole_seq
+-- SEQUENCE: m_activite_eco.an_eco_pole_seq
 
--- DROP SEQUENCE m_activite_eco.geo_eco_pole_seq;
+-- DROP SEQUENCE m_activite_eco.an_eco_pole_seq;
 
-CREATE SEQUENCE m_activite_eco.geo_eco_pole_seq
+CREATE SEQUENCE m_activite_eco.an_eco_pole_seq
     INCREMENT 1
     START 1
     MINVALUE 1
     MAXVALUE 9223372036854775807
     CACHE 1;
 
-ALTER SEQUENCE m_activite_eco.geo_eco_pole_seq
+ALTER SEQUENCE m_activite_eco.an_eco_pole_seq
     OWNER TO create_sig;
 
-GRANT ALL ON SEQUENCE m_activite_eco.geo_eco_pole_seq TO PUBLIC;
-GRANT ALL ON SEQUENCE m_activite_eco.geo_eco_pole_seq TO create_sig;
+GRANT ALL ON SEQUENCE m_activite_eco.an_eco_pole_seq TO PUBLIC;
+GRANT ALL ON SEQUENCE m_activite_eco.an_eco_pole_seq TO create_sig;
 
 
 -- ####################################################################################################################################################
@@ -128,7 +128,7 @@ COMMENT ON COLUMN m_activite_eco.lt_eco_dest.valeur
 -- ####################################################################################################################################################
 
 
--- ################################################# [geo_eco_pole] ##################################
+-- ############################################################## [geo_eco_pole] ######################################################################
 
 -- Table: m_activite_eco.an_eco_pole
 
@@ -136,7 +136,7 @@ COMMENT ON COLUMN m_activite_eco.lt_eco_dest.valeur
 
 CREATE TABLE m_activite_eco.an_eco_pole
 (
-    idpole integer NOT NULL DEFAULT nextval('m_activite_eco.geo_eco_pole_seq'::regclass),
+    idpole integer NOT NULL DEFAULT nextval('m_activite_eco.an_eco_pole_seq'::regclass),
     idpolereg character varying(7) COLLATE pg_catalog."default",
     nom_pole character varying(100) COLLATE pg_catalog."default",
     dest character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
@@ -195,115 +195,103 @@ COMMENT ON COLUMN m_activite_eco.an_eco_pole.dest
     IS 'Destination du pôle (issue de la destination des sites)';
 
 
+-- ############################################################## [geo_eco_site] ######################################################################
 
--- Table: m_economie.an_sa_site
 
--- DROP TABLE m_economie.an_sa_site;
+-- Table: m_activite_eco.geo_eco_site
 
-CREATE TABLE m_economie.an_sa_site
+-- DROP TABLE m_activite_eco.geo_eco_site;
+
+CREATE TABLE m_activite_eco.geo_eco_site
 (
-    idsite integer COLLATE pg_catalog."default",
+    idsite integer NOT NULL nextval('m_activite_eco.geo_eco_site_seq'::regclass),
     idsitereg character varying(7) COLLATE pg_catalog."default",
     idpole integer,
     site_voca character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
     site_nom character varying(80) COLLATE pg_catalog."default",
     site_etat character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
-    date_int date,
-    op_sai character varying(80) COLLATE pg_catalog."default",
-    org_sai character varying(80) COLLATE pg_catalog."default",
+
+    typsite character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
+	
     typo character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
     dest character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
+	
+    dest character varying(254) COLLATE pg_catalog."default",
+	
+    date_crea integer,
+	
+    commune character varying(255) COLLATE pg_catalog."default",
+	
     p_implant character varying(10) COLLATE pg_catalog."default",
+    surf_brt double precision,
+    surf_occ double precision,
+    surf_equ double precision,
+	
+    surf_net double precision,
+    surf_res double precision,	
+    nbetab integer,
+    nbemploi integer,
+	
     z_mai_ouvr character varying(80) COLLATE pg_catalog."default",
     z_compet character varying(80) COLLATE pg_catalog."default",
     z_amng character varying(80) COLLATE pg_catalog."default",
     z_gest character varying(80) COLLATE pg_catalog."default",
     z_anim character varying(80) COLLATE pg_catalog."default",
     z_comm character varying(80) COLLATE pg_catalog."default",
-    contact character varying(80) COLLATE pg_catalog."default",
     z_cession double precision,
-    z_env character varying(80) COLLATE pg_catalog."default",
-    z_paysage character varying(80) COLLATE pg_catalog."default",
-    z_rehab character varying(80) COLLATE pg_catalog."default",
-    z_epu character varying(3) COLLATE pg_catalog."default",
-    z_dechet character varying(80) COLLATE pg_catalog."default",
-    z_tr_slect character varying(3) COLLATE pg_catalog."default",
-    res_ass double precision,
-    res_pluvia double precision,
-    res_eau double precision,
-    res_gaz double precision,
-    res_elect double precision,
-    res_net character varying(80) COLLATE pg_catalog."default",
-    res_db_net double precision,
+    z_env boolean DEFAULT false,
+    z_paysage boolean DEFAULT false,
+    z_rehab boolean DEFAULT false,
+    z_epu boolean DEFAULT false,
+    z_dechet boolean DEFAULT false,
+    z_tr_slect boolean DEFAULT false,
+    res_ass boolean DEFAULT false,
+    res_pluvia boolean DEFAULT false,
+    res_eau boolean DEFAULT false,
+    res_gaz boolean DEFAULT false,
+    res_elect boolean DEFAULT false,
+    res_fibre boolean DEFAULT false,
+	
+    res_autre character varying(1000) COLLATE pg_catalog."default",
+	
     z_auto character varying(10) COLLATE pg_catalog."default",
-    z_dst_auto double precision,
-    z_tps_auto double precision,
+	
+    dauto character varying(100) COLLATE pg_catalog."default"
+	
+    z_dst_auto integer,
+    z_tps_auto integer,
     z_ar_f character varying(80) COLLATE pg_catalog."default",
     z_dst_ar_f double precision,
     z_ar_v character varying(80) COLLATE pg_catalog."default",
-    z_dst_ar_v double precision,
+    z_dst_ar_v integer,
+    l_dst_ar_v integer,
     z_fr_f character varying(80) COLLATE pg_catalog."default",
-    z_dst_fr_f double precision,
+    z_dst_fr_f integer,
     z_fr_v character varying(80) COLLATE pg_catalog."default",
-    z_dst_fr_v double precision,
-    z_pmm character varying(3) COLLATE pg_catalog."default",
-    z_dst_pmm double precision,
-    serv_tc integer,
-    circ_douce character varying(3) COLLATE pg_catalog."default",
+    z_dst_fr_v integer,
+    z_pmm boolean DEFAULT false,
+    z_dst_pmm integer,
+    serv_tc boolean DEFAULT false,
+    circ_douce boolean DEFAULT false,
     serv_rest integer,
     serv_crech integer,
-    serv_autre character varying(80) COLLATE pg_catalog."default",
-    serv_collt character varying(80) COLLATE pg_catalog."default",
-    z_aide_pb character varying(2) COLLATE pg_catalog."default",
-    l_dated_aide_pb date,
-    l_datef_aide_pb date,
-    date_sai timestamp without time zone,
-    date_maj timestamp without time zone,
-    d_paris integer,
-    t_paris integer,
-    d_lille integer,
-    t_lille integer,
-    l_dauto character varying(200) COLLATE pg_catalog."default",
-    l_dtgvhp integer,
-    l_ttgvhp integer,
-    l_dtgvcdg integer,
-    l_ttgvcdg integer,
-    l_tgcomp integer,
-    l_dtille integer,
-    l_ttille integer,
-    l_dcdg integer,
-    l_tcdg integer,
-    l_dlesquin integer,
-    l_tlesquin integer,
-    zae boolean,
-    l_cc_aep_lib character varying(100) COLLATE pg_catalog."default",
-    l_cc_aep_nom character varying(100) COLLATE pg_catalog."default",
-    l_cc_aep_poste character varying(50) COLLATE pg_catalog."default",
-    l_cc_aep_tel character varying(15) COLLATE pg_catalog."default",
-    l_cc_aep_telp character varying(15) COLLATE pg_catalog."default",
-    l_cc_aep_mail character varying(50) COLLATE pg_catalog."default",
-    l_cc_elect_lib character varying(100) COLLATE pg_catalog."default",
-    l_cc_elect_nom character varying(100) COLLATE pg_catalog."default",
-    l_cc_elect_poste character varying(50) COLLATE pg_catalog."default",
-    l_cc_elect_tel character varying(15) COLLATE pg_catalog."default",
-    l_cc_elect_telp character varying(15) COLLATE pg_catalog."default",
-    l_cc_elect_mail character varying(50) COLLATE pg_catalog."default",
-    l_cc_gaz_lib character varying(100) COLLATE pg_catalog."default",
-    l_cc_gaz_nom character varying(100) COLLATE pg_catalog."default",
-    l_cc_gaz_poste character varying(50) COLLATE pg_catalog."default",
-    l_cc_gaz_tel character varying(15) COLLATE pg_catalog."default",
-    l_cc_gaz_telp character varying(15) COLLATE pg_catalog."default",
-    l_cc_gaz_mail character varying(50) COLLATE pg_catalog."default",
-    l_cc_tel_lib character varying(100) COLLATE pg_catalog."default",
-    l_cc_tel_nom character varying(100) COLLATE pg_catalog."default",
-    l_cc_tel_poste character varying(50) COLLATE pg_catalog."default",
-    l_cc_tel_tel character varying(15) COLLATE pg_catalog."default",
-    l_cc_tel_telp character varying(15) COLLATE pg_catalog."default",
-    l_cc_tel_mail character varying(50) COLLATE pg_catalog."default",
+    serv_autre character varying(1000) COLLATE pg_catalog."default",
+    z_aide_pb boolean DEFAULT false,
+    
     serv_tc_g boolean NOT NULL DEFAULT false,
     serv_tc_lig character varying(50) COLLATE pg_catalog."default",
     serv_tc_pas integer,
-    commune character varying(255) COLLATE pg_catalog."default",
+	
+    src_geom character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
+    src_date character varying(4) COLLATE pg_catalog."default" NOT NULL DEFAULT '0000'::bpchar,
+    date_sai timestamp without time zone,
+    date_maj timestamp without time zone,
+    op_sai character varying(80) COLLATE pg_catalog."default",
+    org_sai character varying(80) COLLATE pg_catalog."default",
+    epci character varying(10) COLLATE pg_catalog."default",
+    observ character varying(1000) COLLATE pg_catalog."default",
+    geom geometry(MultiPolygon,2154) NOT NULL,
+	
     CONSTRAINT an_sa_site_pkey PRIMARY KEY (idsite),
     CONSTRAINT an_sa_site_etat_fkey FOREIGN KEY (site_etat)
         REFERENCES m_amenagement.lt_sa_etat (code) MATCH SIMPLE
