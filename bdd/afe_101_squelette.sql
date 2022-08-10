@@ -14,6 +14,7 @@ DROP TABLE IF EXISTS  m_activite_eco.geo_eco_site;
 DROP TABLE IF EXISTS m_activite_eco.an_eco_media;
 DROP TABLE IF EXISTS m_activite_eco.an_eco_contact CASCADE;
 DROP TABLE IF EXISTS m_activite_eco.an_eco_evenmt;
+DROP TABLE IF EXISTS m_urbanisme_reg.geo_proced;
 
 /* TABLE DE RELATION */
 DROP TABLE IF EXISTS m_activite_eco.lk_eco_contact;
@@ -193,24 +194,24 @@ GRANT ALL ON SEQUENCE m_activite_eco.an_eco_evenmt_seq TO PUBLIC;
 GRANT ALL ON SEQUENCE m_activite_eco.an_eco_evenmt_seq TO create_sig;
 
 
--- ############################################################## [geo_proc_seq] ##################################################################
+-- ############################################################## [geo_proced_seq] ##################################################################
 
--- SEQUENCE: m_urbanisme_reg.geo_proc_seq
+-- SEQUENCE: m_urbanisme_reg.geo_proced_seq
 
--- DROP SEQUENCE m_urbanisme_reg.geo_proc_seq;
+-- DROP SEQUENCE m_urbanisme_reg.geo_proced_seq;
 
-CREATE SEQUENCE m_urbanisme_reg.geo_proc_seq
+CREATE SEQUENCE m_urbanisme_reg.geo_proced_seq
     INCREMENT 1
     START 1
     MINVALUE 1
     MAXVALUE 9223372036854775807
     CACHE 1;
 
-ALTER SEQUENCE m_urbanisme_reg.geo_proc_seq
+ALTER SEQUENCE m_urbanisme_reg.geo_proced_seq
     OWNER TO create_sig;
 
-GRANT ALL ON SEQUENCE m_urbanisme_reg.geo_proc_seq TO PUBLIC;
-GRANT ALL ON SEQUENCE m_urbanisme_reg.geo_proc_seq TO create_sig;
+GRANT ALL ON SEQUENCE m_urbanisme_reg.geo_proced_seq TO PUBLIC;
+GRANT ALL ON SEQUENCE m_urbanisme_reg.geo_proced_seq TO create_sig;
 
 -- ####################################################################################################################################################
 -- ###                                                                                                                                              ###
@@ -708,6 +709,55 @@ INSERT INTO m_urbanisme_reg.lt_proc_typfon(
     ('30','Acquisitions amiables'),
     ('40','Opérateur privé');
 
+-- ################################################################ Domaine valeur - [lt_eco_tact]  ################################################
+
+-- Table: m_activite_eco.lt_eco_tact
+
+-- DROP TABLE m_activite_eco.lt_eco_tact;
+
+CREATE TABLE m_activite_eco.lt_eco_tact
+(
+    code character varying(2) COLLATE pg_catalog."default" NOT NULL,
+    valeur character varying(30) COLLATE pg_catalog."default",
+    CONSTRAINT lt_eco_tact_pkey PRIMARY KEY (code)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE m_activite_eco.lt_eco_tact
+    OWNER to create_sig;
+
+GRANT ALL ON TABLE m_activite_eco.lt_eco_tact TO sig_create;
+
+GRANT SELECT ON TABLE m_activite_eco.lt_eco_tact TO sig_read;
+
+GRANT ALL ON TABLE m_activite_eco.lt_eco_tact TO create_sig;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_activite_eco.lt_eco_tact TO sig_edit;
+
+COMMENT ON TABLE m_activite_eco.lt_eco_tact
+    IS 'Liste de valeurs de l''activité du projet d''implantation sur les lots (spécifique à l''ARC)';
+
+COMMENT ON COLUMN m_activite_eco.lt_eco_tact.code
+    IS 'Code de l''activité du projet d''implantation sur les lots (spécifique à l''ARC)';
+
+COMMENT ON COLUMN m_activite_eco.lt_eco_tact.valeur
+    IS 'Libellé de l''activité du projet d''implantation sur les lots (spécifique à l''ARC)';
+
+INSERT INTO m_activite_eco.lt_eco_tact(
+            code, valeur)
+    VALUES
+    ('00','Non renseigné'),
+    ('10','Artisanat'),
+    ('20','Commerce'),
+    ('30','Industrie'),
+    ('40','R & D'),
+    ('50','Service/Négoce'),
+    ('60','Tertiaire'),
+    ('99','Autre');
+
 -- ####################################################################################################################################################
 -- ###                                                                                                                                              ###
 -- ###                                                                TABLE                                                                         ###
@@ -1198,6 +1248,9 @@ GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_urbanisme_reg.geo_proced TO sig_
 COMMENT ON TABLE m_urbanisme_reg.geo_proced
     IS 'Classe d''objets contenant les données des procédures d''aménagement';
 
+COMMENT ON COLUMN m_urbanisme_reg.geo_proced.idproc
+    IS 'Identifiant non signifiant de la procédure';
+
 COMMENT ON COLUMN m_urbanisme_reg.geo_proced.nom
     IS 'Libellé de l''opération';
 
@@ -1575,6 +1628,179 @@ COMMENT ON COLUMN m_activite_eco.lk_eco_contact.idcontact
 
 COMMENT ON COLUMN m_activite_eco.lk_eco_contact.idobjet
     IS 'Identifiant unique non signifiant de l''objet en référence';
+
+-- ############################################################## [an_eco_lot] ####################################################################
+
+-- Table: m_activite_eco.an_eco_lot
+
+-- DROP TABLE m_activite_eco.an_eco_lot;
+
+CREATE TABLE m_activite_eco.an_eco_lot
+(
+    idgeolf integer NOT NULL,
+    idsite character varying(10) COLLATE pg_catalog."default",
+    surf integer,
+    surf_l character varying(15) COLLATE pg_catalog."default",
+    date_int date,
+    op_sai character varying(80) COLLATE pg_catalog."default",
+    org_sai character varying(80) COLLATE pg_catalog."default",
+    tact character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
+    tact_99 character varying(80) COLLATE pg_catalog."default",
+    cnom character varying(20) COLLATE pg_catalog."default",
+    lnom character varying(80) COLLATE pg_catalog."default",
+    pvente_l character varying(15) COLLATE pg_catalog."default",
+    pcess_l character varying(15) COLLATE pg_catalog."default",
+    eff_dep integer,
+    eff_n5 integer,
+    conv boolean,
+    datefin_conv date,
+    observ character varying(255) COLLATE pg_catalog."default",
+    date_sai timestamp without time zone,
+    date_maj timestamp without time zone,
+    bati integer,
+    pc_depot timestamp without time zone,
+    pc_accord timestamp without time zone,
+    pc_tra timestamp without time zone,
+    pc_fin timestamp without time zone,
+    pvente_e numeric(10,2),
+    pcess_e numeric(10,2),
+    pc_num character varying(50) COLLATE pg_catalog."default",
+    pc_mo character varying(100) COLLATE pg_catalog."default",
+    pers_v character varying(10) COLLATE pg_catalog."default",
+    oripro character varying(15) COLLATE pg_catalog."default",
+    occupant character varying(100) COLLATE pg_catalog."default",
+    descrip character varying(1000) COLLATE pg_catalog."default",
+    insee character varying(30) COLLATE pg_catalog."default",
+    commune character varying(250) COLLATE pg_catalog."default",
+    CONSTRAINT an_sa_lot_pkey PRIMARY KEY (idgeolf),
+    CONSTRAINT an_sa_lot_tact_fkey FOREIGN KEY (tact)
+        REFERENCES m_activite_eco.lt_eco_tact (code) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE m_activite_eco.an_eco_lot
+    OWNER to create_sig;
+
+GRANT ALL ON TABLE m_activite_eco.an_eco_lot TO sig_create;
+
+GRANT SELECT ON TABLE m_activite_eco.an_eco_lot TO sig_read;
+
+GRANT ALL ON TABLE m_activite_eco.an_eco_lot TO create_sig;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_activite_eco.an_eco_lot TO sig_edit;
+
+COMMENT ON TABLE m_activite_eco.an_eco_lot
+    IS 'Table alphanumérique contenant les données des lots à vocation économique';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_lot.idgeolf
+    IS 'Identifiant unique de l''entité géographique lot';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_lot.idsite
+    IS 'Identifiant du site d''activité d''appartenance';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_lot.surf
+    IS 'Surface parcellaire occupée du lot';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_lot.surf_l
+    IS 'Surface littérale parcellaire occupée du lot';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_lot.date_int
+    IS 'Date renseignée par GéoPicardie lors de l''intégration (correspond aux dernières données reçues)';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_lot.op_sai
+    IS 'Libellé de l''opérateur de saisie';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_lot.org_sai
+    IS 'Libellé de l''organisme de saisie';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_lot.tact
+    IS 'Type d''activité présent sur le lot';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_lot.tact_99
+    IS 'Précision de l''activité du lot (si Autre sélectionné dans l_tact)';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_lot.cnom
+    IS 'Nom de code de l''acquéreur';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_lot.lnom
+    IS 'Nom de l''acquéreur';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_lot.pvente_l
+    IS 'Prix littéral de vente du lot en HT (ex:50€/m²)';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_lot.pcess_l
+    IS 'Prix littéral de cession du lot en HT (ex:30€/m²)';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_lot.eff_dep
+    IS 'Effectif de départ prévu par l''implantation de l''établissement lors de l''octroi de la convention de subvention';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_lot.eff_n5
+    IS 'Effectif prévu de l''établissement à n+5 par la convention d''octroi de subvention';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_lot.conv
+    IS 'Accord ou non d''une convention d''octroi de subvention';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_lot.datefin_conv
+    IS 'Date de fin de la convention d''octroi de subvention, liée à l''effectif n+5';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_lot.observ
+    IS 'Observations diverses';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_lot.date_sai
+    IS 'Date de saisie des données attributaires';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_lot.date_maj
+    IS 'Date de mise à jour des données attributaires';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_lot.bati
+    IS 'Surface de bâtiments projetée en m²';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_lot.pc_depot
+    IS 'Date de dépôt du permis de construire';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_lot.pc_accord
+    IS 'Date d''obtention du permis de construire';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_lot.pc_tra
+    IS 'Date de commencement des travaux du permis de construire';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_lot.pc_fin
+    IS 'Date de fin des travaux du permis de construire';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_lot.pvente_e
+    IS 'Prix de vente (ou cession) envisagé du lot en HT (€/m²) par le service économique';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_lot.pcess_e
+    IS 'Prix de cession du lot en HT(€/m²) - plus utilisé (cf prix de cession du foncier)';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_lot.pc_num
+    IS 'N° du permis de construire';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_lot.pc_mo
+    IS 'Nom du mapitre d''oeuvre (architecte) du PC';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_lot.pers_v
+    IS 'Année de la perspective de vente ou de cession';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_lot.oripro
+    IS 'Information sur l''origine du projet. 3 valeurs possibles ENDOGENE ou EXOGENE ou non renseignée (pas de listes de valeurs créées, cette liste est paramétrée dans GEO)';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_lot.occupant
+    IS 'Libellé de l''occupant du terrain après cession';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_lot.descrip
+    IS 'Descriptif du bâtiment construit sur le lot';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_lot.insee
+    IS 'Code Insee du ou des communes';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_lot.commune
+    IS 'Libellé de la ou des communes contenant le lot';
 
 				  
 -- ####################################################################################################################################################
