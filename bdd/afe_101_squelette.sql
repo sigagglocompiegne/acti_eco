@@ -20,7 +20,7 @@ DROP TABLE IF EXISTS m_activite_eco.an_eco_contact CASCADE;
 DROP TABLE IF EXISTS m_activite_eco.an_eco_evenmt;
 DROP TABLE IF EXISTS m_urbanisme_reg.geo_proced;
 DROP TABLE IF EXISTS m_activite_eco.an_eco_lot;
-DROP TABLE IF EXISTS m_amenagement.an_amt_lot_stade
+DROP TABLE IF EXISTS m_amenagement.an_amt_lot_stade;
 
 /* TABLE DE RELATION */
 DROP TABLE IF EXISTS m_activite_eco.lk_eco_contact;
@@ -791,7 +791,7 @@ CREATE TABLE m_amenagement.lt_amt_stadeamng
 (
     code character varying(2) COLLATE pg_catalog."default" NOT NULL,
     valeur character varying(15) COLLATE pg_catalog."default",
-    CONSTRAINT lt_amt_stadeamng_pkkey PRIMARY KEY (code)
+    CONSTRAINT lt_amt_stadeamng_pkey PRIMARY KEY (code)
 )
 WITH (
     OIDS = FALSE
@@ -817,7 +817,7 @@ COMMENT ON COLUMN m_amenagement.lt_amt_stadeamng.code
 
 COMMENT ON COLUMN m_amenagement.lt_amt_stadeamng.valeur
     IS 'Libellé du stade d''aménagement du lot';
-COMMENT ON CONSTRAINT lt_sa_stadeamng_pkkey ON m_amenagement.lt_amt_stadeamng
+COMMENT ON CONSTRAINT lt_amt_stadeamng_pkey ON m_amenagement.lt_amt_stadeamng
     IS 'Clé primaire de la table lt_sa_stadeamng';
 
 INSERT INTO m_amenagement.lt_amt_stadeamng(
@@ -841,7 +841,7 @@ CREATE TABLE m_amenagement.lt_amt_stadeamng2
 (
     code character varying(2) COLLATE pg_catalog."default" NOT NULL,
     valeur character varying(50) COLLATE pg_catalog."default",
-    CONSTRAINT lt_amt_stadeamng2_pkkey PRIMARY KEY (code)
+    CONSTRAINT lt_amt_stadeamng2_pkey PRIMARY KEY (code)
 )
 WITH (
     OIDS = FALSE
@@ -867,7 +867,7 @@ COMMENT ON COLUMN m_amenagement.lt_amt_stadeamng2.code
 
 COMMENT ON COLUMN m_amenagement.lt_amt_stadeamng2.valeur
     IS 'Libellé de l''état de disponibilité des lots selon le stade d''aménagement (spécifique à l''ARC)';
-COMMENT ON CONSTRAINTlt_amt_stadeamng2_pkkey ON m_amenagement.lt_amt_stadeamng2
+COMMENT ON CONSTRAINT lt_amt_stadeamng2_pkey ON m_amenagement.lt_amt_stadeamng2
     IS 'Clé primaire de la table lt_sa_stadeamng2';
     
 
@@ -889,7 +889,7 @@ CREATE TABLE m_amenagement.lt_amt_stadecomm
 (
     code character varying(2) COLLATE pg_catalog."default" NOT NULL,
     valeur character varying(20) COLLATE pg_catalog."default",
-    CONSTRAINT lt_amt_stadecomm_pkkey PRIMARY KEY (code)
+    CONSTRAINT lt_amt_stadecomm_pkey PRIMARY KEY (code)
 )
 WITH (
     OIDS = FALSE
@@ -915,7 +915,7 @@ COMMENT ON COLUMN m_amenagement.lt_amt_stadecomm.code
 
 COMMENT ON COLUMN m_amenagement.lt_amt_stadecomm.valeur
     IS 'Libellé de le typologie d''aménageur';
-COMMENT ON CONSTRAINT lt_amt_stadecomm_pkkey ON m_amenagement.lt_amt_stadecomm
+COMMENT ON CONSTRAINT lt_amt_stadecomm_pkey ON m_amenagement.lt_amt_stadecomm
     IS 'Clé primaire de la table lt_sa_stadecomm';
 
 INSERT INTO m_amenagement.lt_amt_stadecomm(
@@ -935,7 +935,7 @@ CREATE TABLE m_amenagement.lt_amt_stadecomm2
 (
     code character varying(2) COLLATE pg_catalog."default" NOT NULL,
     valeur character varying(80) COLLATE pg_catalog."default",
-    CONSTRAINT lt_amt_stadecomm2_pkkey PRIMARY KEY (code)
+    CONSTRAINT lt_amt_stadecomm2_pkey PRIMARY KEY (code)
 )
 WITH (
     OIDS = FALSE
@@ -961,7 +961,7 @@ COMMENT ON COLUMN m_amenagement.lt_amt_stadecomm2.code
 
 COMMENT ON COLUMN m_amenagement.lt_amt_stadecomm2.valeur
     IS 'Libellé du stade de commercialisation spécifique à l''ARC';
-COMMENT ON CONSTRAINT lt_amt_stadecomm2_pkkey ON m_amenagement.lt_amt_stadecomm2
+COMMENT ON CONSTRAINT lt_amt_stadecomm2_pkey ON m_amenagement.lt_amt_stadecomm2
     IS 'Clé primaire de la table lt_sa_stadecomm2 spécifique à l''ARC';
 
 INSERT INTO m_amenagement.lt_amt_stadecomm2(
