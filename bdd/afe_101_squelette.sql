@@ -20,6 +20,7 @@ DROP TABLE IF EXISTS m_activite_eco.an_eco_contact CASCADE;
 DROP TABLE IF EXISTS m_activite_eco.an_eco_evenmt;
 DROP TABLE IF EXISTS m_urbanisme_reg.geo_proced;
 DROP TABLE IF EXISTS m_activite_eco.an_eco_lot;
+DROP TABLE IF EXISTS m_amenagement.an_amt_lot_stade
 
 /* TABLE DE RELATION */
 DROP TABLE IF EXISTS m_activite_eco.lk_eco_contact;
@@ -38,6 +39,11 @@ DROP TABLE IF EXISTS m_urbanisme_reg.lt_proc_phase;
 DROP TABLE IF EXISTS m_urbanisme_reg.lt_proc_typ;
 DROP TABLE IF EXISTS m_urbanisme_reg.lt_proc_typfon;
 DROP TABLE IF EXISTS m_activite_eco.lt_eco_tact;
+DROP TABLE IF EXISTS m_amenagement.lt_sa_stadeamng;
+DROP TABLE IF EXISTS m_amenagement.lt_sa_stadeamng2;
+DROP TABLE IF EXISTS m_amenagement.lt_sa_stadecomm;
+DROP TABLE IF EXISTS m_amenagement.lt_sa_stadecomm2;
+
 
 /* SEQUENCE */
 DROP SEQUENCE IF EXISTS m_activite_eco.an_eco_pole_seq;
@@ -226,6 +232,9 @@ ALTER SEQUENCE m_urbanisme_reg.geo_proced_seq
 
 GRANT ALL ON SEQUENCE m_urbanisme_reg.geo_proced_seq TO PUBLIC;
 GRANT ALL ON SEQUENCE m_urbanisme_reg.geo_proced_seq TO create_sig;
+
+
+
 
 -- ####################################################################################################################################################
 -- ###                                                                                                                                              ###
@@ -771,6 +780,167 @@ INSERT INTO m_activite_eco.lt_eco_tact(
     ('50','Service/Négoce'),
     ('60','Tertiaire'),
     ('99','Autre');
+
+-- ################################################################ Domaine valeur - [lt_amt_stadeamng]  ################################################
+
+-- Table: m_amenagement.lt_amt_stadeamng
+
+-- DROP TABLE m_amenagement.lt_amt_stadeamng;
+
+CREATE TABLE m_amenagement.lt_amt_stadeamng
+(
+    code character varying(2) COLLATE pg_catalog."default" NOT NULL,
+    valeur character varying(15) COLLATE pg_catalog."default",
+    CONSTRAINT lt_amt_stadeamng_pkkey PRIMARY KEY (code)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE m_amenagement.lt_amt_stadeamng
+    OWNER to create_sig;
+
+GRANT ALL ON TABLE m_amenagement.lt_amt_stadeamng TO sig_create;
+
+GRANT ALL ON TABLE m_amenagement.lt_amt_stadeamng TO create_sig;
+
+GRANT SELECT ON TABLE m_amenagement.lt_amt_stadeamng TO sig_read;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_amenagement.lt_amt_stadeamng TO sig_edit;
+
+COMMENT ON TABLE m_amenagement.lt_amt_stadeamng
+    IS 'Liste de valeurs du stade d''aménagement du lot';
+
+COMMENT ON COLUMN m_amenagement.lt_amt_stadeamng.code
+    IS 'Code du stade d''aménagement du lot';
+
+COMMENT ON COLUMN m_amenagement.lt_amt_stadeamng.valeur
+    IS 'Libellé du stade d''aménagement du lot';
+COMMENT ON CONSTRAINT lt_sa_stadeamng_pkkey ON m_amenagement.lt_amt_stadeamng
+    IS 'Clé primaire de la table lt_sa_stadeamng';
+
+
+
+-- ################################################################ Domaine valeur - [lt_amt_stadeamng2]  ################################################
+
+
+-- Table: m_amenagement.lt_amt_stadeamng2
+
+-- DROP TABLE m_amenagement.lt_amt_stadeamng2;
+
+CREATE TABLE m_amenagement.lt_amt_stadeamng2
+(
+    code character varying(2) COLLATE pg_catalog."default" NOT NULL,
+    valeur character varying(50) COLLATE pg_catalog."default",
+    CONSTRAINT lt_amt_stadeamng2_pkkey PRIMARY KEY (code)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE m_amenagement.lt_amt_stadeamng2
+    OWNER to create_sig;
+
+GRANT ALL ON TABLE m_amenagement.lt_amt_stadeamng2 TO sig_create;
+
+GRANT ALL ON TABLE m_amenagement.lt_amt_stadeamng2 TO create_sig;
+
+GRANT SELECT ON TABLE m_amenagement.lt_amt_stadeamng2 TO sig_read;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_amenagement.lt_amt_stadeamng2 TO sig_edit;
+
+COMMENT ON TABLE m_amenagement.lt_amt_stadeamng2
+    IS 'Liste de valeurs du stade d''aménagement du lot spécifique à l''ARC';
+
+COMMENT ON COLUMN m_amenagement.lt_amt_stadeamng2.code
+    IS 'Code de l''état de disponibilité des lots selon le stade d''aménagement (spécifique à l''ARC)';
+
+COMMENT ON COLUMN m_amenagement.lt_amt_stadeamng2.valeur
+    IS 'Libellé de l''état de disponibilité des lots selon le stade d''aménagement (spécifique à l''ARC)';
+COMMENT ON CONSTRAINTlt_amt_stadeamng2_pkkey ON m_amenagement.lt_amt_stadeamng2
+    IS 'Clé primaire de la table lt_sa_stadeamng2';
+    
+
+-- ################################################################ Domaine valeur - [lt_amt_stadecomm]  ################################################
+
+-- Table: m_amenagement.lt_amt_stadecomm
+
+-- DROP TABLE m_amenagement.lt_amt_stadecomm;
+
+CREATE TABLE m_amenagement.lt_amt_stadecomm
+(
+    code character varying(2) COLLATE pg_catalog."default" NOT NULL,
+    valeur character varying(20) COLLATE pg_catalog."default",
+    CONSTRAINT lt_amt_stadecomm_pkkey PRIMARY KEY (code)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE m_amenagement.lt_amt_stadecomm
+    OWNER to create_sig;
+
+GRANT ALL ON TABLE m_amenagement.lt_amt_stadecomm TO sig_create;
+
+GRANT ALL ON TABLE m_amenagement.lt_amt_stadecomm TO create_sig;
+
+GRANT SELECT ON TABLE m_amenagement.lt_amt_stadecomm TO sig_read;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_amenagement.lt_amt_stadecomm TO sig_edit;
+
+COMMENT ON TABLE m_amenagement.lt_amt_stadecomm
+    IS 'Liste de valeurs du stade de commercialisation';
+
+COMMENT ON COLUMN m_amenagement.lt_amt_stadecomm.code
+    IS 'Code de le typologie d''aménageur';
+
+COMMENT ON COLUMN m_amenagement.lt_amt_stadecomm.valeur
+    IS 'Libellé de le typologie d''aménageur';
+COMMENT ON CONSTRAINT lt_amt_stadecomm_pkkey ON m_amenagement.lt_amt_stadecomm
+    IS 'Clé primaire de la table lt_sa_stadecomm';
+
+
+-- ################################################################ Domaine valeur - [lt_amt_stadecomm2]  ################################################
+
+-- Table: m_amenagement.lt_amt_stadecomm2
+
+-- DROP TABLE m_amenagement.lt_amt_stadecomm2;
+
+CREATE TABLE m_amenagement.lt_amt_stadecomm2
+(
+    code character varying(2) COLLATE pg_catalog."default" NOT NULL,
+    valeur character varying(80) COLLATE pg_catalog."default",
+    CONSTRAINT lt_amt_stadecomm2_pkkey PRIMARY KEY (code)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE m_amenagement.lt_amt_stadecomm2
+    OWNER to create_sig;
+
+GRANT ALL ON TABLE m_amenagement.lt_amt_stadecomm2 TO sig_create;
+
+GRANT ALL ON TABLE m_amenagement.lt_amt_stadecomm2 TO create_sig;
+
+GRANT SELECT ON TABLE m_amenagement.lt_amt_stadecomm2 TO sig_read;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_amenagement.lt_amt_stadecomm2 TO sig_edit;
+
+COMMENT ON TABLE m_amenagement.lt_amt_stadecomm2
+    IS 'Liste de valeurs du stade de commercialisation spécifique à l''ARC';
+
+COMMENT ON COLUMN m_amenagement.lt_amt_stadecomm2.code
+    IS 'Code du stade de commercialisation spécifique à l''ARC';
+
+COMMENT ON COLUMN m_amenagement.lt_amt_stadecomm2.valeur
+    IS 'Libellé du stade de commercialisation spécifique à l''ARC';
+COMMENT ON CONSTRAINT lt_amt_stadecomm2_pkkey ON m_amenagement.lt_amt_stadecomm2
+    IS 'Clé primaire de la table lt_sa_stadecomm2 spécifique à l''ARC';
 
 -- ####################################################################################################################################################
 -- ###                                                                                                                                              ###
@@ -1591,6 +1761,89 @@ COMMENT ON COLUMN m_activite_eco.an_eco_evenmt.epci
 
 COMMENT ON COLUMN m_activite_eco.an_eco_evenmt.observ
     IS 'Observations diverses';
+
+-- ############################################################## [an_amt_lot_stade] ##################################################################
+
+-- Table: m_amenagement.an_amt_lot_stade
+
+-- DROP TABLE m_amenagement.an_amt_lot_stade;
+
+CREATE TABLE m_amenagement.an_amt_lot_stade
+(
+    idgeolf integer NOT NULL,
+    idsite character varying(10) COLLATE pg_catalog."default",
+    stade_amng character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
+    l_amng2 character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
+    stade_comm character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
+    l_comm2 character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
+    l_comm2_12 character varying(80) COLLATE pg_catalog."default",
+    etat_occup character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
+    CONSTRAINT an_amt_lot_stade_pkey PRIMARY KEY (idgeolf),  
+    	CONSTRAINT an_amt_lot_stade_etat_fkey FOREIGN KEY (etat_occup)
+    REFERENCES m_activite_eco.lt_eco_etat (code) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION,
+	CONSTRAINT an_amt_lot_stade_lamng2_fkey FOREIGN KEY (l_amng2)
+    REFERENCES m_amenagement.lt_amt_stadeamng2 (code) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION,
+	CONSTRAINT an_amt_lot_stade_lcomm2_fkey FOREIGN KEY (l_comm2)
+    REFERENCES m_amenagement.lt_amt_stadecomm2 (code) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION,
+	CONSTRAINT an_amt_lot_stade_comm_fkey FOREIGN KEY (stade_comm)
+    REFERENCES m_amenagement.lt_amt_stadecomm (code) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION,
+	CONSTRAINT an_amt_lot_stade_stadeamng_fkey FOREIGN KEY (stade_amng)
+    REFERENCES m_amenagement.lt_amt_stadeamng (code) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE m_amenagement.an_amt_lot_stade
+    OWNER to create_sig;
+
+GRANT ALL ON TABLE m_amenagement.an_amt_lot_stade TO sig_create;
+
+GRANT ALL ON TABLE m_amenagement.an_amt_lot_stade TO create_sig;
+
+GRANT ALL ON TABLE m_amenagement.an_amt_lot_stade TO sig_stage WITH GRANT OPTION;
+
+GRANT SELECT ON TABLE m_amenagement.an_amt_lot_stade TO sig_read;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_amenagement.an_amt_lot_stade TO sig_edit;
+
+COMMENT ON TABLE m_amenagement.an_amt_lot_stade
+    IS 'Table alphanumérique contenant les données de la classe stade d''aménagement et de commercialisation';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_stade.idgeolf
+    IS 'Identifiant unique de l''entité géographique lot';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_stade.idsite
+    IS 'Identifiant du site d''activité d''appartenance';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_stade.stade_amng
+    IS 'Code du stade d''aménagement du foncier';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_stade.l_amng2
+    IS 'Code du stade d''aménagement du foncier spécifique à l''ARC';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_stade.stade_comm
+    IS 'Code du stade de commercialisation du foncier';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_stade.l_comm2
+    IS 'Code du stade de commercialisation du foncier spécifique à l''ARC';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_stade.l_comm2_12
+    IS 'Spécification de la contrainte du lot en vente (code 12 du champ l_comm2)';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_stade.etat_occup
+    IS 'Code de l''état d''occupation du foncier';
 
 -- ####################################################################################################################################################
 -- ###                                                                                                                                              ###
