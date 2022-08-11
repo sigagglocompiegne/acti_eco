@@ -1820,6 +1820,8 @@ COMMENT ON COLUMN m_activite_eco.an_eco_lot.commune
 -- ###                                                                                                                                              ###
 -- ####################################################################################################################################################
 
+-- ##################################################### [m_activite_eco.ft_m_delete_lot_eco] #########################################################
+
 -- FUNCTION: m_activite_eco.ft_m_delete_lot_eco()
 
 -- DROP FUNCTION m_activite_eco.ft_m_delete_lot_eco();
@@ -1854,6 +1856,10 @@ GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_delete_lot_eco() TO create_sig;
 
 COMMENT ON FUNCTION m_activite_eco.ft_m_delete_lot_eco()
     IS 'Fonction gérant la suppression des données correspondant à la gestion des lots à vocation économique';
+
+
+-- ##################################################### [m_activite_eco.ft_m_insert_lot_eco] #########################################################
+
 
 -- FUNCTION: m_economie.ft_m_insert_lot_eco()
 
@@ -2053,6 +2059,9 @@ COMMENT ON FUNCTION m_activite_eco.ft_m_insert_lot_eco()
     IS 'Fonction gérant la mise à jour des données correspondant à la gestion des lots à vocation économique';
 
 
+
+-- ##################################################### [m_activite_eco.ft_m_modif_lot_eco] #########################################################
+
 -- FUNCTION: m_activite_eco.ft_m_modif_lot_eco()
 
 -- DROP FUNCTION m_activite_eco.ft_m_modif_lot_eco();
@@ -2132,6 +2141,8 @@ GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_modif_lot_eco() TO create_sig;
 -- ###                                                                VUE                                                                           ###
 -- ###                                                                                                                                              ###
 -- ####################################################################################################################################################
+
+-- ############################################################ [geo_v_eco_lot] #######################################################################
 
 -- View: m_activite_eco.geo_v_eco_lot
 
@@ -2225,7 +2236,10 @@ CREATE TRIGGER t_t3_modif_lot_eco
     EXECUTE PROCEDURE m_activite_eco.ft_m_modif_lot_eco();
 
 
+-- ############################################################### [geo_v_lot] #######################################################################
 
+
+-- ############################################################### [geo_v_proc] #######################################################################
 
 -- ####################################################################################################################################################
 -- ###                                                                                                                                              ###
