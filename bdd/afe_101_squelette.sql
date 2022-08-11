@@ -10,7 +10,7 @@
 
 /* VIEW */
 DROP VIEW IF EXISTS m_activite_eco.geo_v_eco_lot;
-DROP VIEW IF EXISTS m_activite_eco.geo_v_lot;
+DROP VIEW IF EXISTS r_objet.geo_v_lot;
 
 /* TABLE */
 DROP TABLE IF EXISTS  m_activite_eco.an_eco_pole;
@@ -50,12 +50,12 @@ DROP SEQUENCE IF EXISTS m_urbanisme_reg.geo_proced_seq;
 
 /* TRIGGERS */
 
-DROP TRIGGER t_t1_foncier_delete ON r_objet.geo_v_lot;
-DROP TRIGGER t_t2_foncier_insert ON r_objet.geo_v_lot;
-DROP TRIGGER t_t3_foncier_update ON r_objet.geo_v_lot;
-DROP TRIGGER t_t1_delete_lot_eco ON m_activite_eco.geo_v_eco_lot;
-DROP TRIGGER t_t2_insert_lot_eco ON m_activite_eco.geo_v_eco_lot;
-DROP TRIGGER t_t3_modif_lot_eco ON m_activite_eco.geo_v_eco_lot;
+DROP TRIGGER IF EXISTS t_t1_foncier_delete ON r_objet.geo_v_lot;
+DROP TRIGGER IF EXISTS t_t2_foncier_insert ON r_objet.geo_v_lot;
+DROP TRIGGER IF EXISTS t_t3_foncier_update ON r_objet.geo_v_lot;
+DROP TRIGGER IF EXISTS t_t1_delete_lot_eco ON m_activite_eco.geo_v_eco_lot;
+DROP TRIGGER IF EXISTS t_t2_insert_lot_eco ON m_activite_eco.geo_v_eco_lot;
+DROP TRIGGER IF EXISTS t_t3_modif_lot_eco ON m_activite_eco.geo_v_eco_lot;
 
 -- ####################################################################################################################################################
 -- ###                                                                                                                                              ###
