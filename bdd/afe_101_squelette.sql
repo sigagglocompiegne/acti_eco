@@ -48,6 +48,14 @@ DROP SEQUENCE IF EXISTS m_activite_eco.lk_eco_contact_seq;
 DROP SEQUENCE IF EXISTS m_activite_eco.an_eco_evenmt_seq;
 DROP SEQUENCE IF EXISTS m_urbanisme_reg.geo_proced_seq;
 
+/* TRIGGERS */
+
+DROP TRIGGER t_t1_foncier_delete ON r_objet.geo_v_lot;
+DROP TRIGGER t_t2_foncier_insert ON r_objet.geo_v_lot;
+DROP TRIGGER t_t3_foncier_update ON r_objet.geo_v_lot;
+DROP TRIGGER t_t1_delete_lot_eco ON m_activite_eco.geo_v_eco_lot;
+DROP TRIGGER t_t2_insert_lot_eco ON m_activite_eco.geo_v_eco_lot;
+DROP TRIGGER t_t3_modif_lot_eco ON m_activite_eco.geo_v_eco_lot;
 
 -- ####################################################################################################################################################
 -- ###                                                                                                                                              ###
@@ -1827,7 +1835,7 @@ COMMENT ON COLUMN m_activite_eco.an_eco_lot.commune
 
 -- DROP FUNCTION m_activite_eco.ft_m_delete_lot_eco();
 
-CREATE FUNCTION m_activite_eco.ft_m_delete_lot_eco()
+CREATE OR REPLACE FUNCTION m_activite_eco.ft_m_delete_lot_eco()
     RETURNS trigger
     LANGUAGE 'plpgsql'
     COST 100
@@ -1866,7 +1874,7 @@ COMMENT ON FUNCTION m_activite_eco.ft_m_delete_lot_eco()
 
 -- DROP FUNCTION m_economie.ft_m_insert_lot_eco();
 
-CREATE FUNCTION m_activite_eco.ft_m_insert_lot_eco()
+CREATE OR REPLACE FUNCTION m_activite_eco.ft_m_insert_lot_eco()
     RETURNS trigger
     LANGUAGE 'plpgsql'
     COST 100
@@ -2067,7 +2075,7 @@ COMMENT ON FUNCTION m_activite_eco.ft_m_insert_lot_eco()
 
 -- DROP FUNCTION m_activite_eco.ft_m_modif_lot_eco();
 
-CREATE FUNCTION m_activite_eco.ft_m_modif_lot_eco()
+CREATE OR REPLACE FUNCTION m_activite_eco.ft_m_modif_lot_eco()
     RETURNS trigger
     LANGUAGE 'plpgsql'
     COST 100
@@ -2142,7 +2150,7 @@ GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_modif_lot_eco() TO create_sig;
 
 -- DROP FUNCTION r_objet.ft_m_foncier_delete();
 
-CREATE FUNCTION r_objet.ft_m_foncier_delete()
+CREATE OR REPLACE FUNCTION r_objet.ft_m_foncier_delete()
     RETURNS trigger
     LANGUAGE 'plpgsql'
     COST 100
@@ -2185,7 +2193,7 @@ COMMENT ON FUNCTION r_objet.ft_m_foncier_delete()
 
 -- DROP FUNCTION r_objet.ft_m_foncier_insert();
 
-CREATE FUNCTION r_objet.ft_m_foncier_insert()
+CREATE OR REPLACE FUNCTION r_objet.ft_m_foncier_insert()
     RETURNS trigger
     LANGUAGE 'plpgsql'
     COST 100
@@ -2532,7 +2540,7 @@ COMMENT ON FUNCTION r_objet.ft_m_foncier_insert()
 
 -- DROP FUNCTION r_objet.ft_m_foncier_update();
 
-CREATE FUNCTION r_objet.ft_m_foncier_update()
+CREATE OR REPLACE FUNCTION r_objet.ft_m_foncier_update()
     RETURNS trigger
     LANGUAGE 'plpgsql'
     COST 100
