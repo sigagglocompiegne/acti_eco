@@ -6,7 +6,7 @@
 
 - 01/12/2015 : description initiale de production de la base de données urbanisée
 - 18/02/2021 : intégration du module marché immobilier à la thématique économique
-- 09/08/2022 : réorganisation de la base de données suer l'activité économique (rédaction de la documentation en cours)
+- 09/08/2022 : réorganisation de la base de données sur l'activité économique (rédaction de la documentation en cours)
 
 
 
