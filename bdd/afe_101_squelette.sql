@@ -820,6 +820,14 @@ COMMENT ON COLUMN m_amenagement.lt_amt_stadeamng.valeur
 COMMENT ON CONSTRAINT lt_sa_stadeamng_pkkey ON m_amenagement.lt_amt_stadeamng
     IS 'Clé primaire de la table lt_sa_stadeamng';
 
+INSERT INTO m_amenagement.lt_amt_stadeamng(
+            code, valeur)
+    VALUES
+    ('00','Non renseigné'),
+    ('10','Aucun'),
+    ('20','Non acquis'),
+    ('30','Acquis'),
+    ('40','Viabilisé');
 
 
 -- ################################################################ Domaine valeur - [lt_amt_stadeamng2]  ################################################
@@ -863,6 +871,14 @@ COMMENT ON CONSTRAINTlt_amt_stadeamng2_pkkey ON m_amenagement.lt_amt_stadeamng2
     IS 'Clé primaire de la table lt_sa_stadeamng2';
     
 
+INSERT INTO m_amenagement.lt_amt_stadeamng2(
+            code, valeur)
+    VALUES
+    ('00','Non renseigné'),
+    ('10','Disponible (aménagé ou aménageable rapidement)'),
+    ('20','Indisponible (terrain non acheté)'),
+    ('30','Indisponible (terrain non aménagé)');
+
 -- ################################################################ Domaine valeur - [lt_amt_stadecomm]  ################################################
 
 -- Table: m_amenagement.lt_amt_stadecomm
@@ -902,6 +918,12 @@ COMMENT ON COLUMN m_amenagement.lt_amt_stadecomm.valeur
 COMMENT ON CONSTRAINT lt_amt_stadecomm_pkkey ON m_amenagement.lt_amt_stadecomm
     IS 'Clé primaire de la table lt_sa_stadecomm';
 
+INSERT INTO m_amenagement.lt_amt_stadecomm(
+            code, valeur)
+    VALUES
+    ('00','Non renseigné'),
+    ('10','Aucun'),
+    ('20','Commercialisable');
 
 -- ################################################################ Domaine valeur - [lt_amt_stadecomm2]  ################################################
 
@@ -941,6 +963,17 @@ COMMENT ON COLUMN m_amenagement.lt_amt_stadecomm2.valeur
     IS 'Libellé du stade de commercialisation spécifique à l''ARC';
 COMMENT ON CONSTRAINT lt_amt_stadecomm2_pkkey ON m_amenagement.lt_amt_stadecomm2
     IS 'Clé primaire de la table lt_sa_stadecomm2 spécifique à l''ARC';
+
+INSERT INTO m_amenagement.lt_amt_stadecomm2(
+            code, valeur)
+    VALUES
+    ('00','Non renseigné'),
+    ('11','En vente'),
+    ('12','En vente (avec contrainte)'),
+    ('20','Vendu'),
+    ('31','Réservé (par une délibération du Conseil d''Agglomération)'),
+    ('32','Réservé (option)'),
+    ('99','Non commercialisé par un acteur public');
 
 -- ####################################################################################################################################################
 -- ###                                                                                                                                              ###
