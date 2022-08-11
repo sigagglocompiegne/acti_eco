@@ -11,6 +11,11 @@
 /* VIEW */
 DROP VIEW IF EXISTS m_activite_eco.geo_v_eco_lot;
 DROP VIEW IF EXISTS r_objet.geo_v_lot;
+DROP VIEW IF EXISTS m_amenagement.geo_v_empesp_pu;
+DROP VIEW IF EXISTS m_amenagement.geo_v_lot_equ;
+DROP VIEW IF EXISTS m_amenagement.geo_v_lot_hab;
+DROP VIEW IF EXISTS m_amenagement.geo_v_lot_mixte;
+DROP VIEW IF EXISTS m_amenagement.geo_v_empesp_pu;
 
 /* TABLE */
 DROP TABLE IF EXISTS  m_activite_eco.an_eco_pole;
@@ -22,10 +27,17 @@ DROP TABLE IF EXISTS m_activite_eco.an_eco_evenmt;
 DROP TABLE IF EXISTS m_urbanisme_reg.geo_proced;
 DROP TABLE IF EXISTS m_activite_eco.an_eco_lot;
 DROP TABLE IF EXISTS m_amenagement.an_amt_lot_stade;
+DROP TABLE IF EXISTS m_amenagement.an_amt_esppu;
+DROP TABLE IF EXISTS m_amenagement.an_amt_lot_divers;
+DROP TABLE IF EXISTS m_amenagement.an_amt_lot_equ;
+DROP TABLE IF EXISTS m_amenagement.an_amt_lot_hab;
+DROP TABLE IF EXISTS m_amenagement.an_amt_lot_mixte;
+DROP TABLE IF EXISTS r_objet.geo_objet_empesp_pu;
 
 /* TABLE DE RELATION */
 DROP TABLE IF EXISTS m_activite_eco.lk_eco_contact;
 DROP TABLE IF EXISTS m_activite_eco.lk_eco_proc;
+DROP TABLE IF EXISTS m_amenagement.lk_amt_lot_site;
 
 /* LISTE DE VALEUR */
 DROP TABLE IF EXISTS m_activite_eco.lt_eco_dest;
@@ -45,6 +57,7 @@ DROP TABLE IF EXISTS m_amenagement.lt_amt_stadeamng;
 DROP TABLE IF EXISTS m_amenagement.lt_amt_stadeamng2;
 DROP TABLE IF EXISTS m_amenagement.lt_amt_stadecomm;
 DROP TABLE IF EXISTS m_amenagement.lt_amt_stadecomm2;
+DROP TABLE IF EXISTS m_amenagement.lt_amt_empesp_pu;
 
 
 /* SEQUENCE */
@@ -56,6 +69,9 @@ DROP SEQUENCE IF EXISTS m_activite_eco.lk_eco_contact_seq;
 DROP SEQUENCE IF EXISTS m_activite_eco.an_eco_evenmt_seq;
 DROP SEQUENCE IF EXISTS m_urbanisme_reg.geo_proced_seq;
 DROP SEQUENCE IF EXISTS m_activite_eco.lk_eco_proc_seq;
+DROP SEQUENCE IF EXISTS m_activite_eco.lk_eco_proc_seq;
+DROP SEQUENCE IF EXISTS m_urbanisme_reg.an_proc_media_seq;
+DROP SEQUENCE IF EXISTS m_amenagement.lk_amt_lot_site_seq;
 
 /* TRIGGERS */
 
@@ -275,6 +291,26 @@ ALTER SEQUENCE m_urbanisme_reg.an_proc_media_seq
 
 GRANT ALL ON SEQUENCE m_urbanisme_reg.an_proc_media_seq TO PUBLIC;
 GRANT ALL ON SEQUENCE m_urbanisme_reg.an_proc_media_seq TO create_sig;
+
+
+-- ############################################################## [lk_amt_lot_site_seq] ##################################################################
+
+-- SEQUENCE: m_amenagement.lk_amt_lot_site_seq
+
+-- DROP SEQUENCE m_amenagement.lk_amt_lot_site_seq;
+
+CREATE SEQUENCE m_amenagement.lk_amt_lot_site_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+
+ALTER SEQUENCE m_amenagement.lk_amt_lot_site_seq
+    OWNER TO create_sig;
+
+GRANT ALL ON SEQUENCE m_amenagement.lk_amt_lot_site_seq TO PUBLIC;
+GRANT ALL ON SEQUENCE m_amenagement.lk_amt_lot_site_seq TO create_sig;
 
 -- ####################################################################################################################################################
 -- ###                                                                                                                                              ###
@@ -1018,6 +1054,66 @@ INSERT INTO m_amenagement.lt_amt_stadecomm2(
     ('31','Réservé (par une délibération du Conseil d''Agglomération)'),
     ('32','Réservé (option)'),
     ('99','Non commercialisé par un acteur public');
+
+-- ################################################################ Domaine valeur - [lt_amt_empesp_pu]  ##############################################
+
+-- Table: m_amenagement.lt_amt_empesp_pu
+
+-- DROP TABLE m_amenagement.lt_amt_empesp_pu;
+
+CREATE TABLE m_amenagement.lt_amt_empesp_pu
+(
+    code character varying(2) COLLATE pg_catalog."default" NOT NULL,
+    valeur character varying(35) COLLATE pg_catalog."default",
+    CONSTRAINT lt_amt_empesp_pu_pkkey PRIMARY KEY (code)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE m_amenagement.lt_amt_empesp_pu
+    OWNER to create_sig;
+
+GRANT ALL ON TABLE m_amenagement.lt_amt_empesp_pu TO sig_create;
+
+GRANT ALL ON TABLE m_amenagement.lt_amt_empesp_pu TO create_sig;
+
+GRANT SELECT ON TABLE m_amenagement.lt_amt_empesp_pu TO sig_read;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_amenagement.lt_amt_empesp_pu TO sig_edit;
+
+COMMENT ON TABLE m_amenagement.lt_amt_empesp_pu
+    IS 'Vocation des espaces publics';
+
+COMMENT ON COLUMN m_amenagement.lt_amt_empesp_pu.code
+    IS 'Code de la vocation de l''espace public';
+
+COMMENT ON COLUMN m_amenagement.lt_amt_empesp_pu.valeur
+    IS 'Libellé de la vocation de l''espace public';
+COMMENT ON CONSTRAINT lt_amt_empesp_pu_pkkey ON m_amenagement.lt_amt_empesp_pu
+    IS 'Clé primaire de la table lt_amt_empesp_pu';
+    
+INSERT INTO m_amenagement.lt_amt_empesp_pu(
+            code, valeur)
+    VALUES
+    ('00','Non renseigné'),
+    ('11','Route'),
+    ('12','Trottoir brut'),
+    ('13','Trottoir paysagé'),
+    ('14','Stationnement'),
+    ('15','Terre plein central ou giratoire'),
+    ('16','Voie réservée'),
+    ('17','Esplanade'),
+    ('21','Chemin'),
+    ('22','Circulation douce'),
+    ('31','Bassin d''orage'),
+    ('32','Equipement réseau'),
+    ('33','Equipement public'),
+    ('41','Espace vert'),
+    ('42','Bois'),
+    ('50','Bâtiment public'),
+    ('99','Autre');
 
 -- ####################################################################################################################################################
 -- ###                                                                                                                                              ###
@@ -1926,7 +2022,6 @@ COMMENT ON COLUMN m_activite_eco.an_eco_evenmt.observ
 CREATE TABLE m_activite_eco.an_eco_lot
 (
     idgeolf integer NOT NULL,
-    idsite character varying(10) COLLATE pg_catalog."default",
     surf integer,
     surf_l character varying(15) COLLATE pg_catalog."default",
     date_int date,
@@ -1988,8 +2083,6 @@ COMMENT ON TABLE m_activite_eco.an_eco_lot
 COMMENT ON COLUMN m_activite_eco.an_eco_lot.idgeolf
     IS 'Identifiant unique de l''entité géographique lot';
 
-COMMENT ON COLUMN m_activite_eco.an_eco_lot.idsite
-    IS 'Identifiant du site d''activité d''appartenance';
 
 COMMENT ON COLUMN m_activite_eco.an_eco_lot.surf
     IS 'Surface parcellaire occupée du lot';
@@ -2099,7 +2192,6 @@ COMMENT ON COLUMN m_activite_eco.an_eco_lot.commune
 CREATE TABLE m_amenagement.an_amt_lot_stade
 (
     idgeolf integer NOT NULL,
-    idsite character varying(10) COLLATE pg_catalog."default",
     stade_amng character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
     l_amng2 character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
     stade_comm character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
@@ -2152,8 +2244,6 @@ COMMENT ON TABLE m_amenagement.an_amt_lot_stade
 COMMENT ON COLUMN m_amenagement.an_amt_lot_stade.idgeolf
     IS 'Identifiant unique de l''entité géographique lot';
 
-COMMENT ON COLUMN m_amenagement.an_amt_lot_stade.idsite
-    IS 'Identifiant du site d''activité d''appartenance';
 
 COMMENT ON COLUMN m_amenagement.an_amt_lot_stade.stade_amng
     IS 'Code du stade d''aménagement du foncier';
@@ -2172,6 +2262,531 @@ COMMENT ON COLUMN m_amenagement.an_amt_lot_stade.l_comm2_12
 
 COMMENT ON COLUMN m_amenagement.an_amt_lot_stade.etat_occup
     IS 'Code de l''état d''occupation du foncier';
+
+-- ############################################################## [an_amt_esppu] ##################################################################
+
+-- Table: m_amenagement.an_amt_esppu
+
+-- DROP TABLE m_amenagement.an_amt_esppu;
+
+CREATE TABLE m_amenagement.an_amt_esppu
+(
+    idgeopu integer NOT NULL,
+    idpole character varying(7) COLLATE pg_catalog."default",
+    date_int date,
+    op_sai character varying(80) COLLATE pg_catalog."default",
+    org_sai character varying(80) COLLATE pg_catalog."default",
+    vocaep character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
+    date_sai timestamp without time zone,
+    date_maj timestamp without time zone,
+    CONSTRAINT an_amt_esppu_pkey PRIMARY KEY (idgeopu),
+    CONSTRAINT lt_amt_empesp_pu_fkey FOREIGN KEY (vocaep)
+        REFERENCES m_amenagement.lt_amt_empesp_pu (code) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE m_amenagement.an_amt_esppu
+    OWNER to create_sig;
+
+GRANT SELECT ON TABLE m_amenagement.an_amt_esppu TO sig_read;
+
+GRANT ALL ON TABLE m_amenagement.an_amt_esppu TO sig_create;
+
+GRANT ALL ON TABLE m_amenagement.an_amt_esppu TO create_sig;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_amenagement.an_amt_esppu TO sig_edit;
+
+COMMENT ON TABLE m_amenagement.an_amt_esppu
+    IS 'Information alphanumérique sur les emprises des espaces publiques contenus dans les sites opérationnels. Les objets virtuels de référence sont gérés dans le schéma r_objet';
+
+COMMENT ON COLUMN m_amenagement.an_amt_esppu.idgeopu
+    IS 'Identifiant unique géographique de référence de l''objet virtuel';
+
+
+COMMENT ON COLUMN m_amenagement.an_amt_esppu.idpole
+    IS 'Identifiant unique du pole';
+
+COMMENT ON COLUMN m_amenagement.an_amt_esppu.date_int
+    IS 'Date d''intégration par GéoPicardie dans la base (permet de connaître la dernière donnée intégrée)';
+
+COMMENT ON COLUMN m_amenagement.an_amt_esppu.op_sai
+    IS 'Libellé de la personne ayant saisie la mise à jour';
+
+COMMENT ON COLUMN m_amenagement.an_amt_esppu.org_sai
+    IS 'Organisme de saisie dont dépend l''opérateur de saisie';
+
+COMMENT ON COLUMN m_amenagement.an_amt_esppu.vocaep
+    IS 'Code de valeurs des vocations des espaces publics';
+
+COMMENT ON COLUMN m_amenagement.an_amt_esppu.date_sai
+    IS 'Date de saisie des données attributaires';
+
+COMMENT ON COLUMN m_amenagement.an_amt_esppu.date_maj
+    IS 'Date de mises à jour des données attributaires';
+
+-- ############################################################## [an_amt_lot_divers] ##################################################################
+
+-- Table: m_amenagement.an_amt_lot_divers
+
+-- DROP TABLE m_amenagement.an_amt_lot_divers;
+
+CREATE TABLE m_amenagement.an_amt_lot_divers
+(
+    idgeolf integer NOT NULL,
+    op_sai character varying(80) COLLATE pg_catalog."default",
+    org_sai character varying(80) COLLATE pg_catalog."default",
+    l_nom character varying(100) COLLATE pg_catalog."default",
+    surf double precision,
+    date_sai timestamp without time zone,
+    date_maj timestamp without time zone,
+    l_phase character varying(10) COLLATE pg_catalog."default",
+    l_surf_l character varying(15) COLLATE pg_catalog."default",
+    CONSTRAINT an_amt_lot_divers_pkey PRIMARY KEY (idgeolf)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE m_amenagement.an_amt_lot_divers
+    OWNER to create_sig;
+
+GRANT ALL ON TABLE m_amenagement.an_amt_lot_divers TO sig_create;
+
+GRANT ALL ON TABLE m_amenagement.an_amt_lot_divers TO create_sig;
+
+GRANT SELECT ON TABLE m_amenagement.an_amt_lot_divers TO sig_read;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_amenagement.an_amt_lot_divers TO sig_edit;
+
+COMMENT ON TABLE m_amenagement.an_amt_lot_divers
+    IS 'Information alphanumérique sur les lots divers';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_divers.idgeolf
+    IS 'Identifiant unique géographique de référence de l''objet virtuel';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_divers.op_sai
+    IS 'Libellé de la personne ayant saisie la mise à jour';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_divers.org_sai
+    IS 'Organisme de saisie dont dépend l''opérateur de saisie';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_divers.l_nom
+    IS 'Libellé';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_divers.surf
+    IS 'Surface du lot divers en m²';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_divers.date_sai
+    IS 'Date de saisie des données attributaires';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_divers.date_maj
+    IS 'Date de mise à jour des données attributaires';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_divers.l_phase
+    IS 'Phase opérationnelle éventuelle';
+
+-- ############################################################## [an_amt_lot_equ] ##################################################################
+
+-- Table: m_amenagement.an_amt_lot_equ
+
+-- DROP TABLE m_amenagement.an_amt_lot_equ;
+
+CREATE TABLE m_amenagement.an_amt_lot_equ
+(
+    idgeolf integer NOT NULL,
+    op_sai character varying(80) COLLATE pg_catalog."default",
+    org_sai character varying(80) COLLATE pg_catalog."default",
+    l_nom character varying(100) COLLATE pg_catalog."default",
+    surf double precision,
+    date_sai timestamp without time zone,
+    date_maj timestamp without time zone,
+    l_phase character varying(10) COLLATE pg_catalog."default",
+    l_surf_l character varying(15) COLLATE pg_catalog."default",
+    CONSTRAINT an_amt_lot_equ_pkey PRIMARY KEY (idgeolf)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE m_amenagement.an_amt_lot_equ
+    OWNER to create_sig;
+
+GRANT ALL ON TABLE m_amenagement.an_amt_lot_equ TO sig_create;
+
+GRANT ALL ON TABLE m_amenagement.an_amt_lot_equ TO create_sig;
+
+GRANT SELECT ON TABLE m_amenagement.an_amt_lot_equ TO sig_read;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_amenagement.an_amt_lot_equ TO sig_edit;
+
+COMMENT ON TABLE m_amenagement.an_amt_lot_equ
+    IS 'Information alphanumérique sur les lots équipements';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_equ.idgeolf
+    IS 'Identifiant unique géographique de référence de l''objet virtuel';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_equ.op_sai
+    IS 'Libellé de la personne ayant saisie la mise à jour';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_equ.org_sai
+    IS 'Organisme de saisie dont dépend l''opérateur de saisie';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_equ.l_nom
+    IS 'Libellé de l''équipement';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_equ.surf
+    IS 'Surface du lot équipement en m²';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_equ.date_sai
+    IS 'Date de saisie des données attributaires';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_equ.date_maj
+    IS 'Date de mise à jour des données attributaires';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_equ.l_phase
+    IS 'Phase opérationnelle éventuelle';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_equ.l_surf_l
+    IS 'Surface littérale parcellaire occupée du lot';
+
+-- ############################################################## [an_amt_lot_hab] ##################################################################
+
+-- Table: m_amenagement.an_amt_lot_hab
+
+-- DROP TABLE m_amenagement.an_amt_lot_hab;
+
+CREATE TABLE m_amenagement.an_amt_lot_hab
+(
+    idgeolf integer NOT NULL,
+    surf integer,
+    l_surf_l character varying(15) COLLATE pg_catalog."default",
+    op_sai character varying(80) COLLATE pg_catalog."default",
+    org_sai character varying(80) COLLATE pg_catalog."default",
+    l_pvente double precision,
+    l_pvente_l character varying(15) COLLATE pg_catalog."default",
+    nb_log integer,
+    nb_logind integer,
+    nb_logindgr integer,
+    nb_logcol integer,
+    nb_logaide integer,
+    l_observ character varying(255) COLLATE pg_catalog."default",
+    date_sai timestamp without time zone,
+    date_maj timestamp without time zone,
+    l_phase character varying(20) COLLATE pg_catalog."default",
+    nb_log_r integer DEFAULT 0,
+    nb_logind_r integer DEFAULT 0,
+    nb_logindgr_r integer DEFAULT 0,
+    nb_logcol_r integer DEFAULT 0,
+    nb_logaide_r integer DEFAULT 0,
+    l_pvente_lot integer,
+    nb_logaide_loc_r integer,
+    nb_logaide_acc_r integer,
+    CONSTRAINT an_amt_lot_hab_pkey PRIMARY KEY (idgeolf)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE m_amenagement.an_amt_lot_hab
+    OWNER to create_sig;
+
+GRANT ALL ON TABLE m_amenagement.an_amt_lot_hab TO sig_create;
+
+GRANT ALL ON TABLE m_amenagement.an_amt_lot_hab TO create_sig;
+
+GRANT SELECT ON TABLE m_amenagement.an_amt_lot_hab TO sig_read;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_amenagement.an_amt_lot_hab TO sig_edit;
+
+COMMENT ON TABLE m_amenagement.an_amt_lot_hab
+    IS 'Table alphanumérique contenant les données des lots à vocation habitat';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.idgeolf
+    IS 'Identifiant unique de l''entité géographique lot';
+
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.surf
+    IS 'Surface parcellaire occupée du lot';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.l_surf_l
+    IS 'Surface littérale parcellaire occupée du lot';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.op_sai
+    IS 'Libellé de l''opérateur de saisie';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.org_sai
+    IS 'Libellé de l''organisme de saisie';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.l_pvente
+    IS 'Prix de vente du lot en HT (€/m²)';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.l_pvente_l
+    IS 'Prix littéral de vente du lot en HT (ex:50€/m²)';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.nb_log
+    IS 'Nombre total de logements';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.nb_logind
+    IS 'Nombre de logements individuels';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.nb_logindgr
+    IS 'Nombre de logements individuels groupés';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.nb_logcol
+    IS 'Nombre de logements collectifs';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.nb_logaide
+    IS 'Dont nombre de logements aidés';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.l_observ
+    IS 'Observations diverses';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.date_sai
+    IS 'Date de saisie des données attributaires';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.date_maj
+    IS 'Date de mise à jour des données attributaires';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.l_phase
+    IS 'Information facultative sur l''appartenance du lot à un éventuel phasage de l''opération';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.nb_log_r
+    IS 'Nombre de logements total réalisé';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.nb_logind_r
+    IS 'Nombre de logements individuels réalisé';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.nb_logindgr_r
+    IS 'Nombre de logements individuels groupés réalisé';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.nb_logcol_r
+    IS 'Nombre de logements collectifs réalisé';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.nb_logaide_r
+    IS 'Nombre de logements aidés réalisé';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.l_pvente_lot
+    IS 'Prix de vente du lot (ht)';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.nb_logaide_loc_r
+    IS 'Nombre de logements aidés en location réalisé';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.nb_logaide_acc_r
+    IS 'Nombre de logements aidés en accession réalisé';
+
+-- ############################################################## [an_amt_lot_mixte] ##################################################################
+
+-- Table: m_amenagement.an_amt_lot_mixte
+
+-- DROP TABLE m_amenagement.an_amt_lot_mixte;
+
+CREATE TABLE m_amenagement.an_amt_lot_mixte
+(
+    idgeolf integer NOT NULL,
+    surf integer,
+    l_surf_l character varying(15) COLLATE pg_catalog."default",
+    op_sai character varying(80) COLLATE pg_catalog."default",
+    org_sai character varying(80) COLLATE pg_catalog."default",
+    l_pvente double precision,
+    l_pvente_l character varying(15) COLLATE pg_catalog."default",
+    nb_log integer DEFAULT 0,
+    nb_logind integer DEFAULT 0,
+    nb_logindgr integer DEFAULT 0,
+    nb_logcol integer DEFAULT 0,
+    nb_logaide integer DEFAULT 0,
+    l_observ character varying(255) COLLATE pg_catalog."default",
+    date_sai timestamp without time zone,
+    date_maj timestamp without time zone,
+    l_phase character varying(20) COLLATE pg_catalog."default",
+    nb_log_r integer DEFAULT 0,
+    nb_logind_r integer DEFAULT 0,
+    nb_logindgr_r integer DEFAULT 0,
+    nb_logcol_r integer DEFAULT 0,
+    nb_logaide_r integer DEFAULT 0,
+    l_pvente_lot integer,
+    l_tact character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
+    l_tact_99 character varying(80) COLLATE pg_catalog."default",
+    l_nom_equ character varying(100) COLLATE pg_catalog."default",
+    nb_logaide_loc_r integer,
+    nb_logaide_acc_r integer,
+    l_lnom character varying(250) COLLATE pg_catalog."default",
+    CONSTRAINT an_amt_lot_mixte_pkey PRIMARY KEY (idgeolf)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE m_amenagement.an_amt_lot_mixte
+    OWNER to create_sig;
+
+GRANT ALL ON TABLE m_amenagement.an_amt_lot_mixte TO sig_create;
+
+GRANT ALL ON TABLE m_amenagement.an_amt_lot_mixte TO create_sig;
+
+GRANT SELECT ON TABLE m_amenagement.an_amt_lot_mixte TO sig_read;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_amenagement.an_amt_lot_mixte TO sig_edit;
+
+COMMENT ON TABLE m_amenagement.an_amt_lot_mixte
+    IS 'Table alphanumérique contenant les données des lots à vocation mixte';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.idgeolf
+    IS 'Identifiant unique de l''entité géographique lot';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.surf
+    IS 'Surface parcellaire occupée du lot';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.l_surf_l
+    IS 'Surface littérale parcellaire occupée du lot';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.op_sai
+    IS 'Libellé de l''opérateur de saisie';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.org_sai
+    IS 'Libellé de l''organisme de saisie';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.l_pvente
+    IS 'Prix de vente du lot en HT (€/m²)';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.l_pvente_l
+    IS 'Prix littéral de vente du lot en HT (ex:50€/m²)';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.nb_log
+    IS 'Nombre total de logements';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.nb_logind
+    IS 'Nombre de logements individuels';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.nb_logindgr
+    IS 'Nombre de logements individuels groupés';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.nb_logcol
+    IS 'Nombre de logements collectifs';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.nb_logaide
+    IS 'Dont nombre de logements aidés';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.l_observ
+    IS 'Observations diverses';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.date_sai
+    IS 'Date de saisie des données attributaires';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.date_maj
+    IS 'Date de mise à jour des données attributaires';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.l_phase
+    IS 'Information facultative sur l''appartenance du lot à un éventuel phasage de l''opération';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.nb_log_r
+    IS 'Nombre de logements total réalisé';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.nb_logind_r
+    IS 'Nombre de logements individuels réalisé';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.nb_logindgr_r
+    IS 'Nombre de logements individuels groupés réalisé';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.nb_logcol_r
+    IS 'Nombre de logements collectifs réalisé';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.nb_logaide_r
+    IS 'Nombre de logements aidés réalisé';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.l_pvente_lot
+    IS 'Prix de vente du lot (ht)';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.l_tact
+    IS 'Type d''activité présent sur le lot';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.l_tact_99
+    IS 'Précision de l''activité du lot (si Autre sélectionné dans l_tact)';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.l_nom_equ
+    IS 'Libellé des équipements prévus sur le lot';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.nb_logaide_loc_r
+    IS 'Nombre de logements aidés en location réalisé';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.nb_logaide_acc_r
+    IS 'Nombre de logements aidés en accession réalisé';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.l_lnom
+    IS 'Nom(s) du ou des acquéreurs du lot ou d''une partie des bâtiments';
+
+
+-- ############################################################## [geo_objet_empesp_pu] ####################################################################
+
+-- Table: r_objet.geo_objet_empesp_pu
+
+-- DROP TABLE r_objet.geo_objet_empesp_pu;
+
+CREATE TABLE r_objet.geo_objet_empesp_pu
+(
+    idgeopu integer NOT NULL,
+    op_sai character varying(80) COLLATE pg_catalog."default",
+    src_geom character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
+    sup_m2 double precision,
+    geom geometry(MultiPolygon,2154) NOT NULL,
+    date_sai timestamp without time zone,
+    date_maj timestamp without time zone,
+    CONSTRAINT geo_objet_empesp_pu_pkey PRIMARY KEY (idgeopu),
+    CONSTRAINT geo_objet_empesp_pu_srcgeom_fkey FOREIGN KEY (src_geom)
+        REFERENCES r_objet.lt_src_geom (code) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE r_objet.geo_objet_empesp_pu
+    OWNER to create_sig;
+
+GRANT SELECT ON TABLE r_objet.geo_objet_empesp_pu TO sig_read;
+
+GRANT ALL ON TABLE r_objet.geo_objet_empesp_pu TO sig_create;
+
+GRANT ALL ON TABLE r_objet.geo_objet_empesp_pu TO create_sig;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE r_objet.geo_objet_empesp_pu TO sig_edit;
+
+COMMENT ON TABLE r_objet.geo_objet_empesp_pu
+    IS 'Données géographiques contenant les espaces publics';
+
+COMMENT ON COLUMN r_objet.geo_objet_empesp_pu.idgeopu
+    IS 'Identifiant unique de l''objet';
+
+COMMENT ON COLUMN r_objet.geo_objet_empesp_pu.op_sai
+    IS 'Opérateur de saisir d''objet à l''ARC';
+
+COMMENT ON COLUMN r_objet.geo_objet_empesp_pu.src_geom
+    IS 'Référentiel spatial de saisie';
+
+COMMENT ON COLUMN r_objet.geo_objet_empesp_pu.sup_m2
+    IS 'Surface totale de l''objet en m²';
+
+COMMENT ON COLUMN r_objet.geo_objet_empesp_pu.geom
+    IS 'Champ contenant la géométrie';
+
+COMMENT ON COLUMN r_objet.geo_objet_empesp_pu.date_sai
+    IS 'Date de saisie de l''objet';
+
+COMMENT ON COLUMN r_objet.geo_objet_empesp_pu.date_maj
+    IS 'Date de mise à jour de l''objet';
+
+
+
 
 -- ####################################################################################################################################################
 -- ###                                                                                                                                              ###
@@ -2265,6 +2880,50 @@ COMMENT ON COLUMN m_activite_eco.lk_eco_proc.idproc
     IS 'Identifiant unique non signifiant de l''objet procédure';
 
 COMMENT ON COLUMN m_activite_eco.lk_eco_proc.idsite
+    IS 'Identifiant unique non signifiant de l''objet site';
+    
+ 
+-- ############################################################## [lk_amt_lot_site] ####################################################################
+
+-- Table: m_amenagement.lk_amt_lot_site
+
+-- DROP TABLE m_amenagement.lk_amt_lot_site;
+
+CREATE TABLE m_amenagement.lk_amt_lot_site
+(
+    id integer NOT NULL DEFAULT nextval('m_amenagement.lk_amt_lot_site_seq'::regclass),
+    idsite character varying(5) NOT NULL,
+    idgeolf integer NOT NULL,
+    CONSTRAINT lk_amt_lot_site_pkey PRIMARY KEY (id)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE m_amenagement.lk_amt_lot_site
+    OWNER to create_sig;
+
+GRANT ALL ON TABLE m_amenagement.lk_amt_lot_site TO sig_create;
+
+GRANT ALL ON TABLE m_amenagement.lk_amt_lot_site TO create_sig;
+
+GRANT ALL ON TABLE m_amenagement.lk_amt_lot_site TO sig_stage WITH GRANT OPTION;
+
+GRANT SELECT ON TABLE m_amenagement.lk_amt_lot_site TO sig_read;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_amenagement.lk_amt_lot_site TO sig_edit;
+
+COMMENT ON TABLE m_amenagement.lk_amt_lot_site
+    IS 'Table alphanumérique d''appartenance des lots à un ou plusieurs sites';
+
+COMMENT ON COLUMN m_amenagement.lk_amt_lot_site.id
+    IS 'Identifiant unique non signifiant de la relation';
+
+COMMENT ON COLUMN m_amenagement.lk_amt_lot_site.idgeolf
+    IS 'Identifiant unique non signifiant de l''objet lot';
+
+COMMENT ON COLUMN m_amenagement.lk_amt_lot_site.idsite
     IS 'Identifiant unique non signifiant de l''objet site';
 				  
 -- ####################################################################################################################################################
@@ -4507,7 +5166,6 @@ CREATE OR REPLACE VIEW m_activite_eco.geo_v_eco_lot
     o.l_nom,
     o.date_sai,
     o.date_maj,
-    f.idsite,
     s.stade_amng,
     s.l_amng2,
     s.stade_comm,
@@ -4552,7 +5210,7 @@ CREATE OR REPLACE VIEW m_activite_eco.geo_v_eco_lot
    FROM m_activite_eco.an_eco_lot f,
     r_objet.geo_objet_fon_lot o,
     m_amenagement.an_amt_lot_stade s
-  WHERE o.l_voca::text = '20'::text AND f.idgeolf = o.idgeolf AND o.idgeolf = s.idgeolf;
+  WHERE o.l_voca::text = '20'::text AND f.idgeolf = o.idgeolf;
 
 ALTER TABLE m_activite_eco.geo_v_eco_lot
     OWNER TO create_sig;
@@ -4641,6 +5299,264 @@ CREATE TRIGGER t_t3_foncier_update
     ON r_objet.geo_v_lot
     FOR EACH ROW
     EXECUTE PROCEDURE r_objet.ft_m_foncier_update();
+
+
+-- ############################################################### [geo_v_empesp_pu] ######################################################################
+
+-- View: m_amenagement.geo_v_empesp_pu
+
+-- DROP VIEW m_amenagement.geo_v_empesp_pu;
+
+CREATE OR REPLACE VIEW m_amenagement.geo_v_empesp_pu
+ AS
+ SELECT o.idgeopu,
+    ep.date_sai AS date_sai_att,
+    ep.date_maj AS date_maj_att,
+    ep.date_int,
+    ep.op_sai AS op_sai_att,
+    ep.org_sai AS org_sai_att,
+    ep.vocaep,
+    o.geom
+   FROM m_amenagement.an_amt_esppu ep,
+    r_objet.geo_objet_empesp_pu o
+  WHERE ep.idgeopu = o.idgeopu;
+
+ALTER TABLE m_amenagement.geo_v_empesp_pu
+    OWNER TO create_sig;
+COMMENT ON VIEW m_amenagement.geo_v_empesp_pu
+    IS 'Vue géographique des emprises des espaces publics sur les sites (en faire une vue éditable)';
+
+GRANT ALL ON TABLE m_amenagement.geo_v_empesp_pu TO sig_create;
+GRANT ALL ON TABLE m_amenagement.geo_v_empesp_pu TO create_sig;
+GRANT SELECT ON TABLE m_amenagement.geo_v_empesp_pu TO sig_read;
+GRANT DELETE, UPDATE, SELECT, INSERT ON TABLE m_amenagement.geo_v_empesp_pu TO sig_edit;
+
+
+
+
+-- ############################################################### [geo_v_lot_equ] ######################################################################
+
+-- View: m_amenagement.geo_v_lot_equ
+
+-- DROP VIEW m_amenagement.geo_v_lot_equ;
+
+CREATE OR REPLACE VIEW m_amenagement.geo_v_lot_equ
+ AS
+ SELECT o.idgeolf,
+    s.stade_amng,
+    s.l_amng2,
+    s.stade_comm,
+    s.l_comm2,
+    s.l_comm2_12,
+    s.etat_occup,
+    eu.date_sai,
+    eu.date_maj,
+    eu.op_sai,
+    eu.org_sai,
+    o.src_geom AS ref_spa,
+    eu.surf,
+    eu.l_surf_l,
+    o.l_voca,
+    eu.l_nom,
+    o.l_nom AS l_nom_lot,
+    eu.l_phase,
+    o.geom
+   FROM r_objet.geo_objet_fon_lot o,
+    m_amenagement.an_amt_lot_equ eu,
+    m_amenagement.an_amt_lot_stade s
+  WHERE eu.idgeolf = o.idgeolf AND o.l_voca::text = '10'::text AND o.idgeolf = s.idgeolf;
+
+ALTER TABLE m_amenagement.geo_v_lot_equ
+    OWNER TO create_sig;
+COMMENT ON VIEW m_amenagement.geo_v_lot_equ
+    IS 'Vue éditable géographique des lots à vocation d''équipement';
+
+GRANT ALL ON TABLE m_amenagement.geo_v_lot_equ TO sig_create;
+GRANT ALL ON TABLE m_amenagement.geo_v_lot_equ TO create_sig;
+GRANT SELECT ON TABLE m_amenagement.geo_v_lot_equ TO sig_read;
+GRANT DELETE, UPDATE, SELECT, INSERT ON TABLE m_amenagement.geo_v_lot_equ TO sig_edit;
+
+CREATE TRIGGER t_t1_delete_lot_equ
+    INSTEAD OF DELETE
+    ON m_amenagement.geo_v_lot_equ
+    FOR EACH ROW
+    EXECUTE PROCEDURE m_amenagement.ft_m_delete_lot_equ();
+
+
+CREATE TRIGGER t_t2_insert_lot_equ
+    INSTEAD OF INSERT
+    ON m_amenagement.geo_v_lot_equ
+    FOR EACH ROW
+    EXECUTE PROCEDURE m_amenagement.ft_m_insert_lot_equ();
+
+
+CREATE TRIGGER t_t3_modif_lot_equ
+    INSTEAD OF UPDATE 
+    ON m_amenagement.geo_v_lot_equ
+    FOR EACH ROW
+    EXECUTE PROCEDURE m_amenagement.ft_m_modif_lot_equ();
+
+
+-- ############################################################### [geo_v_lot_hab] ######################################################################
+
+-- View: m_amenagement.geo_v_lot_hab
+
+-- DROP VIEW m_amenagement.geo_v_lot_hab;
+
+CREATE OR REPLACE VIEW m_amenagement.geo_v_lot_hab
+ AS
+ SELECT o.idgeolf,
+    o.src_geom AS ref_spa,
+    o.op_sai,
+    o.l_voca,
+    o.l_nom,
+    s.stade_amng,
+    s.l_amng2,
+    s.stade_comm,
+    s.l_comm2,
+    s.l_comm2_12,
+    s.etat_occup,
+    f.surf,
+    f.l_surf_l,
+    f.date_sai AS date_sai_att,
+    f.date_maj AS date_maj_att,
+    f.op_sai AS op_sai_att,
+    f.org_sai AS org_sai_att,
+    f.l_pvente,
+    f.l_pvente_l,
+    f.l_pvente_lot,
+    f.nb_log,
+    f.nb_logind,
+    f.nb_logindgr,
+    f.nb_logcol,
+    f.nb_logaide,
+    f.nb_log_r,
+    f.nb_logind_r,
+    f.nb_logindgr_r,
+    f.nb_logcol_r,
+    f.nb_logaide_r,
+    f.l_observ,
+    f.l_phase,
+    f.nb_logaide_loc_r,
+    f.nb_logaide_acc_r,
+    o.geom
+   FROM m_amenagement.an_amt_lot_hab f,
+    r_objet.geo_objet_fon_lot o,
+    m_amenagement.an_amt_lot_stade s
+  WHERE o.l_voca::text = '30'::text AND f.idgeolf = o.idgeolf AND f.idgeolf = s.idgeolf;
+
+ALTER TABLE m_amenagement.geo_v_lot_hab
+    OWNER TO create_sig;
+COMMENT ON VIEW m_amenagement.geo_v_lot_hab
+    IS 'Vue éditable des lots à vocation habitat';
+
+GRANT ALL ON TABLE m_amenagement.geo_v_lot_hab TO sig_create;
+GRANT ALL ON TABLE m_amenagement.geo_v_lot_hab TO create_sig;
+GRANT SELECT ON TABLE m_amenagement.geo_v_lot_hab TO sig_read;
+GRANT DELETE, UPDATE, SELECT, INSERT ON TABLE m_amenagement.geo_v_lot_hab TO sig_edit;
+
+CREATE TRIGGER t_t1_delete_lot_hab
+    INSTEAD OF DELETE
+    ON m_amenagement.geo_v_lot_hab
+    FOR EACH ROW
+    EXECUTE PROCEDURE m_amenagement.ft_m_delete_lot_hab();
+
+
+CREATE TRIGGER t_t2_insert_lot_hab
+    INSTEAD OF INSERT
+    ON m_amenagement.geo_v_lot_hab
+    FOR EACH ROW
+    EXECUTE PROCEDURE m_amenagement.ft_m_insert_lot_hab();
+
+
+CREATE TRIGGER t_t3_modif_lot_hab
+    INSTEAD OF UPDATE 
+    ON m_amenagement.geo_v_lot_hab
+    FOR EACH ROW
+    EXECUTE PROCEDURE m_amenagement.ft_m_modif_lot_hab();
+
+
+-- ############################################################### [geo_v_lot_mixte] ######################################################################
+
+-- View: m_amenagement.geo_v_lot_mixte
+
+-- DROP VIEW m_amenagement.geo_v_lot_mixte;
+
+CREATE OR REPLACE VIEW m_amenagement.geo_v_lot_mixte
+ AS
+ SELECT o.idgeolf,
+    f.l_lnom,
+    o.src_geom AS ref_spa,
+    o.op_sai,
+    o.l_voca,
+    o.l_nom,
+    s.stade_amng,
+    s.l_amng2,
+    s.stade_comm,
+    s.l_comm2,
+    s.l_comm2_12,
+    s.etat_occup,
+    f.surf,
+    f.l_surf_l,
+    f.date_sai AS date_sai_att,
+    f.date_maj AS date_maj_att,
+    f.op_sai AS op_sai_att,
+    f.org_sai AS org_sai_att,
+    f.l_pvente,
+    f.l_pvente_l,
+    f.l_pvente_lot,
+    f.nb_log,
+    f.nb_logind,
+    f.nb_logindgr,
+    f.nb_logcol,
+    f.nb_logaide,
+    f.nb_log_r,
+    f.nb_logind_r,
+    f.nb_logindgr_r,
+    f.nb_logcol_r,
+    f.nb_logaide_r,
+    f.l_observ,
+    f.l_phase,
+    f.l_tact,
+    f.l_tact_99,
+    f.l_nom_equ,
+    f.nb_logaide_loc_r,
+    f.nb_logaide_acc_r,
+    o.geom
+   FROM m_amenagement.an_amt_lot_mixte f,
+    r_objet.geo_objet_fon_lot o,
+    m_amenagement.an_amt_lot_stade s
+  WHERE o.l_voca::text = '60'::text AND f.idgeolf = o.idgeolf AND o.idgeolf = s.idgeolf;
+
+ALTER TABLE m_amenagement.geo_v_lot_mixte
+    OWNER TO create_sig;
+COMMENT ON VIEW m_amenagement.geo_v_lot_mixte
+    IS 'Vue éditable des lots à vocation mixte';
+
+GRANT ALL ON TABLE m_amenagement.geo_v_lot_mixte TO sig_create;
+GRANT ALL ON TABLE m_amenagement.geo_v_lot_mixte TO create_sig;
+GRANT SELECT ON TABLE m_amenagement.geo_v_lot_mixte TO sig_read;
+GRANT DELETE, UPDATE, SELECT, INSERT ON TABLE m_amenagement.geo_v_lot_mixte TO sig_edit;
+
+CREATE TRIGGER t_t1_delete_lot_mixte
+    INSTEAD OF DELETE
+    ON m_amenagement.geo_v_lot_mixte
+    FOR EACH ROW
+    EXECUTE PROCEDURE m_amenagement.ft_m_delete_lot_mixte();
+
+
+CREATE TRIGGER t_t2_insert_lot_mixte
+    INSTEAD OF INSERT
+    ON m_amenagement.geo_v_lot_mixte
+    FOR EACH ROW
+    EXECUTE PROCEDURE m_amenagement.ft_m_insert_lot_mixte();
+
+
+CREATE TRIGGER t_t3_modif_lot_mixte
+    INSTEAD OF UPDATE 
+    ON m_amenagement.geo_v_lot_mixte
+    FOR EACH ROW
+    EXECUTE PROCEDURE m_amenagement.ft_m_modif_lot_mixte();
 
 
 
