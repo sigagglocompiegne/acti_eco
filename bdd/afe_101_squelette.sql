@@ -16,6 +16,7 @@ DROP VIEW IF EXISTS r_objet.geo_v_lot;
 DROP TABLE IF EXISTS  m_activite_eco.an_eco_pole;
 DROP TABLE IF EXISTS  m_activite_eco.geo_eco_site;
 DROP TABLE IF EXISTS m_activite_eco.an_eco_media;
+DROP TABLE IF EXISTS m_urbanisme_reg.an_proc_media;
 DROP TABLE IF EXISTS m_activite_eco.an_eco_contact CASCADE;
 DROP TABLE IF EXISTS m_activite_eco.an_eco_evenmt;
 DROP TABLE IF EXISTS m_urbanisme_reg.geo_proced;
@@ -255,6 +256,25 @@ ALTER SEQUENCE m_activite_eco.lk_eco_proc_seq
 GRANT ALL ON SEQUENCE m_activite_eco.lk_eco_proc_seq TO PUBLIC;
 GRANT ALL ON SEQUENCE m_activite_eco.lk_eco_proc_seq TO create_sig;
 
+
+-- ############################################################## [an_proc_media_seq] ##################################################################
+
+-- SEQUENCE: m_urbanisme_reg.an_proc_media_seq
+
+-- DROP SEQUENCE m_urbanisme_reg.an_proc_media_seq;
+
+CREATE SEQUENCE m_urbanisme_reg.an_proc_media_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+
+ALTER SEQUENCE m_urbanisme_reg.an_proc_media_seq
+    OWNER TO create_sig;
+
+GRANT ALL ON SEQUENCE m_urbanisme_reg.an_proc_media_seq TO PUBLIC;
+GRANT ALL ON SEQUENCE m_urbanisme_reg.an_proc_media_seq TO create_sig;
 
 -- ####################################################################################################################################################
 -- ###                                                                                                                                              ###
@@ -511,6 +531,10 @@ INSERT INTO m_activite_eco.lt_eco_tdocmedia(
     ('20','Carte, Plan'),
     ('30','Présentation'),
     ('40','Fiche commerciale'),
+    ('50','Compte rendu'),
+    ('60','Actes administratifs divers'),
+    ('61','Délibération'),
+    ('62','Règlement'),
     ('99','Autre document');
     
 -- ################################################################ Domaine valeur - [lt_eco_typcontact]  ################################################
@@ -1664,6 +1688,77 @@ COMMENT ON COLUMN m_activite_eco.an_eco_media.alaune
     IS 'Média poussé à la une de l''annonce immobilière';
 
 COMMENT ON COLUMN m_activite_eco.an_eco_media.gid
+    IS 'Compteur (identifiant interne)';
+    
+    -- ############################################################## [an_proc_media] ##################################################################
+
+-- Table: m_urbanisme_reg.an_proc_media
+
+-- DROP TABLE m_urbanisme_reg.an_proc_media;
+
+CREATE TABLE m_urbanisme_reg.an_proc_media
+(
+    gid integer NOT NULL DEFAULT nextval('m_urbanisme_reg.an_proc_media_seq'::regclass),
+    id text COLLATE pg_catalog."default",
+    media text COLLATE pg_catalog."default",
+    miniature bytea,
+    n_fichier text COLLATE pg_catalog."default",
+    t_fichier text COLLATE pg_catalog."default",
+    op_sai character varying(20) COLLATE pg_catalog."default",
+    date_sai timestamp without time zone,
+    l_doc character varying(100) COLLATE pg_catalog."default",
+    t_doc character varying(2) COLLATE pg_catalog."default" DEFAULT '00',		
+    CONSTRAINT an_proc_media_pkey PRIMARY KEY (gid),
+    CONSTRAINT an_proc_media_t_doc_fkey FOREIGN KEY (t_doc)
+    REFERENCES m_activite_eco.lt_eco_tdocmedia (code) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE m_urbanisme_reg.an_proc_media
+    OWNER to create_sig;
+
+GRANT ALL ON TABLE m_urbanisme_reg.an_proc_media TO sig_create;
+
+GRANT SELECT ON TABLE m_urbanisme_reg.an_proc_media TO sig_read;
+
+GRANT ALL ON TABLE m_urbanisme_reg.an_proc_media TO create_sig;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_urbanisme_reg.an_proc_media TO sig_edit;
+
+COMMENT ON TABLE m_urbanisme_reg.an_proc_media
+    IS 'Table gérant les documents intégrés pour la gestion des données du marché immobilier d''entreprises';
+
+COMMENT ON COLUMN m_urbanisme_reg.an_proc_media.id
+    IS 'Identifiant interne non signifiant de l''objet saisi';
+
+COMMENT ON COLUMN m_urbanisme_reg.an_proc_media.media
+    IS 'Champ Média de GEO';
+
+COMMENT ON COLUMN m_urbanisme_reg.an_proc_media.miniature
+    IS 'Champ miniature de GEO';
+
+COMMENT ON COLUMN m_urbanisme_reg.an_proc_media.n_fichier
+    IS 'Nom du fichier';
+
+COMMENT ON COLUMN m_urbanisme_reg.an_proc_media.t_fichier
+    IS 'Type de média dans GEO';
+
+COMMENT ON COLUMN m_urbanisme_reg.an_proc_media.op_sai
+    IS 'Opérateur de saisie (par défaut login de connexion à GEO)';
+
+COMMENT ON COLUMN m_urbanisme_reg.an_proc_media.date_sai
+    IS 'Date de la saisie du document';
+
+COMMENT ON COLUMN m_urbanisme_reg.an_proc_media.l_doc
+    IS 'Titre du document ou légère description';
+
+
+COMMENT ON COLUMN m_urbanisme_reg.an_proc_media.gid
     IS 'Compteur (identifiant interne)';
 
 -- ############################################################## [an_eco_contact] ##################################################################
