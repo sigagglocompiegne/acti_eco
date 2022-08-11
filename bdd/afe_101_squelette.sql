@@ -24,6 +24,7 @@ DROP TABLE IF EXISTS m_amenagement.an_amt_lot_stade;
 
 /* TABLE DE RELATION */
 DROP TABLE IF EXISTS m_activite_eco.lk_eco_contact;
+DROP TABLE IF EXISTS m_activite_eco.lk_eco_proc;
 
 /* LISTE DE VALEUR */
 DROP TABLE IF EXISTS m_activite_eco.lt_eco_dest;
@@ -39,10 +40,10 @@ DROP TABLE IF EXISTS m_urbanisme_reg.lt_proc_phase;
 DROP TABLE IF EXISTS m_urbanisme_reg.lt_proc_typ;
 DROP TABLE IF EXISTS m_urbanisme_reg.lt_proc_typfon;
 DROP TABLE IF EXISTS m_activite_eco.lt_eco_tact;
-DROP TABLE IF EXISTS m_amenagement.lt_sa_stadeamng;
-DROP TABLE IF EXISTS m_amenagement.lt_sa_stadeamng2;
-DROP TABLE IF EXISTS m_amenagement.lt_sa_stadecomm;
-DROP TABLE IF EXISTS m_amenagement.lt_sa_stadecomm2;
+DROP TABLE IF EXISTS m_amenagement.lt_amt_stadeamng;
+DROP TABLE IF EXISTS m_amenagement.lt_amt_stadeamng2;
+DROP TABLE IF EXISTS m_amenagement.lt_amt_stadecomm;
+DROP TABLE IF EXISTS m_amenagement.lt_amt_stadecomm2;
 
 
 /* SEQUENCE */
@@ -53,6 +54,7 @@ DROP SEQUENCE IF EXISTS m_activite_eco.an_eco_contact_seq;
 DROP SEQUENCE IF EXISTS m_activite_eco.lk_eco_contact_seq;
 DROP SEQUENCE IF EXISTS m_activite_eco.an_eco_evenmt_seq;
 DROP SEQUENCE IF EXISTS m_urbanisme_reg.geo_proced_seq;
+DROP SEQUENCE IF EXISTS m_activite_eco.lk_eco_proc_seq;
 
 /* TRIGGERS */
 
@@ -234,6 +236,24 @@ GRANT ALL ON SEQUENCE m_urbanisme_reg.geo_proced_seq TO PUBLIC;
 GRANT ALL ON SEQUENCE m_urbanisme_reg.geo_proced_seq TO create_sig;
 
 
+-- ############################################################## [lk_eco_proc_seq] ##################################################################
+
+-- SEQUENCE: m_activite_eco.lk_eco_proc_seq
+
+-- DROP SEQUENCE m_activite_eco.lk_eco_proc_seq;
+
+CREATE SEQUENCE m_activite_eco.lk_eco_proc_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+
+ALTER SEQUENCE m_activite_eco.lk_eco_proc_seq
+    OWNER TO create_sig;
+
+GRANT ALL ON SEQUENCE m_activite_eco.lk_eco_proc_seq TO PUBLIC;
+GRANT ALL ON SEQUENCE m_activite_eco.lk_eco_proc_seq TO create_sig;
 
 
 -- ####################################################################################################################################################
@@ -1185,7 +1205,7 @@ COMMENT ON TABLE m_activite_eco.geo_eco_site
 COMMENT ON COLUMN m_activite_eco.geo_eco_site.idsite
     IS 'Identifiant interne non signifiant des site d''activités';
 
-COMMENT ON COLUMN m_activite_eco.geo_eco_site.idsite
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.idsitereg
     IS 'Identifiant régional des site d''activités';
 
 COMMENT ON COLUMN m_activite_eco.geo_eco_site.idpole
@@ -1241,6 +1261,9 @@ COMMENT ON COLUMN m_activite_eco.geo_eco_site.nbetab
 
 COMMENT ON COLUMN m_activite_eco.geo_eco_site.nbemploi
     IS 'Nombre d''emplois présent sur le site';
+    
+    COMMENT ON COLUMN m_activite_eco.geo_eco_site.z_proced
+    IS 'Le site est-il issu d''une procédure d''aménagement';
 
 COMMENT ON COLUMN m_activite_eco.geo_eco_site.z_mai_ouvr
     IS 'Nom du maître d''ouvrage';
@@ -1265,6 +1288,10 @@ COMMENT ON COLUMN m_activite_eco.geo_eco_site.z_cession
 
 COMMENT ON COLUMN m_activite_eco.geo_eco_site.z_env
     IS 'Démarche environnementale engagée sur le site';
+    
+    
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.z_aide_pb
+    IS 'Aides publiques bénéficiaires au site';
 
 COMMENT ON COLUMN m_activite_eco.geo_eco_site.z_paysage
     IS 'Démarche paysagère engagée sur le site';
@@ -1795,140 +1822,6 @@ COMMENT ON COLUMN m_activite_eco.an_eco_evenmt.epci
 COMMENT ON COLUMN m_activite_eco.an_eco_evenmt.observ
     IS 'Observations diverses';
 
--- ############################################################## [an_amt_lot_stade] ##################################################################
-
--- Table: m_amenagement.an_amt_lot_stade
-
--- DROP TABLE m_amenagement.an_amt_lot_stade;
-
-CREATE TABLE m_amenagement.an_amt_lot_stade
-(
-    idgeolf integer NOT NULL,
-    idsite character varying(10) COLLATE pg_catalog."default",
-    stade_amng character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
-    l_amng2 character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
-    stade_comm character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
-    l_comm2 character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
-    l_comm2_12 character varying(80) COLLATE pg_catalog."default",
-    etat_occup character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
-    CONSTRAINT an_amt_lot_stade_pkey PRIMARY KEY (idgeolf),  
-    	CONSTRAINT an_amt_lot_stade_etat_fkey FOREIGN KEY (etat_occup)
-    REFERENCES m_activite_eco.lt_eco_etat (code) MATCH SIMPLE
-    ON UPDATE NO ACTION
-    ON DELETE NO ACTION,
-	CONSTRAINT an_amt_lot_stade_lamng2_fkey FOREIGN KEY (l_amng2)
-    REFERENCES m_amenagement.lt_amt_stadeamng2 (code) MATCH SIMPLE
-    ON UPDATE NO ACTION
-    ON DELETE NO ACTION,
-	CONSTRAINT an_amt_lot_stade_lcomm2_fkey FOREIGN KEY (l_comm2)
-    REFERENCES m_amenagement.lt_amt_stadecomm2 (code) MATCH SIMPLE
-    ON UPDATE NO ACTION
-    ON DELETE NO ACTION,
-	CONSTRAINT an_amt_lot_stade_comm_fkey FOREIGN KEY (stade_comm)
-    REFERENCES m_amenagement.lt_amt_stadecomm (code) MATCH SIMPLE
-    ON UPDATE NO ACTION
-    ON DELETE NO ACTION,
-	CONSTRAINT an_amt_lot_stade_stadeamng_fkey FOREIGN KEY (stade_amng)
-    REFERENCES m_amenagement.lt_amt_stadeamng (code) MATCH SIMPLE
-    ON UPDATE NO ACTION
-    ON DELETE NO ACTION
-)
-WITH (
-    OIDS = FALSE
-)
-TABLESPACE pg_default;
-
-ALTER TABLE m_amenagement.an_amt_lot_stade
-    OWNER to create_sig;
-
-GRANT ALL ON TABLE m_amenagement.an_amt_lot_stade TO sig_create;
-
-GRANT ALL ON TABLE m_amenagement.an_amt_lot_stade TO create_sig;
-
-GRANT ALL ON TABLE m_amenagement.an_amt_lot_stade TO sig_stage WITH GRANT OPTION;
-
-GRANT SELECT ON TABLE m_amenagement.an_amt_lot_stade TO sig_read;
-
-GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_amenagement.an_amt_lot_stade TO sig_edit;
-
-COMMENT ON TABLE m_amenagement.an_amt_lot_stade
-    IS 'Table alphanumérique contenant les données de la classe stade d''aménagement et de commercialisation';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_stade.idgeolf
-    IS 'Identifiant unique de l''entité géographique lot';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_stade.idsite
-    IS 'Identifiant du site d''activité d''appartenance';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_stade.stade_amng
-    IS 'Code du stade d''aménagement du foncier';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_stade.l_amng2
-    IS 'Code du stade d''aménagement du foncier spécifique à l''ARC';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_stade.stade_comm
-    IS 'Code du stade de commercialisation du foncier';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_stade.l_comm2
-    IS 'Code du stade de commercialisation du foncier spécifique à l''ARC';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_stade.l_comm2_12
-    IS 'Spécification de la contrainte du lot en vente (code 12 du champ l_comm2)';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_stade.etat_occup
-    IS 'Code de l''état d''occupation du foncier';
-
--- ####################################################################################################################################################
--- ###                                                                                                                                              ###
--- ###                                                             TABLE DE RELATION                                                                ### 
--- ###                                                                                                                                              ###
--- ####################################################################################################################################################
-
--- ############################################################## [lk_eco_contact] ####################################################################
-
--- Table: m_activite_eco.lk_eco_contact
-
--- DROP TABLE m_activite_eco.lk_eco_contact;
-
-CREATE TABLE m_activite_eco.lk_eco_contact
-(
-    id integer NOT NULL DEFAULT nextval('m_activite_eco.lk_eco_contact_seq'::regclass),
-    idcontact integer NOT NULL,
-    idobjet integer NOT NULL,
-    CONSTRAINT lk_eco_contact_pkey PRIMARY KEY (id),
-    CONSTRAINT lk_eco_contact_fkey FOREIGN KEY (idcontact)
-        REFERENCES m_activite_eco.an_eco_contact (idcontact) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION
-)
-WITH (
-    OIDS = FALSE
-)
-TABLESPACE pg_default;
-
-ALTER TABLE m_activite_eco.lk_eco_contact
-    OWNER to create_sig;
-
-GRANT ALL ON TABLE m_activite_eco.lk_eco_contact TO sig_create;
-
-GRANT SELECT ON TABLE m_activite_eco.lk_eco_contact TO sig_read;
-
-GRANT ALL ON TABLE m_activite_eco.lk_eco_contact TO create_sig;
-
-GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_activite_eco.lk_eco_contact TO sig_edit;
-
-COMMENT ON TABLE m_activite_eco.lk_eco_contact
-    IS 'Table alphanumérique de l''ensemble des contacts liés à la thématique activité économique';
-
-COMMENT ON COLUMN m_activite_eco.lk_eco_contact.id
-    IS 'Identifiant unique non signifiant';
-
-COMMENT ON COLUMN m_activite_eco.lk_eco_contact.idcontact
-    IS 'Identifiant unique non signifiant du contact';
-
-COMMENT ON COLUMN m_activite_eco.lk_eco_contact.idobjet
-    IS 'Identifiant unique non signifiant de l''objet en référence';
-
 -- ############################################################## [an_eco_lot] ####################################################################
 
 -- Table: m_activite_eco.an_eco_lot
@@ -2102,6 +1995,182 @@ COMMENT ON COLUMN m_activite_eco.an_eco_lot.insee
 COMMENT ON COLUMN m_activite_eco.an_eco_lot.commune
     IS 'Libellé de la ou des communes contenant le lot';
 
+-- ############################################################## [an_amt_lot_stade] ##################################################################
+
+-- Table: m_amenagement.an_amt_lot_stade
+
+-- DROP TABLE m_amenagement.an_amt_lot_stade;
+
+CREATE TABLE m_amenagement.an_amt_lot_stade
+(
+    idgeolf integer NOT NULL,
+    idsite character varying(10) COLLATE pg_catalog."default",
+    stade_amng character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
+    l_amng2 character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
+    stade_comm character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
+    l_comm2 character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
+    l_comm2_12 character varying(80) COLLATE pg_catalog."default",
+    etat_occup character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
+    CONSTRAINT an_amt_lot_stade_pkey PRIMARY KEY (idgeolf),  
+    	CONSTRAINT an_amt_lot_stade_etat_fkey FOREIGN KEY (etat_occup)
+    REFERENCES m_activite_eco.lt_eco_etat (code) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION,
+	CONSTRAINT an_amt_lot_stade_lamng2_fkey FOREIGN KEY (l_amng2)
+    REFERENCES m_amenagement.lt_amt_stadeamng2 (code) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION,
+	CONSTRAINT an_amt_lot_stade_lcomm2_fkey FOREIGN KEY (l_comm2)
+    REFERENCES m_amenagement.lt_amt_stadecomm2 (code) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION,
+	CONSTRAINT an_amt_lot_stade_comm_fkey FOREIGN KEY (stade_comm)
+    REFERENCES m_amenagement.lt_amt_stadecomm (code) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION,
+	CONSTRAINT an_amt_lot_stade_stadeamng_fkey FOREIGN KEY (stade_amng)
+    REFERENCES m_amenagement.lt_amt_stadeamng (code) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE m_amenagement.an_amt_lot_stade
+    OWNER to create_sig;
+
+GRANT ALL ON TABLE m_amenagement.an_amt_lot_stade TO sig_create;
+
+GRANT ALL ON TABLE m_amenagement.an_amt_lot_stade TO create_sig;
+
+GRANT ALL ON TABLE m_amenagement.an_amt_lot_stade TO sig_stage WITH GRANT OPTION;
+
+GRANT SELECT ON TABLE m_amenagement.an_amt_lot_stade TO sig_read;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_amenagement.an_amt_lot_stade TO sig_edit;
+
+COMMENT ON TABLE m_amenagement.an_amt_lot_stade
+    IS 'Table alphanumérique contenant les données de la classe stade d''aménagement et de commercialisation';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_stade.idgeolf
+    IS 'Identifiant unique de l''entité géographique lot';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_stade.idsite
+    IS 'Identifiant du site d''activité d''appartenance';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_stade.stade_amng
+    IS 'Code du stade d''aménagement du foncier';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_stade.l_amng2
+    IS 'Code du stade d''aménagement du foncier spécifique à l''ARC';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_stade.stade_comm
+    IS 'Code du stade de commercialisation du foncier';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_stade.l_comm2
+    IS 'Code du stade de commercialisation du foncier spécifique à l''ARC';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_stade.l_comm2_12
+    IS 'Spécification de la contrainte du lot en vente (code 12 du champ l_comm2)';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_stade.etat_occup
+    IS 'Code de l''état d''occupation du foncier';
+
+-- ####################################################################################################################################################
+-- ###                                                                                                                                              ###
+-- ###                                                             TABLE DE RELATION                                                                ### 
+-- ###                                                                                                                                              ###
+-- ####################################################################################################################################################
+
+-- ############################################################## [lk_eco_contact] ####################################################################
+
+-- Table: m_activite_eco.lk_eco_contact
+
+-- DROP TABLE m_activite_eco.lk_eco_contact;
+
+CREATE TABLE m_activite_eco.lk_eco_contact
+(
+    id integer NOT NULL DEFAULT nextval('m_activite_eco.lk_eco_contact_seq'::regclass),
+    idcontact integer NOT NULL,
+    idobjet integer NOT NULL,
+    CONSTRAINT lk_eco_contact_pkey PRIMARY KEY (id),
+    CONSTRAINT lk_eco_contact_fkey FOREIGN KEY (idcontact)
+        REFERENCES m_activite_eco.an_eco_contact (idcontact) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE m_activite_eco.lk_eco_contact
+    OWNER to create_sig;
+
+GRANT ALL ON TABLE m_activite_eco.lk_eco_contact TO sig_create;
+
+GRANT SELECT ON TABLE m_activite_eco.lk_eco_contact TO sig_read;
+
+GRANT ALL ON TABLE m_activite_eco.lk_eco_contact TO create_sig;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_activite_eco.lk_eco_contact TO sig_edit;
+
+COMMENT ON TABLE m_activite_eco.lk_eco_contact
+    IS 'Table alphanumérique de l''ensemble des contacts liés à la thématique activité économique';
+
+COMMENT ON COLUMN m_activite_eco.lk_eco_contact.id
+    IS 'Identifiant unique non signifiant';
+
+COMMENT ON COLUMN m_activite_eco.lk_eco_contact.idcontact
+    IS 'Identifiant unique non signifiant du contact';
+
+COMMENT ON COLUMN m_activite_eco.lk_eco_contact.idobjet
+    IS 'Identifiant unique non signifiant de l''objet en référence';
+
+-- ############################################################## [lk_eco_proc] ####################################################################
+
+-- Table: m_activite_eco.lk_eco_proc
+
+-- DROP TABLE m_activite_eco.lk_eco_proc;
+
+CREATE TABLE m_activite_eco.lk_eco_proc
+(
+    id integer NOT NULL DEFAULT nextval('m_activite_eco.lk_eco_proc_seq'::regclass),
+    idproc character varying(5) NOT NULL,
+    idsite character varying(5) NOT NULL,
+    CONSTRAINT lk_eco_proc_pkey PRIMARY KEY (id)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE m_activite_eco.lk_eco_proc
+    OWNER to create_sig;
+
+GRANT ALL ON TABLE m_activite_eco.lk_eco_proc TO sig_create;
+
+GRANT ALL ON TABLE m_activite_eco.lk_eco_proc TO create_sig;
+
+GRANT ALL ON TABLE m_activite_eco.lk_eco_proc TO sig_stage WITH GRANT OPTION;
+
+GRANT SELECT ON TABLE m_activite_eco.lk_eco_proc TO sig_read;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_activite_eco.lk_eco_proc TO sig_edit;
+
+COMMENT ON TABLE m_activite_eco.lk_eco_proc
+    IS 'Table alphanumérique de l''ensemble des procédures d''aménagement présentes sur le site';
+
+COMMENT ON COLUMN m_activite_eco.lk_eco_proc.id
+    IS 'Identifiant unique non signifiant';
+
+COMMENT ON COLUMN m_activite_eco.lk_eco_proc.idproc
+    IS 'Identifiant unique non signifiant de l''objet procédure';
+
+COMMENT ON COLUMN m_activite_eco.lk_eco_proc.idsite
+    IS 'Identifiant unique non signifiant de l''objet site';
 				  
 -- ####################################################################################################################################################
 -- ###                                                                                                                                              ###
