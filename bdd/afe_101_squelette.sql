@@ -10,6 +10,8 @@
 
 /* VIEW */
 DROP VIEW IF EXISTS m_activite_eco.geo_v_eco_lot;
+DROP VIEW IF EXISTS m_activite_eco.geo_v_proc;
+DROP VIEW IF EXISTS m_activite_eco.geo_v_lot;
 
 /* TABLE */
 DROP TABLE IF EXISTS  m_activite_eco.an_eco_pole;
