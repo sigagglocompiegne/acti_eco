@@ -32,9 +32,9 @@ Pour rappel des grands principes :
 
 (en refonte)
 
-## Modèle conceptuel simplifié
+## Modèle relationel simplifié
 
-(en refonte)
+[!m_rel_simpl]
 
 ## Dépendances
 
