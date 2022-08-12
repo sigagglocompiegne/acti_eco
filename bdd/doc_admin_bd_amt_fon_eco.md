@@ -43,7 +43,7 @@ Cette base de donnnées est interdépendante du fait d'une partie urbanisée. Le
 
 L'ensemble des classes d'objets de gestion sont stockés dans le schéma `r_objet` ,et celles applicatives dans les schémas x_apps (pour les applications pro) ou x_apps_public (pour les applications grands publiques).
 
-`[schema].[table]` : table ...
+`[r_objet].[geo_objet_fon_lot]` : table géographique partagé des lots commercialisés
    
 |Nom attribut | Définition | Type | Valeurs par défaut |
 |:---|:---|:---|:---|
@@ -52,7 +52,7 @@ L'ensemble des classes d'objets de gestion sont stockés dans le schéma `r_obje
 |src_geom|Référentiel spatial de saisie|character varying(2)|'00'::character varying|
 |sup_m2|Surface totale de l'objet en m²|double precision| |
 |l_voca|Vocation du foncier|character varying(2)|'00'::character varying|
-|geom|Champ contenant la géométrie|USER-DEFINED| |
+|geom|Champ contenant la géométrie|MultiPolygon,2154| |
 |date_sai|Date de saisie de l'objet|timestamp without time zone| |
 |date_maj|Date de mise à jour|timestamp without time zone| |
 |l_nom|Nom de lot donné au moment du plan d'aménagement (ex : lot 1)|character varying(80)| |
