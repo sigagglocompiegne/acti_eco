@@ -5414,11 +5414,7 @@ CREATE TABLE m_activite_eco.geo_eco_site
     CONSTRAINT lt_src_geom_fkey FOREIGN KEY (src_geom)
         REFERENCES r_objet.lt_src_geom (code) MATCH SIMPLE
         ON UPDATE NO ACTION
-        ON DELETE NO ACTION,
-    CONSTRAINT geo_am_fkey FOREIGN KEY (src_geom)
-        REFERENCES r_objet.lt_src_geom (code) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION	
+        ON DELETE NO ACTION
 )
 WITH (
     OIDS = FALSE
