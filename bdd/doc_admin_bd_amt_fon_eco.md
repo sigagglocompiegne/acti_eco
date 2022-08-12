@@ -273,6 +273,530 @@ Particularité(s) à noter :
 * Une vue de gestion a été réalisée `geo_v_eco_pole` dans ce schéma pour reconstruire les pôles à partir de la table `geo_eco_site`
 * Une vue matérialisée a été réalisée `geo_vmr_eco_pole` dans ce schéma pour reconstruire les pôles à partir de la table `geo_eco_site` pour des usages cartographiques et d'export OpenData
 
+---
+
+`[m_activite_eco].[an_eco_contact]` : table alphanumérique contenant l'ensemble des contacts
+   
+|Nom attribut | Définition | Type | Valeurs par défaut |
+|:---|:---|:---|:---|
+|idcontact|Identifiant unique non signifiant du contact|integer|nextval('m_activite_eco.an_eco_contact_seq'::regclass)|
+|nom|Libellé du contact (nom, prénom ou nom de l'entreprise)|character varying(100)| |
+|typcontact|Type de contact|character varying(2)| |
+|tel|Téléphone du contact|character varying(14)| |
+|telp|Téléphone portable dui contact|character varying(14)| |
+|email|Email du contact|character varying(100)| |
+|date_sai|Date de saisie des données attributaires|timestamp without time zone| |
+|date_maj|Date de mise à jour des données attributaires|timestamp without time zone| |
+|op_sai|Libellé de la personne ayant saisie l'objet initialisament|character varying(80)| |
+|epci|Autorité compétente|character varying(10)| |
+|observ|Observations diverses|character varying(1000)| |
+
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ `idcontact` l'attribution automatique de la référence unique s'effectue via une séquence. 
+* Une clé étrangère existe sur la table de valeur `typcontact` (lien vers la liste de valeurs du type de contact `lt_eco_typcontact`)
+ 
+---
+
+`[m_activite_eco].[an_eco_dia]` : table alphanumérique contenant l'ensemble des informations des DIA liés à un lot économique
+   
+|Nom attribut | Définition | Type | Valeurs par défaut |
+|:---|:---|:---|:---|
+|gid|Identifiant unique interne|integer|nextval('m_activite_eco.an_eco_dia_seq'::regclass)|
+|idgeolf|Identifiant unique de l'entité géographique lot|integer| |
+|num_dia|Numéro de la DIA|character varying(25)| |
+|date_dia|Date de la dernière DIA|timestamp without time zone| |
+|prix_v|Prix de vente en euros|double precision| |
+|nom_v|Nom du vendeur|character varying(80)| |
+|nom_a|Nom de l'acquéreur (seconde main)|character varying(80)| |
+
+---
+
+`[m_activite_eco].[an_eco_etab]` : table alphanumérique contenant l'ensemble des informations métiers des établissements
+   
+|Nom attribut | Définition | Type | Valeurs par défaut |
+|:---|:---|:---|:---|
+|id|Identifiant unique interne|integer|nextval('m_activite_eco.an_eco_etab_seq'::regclass)|
+|idgeoet|Identifiant unique géographique|integer| |
+|idsiren|Numéro SIRENE de l'établissement|character varying(9)| |
+|idsiret|Numéro SIRET de l'établissement|character varying(14)| |
+|l_nom|Libellé du nom de l'établissement spécifique si différent du nom SIRENE (nom usuel du service économie)|character varying(255)| |
+|n_adres|Libellé de la nouvelle adresse si l'établissement a déménagé|character varying(255)| |
+|eff_ent|Effectif total du groupe|integer| |
+|eff_etab|Effectif total de l'établissement|integer| |
+|eff_ent_etp|Effectif total du groupe en etp|double precision| |
+|eff_etab_etp|Effectif de l'établissement en etp|double precision| |
+|eff_etab_d|Précision (en détail) du nombre de CDD, CDI, intérim, ....|character varying(200)| |
+|source_eff|Source de l'effectif de l'établissement|character varying(50)| |
+|annee_eff|Année de l'effectif (issu de SIRENE)|integer| |
+|l_date_eff|Date de l'effectif saisie par l'ARC|date| |
+|l_compte|Prise en compte de l'établissement pour le calcul des statistiques (nombre d'établissements et effectifs) dans les informations de synthèse.
+Par défaut TRUE et laisse le choix à l'administrateur de la donnée de modifier cette valeur.|boolean|true|
+|apet700|Code d'activité de l'établissement (issu de SIRENE et mis à jour lors de la mise à jour de SIRENE)|character varying(255)| |
+|libapet|Libellé de l'activité de l'établissement (issu de SIRENE et mis à jour lors de la mise à jour de SIRENE)|character varying(255)| |
+|l_url|Lien du site internet de l'entreprise|character varying(500)| |
+|l_url_bil|Lien vers le bilan en ligne de l'entreprise|character varying(500)| |
+|dentree|Date d'entrée dans le fichier SIRENE|timestamp without time zone| |
+|dsortie|Date de sortie du fichier SIRENE|timestamp without time zone| |
+|etatadministratifetablissement|Etat administratif de l'établissement dans le fichier SIEREN (attribut déjà présent dans SIRENE mais dupliqué ici pour le filtrage dans GEO, améliore les performances sans passer par une vue)|character varying(1)| |
+|old_siret|Attribut de gestion servant uniquement temporairement à la récupération des contacts d'un ancien établissement qui aurait disparu pour les remettre dans le nouveau. Cet attribut est vidé parès mise à jour|character varying(14)| |
+|old_id|Attribut de gestion servant uniquement temporairement à la récupération des contacts d'un établissement spécifique non présent dans SIRENE mais apparu par la suite. Cet attribut est vidé parès mise à jour|integer| |
+|date_int|Date renseignée par GéoPicardie lors de l'intégration du fichier dans la base (correspond aux dernières données reçues)|date| |
+|observ|Commentaires|character varying(255)| |
+|op_sai|Libellé de l'opérateur de Saisie|character varying(80)| |
+|date_sai|Date de saisie des données attributaires|timestamp without time zone| |
+|date_maj|Date de mise à jour des données attributaires|timestamp without time zone| |
+
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ `id` l'attribution automatique de la référence unique s'effectue via une séquence. 
+* Cette classe d'objet est alimenté automatiquement à l'insertion d'un nouvel établissement SIRENE via un process FME
+
+* 2 triggers :
+  * `t_t1_an_sa_etab_date_maj` : trigger permettant d'automatiser la date de mise à jour des données
+  * `t_t1_l_nom_null` : trigger permettant de gérer les attributs à NULL et non vide issu de GEO
+  * `t_t4_an_sa_etab_oldsiret` : trigger permettant l'appariemment des données de la table des établissements spécifiques ou la récupération d'un ancien disparu
+  * `t_t5_an_sa_etab_lcompte_local` : trigger permettant de rafraichir des vues matérialisés
+ 
+---
+
+`[m_activite_eco].[an_eco_etab_rad]` : table alphanumérique contenant l'ensemble des établissements radiés
+   
+|Nom attribut | Définition | Type | Valeurs par défaut |
+|:---|:---|:---|:---|
+|gid|Identifiant unique interne|integer|nextval('m_activite_eco.an_eco_etab_rad_seq'::regclass)|
+|siren|Identifiant SIRNE de l'unité légale|character varying(9)| |
+|date_rad|Date de la radiation|timestamp without time zone| |
+
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ `gid` l'attribution automatique de la référence unique s'effectue via une séquence. 
+* Cette classe d'objet est alimenté automatiquement à la mise à jour des établissements SIRENE via un process FME insérant les données des radiations téléchargés sur l'OpenData
+
+---
+
+`[m_activite_eco].[an_eco_evenmt]` : table alphanumérique contenant l'ensemble des évènements suivis
+   
+|Nom attribut | Définition | Type | Valeurs par défaut |
+|:---|:---|:---|:---|
+|idevenmt|Identifiant unique non signifiant du contact|integer|nextval('m_activite_eco.an_eco_evenmt_seq'::regclass)|
+|libelle|Libellé de l'éveènement|character varying(254)| |
+|typevenmt|Type d'évènement|character varying(2)| |
+|date_evenmt|Date de l'évènement|timestamp without time zone| |
+|nom_contact|Nom du contact|character varying(100)| |
+|date_sai|Date de saisie des données attributaires|timestamp without time zone| |
+|date_maj|Date de mise à jour des données attributaires|timestamp without time zone| |
+|op_sai|Libellé de la personne ayant saisie l'objet initialisament|character varying(80)| |
+|epci|Autorité compétente|character varying(10)| |
+|observ|Observations diverses|character varying(1000)| |
+
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ `idevenmt` l'attribution automatique de la référence unique s'effectue via une séquence. 
+* Une clé étrangère existe sur la table de valeur `typevenmt` (lien vers la liste de valeurs du type d'évènement `lt_eco_typevenmt`)
+
+`[m_activite_eco].[an_eco_evenmt_media]` : table alphanumérique contenant l'ensemble des médias rattachés aux évènements
+   
+|Nom attribut | Définition | Type | Valeurs par défaut |
+|:---|:---|:---|:---|
+|gid|Compteur (identifiant interne)|integer|nextval('m_activite_eco.an_eco_evenmt_media_seq'::regclass)|
+|id|Identifiant interne non signifiant de l'objet saisi|text| |
+|media|Champ Média de GEO|text| |
+|miniature|Champ miniature de GEO|bytea| |
+|n_fichier|Nom du fichier|text| |
+|t_fichier|Type de média dans GEO|text| |
+|op_sai|Opérateur de saisie (par défaut login de connexion à GEO)|character varying(20)| |
+|date_sai|Date de la saisie du document|timestamp without time zone| |
+|l_doc|Titre du document ou légère description|character varying(100)| |
+|t_doc|Type de documents|character varying(2)| |
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ `gid` l'attribution automatique de la référence unique s'effectue via une séquence. 
+* Une clé étrangère existe sur la table de valeur `t_doc` (lien vers la liste de valeurs du type de médias `lt_eco_tdocmedia`)
+
+---
+
+`[m_activite_eco].[an_eco_lot]` : table alphanumérique contenant l'ensemble des informations métiers des lots commercialisés
+   
+|Nom attribut | Définition | Type | Valeurs par défaut |
+|:---|:---|:---|:---|
+|idgeolf|Identifiant unique de l'entité géographique lot|integer| |
+|surf|Surface parcellaire occupée du lot|integer| |
+|surf_l|Surface littérale parcellaire occupée du lot|character varying(15)| |
+|date_int|Date renseignée par GéoPicardie lors de l'intégration (correspond aux dernières données reçues)|date| |
+|op_sai|Libellé de l'opérateur de saisie|character varying(80)| |
+|org_sai|Libellé de l'organisme de saisie|character varying(80)| |
+|tact|Type d'activité présent sur le lot|character varying(2)|'00'::character varying|
+|tact_99|Précision de l'activité du lot (si Autre sélectionné dans l_tact)|character varying(80)| |
+|cnom|Nom de code de l'acquéreur|character varying(20)| |
+|lnom|Nom de l'acquéreur|character varying(80)| |
+|pvente_l|Prix littéral de vente du lot en HT (ex:50€/m²)|character varying(15)| |
+|pcess_l|Prix littéral de cession du lot en HT (ex:30€/m²)|character varying(15)| |
+|eff_dep|Effectif de départ prévu par l'implantation de l'établissement lors de l'octroi de la convention de subvention|integer| |
+|eff_n5|Effectif prévu de l'établissement à n+5 par la convention d'octroi de subvention|integer| |
+|conv|Accord ou non d'une convention d'octroi de subvention|boolean| |
+|datefin_conv|Date de fin de la convention d'octroi de subvention, liée à l'effectif n+5|date| |
+|observ|Observations diverses|character varying(255)| |
+|date_sai|Date de saisie des données attributaires|timestamp without time zone| |
+|date_maj|Date de mise à jour des données attributaires|timestamp without time zone| |
+|bati|Surface de bâtiments projetée en m²|integer| |
+|pc_depot|Date de dépôt du permis de construire|timestamp without time zone| |
+|pc_accord|Date d'obtention du permis de construire|timestamp without time zone| |
+|pc_tra|Date de commencement des travaux du permis de construire|timestamp without time zone| |
+|pc_fin|Date de fin des travaux du permis de construire|timestamp without time zone| |
+|pvente_e|Prix de vente (ou cession) envisagé du lot en HT (€/m²) par le service économique|numeric| |
+|pcess_e|Prix de cession du lot en HT(€/m²) - plus utilisé (cf prix de cession du foncier)|numeric| |
+|pc_num|N° du permis de construire|character varying(50)| |
+|pc_mo|Nom du mapitre d'oeuvre (architecte) du PC|character varying(100)| |
+|pers_v|Année de la perspective de vente ou de cession|character varying(10)| |
+|oripro|Information sur l'origine du projet. 3 valeurs possibles ENDOGENE ou EXOGENE ou non renseignée (pas de listes de valeurs créées, cette liste est paramétrée dans GEO)|character varying(15)| |
+|occupant|Libellé de l'occupant du terrain après cession|character varying(100)| |
+|descrip|Descriptif du bâtiment construit sur le lot|character varying(1000)| |
+|insee|Code Insee du ou des communes|character varying(30)| |
+|commune|Libellé de la ou des communes contenant le lot|character varying(250)| |
+
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ `idgeolf` l'attribution automatique de la référence unique s'effectue via la vue de gestion. 
+* Une clé étrangère existe sur la table de valeur `tact` (lien vers la liste de valeurs du type d'activité `lt_eco_tact`)
+
+---
+
+`[m_activite_eco].[an_eco_media]` : table alphanumérique contenant l'ensemble des médias des objets exclusivement économique
+   
+|Nom attribut | Définition | Type | Valeurs par défaut |
+|:---|:---|:---|:---|
+|gid|Compteur (identifiant interne)|integer|nextval('m_activite_eco.an_eco_media_seq'::regclass)|
+|id|Identifiant interne non signifiant de l'objet saisi|text| |
+|media|Champ Média de GEO|text| |
+|miniature|Champ miniature de GEO|bytea| |
+|n_fichier|Nom du fichier|text| |
+|t_fichier|Type de média dans GEO|text| |
+|op_sai|Opérateur de saisie (par défaut login de connexion à GEO)|character varying(20)| |
+|date_sai|Date de la saisie du document|timestamp without time zone| |
+|l_doc|Titre du document ou légère description|character varying(100)| |
+|t_doc|Titre du document ou légère description|character varying(100)| |
+|d_photo|Date de la prise de vue|timestamp without time zone| |
+|alaune|Média poussé à la une de l'annonce immobilière|boolean|false|
+
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ `gid` l'attribution automatique de la référence unique s'effectue via uine séquence. 
+* Une clé étrangère existe sur la table de valeur `t_doc` (lien vers la liste de valeurs du type de médias `lt_eco_tdocmedia`)
+
+---
+
+`[m_activite_eco].[an_eco_patri_media]` : table alphanumérique contenant l'ensemble des médias des objets exclusivement lié aux patrimoines
+   
+|Nom attribut | Définition | Type | Valeurs par défaut |
+|:---|:---|:---|:---|
+|gid|Compteur (identifiant interne)|integer|nextval('m_activite_eco.an_eco_patri_media_seq'::regclass)|
+|id|Identifiant interne non signifiant de l'objet saisi|text| |
+|media|Champ Média de GEO|text| |
+|miniature|Champ miniature de GEO|bytea| |
+|n_fichier|Nom du fichier|text| |
+|t_fichier|Type de média dans GEO|text| |
+|op_sai|Opérateur de saisie (par défaut login de connexion à GEO)|character varying(20)| |
+|date_sai|Date de la saisie du document|timestamp without time zone| |
+|l_doc|Titre du document ou légère description|character varying(100)| |
+|t_doc|Type de document|character varying(2)|'00'::character varying|
+
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ `gid` l'attribution automatique de la référence unique s'effectue via une séquence. 
+* Une clé étrangère existe sur la table de valeur `t_doc` (lien vers la liste de valeurs du type de médias `lt_eco_tdocmedia`)
+
+---
+
+`[m_activite_eco].[geo_eco_bati_act]` : table géographique contenant l'ensemble des objets des bâtiments d'activité
+   
+|Nom attribut | Définition | Type | Valeurs par défaut |
+|:---|:---|:---|:---|
+|idbati|Identifiant unique de l'objet|character varying(10)|('B'::text || nextval('m_activite_eco.geo_eco_bati_act_seq'::regclass))|
+|libelle|Nom usuel du bâtiment|character varying(100)| |
+|surf_p|Surface de plancher|integer| |
+|op_sai|Opérateur de saisir d'objet à l'ARC|character varying(80)| |
+|src_geom|Référentiel spatial de saisie|character varying(2)|'00'::character varying|
+|sup_m2|Surface totale de l'objet en m²|double precision| |
+|date_sai|Date de saisie de l'objet|timestamp without time zone| |
+|date_maj|Date de mise à jour|timestamp without time zone| |
+|epci|Autorité compétente|character varying(10)| |
+|geom|Champ contenant la géométrie|MultiPolygon,2154| |
+
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ `idbati` l'attribution automatique de la référence unique s'effectue via une séquence. 
+* Une clé étrangère existe sur la table de valeur `src_geom` (lien vers la liste de valeurs des référentiels de saisies `lt_src_geom`)
+ 
+---
+
+`[m_activite_eco].[geo_eco_etabp]` : table géographique contenant l'ensemble des établissements spécifiques saisis (hors SIRENE)
+   
+|Nom attribut | Définition | Type | Valeurs par défaut |
+|:---|:---|:---|:---|
+|idgeoet|Identifiant géographique unique|integer| |
+|idsiren|Numéro SIRENE de l'établissement (si connu)|character varying(9)| |
+|idsiret|Numéro SIRET de l'établissement (si connu)|character varying(14)| |
+|idsite|Identifiant du site d'activité d'appartenance|character varying(10)| |
+|date_sai|Date de saisie par le producteur|timestamp without time zone|now()|
+|op_sai|Libellé de l'opérateur de Saisie|character varying(80)| |
+|org_sai|Libellé de l'organisme dont dépend l'opérateur de saisie|character varying(80)| |
+|l_nom|Libellé du nom de l'établissement spécifique|character varying(255)| |
+|eff_etab|Effectif total de l'établissement|integer| |
+|source_eff|Source de l'effectif de l'établissement|character varying(50)| |
+|date_eff|Date de l'effectif|date| |
+|l_ape|Code APE de l'établissement|character varying(5)| |
+|l_observ|Commentaires|character varying(255)| |
+|geom|Champ contenant la géométrie des objets|Point,2154| |
+|date_maj|Date de mise à jour|timestamp without time zone| |
+|l_compte|Prise en compte de l'établissement pour le calcul des statistiques (nombre d'établissements et effectifs) dans les informations de synthèse.
+Par défaut TRUE et laisse le choix à l'administrateur de la donnée de modifier cette valeur.|boolean|true|
+|src_geom|Référentiel spatial utilisé pour la saisie|character varying(2)|'20'::character varying|
+|eff_etab_d|Précision (en détail) du nombre de CDD, CDI, intérim, ....|character varying(200)| |
+
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ `idgeoet` l'attribution automatique de la référence unique s'effectue via un trigger. 
+* Une clé étrangère existe sur la table de valeur `src_geom` (lien vers la liste de valeurs des référentiels de saisies `lt_src_geom`)
+
+* 4 triggers :
+  * `t_t1_etabp_insert` : trigger permettant d'automatiser l'insertion de la séquence + date de saisie + les informations d'appartenance à un site
+  * `t_t5_etabp_update` : trigger permettant d'automatiser la date de mise à jour + les informations d'appartenance à un site
+  * `t_t7_geo_sa_etabp_insee` : trigger permettant de récupérer la code INSEE d'assise
+  * `t_t91_etabp_null` : trigger permettant de mettre à NULL et non vide les attributs saisis depuis GEO
+ 
+---
+
+`[m_activite_eco].[geo_eco_loc_act]` : table géographique contenant l'ensemble des locaux d'acticité
+   
+|Nom attribut | Définition | Type | Valeurs par défaut |
+|:---|:---|:---|:---|
+|idloc|Identifiant unique de l'objet|character varying(10)|('L'::text || nextval('m_activite_eco.geo_eco_loc_act_seq'::regclass))|
+|libelle|Nom usuel du local|character varying(100)| |
+|typ|Type de local|character varying(2)| |
+|adresse_b|Adresse commune entre bâtiment et local|boolean|false|
+|adresse_a|Adresse libre si inexistante dans la BAL (adresse non conforme, lieux-dit, ...)|character varying(100)| |
+|surf_p|Surface de plancher|integer| |
+|descript|Elément descriptif du local|character varying(5000)| |
+|occup|Type d'occupation du local|character varying(2)|'00'::character varying|
+|pvente|Prix de vente en € du local|integer| |
+|pventem2|Prix de vente au m² en € du local|double precision| |
+|loyer|Loyer mensuel en € du local|integer| |
+|loyerm2|Loyer mensuel au m² en € du local|double precision| |
+|occupant|Libellé de l'occupant si établissement non lié|character varying(80)| |
+|l_url|Lien URL vers une référen ce externe|character varying(254)| |
+|sourceloc|Source des informations du local|character varying(254)| |
+|op_sai|Opérateur de saisir d'objet à l'ARC|character varying(80)| |
+|src_geom|Référentiel spatial de saisie|character varying(2)|'00'::character varying|
+|sup_m2|Surface totale de l'objet en m²|double precision| |
+|date_sai|Date de saisie de l'objet|timestamp without time zone| |
+|date_maj|Date de mise à jour|timestamp without time zone| |
+|epci|Autorité compétente|character varying(10)| |
+|geom|Champ contenant la géométrie|MultiPolygon,2154| |
+
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ `idloc` l'attribution automatique de la référence unique s'effectue via une séquence. 
+* Une clé étrangère existe sur la table de valeur `src_geom` (lien vers la liste de valeurs des référentiels de saisies `lt_src_geom`)
+* Une clé étrangère existe sur la table de valeur `typ` (lien vers la liste de valeurs du type de local `lt_eco_typloc`)
+* Une clé étrangère existe sur la table de valeur `occup` (lien vers la liste de valeurs du type d'occupation `lt_eco_occuploc`)
+
+---
+
+`[m_activite_eco].[geo_eco_loc_patri]` : table géographique contenant l'ensemble des locaux du patrimoine public
+   
+|Nom attribut | Définition | Type | Valeurs par défaut |
+|:---|:---|:---|:---|
+|idpatri|Identifiant unique de l'objet|character varying(10)|('P'::text || nextval('m_activite_eco.geo_eco_loc_patri_seq'::regclass))|
+|libelle|Nom usuel du local|character varying(100)| |
+|a_const|Année de construction|integer| |
+|loyer|Loyer mensuel|double precision| |
+|descript|Elément descriptif du local|character varying(5000)| |
+|l_url|Lien URL vers une référen ce externe|character varying(254)| |
+|op_sai|Opérateur de saisir d'objet à l'ARC|character varying(80)| |
+|src_geom|Référentiel spatial de saisie|character varying(2)|'00'::character varying|
+|sup_m2|Surface totale de l'objet en m²|double precision| |
+|date_sai|Date de saisie de l'objet|timestamp without time zone| |
+|date_maj|Date de mise à jour|timestamp without time zone| |
+|epci|Autorité compétente|character varying(10)| |
+|geom|Champ contenant la géométrie|MultiPolygon,2154| |
+
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ `idpatri` l'attribution automatique de la référence unique s'effectue via une séquence. 
+ 
+---
+
+`[m_activite_eco].[h_an_eco_etab]` : table géographique contenant l'historique (ou état) des établissements par an
+
+Particularité(s) à noter :
+* cette classe d'objet est alimenté 1 fois par an par un traitement FME 
+ 
+---
+
+`[m_activite_eco].[h_an_eco_site]` : table géographique contenant l'historique (ou état) des sites par an
+
+Particularité(s) à noter :
+* cette classe d'objet est alimenté 1 fois par an par un traitement FME 
+
+---
+
+`[m_activite_eco].[lk_adresseetablissement]` : table alphanumérique de relation entre les adresses et les établissements
+   
+|Nom attribut | Définition | Type | Valeurs par défaut |
+|:---|:---|:---|:---|
+|idadresse|Identifiant unique de l'adresse|bigint| |
+|siret|N° SIRET de l'établissement|character varying(14)| |
+|id|Identifiant unique non siggnifiant|integer|nextval('m_activite_eco.lk_adresseetablissement_seq'::regclass)|
+
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ `id` l'attribution automatique de la référence unique s'effectue via une séquence. 
+
+* 4 triggers :
+  * `t_t1_lk_adresseetablissement_siret_update` : trigger permettant de modifier l'appariemment des adresses à la mise jour de celle-ci à l'établissement
+  * `t_t2_lk_adresseetablissement_idsite` : trigger à revoir
+  * `t_t3_lk_adresseetablissement_idsite_delete` : trigger permettant de supprimer un appariemment
+  * `t_t4_lk_etablissementlocal` : trigger permettant de rafraichir une vue matérialisée d'exploitation
+ 
+---
+
+`[m_activite_eco].[lk_eco_bati_loc]` : table alphanumérique de relation entre les bâtiments et les adresses
+   
+|Nom attribut | Définition | Type | Valeurs par défaut |
+|:---|:---|:---|:---|
+|id|Identifiant unique non signifiant de la relation|integer|nextval('m_activite_eco.lk_eco_bati_loc_seq'::regclass)|
+|idbati|Identifiant unique non signifiant de l'objet bâti d'activité|character varying(5)| |
+|idloc|Identifiant unique non signifiant de l'objet local d'activité|character varying(5)| |
+
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ `id` l'attribution automatique de la référence unique s'effectue via une séquence. 
+
+* x triggers : à venir
+ 
+ 
+---
+
+`[m_activite_eco].[lk_eco_bati_site]` : table alphanumérique de relation entre les bâtiments et les sites
+   
+|Nom attribut | Définition | Type | Valeurs par défaut |
+|:---|:---|:---|:---|
+|id|Identifiant unique non signifiant de la relation|integer|nextval('m_activite_eco.lk_eco_bati_site_seq'::regclass)|
+|idbati|Identifiant unique non signifiant de l'objet bâti|character varying(5)| |
+|idsite|Identifiant unique non signifiant de l'objet site|character varying(5)| |
+
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ `id` l'attribution automatique de la référence unique s'effectue via une séquence. 
+
+* x triggers : à venir
+ 
+ 
+---
+
+`[m_activite_eco].[lk_eco_contact]` : table alphanumérique de relation entre les objets éconimoques et les contacts
+   
+|Nom attribut | Définition | Type | Valeurs par défaut |
+|:---|:---|:---|:---|
+|id|Identifiant unique non signifiant|integer|nextval('m_activite_eco.lk_eco_contact_seq'::regclass)|
+|idcontact|Identifiant unique non signifiant du contact|integer| |
+|idobjet|Identifiant unique non signifiant de l'objet en référence|integer| |
+
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ `id` l'attribution automatique de la référence unique s'effectue via une séquence. 
+
+* x triggers : à venir
+ 
+ 
+---
+
+`[m_activite_eco].[lk_eco_loc_site]` : table alphanumérique de relation entre les locaux d'activité et les sites
+   
+|Nom attribut | Définition | Type | Valeurs par défaut |
+|:---|:---|:---|:---|
+|id|Identifiant unique non signifiant de la relation|integer|nextval('m_activite_eco.lk_eco_loc_site_seq'::regclass)|
+|idloc|Identifiant unique non signifiant de l'objet local d'activité|character varying(5)| |
+|idsite|Identifiant unique non signifiant de l'objet site|character varying(5)| |
+
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ `id` l'attribution automatique de la référence unique s'effectue via une séquence. 
+
+* x triggers : à venir
+ 
+ 
+---
+
+
+`[m_activite_eco].[lk_eco_loc_etab]` : table alphanumérique de relation entre les locaux d'activité et les établissements
+   
+|Nom attribut | Définition | Type | Valeurs par défaut |
+|:---|:---|:---|:---|
+|id|Identifiant unique non signifiant de la relation|integer|nextval('m_activite_eco.lk_eco_loc_etab_seq'::regclass)|
+|idloc|Identifiant unique non signifiant de l'objet local|character varying(5)| |
+|siren|Identifiant unique non signifiant de l'établissement|character varying(5)| |
+
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ `id` l'attribution automatique de la référence unique s'effectue via une séquence. 
+
+* x triggers : à venir
+ 
+ 
+---
+
+`[m_activite_eco].[lk_eco_proc]` : table alphanumérique de relation entre les sites et les procédures d'aménagement
+   
+|Nom attribut | Définition | Type | Valeurs par défaut |
+|:---|:---|:---|:---|
+|id|Identifiant unique non signifiant|integer|nextval('m_activite_eco.lk_eco_proc_seq'::regclass)|
+|idproc|Identifiant unique non signifiant de l'objet procédure|character varying(5)| |
+|idsite|Identifiant unique non signifiant de l'objet site|character varying(5)| |
+
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ `id` l'attribution automatique de la référence unique s'effectue via une séquence. 
+
+* x triggers : à venir
+ 
+ 
+---
+
+`[m_activite_eco].[lk_eco_bati_adr]` : table alphanumérique de relation entre les bâtiments et les adresses   
+|Nom attribut | Définition | Type | Valeurs par défaut |
+|:---|:---|:---|:---|
+|id|Identifiant unique non signifiant de la relation|integer|nextval('m_activite_eco.lk_eco_bati_adr_seq'::regclass)|
+|idbati|Identifiant unique non signifiant de l'objet bâtiment|character varying(5)| |
+|idadresse|Identifiant unique de l'adresse|bigint| |
+
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ `id` l'attribution automatique de la référence unique s'effectue via une séquence. 
+
+* x triggers : à venir
+ 
+ 
+---
+
+---
+
+`[m_activite_eco].[lk_eco_loc_adr]` : table alphanumérique de relation entre les locaux d'activités et les adresses   
+|Nom attribut | Définition | Type | Valeurs par défaut |
+|:---|:---|:---|:---|
+|id|Identifiant unique non signifiant de la relation|integer|nextval('m_activite_eco.lk_eco_loc_adr_seq'::regclass)|
+|idloc|Identifiant unique non signifiant de l'objet local|character varying(5)| |
+|idadresse|Identifiant unique de l'adresse|bigint| |
+
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ `id` l'attribution automatique de la référence unique s'effectue via une séquence. 
+
+* x triggers : à venir
+ 
+ 
+---
 
 ### classes d'objets applicatives métiers sont classés dans le schéma x_apps :
 
