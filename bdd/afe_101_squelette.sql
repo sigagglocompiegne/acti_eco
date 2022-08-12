@@ -4128,7 +4128,7 @@ GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_lk_adresseetablissement_idsite_upd
 
 -- DROP FUNCTION m_activite_eco.ft_m_lk_adresseetablissement_siret_update();
 
-CREATE FUNCTION m_activite_eco.ft_m_lk_adresseetablissement_siret_update()
+CREATE OR REPLACE FUNCTION m_activite_eco.ft_m_lk_adresseetablissement_siret_update()
     RETURNS trigger
     LANGUAGE 'plpgsql'
     COST 100
@@ -4203,7 +4203,7 @@ GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_lk_adresseetablissement_idsite() T
 
 -- DROP FUNCTION m_activite_eco.ft_m_lk_adresseetablissement_idsite_delete();
 
-CREATE FUNCTION m_activite_eco.ft_m_lk_adresseetablissement_idsite_delete()
+CREATE OR REPLACE FUNCTION m_activite_eco.ft_m_lk_adresseetablissement_idsite_delete()
     RETURNS trigger
     LANGUAGE 'plpgsql'
     COST 100
@@ -4234,7 +4234,7 @@ GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_lk_adresseetablissement_idsite_del
 
 -- DROP FUNCTION m_activite_eco.ft_m_lk_adresseetablissement();
 
-CREATE FUNCTION m_activite_eco.ft_m_lk_adresseetablissement()
+CREATE OR REPLACE FUNCTION m_activite_eco.ft_m_lk_adresseetablissement()
     RETURNS trigger
     LANGUAGE 'plpgsql'
     COST 100
