@@ -39,6 +39,15 @@ DROP TABLE IF EXISTS m_activite_eco.geo_eco_loc_act;
 DROP TABLE IF EXISTS m_activite_eco.geo_eco_loc_patri;
 DROP TABLE IF EXISTS m_activite_eco.an_eco_patri_media;
 DROP TABLE IF EXISTS m_activite_eco.an_eco_evenmt_media;
+DROP TABLE IF EXISTS m_ectivite_eco.an_eco_etab;
+DROP TABLE IF EXISTS m_activite_eco.an_eco_etab;
+DROP TABLE IF EXISTS m_activite_eco.an_eco_etab_rad;
+DROP TABLE IF EXISTS m_activite_eco.an_eco_dia;
+DROP TABLE IF EXISTS m_activite_eco.geo_eco_etabp;
+DROP TABLE IF EXISTS m_activite_eco.geo_eco_geoloc_salarie;
+DROP TABLE IF EXISTS m_activite_eco.geo_eco_site_zu;
+DROP TABLE IF EXISTS m_activite_eco.h_an_eco_etab;
+DROP TABLE IF EXISTS m_activite_eco.h_an_eco_site;
 
 /* TABLE DE RELATION */
 DROP TABLE IF EXISTS m_activite_eco.lk_eco_contact;
@@ -94,6 +103,12 @@ DROP SEQUENCE IF EXISTS m_activite_eco.lk_eco_loc_site_seq;
 DROP SEQUENCE IF EXISTS m_activite_eco.lk_eco_bati_loc_seq;
 DROP SEQUENCE IF EXISTS m_activite_eco.lk_eco_locetab_seq;
 DROP SEQUENCE IF EXISTS m_activite_eco.an_eco_evenmt_media_seq;
+DROP SEQUENCE IF EXISTS m_activite_eco.an_eco_etab_seq;
+DROP SEQUENCE IF EXISTS m_activite_eco.an_eco_etab_rad_seq;
+DROP SEQUENCE IF EXISTS m_activite_eco.an_eco_dia_seq;
+DROP SEQUENCE IF EXISTS m_activite_eco.geo_eco_geoloc_salarie_seq;
+DROP SEQUENCE IF EXISTS m_activite_eco.h_an_eco_site_seq;
+DROP SEQUENCE IF EXISTS m_activite_eco.h_an_eco_etab_seq;
 
 /* TRIGGERS */
 
@@ -505,6 +520,122 @@ ALTER SEQUENCE m_activite_eco.an_eco_evenmt_media_seq
 
 GRANT ALL ON SEQUENCE m_activite_eco.an_eco_evenmt_media_seq TO PUBLIC;
 GRANT ALL ON SEQUENCE m_activite_eco.an_eco_evenmt_media_seq TO create_sig;
+
+-- ############################################################## [an_eco_etab_seq] ##################################################################
+
+-- SEQUENCE: m_activite_eco.an_eco_etab_seq
+
+-- DROP SEQUENCE m_activite_eco.an_eco_etab_seq;
+
+CREATE SEQUENCE m_activite_eco.an_eco_etab_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+
+ALTER SEQUENCE m_activite_eco.an_eco_etab_seq
+    OWNER TO create_sig;
+
+GRANT ALL ON SEQUENCE m_activite_eco.an_eco_etab_seq TO PUBLIC;
+GRANT ALL ON SEQUENCE m_activite_eco.an_eco_etab_seq TO create_sig;
+
+
+-- ############################################################## [an_eco_etab_rad_seq] ##################################################################
+
+-- SEQUENCE: m_activite_eco.an_eco_etab_rad_seq
+
+-- DROP SEQUENCE m_activite_eco.an_eco_etab_rad_seq;
+
+CREATE SEQUENCE m_activite_eco.an_eco_etab_rad_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+
+ALTER SEQUENCE m_activite_eco.an_eco_etab_rad_seq
+    OWNER TO create_sig;
+
+GRANT ALL ON SEQUENCE m_activite_eco.an_eco_etab_rad_seq TO PUBLIC;
+GRANT ALL ON SEQUENCE m_activite_eco.an_eco_etab_rad_seq TO create_sig;
+
+-- ############################################################## [an_eco_dia_seq] ##################################################################
+
+-- SEQUENCE: m_activite_eco.an_eco_dia_seq
+
+-- DROP SEQUENCE m_activite_eco.an_eco_dia_seq;
+
+CREATE SEQUENCE m_activite_eco.an_eco_dia_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+
+ALTER SEQUENCE m_activite_eco.an_eco_dia_seq
+    OWNER TO create_sig;
+
+GRANT ALL ON SEQUENCE m_activite_eco.an_eco_dia_seq TO PUBLIC;
+GRANT ALL ON SEQUENCE m_activite_eco.an_eco_dia_seq TO create_sig;
+
+-- ############################################################## [geo_eco_geoloc_salarie_seq] ##################################################################
+
+-- SEQUENCE: m_activite_eco.geo_eco_geoloc_salarie_seq
+
+-- DROP SEQUENCE m_activite_eco.geo_eco_geoloc_salarie_seq;
+
+CREATE SEQUENCE m_activite_eco.geo_eco_geoloc_salarie_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+
+ALTER SEQUENCE m_activite_eco.geo_eco_geoloc_salarie_seq
+    OWNER TO create_sig;
+
+GRANT ALL ON SEQUENCE m_activite_eco.geo_eco_geoloc_salarie_seq TO PUBLIC;
+GRANT ALL ON SEQUENCE m_activite_eco.geo_eco_geoloc_salarie_seq TO create_sig;
+
+
+-- ############################################################## [h_an_eco_etab_seq] ##################################################################
+
+-- SEQUENCE: m_activite_eco.h_an_eco_etab_seq
+
+-- DROP SEQUENCE m_activite_eco.h_an_eco_etab_seq;
+
+CREATE SEQUENCE m_activite_eco.h_an_eco_etab_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+
+ALTER SEQUENCE m_activite_eco.h_an_eco_etab_seq
+    OWNER TO create_sig;
+
+GRANT ALL ON SEQUENCE m_activite_eco.h_an_eco_etab_seq TO PUBLIC;
+GRANT ALL ON SEQUENCE m_activite_eco.h_an_eco_etab_seq TO create_sig;
+
+-- ############################################################## [h_an_eco_site_seq] ##################################################################
+
+-- SEQUENCE: m_activite_eco.h_an_eco_site_seq
+
+-- DROP SEQUENCE m_activite_eco.h_an_eco_site_seq;
+
+CREATE SEQUENCE m_activite_eco.h_an_eco_site_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+
+ALTER SEQUENCE m_activite_eco.h_an_eco_site_seq
+    OWNER TO create_sig;
+
+GRANT ALL ON SEQUENCE m_activite_eco.h_an_eco_site_seq TO PUBLIC;
+GRANT ALL ON SEQUENCE m_activite_eco.h_an_eco_site_seq TO create_sig;
 
 -- ####################################################################################################################################################
 -- ###                                                                                                                                              ###
@@ -3606,7 +3737,338 @@ GRANT EXECUTE ON FUNCTION m_amenagement.ft_m_modif_lot_mixte() TO PUBLIC;
 COMMENT ON FUNCTION m_amenagement.ft_m_modif_lot_mixte()
     IS 'Fonction gérant la mise à jour des données liées aux lots à vocation mixte lors de la mise à jour de l''objet';
 
--- ############################################################ [ft_m_modif_lot_mixte] #######################################################################
+-- ############################################################ [ft_m_an_sa_etab_l_nom_null] #######################################################################
+
+-- FUNCTION: m_activite_eco.ft_m_an_sa_etab_l_nom_null()
+
+-- DROP FUNCTION m_activite_eco.ft_m_an_sa_etab_l_nom_null();
+
+CREATE OR REPLACE FUNCTION m_activite_eco.ft_m_an_sa_etab_l_nom_null()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$
+
+begin
+
+ -- gestion des valeurs '' quand suppression d'une valeur dans une fiche GEO
+ update m_activite_eco.an_eco_etab set l_nom = null where l_nom = '';        
+
+
+	return new; 
+end;
+
+$BODY$;
+
+ALTER FUNCTION m_activite_eco.ft_m_an_sa_etab_l_nom_null()
+    OWNER TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_an_sa_etab_l_nom_null() TO PUBLIC;
+
+GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_an_sa_etab_l_nom_null() TO create_sig;
+
+COMMENT ON FUNCTION m_activite_eco.ft_m_an_sa_etab_l_nom_null()
+    IS 'Fonction forçant le champ à null quand insertion ou mise à jour de l''attribut pour éviter les '''' (pb d''afficchage des étiquettes dans GEO)';
+
+
+
+-- ############################################################ [ft_m_an_sa_etab_oldsiret] #######################################################################
+
+-- FUNCTION: m_activite_eco.ft_m_an_sa_etab_oldsiret()
+
+-- DROP FUNCTION m_activite_eco.ft_m_an_sa_etab_oldsiret();
+
+CREATE OR REPLACE FUNCTION m_activite_eco.ft_m_an_sa_etab_oldsiret()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$BEGIN
+
+
+IF new.old_siret is not null or new.old_siret <> '' THEN
+
+update m_activite_eco.an_eco_etab set eff_etab = (select eff_etab from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_activite_eco.an_eco_etab set source_eff = (select source_eff from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_activite_eco.an_eco_etab set l_date_eff = (select l_date_eff from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_activite_eco.an_eco_etab set op_sai = (select op_sai from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_activite_eco.an_eco_etab set org_sai = (select org_sai from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_activite_eco.an_eco_etab set l_tel = (select l_tel from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_activite_eco.an_eco_etab set l_mail = (select l_mail from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_activite_eco.an_eco_etab set l_url = (select l_url from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_activite_eco.an_eco_etab set l_nom_dir = (select l_nom_dir from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_activite_eco.an_eco_etab set l_titre = (select l_titre from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_activite_eco.an_eco_etab set source_maj_dir = (select source_maj_dir from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_activite_eco.an_eco_etab set date_maj_dir = (select date_maj_dir from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_activite_eco.an_eco_etab set l_mail_dir = (select l_mail_dir from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_activite_eco.an_eco_etab set l_tel_dir = (select l_tel_dir from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_activite_eco.an_eco_etab set l_telp_dir = (select l_telp_dir from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_activite_eco.an_eco_etab set l_nom_aut = (select l_nom_aut from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_activite_eco.an_eco_etab set l_titre_aut = (select l_titre_aut from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_activite_eco.an_eco_etab set date_maj_aut = (select date_maj_aut from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_activite_eco.an_eco_etab set l_mail_aut = (select l_mail_aut from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_activite_eco.an_eco_etab set l_tel_aut = (select l_tel_aut from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_activite_eco.an_eco_etab set l_telp_aut = (select l_telp_aut from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_activite_eco.an_eco_etab set l_nom_drh = (select l_nom_drh from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_activite_eco.an_eco_etab set l_titre_drh = (select l_titre_drh from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_activite_eco.an_eco_etab set date_maj_drh = (select date_maj_drh from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_activite_eco.an_eco_etab set l_mail_drh = (select l_mail_drh from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_activite_eco.an_eco_etab set l_tel_drh = (select l_tel_drh from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_activite_eco.an_eco_etab set l_drh_ss = (select l_drh_ss from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_activite_eco.an_eco_etab set l_drh_ad = (select l_drh_ad from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_activite_eco.an_eco_etab set l_nom_ad = (select l_nom_ad from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_activite_eco.an_eco_etab set l_titre_ad = (select l_titre_ad from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_activite_eco.an_eco_etab set date_maj_ad = (select date_maj_ad from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_activite_eco.an_eco_etab set l_mail_ad = (select l_mail_ad from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_activite_eco.an_eco_etab set l_tel_ad = (select l_tel_ad from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_activite_eco.an_eco_etab set l_comp_ad = (select l_comp_ad from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_activite_eco.an_eco_etab set l_url_bil = (select l_url_bil from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_activite_eco.an_eco_etab set l_observ = (select l_observ from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+
+update m_activite_eco.an_eco_etab set eff_etab_d = (select eff_etab_d from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_activite_eco.an_eco_etab set old_siret = null WHERE idsiret=new.idsiret;
+
+
+END IF;
+
+IF new.old_id is not null or new.old_id > 0 THEN
+
+update m_activite_eco.an_eco_etab set l_observ = (select l_observ from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_activite_eco.an_eco_etab set eff_etab = (select eff_etab from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_activite_eco.an_eco_etab set source_eff = (select source_eff from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_activite_eco.an_eco_etab set l_date_eff = (select date_eff from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_activite_eco.an_eco_etab set op_sai = (select op_sai from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_activite_eco.an_eco_etab set org_sai = (select org_sai from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_activite_eco.an_eco_etab set l_tel = (select l_tel from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_activite_eco.an_eco_etab set l_mail = (select l_mail from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_activite_eco.an_eco_etab set l_url = (select l_url from m_activite_eco.geo_sa_egeo_eco_etabptabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_activite_eco.an_eco_etab set l_nom_dir = (select l_nom_dir from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_activite_eco.an_eco_etab set l_titre = (select l_titre from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_activite_eco.an_eco_etab set source_maj_dir = (select source_maj_dir from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_activite_eco.an_eco_etab set date_maj_dir = (select date_maj_dir from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_activite_eco.an_eco_etab set l_mail_dir = (select l_mail_dir from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_activite_eco.an_eco_etab set l_tel_dir = (select l_tel_dir from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_activite_eco.an_eco_etab set l_telp_dir = (select l_telp_dir from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_activite_eco.an_eco_etab set l_nom_aut = (select l_nom_aut from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_activite_eco.an_eco_etab set l_titre_aut = (select l_titre_aut from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_activite_eco.an_eco_etab set date_maj_aut = (select date_maj_aut from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_activite_eco.an_eco_etab set l_mail_aut = (select l_mail_aut from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_activite_eco.an_eco_etab set l_tel_aut = (select l_tel_aut from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_activite_eco.an_eco_etab set l_telp_aut = (select l_telp_aut from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_activite_eco.an_eco_etab set l_nom_drh = (select l_nom_drh from m_economie.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_activite_eco.an_eco_etab set l_titre_drh = (select l_titre_drh from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_activite_eco.an_eco_etab set date_maj_drh = (select date_maj_drh from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_activite_eco.an_eco_etab set l_mail_drh = (select l_mail_drh from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_activite_eco.an_eco_etab set l_tel_drh = (select l_tel_drh from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_activite_eco.an_eco_etab set l_drh_ss = (select l_drh_ss from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_activite_eco.an_eco_etab set l_drh_ad = (select l_drh_ad from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_activite_eco.an_eco_etab set l_nom_ad = (select l_nom_ad from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_activite_eco.an_eco_etab set l_titre_ad = (select l_titre_ad from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_activite_eco.an_eco_etab set date_maj_ad = (select date_maj_ad from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_activite_eco.an_eco_etab set l_mail_ad = (select l_mail_ad from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_activite_eco.an_eco_etab set l_tel_ad = (select l_tel_ad from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+
+update m_activite_eco.an_eco_etab set l_comp_ad = (select l_comp_ad from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_activite_eco.an_eco_etab set l_url_bil = (select l_url_bil from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_activite_eco.an_eco_etab set eff_etab_d = (select eff_etab_d from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+
+
+update m_activite_eco.an_eco_etab set old_id = null WHERE idgeoet=new.idgeoet;
+
+DELETE FROM m_activite_eco.geo_eco_etabp where idgeoet = new.old_id;
+
+END IF;
+
+
+
+return new;
+END$BODY$;
+
+ALTER FUNCTION m_activite_eco.ft_m_an_sa_etab_oldsiret()
+    OWNER TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_an_sa_etab_oldsiret() TO PUBLIC;
+
+GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_an_sa_etab_oldsiret() TO create_sig;
+
+COMMENT ON FUNCTION m_activite_eco.ft_m_an_sa_etab_oldsiret()
+    IS 'Fonction dont l''objet est de récupérer les anciens contacts d''un établissement fermé pour les réinscrires au même établissement ayant changer de SIRET';
+
+
+-- ############################################################ [ft_m_etiquette_local] #######################################################################
+
+-- FUNCTION: m_activite_eco.ft_m_etiquette_local()
+
+-- DROP FUNCTION m_activite_eco.ft_m_etiquette_local();
+
+CREATE OR REPLACE FUNCTION m_activite_eco.ft_m_etiquette_local()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$
+
+BEGIN
+
+-- refraichissement de la vue matérialisée des points établissements à l'adresse
+REFRESH MATERIALIZED VIEW x_apps.xapps_geo_vmr_etab_api;
+REFRESH MATERIALIZED VIEW x_apps.xapps_geo_vmr_immo_bati;
+
+return new;
+
+END;
+
+$BODY$;
+
+ALTER FUNCTION m_activite_eco.ft_m_etiquette_local()
+    OWNER TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_etiquette_local() TO PUBLIC;
+
+GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_etiquette_local() TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_etiquette_local() TO sig_edit;
+
+
+
+-- ############################################################ [ft_m_etabp_insert] #######################################################################
+
+-- FUNCTION: m_activite_eco.ft_m_etabp_insert()
+
+-- DROP FUNCTION m_activite_eco.ft_m_etabp_insert();
+
+CREATE OR REPLACE FUNCTION m_activite_eco.ft_m_etabp_insert()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$
+
+DECLARE v_idgeoet integer;
+
+BEGIN
+    
+    new.date_sai=current_timestamp;
+    v_idgeoet := (SELECT nextval('r_objet.idgeo_seq'::regclass));
+    new.idgeoet = v_idgeoet;
+    -- insertion du numéro du site
+    new.idsite = (SELECT DISTINCT
+				an_sa_site.idsite 
+		  FROM 
+				m_economie.an_sa_site, r_objet.geo_objet_ope
+		  WHERE
+				geo_objet_ope.idsite=an_sa_site.idsite
+		  AND
+				st_intersects(geo_objet_ope.geom,new.geom) = true
+		  );
+
+    return new ;
+END;
+
+$BODY$;
+
+ALTER FUNCTION m_activite_eco.ft_m_etabp_insert()
+    OWNER TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_etabp_insert() TO PUBLIC;
+
+GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_etabp_insert() TO create_sig;
+
+-- ############################################################ [ft_m_etabp_update] #######################################################################
+
+-- FUNCTION: m_activite_eco.ft_m_etabp_update()
+
+-- DROP FUNCTION m_activite_eco.ft_m_etabp_update();
+
+CREATE OR REPLACE FUNCTION m_activite_eco.ft_m_etabp_update()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$
+
+BEGIN
+
+    new.date_maj=current_timestamp;
+    -- insertion du numéro du site
+    new.idsite = (SELECT DISTINCT
+				an_sa_site.idsite 
+		  FROM 
+				m_economie.an_sa_site, r_objet.geo_objet_ope
+		  WHERE
+				geo_objet_ope.idsite=an_sa_site.idsite
+		  AND
+				st_intersects(geo_objet_ope.geom,new.geom) = true
+		  );
+	
+ 
+
+return new ;
+
+END;
+
+$BODY$;
+
+ALTER FUNCTION m_activite_eco.ft_m_etabp_update()
+    OWNER TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_etabp_update() TO PUBLIC;
+
+GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_etabp_update() TO create_sig;
+
+
+
+-- ############################################################ [ft_m_etabp_null] #######################################################################
+
+-- FUNCTION: m_activite_eco.ft_m_etabp_null()
+
+-- DROP FUNCTION m_activite_eco.ft_m_etabp_null();
+
+CREATE OR REPLACE FUNCTION m_activite_eco.ft_m_etabp_null()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$
+
+BEGIN
+
+    -- insertion du numéro du site
+    UPDATE m_activite_eco.geo_eco_etabp SET idsiren = null WHERE idsiren='';
+    UPDATE m_activite_eco.geo_eco_etabp SET idsiret = null WHERE idsiret='';
+    UPDATE m_activite_eco.geo_eco_etabp SET op_sai = null WHERE op_sai='';
+    UPDATE m_activite_eco.geo_eco_etabp SET org_sai = null WHERE org_sai='';
+    UPDATE m_activite_eco.geo_eco_etabp SET l_nom = null WHERE l_nom='';
+    UPDATE m_activite_eco.geo_eco_etabp SET source_eff = null WHERE source_eff='';
+    UPDATE m_activite_eco.geo_eco_etabp SET l_ape = null WHERE l_ape='';
+    UPDATE m_activite_eco.geo_eco_etabp SET l_nom_dir = null WHERE l_nom_dir='';
+    UPDATE m_activite_eco.geo_eco_etabp SET source_maj_dir = null WHERE source_maj_dir='';
+    UPDATE m_activite_eco.geo_eco_etabp SET l_tel = null WHERE l_tel='';
+    UPDATE m_activite_eco.geo_eco_etabp SET l_mail = null WHERE l_mail='';
+    UPDATE m_activite_eco.geo_eco_etabp SET l_observ = null WHERE l_observ='';
+    return new ;
+END;
+
+
+
+
+$BODY$;
+
+ALTER FUNCTION m_activite_eco.ft_m_etabp_null()
+    OWNER TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_etabp_null() TO PUBLIC;
+
+GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_etabp_null() TO create_sig;
+
+
+
+-- ############################################################ [ft_m_etabp_null] #######################################################################
+
+-- ############################################################ [ft_m_etabp_null] #######################################################################
+
+-- ############################################################ [ft_m_etabp_null] #######################################################################
 
 -- ####################################################################################################################################################
 -- ###                                                                                                                                              ###
@@ -6780,6 +7242,813 @@ COMMENT ON COLUMN m_activite_eco.an_eco_evenmt_media.l_doc
 COMMENT ON COLUMN m_activite_eco.an_eco_evenmt_media.gid
     IS 'Compteur (identifiant interne)';
 
+-- ############################################################## [an_eco_etab] ##################################################################
+
+-- Table: m_activite_eco.an_eco_etab
+
+-- DROP TABLE m_activite_eco.an_eco_etab;
+
+CREATE TABLE m_activite_eco.an_eco_etab
+(
+    id integer NOT NULL DEFAULT nextval('m_activite_eco.an_eco_etab_seq'::regclass),
+    idgeoet integer NOT NULL,
+    idsiren character varying(9) COLLATE pg_catalog."default" NOT NULL,
+    idsiret character varying(14) COLLATE pg_catalog."default",
+    l_nom character varying(255) COLLATE pg_catalog."default",
+    n_adres character varying(255) COLLATE pg_catalog."default",
+    eff_ent integer,
+    eff_etab integer,
+    eff_ent_etp double precision,
+    eff_etab_etp double precision,
+    eff_etab_d character varying(200) COLLATE pg_catalog."default",
+    source_eff character varying(50) COLLATE pg_catalog."default",
+    annee_eff integer,
+    l_date_eff date,
+    l_compte boolean DEFAULT true,
+    apet700 character varying(255) COLLATE pg_catalog."default",
+    libapet character varying(255) COLLATE pg_catalog."default",
+    l_url character varying(500) COLLATE pg_catalog."default",
+    l_url_bil character varying(500) COLLATE pg_catalog."default",
+    dentree timestamp without time zone,
+    dsortie timestamp without time zone,
+    etatadministratifetablissement character varying(1) COLLATE pg_catalog."default",
+    old_siret character varying(14) COLLATE pg_catalog."default",
+    old_id integer, 
+    date_int date,
+    observ character varying(255) COLLATE pg_catalog."default",
+    op_sai character varying(80) COLLATE pg_catalog."default",
+    date_sai timestamp without time zone,
+    date_maj timestamp without time zone,
+    epci character varying(10) COLLATE pg_catalog."default",
+    CONSTRAINT an_eco_etab_pkey PRIMARY KEY (id)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE m_activite_eco.an_eco_etab
+    OWNER to create_sig;
+
+GRANT ALL ON TABLE m_activite_eco.an_eco_etab TO sig_create;
+
+GRANT ALL ON TABLE m_activite_eco.an_eco_etab TO create_sig;
+
+GRANT SELECT ON TABLE m_activite_eco.an_eco_etab TO sig_read;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_activite_eco.an_eco_etab TO sig_edit;
+
+COMMENT ON TABLE m_activite_eco.an_eco_etab
+    IS 'Données métiers sur les établissements';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_etab.idgeoet
+    IS 'Identifiant unique géographique';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_etab.idsiren
+    IS 'Numéro SIRENE de l''établissement';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_etab.idsiret
+    IS 'Numéro SIRET de l''établissement';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_etab.date_int
+    IS 'Date renseignée par GéoPicardie lors de l''intégration du fichier dans la base (correspond aux dernières données reçues)';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_etab.op_sai
+    IS 'Libellé de l''opérateur de Saisie';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_etab.l_nom
+    IS 'Libellé du nom de l''établissement spécifique si différent du nom SIRENE (nom usuel du service économie)';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_etab.n_adres
+    IS 'Libellé de la nouvelle adresse si l''établissement a déménagé';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_etab.eff_ent
+    IS 'Effectif total du groupe';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_etab.eff_etab
+    IS 'Effectif total de l''établissement';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_etab.eff_ent_etp
+    IS 'Effectif total du groupe en etp';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_etab.eff_etab_etp
+    IS 'Effectif de l''établissement en etp';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_etab.source_eff
+    IS 'Source de l''effectif de l''établissement';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_etab.annee_eff
+    IS 'Année de l''effectif (issu de SIRENE)';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_etab.l_date_eff
+    IS 'Date de l''effectif saisie par l''ARC';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_etab.observ
+    IS 'Commentaires';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_etab.date_sai
+    IS 'Date de saisie des données attributaires';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_etab.date_maj
+    IS 'Date de mise à jour des données attributaires';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_etab.l_compte
+    IS 'Prise en compte de l''établissement pour le calcul des statistiques (nombre d''établissements et effectifs) dans les informations de synthèse.
+Par défaut TRUE et laisse le choix à l''administrateur de la donnée de modifier cette valeur.';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_etab.l_url
+    IS 'Lien du site internet de l''entreprise';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_etab.l_url_bil
+    IS 'Lien vers le bilan en ligne de l''entreprise';
+
+
+COMMENT ON COLUMN m_activite_eco.an_eco_etab.apet700
+    IS 'Code d''activité de l''établissement (issu de SIRENE et mis à jour lors de la mise à jour de SIRENE)';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_etab.libapet
+    IS 'Libellé de l''activité de l''établissement (issu de SIRENE et mis à jour lors de la mise à jour de SIRENE)';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_etab.eff_etab_d
+    IS 'Précision (en détail) du nombre de CDD, CDI, intérim, ....';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_etab.id
+    IS 'Identifiant unique interne';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_etab.dentree
+    IS 'Date d''entrée dans le fichier SIRENE';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_etab.dsortie
+    IS 'Date de sortie du fichier SIRENE';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_etab.etatadministratifetablissement
+    IS 'Etat administratif de l''établissement dans le fichier SIEREN (attribut déjà présent dans SIRENE mais dupliqué ici pour le filtrage dans GEO, améliore les performances sans passer par une vue)';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_etab.old_siret
+    IS 'Attribut de gestion servant uniquement temporairement à la récupération des contacts d''un ancien établissement qui aurait disparu pour les remettre dans le nouveau. Cet attribut est vidé parès mise à jour';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_etab.old_id
+    IS 'Attribut de gestion servant uniquement temporairement à la récupération des contacts d''un établissement spécifique non présent dans SIRENE mais apparu par la suite. Cet attribut est vidé parès mise à jour';
+
+
+-- Trigger: t_t1_an_sa_etab_date_maj
+
+-- DROP TRIGGER t_t1_an_sa_etab_date_maj ON m_activite_eco.an_eco_etab;
+
+CREATE TRIGGER t_t1_an_sa_etab_date_maj
+    BEFORE UPDATE 
+    ON m_activite_eco.an_eco_etab
+    FOR EACH ROW
+    EXECUTE PROCEDURE public.ft_r_timestamp_maj();
+
+-- Trigger: t_t1_l_nom_null
+
+-- DROP TRIGGER t_t1_l_nom_null ON m_activite_eco.an_eco_etab;
+
+CREATE TRIGGER t_t1_l_nom_null
+    AFTER UPDATE 
+    ON m_activite_eco.an_eco_etab
+    FOR EACH ROW
+    EXECUTE PROCEDURE m_activite_eco.ft_m_an_sa_etab_l_nom_null();
+
+
+-- Trigger: t_t4_an_sa_etab_oldsiret
+
+-- DROP TRIGGER t_t4_an_sa_etab_oldsiret ON m_activite_eco.an_eco_etab;
+
+CREATE TRIGGER t_t4_an_sa_etab_oldsiret
+    AFTER UPDATE OF old_siret, old_id
+    ON m_activite_eco.an_eco_etab
+    FOR EACH ROW
+    EXECUTE PROCEDURE m_activite_eco.ft_m_an_sa_etab_oldsiret();
+
+-- Trigger: t_t5_an_sa_etab_lcompte_local
+
+-- DROP TRIGGER t_t5_an_sa_etab_lcompte_local ON m_activite_eco.an_eco_etab;
+
+CREATE TRIGGER t_t5_an_sa_etab_lcompte_local
+    AFTER UPDATE OF l_compte
+    ON m_activite_eco.an_eco_etab
+    FOR EACH ROW
+    EXECUTE PROCEDURE m_activite_eco.ft_m_etiquette_local();
+
+-- ############################################################## [an_eco_etab_rad] ##################################################################
+
+-- Table: m_activite_eco.an_eco_etab_rad
+
+-- DROP TABLE m_activite_eco.an_eco_etab_rad;
+
+CREATE TABLE m_activite_eco.an_eco_etab_rad
+(
+    gid integer NOT NULL DEFAULT nextval('m_activite_eco.an_eco_etab_rad_seq'::regclass),
+    siren character varying(9) COLLATE pg_catalog."default",
+    date_rad timestamp without time zone,
+    CONSTRAINT an_eco_etab_rad_pkey PRIMARY KEY (gid)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE m_activite_eco.an_eco_etab_rad
+    OWNER to create_sig;
+
+GRANT ALL ON TABLE m_activite_eco.an_eco_etab_rad TO sig_create;
+
+GRANT ALL ON TABLE m_activite_eco.an_eco_etab_rad TO create_sig;
+
+GRANT SELECT ON TABLE m_activite_eco.an_eco_etab_rad TO sig_read;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_activite_eco.an_eco_etab_rad TO sig_edit;
+
+COMMENT ON TABLE m_activite_eco.an_eco_etab_rad
+    IS 'Table alphanumérique contenant les SIREN des unités légales radiées (informations issues des fichiers OpenData de 2012 au 23/11/2021 du site InfoGreffe)';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_etab_rad.gid
+    IS 'Identifiant unique interne';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_etab_rad.siren
+    IS 'Identifiant SIRNE de l''unité légale';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_etab_rad.date_rad
+    IS 'Date de la radiation';
+    
+-- ############################################################## [an_eco_dia] ####################################################################    
+
+-- Table: m_activite_eco.an_eco_dia
+
+-- DROP TABLE m_activite_eco.an_eco_dia;
+
+CREATE TABLE m_activite_eco.an_eco_dia
+(
+    gid integer NOT NULL DEFAULT nextval('m_activite_eco.an_eco_dia_seq'::regclass),
+    idgeolf integer NOT NULL,
+    num_dia character varying(25) COLLATE pg_catalog."default",
+    date_dia timestamp without time zone,
+    prix_v double precision,
+    nom_v character varying(80) COLLATE pg_catalog."default",
+    nom_a character varying(80) COLLATE pg_catalog."default",
+    CONSTRAINT an_sa_dia_pkey PRIMARY KEY (gid)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE m_activite_eco.an_eco_dia
+    OWNER to create_sig;
+
+GRANT ALL ON TABLE m_activite_eco.an_eco_dia TO sig_create;
+
+GRANT ALL ON TABLE m_activite_eco.an_eco_dia TO create_sig;
+
+GRANT SELECT ON TABLE m_activite_eco.an_eco_dia TO sig_read;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_activite_eco.an_eco_dia TO sig_edit;
+
+COMMENT ON TABLE m_activite_eco.an_eco_dia
+    IS 'Table alphanumérique contenant le suivi des DIA pour les lots à vocation économique (la gestion des DIA est géré par un outil d''OPERIS mais sans pouvoir récupérer les données brutes pour le moment)';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_dia.gid
+    IS 'Identifiant unique interne';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_dia.idgeolf
+    IS 'Identifiant unique de l''entité géographique lot';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_dia.num_dia
+    IS 'Numéro de la DIA';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_dia.date_dia
+    IS 'Date de la dernière DIA';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_dia.prix_v
+    IS 'Prix de vente en euros';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_dia.nom_v
+    IS 'Nom du vendeur';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_dia.nom_a
+    IS 'Nom de l''acquéreur (seconde main)';
+
+-- ############################################################## [geo_eco_etabp] ####################################################################    
+
+-- Table: m_activite_eco.geo_eco_etabp
+
+-- DROP TABLE m_activite_eco.geo_eco_etabp;
+
+CREATE TABLE m_activite_eco.geo_eco_etabp
+(
+    idgeoet integer NOT NULL,
+    idsiren character varying(9) COLLATE pg_catalog."default",
+    idsiret character varying(14) COLLATE pg_catalog."default",
+    idsite character varying(10) COLLATE pg_catalog."default",
+    date_sai timestamp without time zone DEFAULT now(),
+    op_sai character varying(80) COLLATE pg_catalog."default",
+    org_sai character varying(80) COLLATE pg_catalog."default",
+    l_nom character varying(255) COLLATE pg_catalog."default",
+    eff_etab integer,
+    source_eff character varying(50) COLLATE pg_catalog."default",
+    date_eff date,
+    l_ape character varying(5) COLLATE pg_catalog."default",
+    l_nom_dir character varying(50) COLLATE pg_catalog."default",
+    date_maj_dir date,
+    source_maj_dir character varying(50) COLLATE pg_catalog."default",
+    l_tel character varying(15) COLLATE pg_catalog."default",
+    l_mail character varying(80) COLLATE pg_catalog."default",
+    l_observ character varying(255) COLLATE pg_catalog."default",
+    geom geometry(Point,2154) NOT NULL,
+    date_maj timestamp without time zone,
+    l_compte boolean DEFAULT true,
+    l_tel_dir character varying(15) COLLATE pg_catalog."default",
+    l_telp_dir character varying(15) COLLATE pg_catalog."default",
+    l_mail_dir character varying(80) COLLATE pg_catalog."default",
+    l_nom_drh character varying(255) COLLATE pg_catalog."default",
+    l_tel_drh character varying(15) COLLATE pg_catalog."default",
+    l_mail_drh character varying(80) COLLATE pg_catalog."default",
+    l_nom_ad character varying(255) COLLATE pg_catalog."default",
+    l_tel_ad character varying(15) COLLATE pg_catalog."default",
+    l_mail_ad character varying(80) COLLATE pg_catalog."default",
+    l_url character varying(500) COLLATE pg_catalog."default",
+    l_url_bil character varying(500) COLLATE pg_catalog."default",
+    l_comp_ad character varying(100) COLLATE pg_catalog."default",
+    src_geom character varying(2) COLLATE pg_catalog."default" DEFAULT '20'::character varying,
+    insee character varying(5) COLLATE pg_catalog."default",
+    commune character varying(80) COLLATE pg_catalog."default",
+    l_titre character varying(100) COLLATE pg_catalog."default",
+    eff_etab_d character varying(200) COLLATE pg_catalog."default",
+    l_nom_aut character varying(255) COLLATE pg_catalog."default",
+    l_titre_aut character varying(255) COLLATE pg_catalog."default",
+    l_tel_aut character varying(15) COLLATE pg_catalog."default",
+    l_mail_aut character varying(80) COLLATE pg_catalog."default",
+    date_maj_drh timestamp without time zone,
+    date_maj_ad timestamp without time zone,
+    date_maj_aut timestamp without time zone,
+    l_titre_drh character varying(100) COLLATE pg_catalog."default",
+    l_titre_ad character varying(100) COLLATE pg_catalog."default",
+    l_drh_ss boolean DEFAULT true,
+    l_drh_ad character varying(150) COLLATE pg_catalog."default",
+    l_telp_aut character varying(15) COLLATE pg_catalog."default",
+    CONSTRAINT geo_eco_etabp_pkey PRIMARY KEY (idgeoet),
+    CONSTRAINT geo_eco_etabp_srcgeom_fkey FOREIGN KEY (src_geom)
+        REFERENCES r_objet.lt_src_geom (code) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE m_activite_eco.geo_eco_etabp
+    OWNER to create_sig;
+
+GRANT ALL ON TABLE m_activite_eco.geo_eco_etabp TO sig_create;
+
+GRANT ALL ON TABLE m_activite_eco.geo_eco_etabp TO create_sig;
+
+GRANT SELECT ON TABLE m_activite_eco.geo_eco_etabp TO sig_read;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_activite_eco.geo_eco_etabp TO sig_edit;
+
+COMMENT ON TABLE m_activite_eco.geo_eco_etabp
+    IS 'Données métiers sur les établissements non présent dans SIRENE (transition dans l''attente de leur intégration dans ce même fichier)';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_etabp.idgeoet
+    IS 'Identifiant géographique unique';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_etabp.idsiren
+    IS 'Numéro SIRENE de l''établissement (si connu)';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_etabp.idsiret
+    IS 'Numéro SIRET de l''établissement (si connu)';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_etabp.idsite
+    IS 'Identifiant du site d''activité d''appartenance';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_etabp.date_sai
+    IS 'Date de saisie par le producteur';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_etabp.op_sai
+    IS 'Libellé de l''opérateur de Saisie';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_etabp.org_sai
+    IS 'Libellé de l''organisme dont dépend l''opérateur de saisie';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_etabp.l_nom
+    IS 'Libellé du nom de l''établissement spécifique';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_etabp.eff_etab
+    IS 'Effectif total de l''établissement';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_etabp.source_eff
+    IS 'Source de l''effectif de l''établissement';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_etabp.date_eff
+    IS 'Date de l''effectif';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_etabp.l_ape
+    IS 'Code APE de l''établissement';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_etabp.l_nom_dir
+    IS 'Libellé du nom du dirigeant de l''établissement par l''ARC';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_etabp.date_maj_dir
+    IS 'Date de mise à jour du dirigeant';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_etabp.source_maj_dir
+    IS 'Source de la mise à jour du dirigeant';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_etabp.l_tel
+    IS 'Numéro de téléphone de l''établissement';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_etabp.l_mail
+    IS 'Adresse mail du dirigeant de l''établissement';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_etabp.l_observ
+    IS 'Commentaires';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_etabp.geom
+    IS 'Champ contenant la géométrie des objets';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_etabp.date_maj
+    IS 'Date de mise à jour';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_etabp.l_compte
+    IS 'Prise en compte de l''établissement pour le calcul des statistiques (nombre d''établissements et effectifs) dans les informations de synthèse.
+Par défaut TRUE et laisse le choix à l''administrateur de la donnée de modifier cette valeur.';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_etabp.l_tel_dir
+    IS 'Numéro de téléphone direct du dirigeant';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_etabp.l_telp_dir
+    IS 'Numéro de téléphone portable direct du dirigeant';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_etabp.l_mail_dir
+    IS 'Adresse email du dirigeant';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_etabp.l_nom_drh
+    IS 'Nom du DRH';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_etabp.l_tel_drh
+    IS 'Numéro de téléphone direct du DRH';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_etabp.l_mail_drh
+    IS 'Adresse email du DRH';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_etabp.l_nom_ad
+    IS 'Nom de l''assistante de direction';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_etabp.l_tel_ad
+    IS 'Numéro de téléphone direct de l''assistante de direction';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_etabp.l_mail_ad
+    IS 'Adresse email de l''assistante de direction';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_etabp.l_url
+    IS 'Lien du site internet de l''entreprise';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_etabp.l_url_bil
+    IS 'Lien vers le bilan en ligne de l''entreprise';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_etabp.l_comp_ad
+    IS 'Complément d''adresse (ex : nom du bâtiment)';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_etabp.src_geom
+    IS 'Référentiel spatial utilisé pour la saisie';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_etabp.l_titre
+    IS 'Titre du contact';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_etabp.eff_etab_d
+    IS 'Précision (en détail) du nombre de CDD, CDI, intérim, ....';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_etabp.l_nom_aut
+    IS 'Nom d''un autre responsable';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_etabp.l_titre_aut
+    IS 'Titre de l''autre responsable';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_etabp.l_tel_aut
+    IS 'Téléphone de l''autre responsable';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_etabp.l_mail_aut
+    IS 'Email de l''autre responsable';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_etabp.date_maj_drh
+    IS 'Date de mise à jour du nom du DRH';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_etabp.date_maj_ad
+    IS 'Date de mise à jour de l''assistant(e) de direction';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_etabp.date_maj_aut
+    IS 'Date de mise à jour du nom de l''autre contact';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_etabp.l_titre_drh
+    IS 'Titre du DRH';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_etabp.l_titre_ad
+    IS 'Titre de l''assistant(e) de direction';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_etabp.l_drh_ss
+    IS 'Information sur le fait que la DRH soit sur le site (par défaut oui)';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_etabp.l_drh_ad
+    IS 'Adresse extérieure de la DRH si pas sur le site';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_etabp.l_telp_aut
+    IS 'Téléphone portable de l''autre responsable';
+
+
+
+-- Trigger: t_t1_etabp_insert
+
+-- DROP TRIGGER t_t1_etabp_insert ON m_activite_eco.geo_eco_etabp;
+
+CREATE TRIGGER t_t1_etabp_insert
+    BEFORE INSERT
+    ON m_activite_eco.geo_eco_etabp
+    FOR EACH ROW
+    EXECUTE PROCEDURE m_activite_eco.ft_m_etabp_insert();
+
+-- Trigger: t_t5_etabp_update
+
+-- DROP TRIGGER t_t5_etabp_update ON m_activite_eco.geo_eco_etabp;
+
+CREATE TRIGGER t_t5_etabp_update
+    BEFORE UPDATE 
+    ON m_activite_eco.geo_eco_etabp
+    FOR EACH ROW
+    EXECUTE PROCEDURE m_activite_eco.ft_m_etabp_update();
+
+-- Trigger: t_t7_geo_sa_etabp_insee
+
+-- DROP TRIGGER t_t7_geo_sa_etabp_insee ON m_activite_eco.geo_eco_etabp;
+
+CREATE TRIGGER t_t7_geo_sa_etabp_insee
+    BEFORE INSERT OR UPDATE OF geom
+    ON m_activite_eco.geo_eco_etabp
+    FOR EACH ROW
+    EXECUTE PROCEDURE public.ft_r_commune_pl();
+
+
+
+-- Trigger: t_t91_etabp_null
+
+-- DROP TRIGGER t_t91_etabp_null ON m_activite_eco.geo_eco_etabp;
+
+CREATE TRIGGER t_t91_etabp_null
+    AFTER INSERT OR UPDATE 
+    ON m_activite_eco.geo_eco_etabp
+    FOR EACH ROW
+    EXECUTE PROCEDURE m_activite_eco.ft_m_etabp_null();
+
+-- ############################################################## [geo_eco_geoloc_salarie] ####################################################################
+
+-- Table: m_activite_eco.geo_eco_geoloc_salarie
+
+-- DROP TABLE m_activite_eco.geo_eco_geoloc_salarie;
+
+CREATE TABLE m_activite_eco.geo_eco_geoloc_salarie
+(
+    gid integer NOT NULL DEFAULT nextval('m_activite_eco.geo_eco_geoloc_salarie_seq'::regclass),
+    siret character(254) COLLATE pg_catalog."default",
+    num_salari double precision,
+    etablissem character(80) COLLATE pg_catalog."default",
+    date_maj character(254) COLLATE pg_catalog."default",
+    id character(254) COLLATE pg_catalog."default",
+    adr_num character(254) COLLATE pg_catalog."default",
+    adr_compl character(254) COLLATE pg_catalog."default",
+    codepostal character(5) COLLATE pg_catalog."default",
+    commune character(50) COLLATE pg_catalog."default",
+    pays character(254) COLLATE pg_catalog."default",
+    lat double precision,
+    lng double precision,
+    accuracy double precision,
+    nbadrretur double precision,
+    error_addr character(150) COLLATE pg_catalog."default",
+    code double precision,
+    jour_nuit character(254) COLLATE pg_catalog."default",
+    service character(254) COLLATE pg_catalog."default",
+    geom geometry(Point,2154),
+    CONSTRAINT geo_eco_geoloc_salarie_test_pkey PRIMARY KEY (gid)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE m_activite_eco.geo_eco_geoloc_salarie
+    OWNER to create_sig;
+
+GRANT ALL ON TABLE m_activite_eco.geo_eco_geoloc_salarie TO sig_create;
+
+GRANT ALL ON TABLE m_activite_eco.geo_eco_geoloc_salarie TO create_sig;
+
+GRANT SELECT ON TABLE m_activite_eco.geo_eco_geoloc_salarie TO sig_read;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_activite_eco.geo_eco_geoloc_salarie TO sig_edit;
+
+COMMENT ON TABLE m_activite_eco.geo_eco_geoloc_salarie
+    IS 'Géolocalisation des salariés des entreprises situées sur le territoire de l''ARC servant au service Transports et Mobilité. Les données sont issues des services RH de chaque entreprise.';
+
+
+-- Trigger: t_t1_eco_geoloc_salarie_xy
+
+-- DROP TRIGGER t_t1_eco_geoloc_salarie_xy ON m_economie.geo_eco_geoloc_salarie;
+
+CREATE TRIGGER t_t1_eco_geoloc_salarie_xy
+    BEFORE INSERT OR UPDATE OF geom
+    ON m_activite_eco.geo_eco_geoloc_salarie
+    FOR EACH ROW
+    EXECUTE PROCEDURE public.r_lnglat_wgs84();
+
+-- ############################################################## [geo_eco_site_zu] ####################################################################
+
+-- Table: m_activite_eco.geo_eco_site_zu
+
+-- DROP TABLE m_activite_eco.geo_eco_site_zu;
+
+CREATE TABLE m_activite_eco.geo_eco_site_zu
+(
+    idsite character varying(254) COLLATE pg_catalog."default" NOT NULL,
+    idpole character varying(254) COLLATE pg_catalog."default",
+    site_nom character varying(254) COLLATE pg_catalog."default",
+    site_etat character varying(254) COLLATE pg_catalog."default",
+    surf_brt bigint,
+    surf_net bigint,
+    date_sai character varying(254) COLLATE pg_catalog."default",
+    date_maj character varying(254) COLLATE pg_catalog."default",
+    op_sai character varying(254) COLLATE pg_catalog."default",
+    org_sai character varying(254) COLLATE pg_catalog."default",
+    ref_spa character varying(254) COLLATE pg_catalog."default",
+    prec_qtv bigint,
+    typo character varying(254) COLLATE pg_catalog."default",
+    geom geometry(MultiPolygon,2154),
+    CONSTRAINT geo_eco_site_zu_pkey PRIMARY KEY (idsite)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE m_activite_eco.geo_eco_site_zu
+    OWNER to create_sig;
+
+GRANT ALL ON TABLE m_activite_eco.geo_eco_site_zu TO sig_create;
+
+GRANT ALL ON TABLE m_activite_eco.geo_eco_site_zu TO create_sig;
+
+GRANT SELECT ON TABLE m_activite_eco.geo_eco_site_zu TO sig_read;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_activite_eco.geo_eco_site_zu TO sig_edit;
+
+COMMENT ON TABLE m_activite_eco.geo_eco_site_zu
+    IS 'Délimitation des sites des secteurs de centre-ville (zone urbaine) issue d''un traitement GéoPicardie.
+Couche extraite du portail GéoPicardie le 2 mai 2017';
+
+-- ############################################################## [h_an_eco_etab] ####################################################################
+
+-- Table: m_activite_eco.h_an_eco_etab
+
+-- DROP TABLE m_activite_eco.h_an_eco_etab;
+
+CREATE TABLE m_activite_eco.h_an_eco_etab
+(
+    gid integer NOT NULL DEFAULT nextval('m_activite_eco.h_an_eco_etab_seq'::regclass),
+    idgeoet integer,
+    idsiren character varying(9) COLLATE pg_catalog."default",
+    idsiret character varying(14) COLLATE pg_catalog."default",
+    idsite character varying(10) COLLATE pg_catalog."default",
+    date_maj timestamp without time zone,
+    date_h timestamp without time zone,
+    l_nom character varying(255) COLLATE pg_catalog."default",
+    l1_nomen character varying(255) COLLATE pg_catalog."default",
+    eff_etab integer,
+    eff_etab_etp double precision,
+    source_eff character varying(100) COLLATE pg_catalog."default",
+    annee_eff integer,
+    l_date_eff date,
+    l_nom_dir character varying(100) COLLATE pg_catalog."default",
+    l_observ character varying(255) COLLATE pg_catalog."default",
+    t_source character varying(30) COLLATE pg_catalog."default",
+    geom geometry(Point,2154),
+    CONSTRAINT h_an_eco_etab_pkey PRIMARY KEY (gid)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE m_activite_eco.h_an_eco_etab
+    OWNER to create_sig;
+
+GRANT ALL ON TABLE m_activite_eco.h_an_eco_etab TO sig_create;
+
+GRANT ALL ON TABLE m_activite_eco.h_an_eco_etab TO create_sig;
+
+GRANT SELECT ON TABLE m_activite_eco.h_an_eco_etab TO sig_read;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_activite_eco.h_an_eco_etab TO sig_edit;
+
+COMMENT ON TABLE m_activite_eco.h_an_eco_etab
+    IS 'Table contenant les données historisées des établissements.
+Cette table est incrémentée chaque année par un Workflow FME (Y:\Ressources\4-Partage\3-Procedures\FME\prod\ECO\historisation_annuelle_site_etab.fmw)
+La géométrie des points n''est plus historisés depuis la localisation des établissements à l''adresse';
+
+COMMENT ON COLUMN m_activite_eco.h_an_eco_etab.idgeoet
+    IS 'Identifiant unique géographique';
+
+COMMENT ON COLUMN m_activite_eco.h_an_eco_etab.idsiren
+    IS 'Numéro SIRENE de l''établissement';
+
+COMMENT ON COLUMN m_activite_eco.h_an_eco_etab.idsiret
+    IS 'Numéro SIRET de l''établissement';
+
+COMMENT ON COLUMN m_activite_eco.h_an_eco_etab.idsite
+    IS 'Identifiant du site d''activité d''appartenance';
+
+COMMENT ON COLUMN m_activite_eco.h_an_eco_etab.date_maj
+    IS 'Date de mise à jour par le producteur';
+
+COMMENT ON COLUMN m_activite_eco.h_an_eco_etab.date_h
+    IS 'Date de mise en historique';
+
+COMMENT ON COLUMN m_activite_eco.h_an_eco_etab.l_nom
+    IS 'Enseigne dans SIRENE';
+
+COMMENT ON COLUMN m_activite_eco.h_an_eco_etab.l1_nomen
+    IS 'Raison sociale de l''établissement dans SIRENE';
+
+COMMENT ON COLUMN m_activite_eco.h_an_eco_etab.eff_etab
+    IS 'Effectif total de l''établissement';
+
+COMMENT ON COLUMN m_activite_eco.h_an_eco_etab.eff_etab_etp
+    IS 'Effectif de l''établissement en etp';
+
+COMMENT ON COLUMN m_activite_eco.h_an_eco_etab.source_eff
+    IS 'Source de l''effectif de l''établissement';
+
+COMMENT ON COLUMN m_activite_eco.h_an_eco_etab.annee_eff
+    IS 'Année de l''effectif (issu de SIRENE)';
+
+COMMENT ON COLUMN m_activite_eco.h_an_eco_etab.l_date_eff
+    IS 'Date de l''effectif saisie par l''ARC';
+
+COMMENT ON COLUMN m_activite_eco.h_an_eco_etab.l_nom_dir
+    IS 'Libellé du nom du dirigeant de l''établissement par l''ARC';
+
+COMMENT ON COLUMN m_activite_eco.h_an_eco_etab.l_observ
+    IS 'Commentaires';
+
+COMMENT ON COLUMN m_activite_eco.h_an_eco_etab.t_source
+    IS 'Nom de la table source';
+    
+    
+-- ############################################################## [h_an_eco_site] ####################################################################  
+
+-- Table: m_activite_eco.h_an_eco_site
+
+-- DROP TABLE m_activite_eco.h_an_eco_site;
+
+CREATE TABLE m_activite_eco.h_an_eco_site
+(
+    id integer NOT NULL DEFAULT nextval('m_activite_eco.h_an_eco_site_seq'::regclass),
+    idsite character varying(10) COLLATE pg_catalog."default",
+    site_nom character varying(80) COLLATE pg_catalog."default",
+    dest text COLLATE pg_catalog."default",
+    voca text COLLATE pg_catalog."default",
+    date_h timestamp with time zone,
+    annee_h integer,
+    nb_etab text COLLATE pg_catalog."default",
+    eff_etab text COLLATE pg_catalog."default",
+    surf_dispo_vente character varying COLLATE pg_catalog."default",
+    surf_dedie_act character varying COLLATE pg_catalog."default",
+    surf_reserve_projet character varying COLLATE pg_catalog."default",
+   CONSTRAINT h_an_eco_site_pkey PRIMARY KEY (id)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE m_activite_eco.h_an_eco_site
+    OWNER to create_sig;
+
+GRANT ALL ON TABLE m_activite_eco.h_an_eco_site TO sig_create;
+
+GRANT ALL ON TABLE m_activite_eco.h_an_eco_site TO create_sig;
+
+GRANT SELECT ON TABLE m_activite_eco.h_an_eco_site TO sig_read;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_activite_eco.h_an_eco_site TO sig_edit;
+
+COMMENT ON TABLE m_activite_eco.h_an_eco_site
+    IS 'Table contenant les données historisées des sites à vocation économique (1er historisation 1er janvier 2018). Le millésime correspond au 1er janvier de l''année.
+Cette table est incrémentée chaque année par un Workflow FME (Y:\Ressources\4-Partage\3-Procedures\FME\prod\ECO\historisation_annuelle_site_etab.fmw)';
+
+COMMENT ON COLUMN m_activite_eco.h_an_eco_site.id
+    IS 'Identifiant unique interne';
+
 -- ####################################################################################################################################################
 -- ###                                                                                                                                              ###
 -- ###                                                             TABLE DE RELATION                                                                ### 
@@ -7503,6 +8772,8 @@ CREATE TRIGGER t_t3_modif_lot_mixte
     ON m_amenagement.geo_v_lot_mixte
     FOR EACH ROW
     EXECUTE PROCEDURE m_amenagement.ft_m_modif_lot_mixte();
+
+
 
 
 
