@@ -16,7 +16,7 @@ Ensemble des éléments constituant la mise en oeuvre de la base de données urb
   * [ancienne vues applicatives gd public](bdd/afe_22_vues_xapps_pub.sql)
   * [ancienne vues open data](bdd/afe_23_vues_xopendate.sql)
   * [ancien privilèges](bdd/afe_99_grant.sql)  
-- [Documentation d'administration de la base "Activités Economiques"](bdd/doc_admin_bd_amt_fon_eco.md)
+- [Documentation d'administration de la base de données](bdd/doc_admin_bd_amt_fon_eco.md)
 - Documentation utilisateur du module Site et pôle d'activités
 - Documentation utilisateur du module Procédure d'aménagement
 - Documentation utilisateur du module Gestion des lots
