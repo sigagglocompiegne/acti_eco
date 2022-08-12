@@ -37,7 +37,8 @@ DROP TABLE IF EXISTS r_objet.geo_objet_fon_lot;
 DROP TABLE IF EXISTS m_activite_eco.geo_eco_bati_act;
 DROP TABLE IF EXISTS m_activite_eco.geo_eco_loc_act;
 DROP TABLE IF EXISTS m_activite_eco.geo_eco_loc_patri;
-DROP TABLE IF EXISTS m_activite_eco.an_eco_patri_media_seq;
+DROP TABLE IF EXISTS m_activite_eco.an_eco_patri_media;
+DROP TABLE IF EXISTS m_activite_eco.an_eco_evenmt_media;
 
 /* TABLE DE RELATION */
 DROP TABLE IF EXISTS m_activite_eco.lk_eco_contact;
@@ -84,7 +85,7 @@ DROP SEQUENCE IF EXISTS m_activite_eco.lk_eco_proc_seq;
 DROP SEQUENCE IF EXISTS m_activite_eco.lk_eco_proc_seq;
 DROP SEQUENCE IF EXISTS m_urbanisme_reg.an_proc_media_seq;
 DROP SEQUENCE IF EXISTS m_amenagement.lk_amt_lot_site_seq;
-DROP SEQUENCE IF EXISTS m_activite_eco.an_eco_loc_patri_media_seq;
+DROP SEQUENCE IF EXISTS m_activite_eco.an_eco_patri_media_seq;
 DROP SEQUENCE IF EXISTS m_activite_eco.geo_eco_loc_act_seq;
 DROP SEQUENCE IF EXISTS m_activite_eco.geo_eco_loc_patri_seq;
 DROP SEQUENCE IF EXISTS m_activite_eco.geo_eco_bati_act_seq;
@@ -92,6 +93,7 @@ DROP SEQUENCE IF EXISTS m_activite_eco.lk_eco_bati_site_seq;
 DROP SEQUENCE IF EXISTS m_activite_eco.lk_eco_loc_site_seq;
 DROP SEQUENCE IF EXISTS m_activite_eco.lk_eco_bati_loc_seq;
 DROP SEQUENCE IF EXISTS m_activite_eco.lk_eco_locetab_seq;
+DROP SEQUENCE IF EXISTS m_activite_eco.an_eco_evenmt_media_seq;
 
 /* TRIGGERS */
 
@@ -485,6 +487,24 @@ ALTER SEQUENCE m_activite_eco.lk_eco_locetab_seq
 GRANT ALL ON SEQUENCE m_activite_eco.lk_eco_locetab_seq TO PUBLIC;
 GRANT ALL ON SEQUENCE m_activite_eco.lk_eco_locetab_seq TO create_sig;
 
+-- ############################################################## [an_eco_evenmt_media_seq] ##################################################################
+
+-- SEQUENCE: m_activite_eco.an_eco_evenmt_media_seq
+
+-- DROP SEQUENCE m_activite_eco.an_eco_evenmt_media_seq;
+
+CREATE SEQUENCE m_activite_eco.an_eco_evenmt_media_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+
+ALTER SEQUENCE m_activite_eco.an_eco_evenmt_media_seq
+    OWNER TO create_sig;
+
+GRANT ALL ON SEQUENCE m_activite_eco.an_eco_evenmt_media_seq TO PUBLIC;
+GRANT ALL ON SEQUENCE m_activite_eco.an_eco_evenmt_media_seq TO create_sig;
 
 -- ####################################################################################################################################################
 -- ###                                                                                                                                              ###
@@ -3847,6 +3867,7 @@ INSERT INTO m_activite_eco.lt_eco_tdocmedia(
     ('60','Actes administratifs divers'),
     ('61','Délibération'),
     ('62','Règlement'),
+    ('63','Acte de vente'),
     ('99','Autre document');
     
 -- ################################################################ Domaine valeur - [lt_eco_typcontact]  ################################################
@@ -6541,6 +6562,8 @@ CREATE TABLE m_activite_eco.geo_eco_loc_patri
 (
     idpatri character varying(10) NOT NULL DEFAULT 'B' || nextval('m_activite_eco.geo_eco_loc_patri_seq'::regclass),
     libelle character varying(100) COLLATE pg_catalog."default",
+    a_const integer,
+    loyer double precision,	
     descript character varying(5000) COLLATE pg_catalog."default", 
     l_url character varying(254) COLLATE pg_catalog."default",
     op_sai character varying(80) COLLATE pg_catalog."default",
@@ -6588,8 +6611,14 @@ COMMENT ON COLUMN m_activite_eco.geo_eco_loc_patri.sup_m2
 COMMENT ON COLUMN m_activite_eco.geo_eco_loc_patri.geom
     IS 'Champ contenant la géométrie';
 
+COMMENT ON COLUMN m_activite_eco.geo_eco_loc_patri.loyer
+    IS 'Loyer mensuel';
+
 COMMENT ON COLUMN m_activite_eco.geo_eco_loc_patri.date_sai
     IS 'Date de saisie de l''objet';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_loc_patri.a_const
+    IS 'Année de construction';
 
 COMMENT ON COLUMN m_activite_eco.geo_eco_loc_patri.date_maj
     IS 'Date de mise à jour';
@@ -6677,6 +6706,78 @@ COMMENT ON COLUMN m_activite_eco.an_eco_patri_media.l_doc
 
 
 COMMENT ON COLUMN m_activite_eco.an_eco_patri_media.gid
+    IS 'Compteur (identifiant interne)';
+    
+
+-- ############################################################## [an_eco_evenmt_media] ##################################################################
+
+-- Table: m_activite_eco.an_eco_evenmt_media
+
+-- DROP TABLE m_activite_eco.an_eco_evenmt_media;
+
+CREATE TABLE m_activite_eco.an_eco_evenmt_media
+(
+    gid integer NOT NULL DEFAULT nextval('m_activite_eco.an_eco_evenmt_media_seq'::regclass),
+    id text COLLATE pg_catalog."default",
+    media text COLLATE pg_catalog."default",
+    miniature bytea,
+    n_fichier text COLLATE pg_catalog."default",
+    t_fichier text COLLATE pg_catalog."default",
+    op_sai character varying(20) COLLATE pg_catalog."default",
+    date_sai timestamp without time zone,
+    l_doc character varying(100) COLLATE pg_catalog."default",
+    t_doc character varying(2) COLLATE pg_catalog."default" DEFAULT '00',		
+    CONSTRAINT an_eco_evenmt_media_pkey PRIMARY KEY (gid),
+    CONSTRAINT an_eco_evenmt_media_t_doc_fkey FOREIGN KEY (t_doc)
+    REFERENCES m_activite_eco.lt_eco_tdocmedia (code) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE m_activite_eco.an_eco_evenmt_media
+    OWNER to create_sig;
+
+GRANT ALL ON TABLE m_activite_eco.an_eco_evenmt_media TO sig_create;
+
+GRANT SELECT ON TABLE m_activite_eco.an_eco_evenmt_media TO sig_read;
+
+GRANT ALL ON TABLE m_activite_eco.an_eco_evenmt_media TO create_sig;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_activite_eco.an_eco_evenmt_media TO sig_edit;
+
+COMMENT ON TABLE m_activite_eco.an_eco_evenmt_media
+    IS 'Table gérant les documents intégrés en lien avec un évènement';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_evenmt_media.id
+    IS 'Identifiant interne non signifiant de l''objet saisi';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_evenmt_media.media
+    IS 'Champ Média de GEO';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_evenmt_media.miniature
+    IS 'Champ miniature de GEO';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_evenmt_media.n_fichier
+    IS 'Nom du fichier';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_evenmt_media.t_fichier
+    IS 'Type de média dans GEO';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_evenmt_media.op_sai
+    IS 'Opérateur de saisie (par défaut login de connexion à GEO)';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_evenmt_media.date_sai
+    IS 'Date de la saisie du document';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_evenmt_media.l_doc
+    IS 'Titre du document ou légère description';
+
+
+COMMENT ON COLUMN m_activite_eco.an_eco_evenmt_media.gid
     IS 'Compteur (identifiant interne)';
 
 -- ####################################################################################################################################################
