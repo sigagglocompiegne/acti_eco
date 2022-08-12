@@ -69,6 +69,23 @@ Particularité(s) à noter :
   
 ---
 
+`[r_objet].[geo_objet_empesp_pu]` : table géographique des objets surfaciques composant de l'espace public
+   
+|Nom attribut | Définition | Type | Valeurs par défaut |
+|:---|:---|:---|:---|
+|idgeopu|Identifiant unique de l'objet|integer| |
+|op_sai|Opérateur de saisir d'objet à l'ARC|character varying(80)| |
+|src_geom|Référentiel spatial de saisie|character varying(2)|'00'::character varying|
+|sup_m2|Surface totale de l'objet en m²|double precision| |
+|geom|Champ contenant la géométrie|USER-DEFINED| |
+|date_sai|Date de saisie de l'objet|timestamp without time zone| |
+|date_maj|Date de mise à jour de l'objet|timestamp without time zone| |
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ `idgeopu` l'attribution automatique de la référence unique s'effectue via les vues de gestion. 
+* Une clé étrangère existe sur la table de valeur `src_geom` (lien vers la liste de valeurs des référentiels de saisie `lt_src_geom`)
+
+Cette classe d'objets est peu utilisée, non mise à jour, et testé dans le cadre d'un besoin ponctuel non renouvelé.
 
 ### classes d'objets applicatives métiers sont classés dans le schéma x_apps :
  
@@ -81,6 +98,75 @@ Sans objet
 ### classes d'objets opendata sont classés dans le schéma x_opendata :
 
 Sans objet, les données de cette classe d'objets sont intégrées dans les classes d'objets métiers ci-après. Les vues OpenData y sont décrites.
+
+### Liste de valeurs
+
+`[r_objet].[lt_src_geom]` : Liste des valeurs permettant de décrire les référentiels utilisés pour la saisie des objets
+
+|Nom attribut | Définition | Type  | Valeurs par défaut |
+|:---|:---|:---|:---|    
+|code|Code de la valeur du référentiel|character varying(2)| |
+|valeur|Libellé du référentiel|character varying(254)| |
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ code 
+
+Valeurs possibles :
+
+|Code|Valeur|
+|:---|:---|
+|10|Cadastre|
+|11|PCI vecteur|
+|12|BD Parcellaire|
+|13|RPCU|
+|20|Ortho-images|
+|21|Orthophotoplan IGN|
+|22|Orthophotoplan partenaire|
+|23|Orthophotoplan local|
+|30|Filaire voirie|
+|31|Route BDTopo|
+|32|Route OSM|
+|40|Cartes|
+|41|Scan25|
+|50|Lever|
+|51|Plan topographique|
+|52|PCRS|
+|53|Trace GPS|
+|60|Geocodage|
+|71|Plan masse vectoriel|
+|72|Plan masse redessiné|
+|80|Thématique|
+|81|Document d'urbanisme|
+|82|Occupation du Sol|
+|83|Thèmes BDTopo|
+|99|Autre|
+|00|Non renseigné|
+|70|Plan masse|
+|61|Base Adresse Locale|
+|54|Coordonnées X,Y|
+
+---
+`[r_objet].[lt_objet_vocafon]` : Liste des valeurs permettant de décrire les vocations foncières des lots
+
+|Nom attribut | Définition | Type  | Valeurs par défaut |
+|:---|:---|:---|:---|    
+|code|Code de la vocation|character varying(2)| |
+|valeur|Libellé de la vocation|character varying(25)| |
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ code 
+
+Valeurs possibles :
+
+|Code|Valeur|
+|:---|:---|
+|00|Non renseigné|
+|10|Equipement public|
+|20|Lot Economique|
+|30|Lot Habitat|
+|40|Lot divers|
+|50|Lot espace public|
+|60|Lot Mixte|
 
 ## Classes d'objets de l'activité économique
 
@@ -99,21 +185,13 @@ Particularité(s) à noter :
   
 ---
 
- 
-
 ### classes d'objets applicatives métiers sont classés dans le schéma x_apps :
- 
-
 
 ### classes d'objets applicatives grands publics sont classés dans le schéma x_apps_public :
 
-
-
 ### classes d'objets opendata sont classés dans le schéma x_opendata :
 
-
-
-## Liste de valeurs
+### Liste de valeurs
 
 `[schema].[table]` : Liste des valeurs permettant de décrire ....
 
