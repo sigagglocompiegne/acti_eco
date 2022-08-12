@@ -37,12 +37,54 @@ Pour rappel des grands principes :
 
 ## Dépendances
 
-Cette base de donnnées est dépendante 
+Cette base de donnnées est interdépendante du fait d'une partie urbanisée. Les données de l'activité éconique sont liées en partie à des données d'aménagements opérationnels, de foncier, ou de ressources externes comme les données de la base SIRENE de l'Insee.
+
+## Classes d'objets urbanisé ou partagé
+
+L'ensemble des classes d'objets de gestion sont stockés dans le schéma `r_objet` ,et celles applicatives dans les schémas x_apps (pour les applications pro) ou x_apps_public (pour les applications grands publiques).
+
+`[schema].[table]` : table ...
+   
+|Nom attribut | Définition | Type | Valeurs par défaut |
+|:---|:---|:---|:---|
+|idgeolf|Identifiant unique de l'objet|integer| |
+|op_sai|Opérateur de saisir d'objet à l'ARC|character varying(80)| |
+|src_geom|Référentiel spatial de saisie|character varying(2)|'00'::character varying|
+|sup_m2|Surface totale de l'objet en m²|double precision| |
+|l_voca|Vocation du foncier|character varying(2)|'00'::character varying|
+|geom|Champ contenant la géométrie|USER-DEFINED| |
+|date_sai|Date de saisie de l'objet|timestamp without time zone| |
+|date_maj|Date de mise à jour|timestamp without time zone| |
+|l_nom|Nom de lot donné au moment du plan d'aménagement (ex : lot 1)|character varying(80)| |
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ `idgeolf` l'attribution automatique de la référence unique s'effectue via les vues de gestion. 
+* Une clé étrangère existe sur la table de valeur `src_geom` (lien vers la liste de valeurs des référentiels de saisie `lt_src_geom`)
+* Une clé étrangère existe sur la table de valeur `l_voca` (lien vers la liste de valeurs de la vocation foncière du lot `lt_objet_vocafon`)
+
+* 2 triggers :
+  * `t_t1_foncier_insert_date_maj` : trigger permettant d'automatiser la date de mise à jour des données
+  * `t_t2_foncier_insert_surf` : trigger permettant d'automatiser l'insertion de la surface 
+  * `t_t3_foncier_l_nom` : trigger permettant de remplacer une valeur vide pour une valeur NULL (fonctionnel engendré par GEO)
+  
+---
 
 
-## Classes d'objets
+### classes d'objets applicatives métiers sont classés dans le schéma x_apps :
+ 
+Sans objet, les données de cette classe d'objets sont intégrées dans les classes d'objets métiers ci-après. Les vues applicatives y sont décrites.
 
-L'ensemble des classes d'objets de gestion sont stockés .... ,et celles applicatives dans les schémas x_apps (pour les applications pro) ou x_apps_public (pour les applications grands publiques).
+### classes d'objets applicatives grands publics sont classés dans le schéma x_apps_public :
+
+Sans objet
+
+### classes d'objets opendata sont classés dans le schéma x_opendata :
+
+Sans objet, les données de cette classe d'objets sont intégrées dans les classes d'objets métiers ci-après. Les vues OpenData y sont décrites.
+
+## Classes d'objets de l'activité économique
+
+L'ensemble des classes d'objets de gestion sont stockés dans le schéma `m_activite_eco` ,et celles applicatives dans les schémas x_apps (pour les applications pro) ou x_apps_public (pour les applications grands publiques).
 
  ### classes d'objets de gestion :
   
@@ -90,6 +132,13 @@ Valeurs possibles :
 
 ---
 
+## Classes d'objets de l'aménagement opérationnel
+
+## Classes d'objets de l'urbanisme réglementaire
+
+## Classes d'objets du foncier
+
+## Classes d'objets de la base SIRENE
 
 
 ## Projet QGIS pour la gestion
