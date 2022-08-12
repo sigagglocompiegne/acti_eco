@@ -34,11 +34,18 @@ DROP TABLE IF EXISTS m_amenagement.an_amt_lot_hab;
 DROP TABLE IF EXISTS m_amenagement.an_amt_lot_mixte;
 DROP TABLE IF EXISTS r_objet.geo_objet_empesp_pu;
 DROP TABLE IF EXISTS r_objet.geo_objet_fon_lot;
+DROP TABLE IF EXISTS m_activite_eco.geo_eco_bati_act;
+DROP TABLE IF EXISTS m_activite_eco.geo_eco_loc_act;
+DROP TABLE IF EXISTS m_activite_eco.geo_eco_loc_patri;
+DROP TABLE IF EXISTS m_activite_eco.an_eco_loc_patri_media;
 
 /* TABLE DE RELATION */
 DROP TABLE IF EXISTS m_activite_eco.lk_eco_contact;
 DROP TABLE IF EXISTS m_activite_eco.lk_eco_proc;
 DROP TABLE IF EXISTS m_amenagement.lk_amt_lot_site;
+DROP TABLE IF EXISTS m_activite_eco.lk_eco_loc_site;
+DROP TABLE IF EXISTS m_activite_eco.lk_eco_bati_site;
+DROP TABLE IF EXISTS m_activite_eco.lk_eco_bati_loc;
 
 /* LISTE DE VALEUR */
 DROP TABLE IF EXISTS m_activite_eco.lt_eco_dest;
@@ -74,6 +81,13 @@ DROP SEQUENCE IF EXISTS m_activite_eco.lk_eco_proc_seq;
 DROP SEQUENCE IF EXISTS m_activite_eco.lk_eco_proc_seq;
 DROP SEQUENCE IF EXISTS m_urbanisme_reg.an_proc_media_seq;
 DROP SEQUENCE IF EXISTS m_amenagement.lk_amt_lot_site_seq;
+DROP SEQUENCE IF EXISTS m_activite_eco.an_eco_loc_patri_media_seq;
+DROP SEQUENCE IF EXISTS m_activite_eco.geo_eco_loc_act_seq;
+DROP SEQUENCE IF EXISTS m_activite_eco.geo_eco_loc_patri_seq;
+DROP SEQUENCE IF EXISTS m_activite_eco.geo_eco_bati_act_seq;
+DROP SEQUENCE IF EXISTS m_activite_eco.lk_eco_bati_site_seq;
+DROP SEQUENCE IF EXISTS m_activite_eco.lk_eco_loc_site_seq;
+DROP SEQUENCE IF EXISTS m_activite_eco.lk_eco_bati_loc_seq;
 
 /* TRIGGERS */
 
@@ -313,6 +327,140 @@ ALTER SEQUENCE m_amenagement.lk_amt_lot_site_seq
 
 GRANT ALL ON SEQUENCE m_amenagement.lk_amt_lot_site_seq TO PUBLIC;
 GRANT ALL ON SEQUENCE m_amenagement.lk_amt_lot_site_seq TO create_sig;
+
+-- ############################################################## [lk_eco_bati_site_seq] ##################################################################
+
+-- SEQUENCE: m_activite_eco.lk_eco_bati_site_seq
+
+-- DROP SEQUENCE m_activite_eco.lk_eco_bati_site_seq;
+
+CREATE SEQUENCE m_activite_eco.lk_eco_bati_site_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+
+ALTER SEQUENCE m_activite_eco.lk_eco_bati_site_seq
+    OWNER TO create_sig;
+
+GRANT ALL ON SEQUENCE m_activite_eco.lk_eco_bati_site_seq TO PUBLIC;
+GRANT ALL ON SEQUENCE m_activite_eco.lk_eco_bati_site_seq TO create_sig;
+
+-- ############################################################## [lk_eco_loc_site_seq] ##################################################################
+
+-- SEQUENCE: m_activite_eco.lk_eco_loc_site_seq
+
+-- DROP SEQUENCE m_activite_eco.lk_eco_loc_site_seq;
+
+CREATE SEQUENCE m_activite_eco.lk_eco_loc_site_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+
+ALTER SEQUENCE m_activite_eco.lk_eco_loc_site_seq
+    OWNER TO create_sig;
+
+GRANT ALL ON SEQUENCE m_activite_eco.lk_eco_loc_site_seq TO PUBLIC;
+GRANT ALL ON SEQUENCE m_activite_eco.lk_eco_loc_site_seq TO create_sig;
+
+-- ############################################################## [geo_eco_bati_act_seq] ##################################################################
+
+-- SEQUENCE: m_activite_eco.geo_eco_bati_act_seq
+
+-- DROP SEQUENCE m_activite_eco.geo_eco_bati_act_seq;
+
+CREATE SEQUENCE m_activite_eco.geo_eco_bati_act_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+
+ALTER SEQUENCE m_activite_eco.geo_eco_bati_act_seq
+    OWNER TO create_sig;
+
+GRANT ALL ON SEQUENCE m_activite_eco.geo_eco_bati_act_seq TO PUBLIC;
+GRANT ALL ON SEQUENCE m_activite_eco.geo_eco_bati_act_seq TO create_sig;
+
+-- ############################################################## [lk_eco_bati_loc_seq] ##################################################################
+
+-- SEQUENCE: m_activite_eco.lk_eco_bati_loc_seq
+
+-- DROP SEQUENCE m_activite_eco.lk_eco_bati_loc_seq;
+
+CREATE SEQUENCE m_activite_eco.lk_eco_bati_loc_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+
+ALTER SEQUENCE m_activite_eco.lk_eco_bati_loc_seq
+    OWNER TO create_sig;
+
+GRANT ALL ON SEQUENCE m_activite_eco.lk_eco_bati_loc_seq TO PUBLIC;
+GRANT ALL ON SEQUENCE m_activite_eco.lk_eco_bati_loc_seq TO create_sig;
+
+-- ############################################################## [geo_eco_loc_act_seq] ##################################################################
+
+-- SEQUENCE: m_activite_eco.geo_eco_loc_act_seq
+
+-- DROP SEQUENCE m_activite_eco.geo_eco_loc_act_seq;
+
+CREATE SEQUENCE m_activite_eco.geo_eco_loc_act_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+
+ALTER SEQUENCE m_activite_eco.geo_eco_loc_act_seq
+    OWNER TO create_sig;
+
+GRANT ALL ON SEQUENCE m_activite_eco.geo_eco_loc_act_seq TO PUBLIC;
+GRANT ALL ON SEQUENCE m_activite_eco.geo_eco_loc_act_seq TO create_sig;
+
+
+-- ############################################################## [geo_eco_loc_patri_seq] ##################################################################
+
+-- SEQUENCE: m_activite_eco.geo_eco_loc_patri_seq
+
+-- DROP SEQUENCE m_activite_eco.geo_eco_loc_patri_seq;
+
+CREATE SEQUENCE m_activite_eco.geo_eco_loc_patri_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+
+ALTER SEQUENCE m_activite_eco.geo_eco_loc_patri_seq
+    OWNER TO create_sig;
+
+GRANT ALL ON SEQUENCE m_activite_eco.geo_eco_loc_patri_seq TO PUBLIC;
+GRANT ALL ON SEQUENCE m_activite_eco.geo_eco_loc_patri_seq TO create_sig;
+
+-- ############################################################## [an_eco_loc_patri_media_seq] ##################################################################
+
+-- SEQUENCE: m_activite_eco.an_eco_loc_patri_media_seq
+
+-- DROP SEQUENCE m_activite_eco.an_eco_loc_patri_media_seq;
+
+CREATE SEQUENCE m_activite_eco.an_eco_loc_patri_media_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+
+ALTER SEQUENCE m_activite_eco.an_eco_loc_patri_media_seq
+    OWNER TO create_sig;
+
+GRANT ALL ON SEQUENCE m_activite_eco.an_eco_loc_patri_media_seq TO PUBLIC;
+GRANT ALL ON SEQUENCE m_activite_eco.an_eco_loc_patri_media_seq TO create_sig;
 
 
 -- ####################################################################################################################################################
@@ -6048,6 +6196,149 @@ CREATE TRIGGER t_t3_foncier_l_nom
     FOR EACH ROW
     EXECUTE PROCEDURE r_objet.ft_m_foncier_l_nom();
 
+-- ############################################################## [geo_eco_bati_act] ####################################################################
+
+-- Table: m_activite_eco.geo_eco_bati_act
+
+-- DROP TABLE m_activite_eco.geo_eco_bati_act;
+
+CREATE TABLE m_activite_eco.geo_eco_bati_act
+(
+    idbati character varying(10) NOT NULL DEFAULT 'B' || nextval('m_activite_eco.geo_eco_bati_act_seq'::regclass),
+    libelle character varying(100) COLLATE pg_catalog."default",
+    surf_p integer,
+    op_sai character varying(80) COLLATE pg_catalog."default",
+    src_geom character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
+    sup_m2 double precision,
+    date_sai timestamp without time zone,
+    date_maj timestamp without time zone,
+    observ character varying(1000) COLLATE pg_catalog."default",
+    epci character varying(10) COLLATE pg_catalog."default",
+    geom geometry(MultiPolygon,2154) NOT NULL,
+    CONSTRAINT geo_eco_bati_act_pkey PRIMARY KEY (idbati),
+   
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE m_activite_eco.geo_eco_bati_act
+    OWNER to create_sig;
+
+GRANT SELECT ON TABLE m_activite_eco.geo_eco_bati_act TO sig_read;
+
+GRANT ALL ON TABLE m_activite_eco.geo_eco_bati_act TO sig_create;
+
+GRANT ALL ON TABLE m_activite_eco.geo_eco_bati_act TO create_sig;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_activite_eco.geo_eco_bati_act TO sig_edit;
+
+COMMENT ON TABLE m_activite_eco.geo_eco_bati_act
+    IS 'Données géographiques contenant les bâtiments d''activités identifiés';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_bati_act.idbati
+    IS 'Identifiant unique de l''objet';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_bati_act.op_sai
+    IS 'Opérateur de saisir d''objet à l''ARC';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_bati_act.src_geom
+    IS 'Référentiel spatial de saisie';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_bati_act.sup_m2
+    IS 'Surface totale de l''objet en m²';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_bati_act.geom
+    IS 'Champ contenant la géométrie';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_bati_act.date_sai
+    IS 'Date de saisie de l''objet';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_bati_act.date_maj
+    IS 'Date de mise à jour';
+
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_bati_act.libelle
+    IS 'Nom usuel du bâtiment';
+    
+COMMENT ON COLUMN m_activite_eco.geo_eco_bati_act.surf_p
+    IS 'Surface de plancher';
+    
+COMMENT ON COLUMN m_activite_eco.geo_eco_bati_act.epci
+    IS 'Autorité compétente';
+
+-- ############################################################## [geo_eco_loc_act] ####################################################################
+
+-- Table: m_activite_eco.geo_eco_loc_act
+
+-- DROP TABLE m_activite_eco.geo_eco_loc_act;
+
+CREATE TABLE m_activite_eco.geo_eco_loc_act
+(
+    idbati character varying(10) NOT NULL DEFAULT 'B' || nextval('m_activite_eco.geo_eco_loc_act_seq'::regclass),
+    libelle character varying(100) COLLATE pg_catalog."default",
+    surf_p integer,
+    op_sai character varying(80) COLLATE pg_catalog."default",
+    src_geom character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
+    sup_m2 double precision,
+    date_sai timestamp without time zone,
+    date_maj timestamp without time zone,
+    observ character varying(1000) COLLATE pg_catalog."default",
+    epci character varying(10) COLLATE pg_catalog."default",
+    geom geometry(MultiPolygon,2154) NOT NULL,
+    CONSTRAINT geo_eco_loc_act_pkey PRIMARY KEY (idbati),
+   
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE m_activite_eco.geo_eco_loc_act
+    OWNER to create_sig;
+
+GRANT SELECT ON TABLE m_activite_eco.geo_eco_loc_act TO sig_read;
+
+GRANT ALL ON TABLE m_activite_eco.geo_eco_loc_act TO sig_create;
+
+GRANT ALL ON TABLE m_activite_eco.geo_eco_loc_act TO create_sig;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_activite_eco.geo_eco_loc_act TO sig_edit;
+
+COMMENT ON TABLE m_activite_eco.geo_eco_loc_act
+    IS 'Données géographiques contenant les locaux d''activités identifiés';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_loc_act.idbati
+    IS 'Identifiant unique de l''objet';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_loc_act.op_sai
+    IS 'Opérateur de saisir d''objet à l''ARC';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_loc_act.src_geom
+    IS 'Référentiel spatial de saisie';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_loc_act.sup_m2
+    IS 'Surface totale de l''objet en m²';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_loc_act.geom
+    IS 'Champ contenant la géométrie';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_loc_act.date_sai
+    IS 'Date de saisie de l''objet';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_loc_act.date_maj
+    IS 'Date de mise à jour';
+
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_loc_act.libelle
+    IS 'Nom usuel du bâtiment';
+    
+COMMENT ON COLUMN m_activite_eco.geo_eco_loc_act.surf_p
+    IS 'Surface de plancher';
+    
+COMMENT ON COLUMN m_activite_eco.geo_eco_loc_act.epci
+    IS 'Autorité compétente';
 
 -- ####################################################################################################################################################
 -- ###                                                                                                                                              ###
@@ -6187,6 +6478,134 @@ COMMENT ON COLUMN m_amenagement.lk_amt_lot_site.idgeolf
 COMMENT ON COLUMN m_amenagement.lk_amt_lot_site.idsite
     IS 'Identifiant unique non signifiant de l''objet site';
 				  
+-- ############################################################## [lk_eco_bati_site] ####################################################################
+
+-- Table: m_activite_eco.lk_eco_bati_site
+
+-- DROP TABLE m_activite_eco.lk_eco_bati_site;
+
+CREATE TABLE m_activite_eco.lk_eco_bati_site
+(
+    id integer NOT NULL DEFAULT nextval('m_activite_eco.lk_eco_bati_site_seq'::regclass),
+    idbati character varying(5) NOT NULL,
+    idsite character varying(5) NOT NULL,
+    CONSTRAINT lk_eco_bati_site_pkey PRIMARY KEY (id)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE m_activite_eco.lk_eco_bati_site
+    OWNER to create_sig;
+
+GRANT ALL ON TABLE m_activite_eco.lk_eco_bati_site TO sig_create;
+
+GRANT ALL ON TABLE m_activite_eco.lk_eco_bati_site TO create_sig;
+
+GRANT ALL ON TABLE m_activite_eco.lk_eco_bati_site TO sig_stage WITH GRANT OPTION;
+
+GRANT SELECT ON TABLE m_activite_eco.lk_eco_bati_site TO sig_read;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_activite_eco.lk_eco_bati_site TO sig_edit;
+
+COMMENT ON TABLE m_activite_eco.lk_eco_bati_site
+    IS 'Table alphanumérique d''appartenance des bâtis d''activité à un ou plusieurs sites';
+
+COMMENT ON COLUMN m_activite_eco.lk_eco_bati_site.id
+    IS 'Identifiant unique non signifiant de la relation';
+
+COMMENT ON COLUMN m_activite_eco.lk_eco_bati_site.idbati
+    IS 'Identifiant unique non signifiant de l''objet bâti';
+
+COMMENT ON COLUMN m_activite_eco.lk_eco_bati_site.idsite
+    IS 'Identifiant unique non signifiant de l''objet site';
+    
+-- ############################################################## [lk_eco_loc_site] ####################################################################
+
+-- Table: m_activite_eco.lk_eco_loc_site
+
+-- DROP TABLE m_activite_eco.lk_eco_loc_site;
+
+CREATE TABLE m_activite_eco.lk_eco_loc_site
+(
+    id integer NOT NULL DEFAULT nextval('m_activite_eco.lk_eco_loc_site_seq'::regclass),
+    idloc character varying(5) NOT NULL,
+    idsite character varying(5) NOT NULL,
+    CONSTRAINT lk_eco_loc_site_pkey PRIMARY KEY (id)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE m_activite_eco.lk_eco_loc_site
+    OWNER to create_sig;
+
+GRANT ALL ON TABLE m_activite_eco.lk_eco_loc_site TO sig_create;
+
+GRANT ALL ON TABLE m_activite_eco.lk_eco_loc_site TO create_sig;
+
+GRANT ALL ON TABLE m_activite_eco.lk_eco_loc_site TO sig_stage WITH GRANT OPTION;
+
+GRANT SELECT ON TABLE m_activite_eco.lk_eco_loc_site TO sig_read;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_activite_eco.lk_eco_loc_site TO sig_edit;
+
+COMMENT ON TABLE m_activite_eco.lk_eco_loc_site
+    IS 'Table alphanumérique d''appartenance des locaux d''activité à un ou plusieurs sites';
+
+COMMENT ON COLUMN m_activite_eco.lk_eco_loc_site.id
+    IS 'Identifiant unique non signifiant de la relation';
+
+COMMENT ON COLUMN m_activite_eco.lk_eco_loc_site.idloc
+    IS 'Identifiant unique non signifiant de l''objet local d''activité';
+
+COMMENT ON COLUMN m_activite_eco.lk_eco_loc_site.idsite
+    IS 'Identifiant unique non signifiant de l''objet site';
+    
+-- ############################################################## [lk_eco_bati_loc] ####################################################################
+
+-- Table: m_activite_eco.lk_eco_bati_loc
+
+-- DROP TABLE m_activite_eco.lk_eco_bati_loc;
+
+CREATE TABLE m_activite_eco.lk_eco_bati_loc
+(
+    id integer NOT NULL DEFAULT nextval('m_activite_eco.lk_eco_bati_loc_seq'::regclass),
+    idbati character varying(5) NOT NULL,
+    idloc character varying(5) NOT NULL,
+    CONSTRAINT lk_eco_bati_loc_pkey PRIMARY KEY (id)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE m_activite_eco.lk_eco_bati_loc
+    OWNER to create_sig;
+
+GRANT ALL ON TABLE m_activite_eco.lk_eco_bati_loc TO sig_create;
+
+GRANT ALL ON TABLE m_activite_eco.lk_eco_bati_loc TO create_sig;
+
+GRANT ALL ON TABLE m_activite_eco.lk_eco_bati_loc TO sig_stage WITH GRANT OPTION;
+
+GRANT SELECT ON TABLE m_activite_eco.lk_eco_bati_loc TO sig_read;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_activite_eco.lk_eco_bati_loc TO sig_edit;
+
+COMMENT ON TABLE m_activite_eco.lk_eco_bati_loc
+    IS 'Table alphanumérique d''appartenance des locaux d''activité à un bâtiment d''activité';
+
+COMMENT ON COLUMN m_activite_eco.lk_eco_bati_loc.id
+    IS 'Identifiant unique non signifiant de la relation';
+
+COMMENT ON COLUMN m_activite_eco.lk_eco_bati_loc.idbati
+    IS 'Identifiant unique non signifiant de l''objet bâti d''activité';
+
+COMMENT ON COLUMN m_activite_eco.lk_eco_bati_loc.idloc
+    IS 'Identifiant unique non signifiant de l''objet local d''activité';
 
 -- ####################################################################################################################################################
 -- ###                                                                                                                                              ###
