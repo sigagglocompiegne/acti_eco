@@ -27,18 +27,17 @@ Pour rappel des grands principes :
 * le service foncier (uniquement de l'ARC) assure quant à lui la mise à jour des données d'acquisitions et de cessions de terrains. A cet effet il peut saisir les objets correspondant à ces activités.
 * les services des collectivités gèrent les locaux d'activités et de leur patrimoine selon leurs besoins propres.
 
-
 ## Schéma fonctionnel
 
 (en refonte)
 
 ## Modèle relationel simplifié
 
-[!m_rel_simpl]
+![schema_relationnel](m_rela_simplifie_1v.png)
 
 ## Dépendances
 
-Cette base de donnnées est dépendante ....
+Cette base de donnnées est dépendante 
 
 
 ## Classes d'objets
