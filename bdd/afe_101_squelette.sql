@@ -57,6 +57,8 @@ DROP TABLE IF EXISTS m_activite_eco.lk_eco_loc_site;
 DROP TABLE IF EXISTS m_activite_eco.lk_eco_bati_site;
 DROP TABLE IF EXISTS m_activite_eco.lk_eco_bati_loc;
 DROP TABLE IF EXISTS m_activite_eco.lk_eco_locetab;
+DROP TABLE IF EXISTS m_activite_eco.lk_adresseetablissement;
+
 
 /* LISTE DE VALEUR */
 DROP TABLE IF EXISTS m_activite_eco.lt_eco_dest;
@@ -109,6 +111,7 @@ DROP SEQUENCE IF EXISTS m_activite_eco.an_eco_dia_seq;
 DROP SEQUENCE IF EXISTS m_activite_eco.geo_eco_geoloc_salarie_seq;
 DROP SEQUENCE IF EXISTS m_activite_eco.h_an_eco_site_seq;
 DROP SEQUENCE IF EXISTS m_activite_eco.h_an_eco_etab_seq;
+DROP SEQUENCE IF EXISTS m_activite_eco.lk_adresseetablissement_seq;
 
 /* TRIGGERS */
 
@@ -636,6 +639,25 @@ ALTER SEQUENCE m_activite_eco.h_an_eco_site_seq
 
 GRANT ALL ON SEQUENCE m_activite_eco.h_an_eco_site_seq TO PUBLIC;
 GRANT ALL ON SEQUENCE m_activite_eco.h_an_eco_site_seq TO create_sig;
+
+-- ############################################################## [lk_adresseetablissement_seq] ##################################################################
+
+-- SEQUENCE: m_activite_eco.lk_adresseetablissement_seq
+
+-- DROP SEQUENCE m_activite_eco.lk_adresseetablissement_seq;
+
+CREATE SEQUENCE m_activite_eco.lk_adresseetablissement_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+
+ALTER SEQUENCE m_activite_eco.lk_adresseetablissement_seq
+    OWNER TO create_sig;
+
+GRANT ALL ON SEQUENCE m_activite_eco.lk_adresseetablissement_seq TO PUBLIC;
+GRANT ALL ON SEQUENCE m_activite_eco.lk_adresseetablissement_seq TO create_sig;
 
 -- ####################################################################################################################################################
 -- ###                                                                                                                                              ###
@@ -4063,12 +4085,183 @@ GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_etabp_null() TO PUBLIC;
 GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_etabp_null() TO create_sig;
 
 
+-- ################################################## [ft_m_lk_adresseetablissement_siret_update] ######################################################
 
--- ############################################################ [ft_m_etabp_null] #######################################################################
+-- FUNCTION: m_activite_eco.ft_m_lk_adresseetablissement_idsite_update()
 
--- ############################################################ [ft_m_etabp_null] #######################################################################
+-- DROP FUNCTION m_activite_eco.ft_m_lk_adresseetablissement_idsite_update();
 
--- ############################################################ [ft_m_etabp_null] #######################################################################
+CREATE OR REPLACE FUNCTION m_activite_eco.ft_m_lk_adresseetablissement_idsite_update()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$
+
+BEGIN
+
+IF (old.idadresse || old.siret ) <> (new.idadresse || new.siret) THEN
+
+
+-- suppression de l'appariemment du siret à l'adresse car siret adressé à une autre auparavant
+DELETE FROM m_activite_eco.lk_adresseetablissement WHERE siret = old.siret;
+END IF;
+
+return new;
+
+END;
+
+
+$BODY$;
+
+ALTER FUNCTION m_activite_eco.ft_m_lk_adresseetablissement_idsite_update()
+    OWNER TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_lk_adresseetablissement_idsite_update() TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_lk_adresseetablissement_idsite_update() TO PUBLIC;
+
+
+-- ################################################## [ft_m_lk_adresseetablissement_siret_update] ######################################################
+
+-- FUNCTION: m_activite_eco.ft_m_lk_adresseetablissement_siret_update()
+
+-- DROP FUNCTION m_activite_eco.ft_m_lk_adresseetablissement_siret_update();
+
+CREATE FUNCTION m_activite_eco.ft_m_lk_adresseetablissement_siret_update()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$
+
+BEGIN
+
+-- si j'ai déjà un établissement à une adresse et qu'il est adressé à une autre, je supprime d'abord les appariemments
+IF (SELECT COUNT(*) FROM m_activite_eco.lk_adresseetablissement WHERE siret = new.siret) > 0 THEN
+DELETE FROM m_activite_eco.lk_adresseetablissement WHERE siret = new.siret;
+END IF;
+
+return new;
+
+END;
+
+$BODY$;
+
+ALTER FUNCTION m_activite_eco.ft_m_lk_adresseetablissement_siret_update()
+    OWNER TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_lk_adresseetablissement_siret_update() TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_lk_adresseetablissement_siret_update() TO PUBLIC;
+
+
+
+-- ################################################## [ft_m_lk_adresseetablissement_idsite] ######################################################
+
+-- FUNCTION: m_activite_eco.ft_m_lk_adresseetablissement_idsite()
+
+-- DROP FUNCTION m_activite_eco.ft_m_lk_adresseetablissement_idsite();
+
+CREATE OR REPLACE FUNCTION m_activite_eco.ft_m_lk_adresseetablissement_idsite()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$
+
+
+BEGIN
+
+/** A REVOIR ICI **/
+/**
+UPDATE m_economie.an_eco_etab SET idsite = 
+(SELECT DISTINCT idsite FROM r_objet.geo_objet_ope WHERE st_intersects(geo_objet_ope.geom,(SELECT a.geom FROM x_apps.xapps_geo_vmr_adresse a WHERE a.id_adresse = new.idadresse)) = true and idsite <> '60382zz' AND (destdomi='02' or destdomi='03'))
+WHERE idsiret = new.siret;
+**/
+
+
+return new;
+
+END;
+
+
+$BODY$;
+
+ALTER FUNCTION m_activite_eco.ft_m_lk_adresseetablissement_idsite()
+    OWNER TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_lk_adresseetablissement_idsite() TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_lk_adresseetablissement_idsite() TO PUBLIC;
+
+
+
+-- ################################################## [ft_m_lk_adresseetablissement_idsite_delete] ######################################################
+
+-- FUNCTION: m_activite_eco.ft_m_lk_adresseetablissement_idsite_delete()
+
+-- DROP FUNCTION m_activite_eco.ft_m_lk_adresseetablissement_idsite_delete();
+
+CREATE FUNCTION m_activite_eco.ft_m_lk_adresseetablissement_idsite_delete()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$
+
+BEGIN
+
+-- suppression de l'appariemment du siret à l'adresse
+DELETE FROM m_activite_eco.lk_adresseetablissement WHERE siret = old.siret;
+
+return new;
+
+END;
+
+$BODY$;
+
+ALTER FUNCTION m_activite_eco.ft_m_lk_adresseetablissement_idsite_delete()
+    OWNER TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_lk_adresseetablissement_idsite_delete() TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_lk_adresseetablissement_idsite_delete() TO PUBLIC;
+
+-- ################################################## [ft_m_lk_adresseetablissement] ######################################################
+
+-- FUNCTION: m_activite_eco.ft_m_lk_adresseetablissement()
+
+-- DROP FUNCTION m_activite_eco.ft_m_lk_adresseetablissement();
+
+CREATE FUNCTION m_activite_eco.ft_m_lk_adresseetablissement()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$
+
+BEGIN
+
+-- refraichissement de la vue matérialisée des points établissements à l'adresse
+REFRESH MATERIALIZED VIEW x_apps.xapps_geo_vmr_etab_api;
+
+return new;
+
+END;
+
+$BODY$;
+
+ALTER FUNCTION m_activite_eco.ft_m_lk_adresseetablissement()
+    OWNER TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_lk_adresseetablissement() TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_lk_adresseetablissement() TO PUBLIC;
+
+
+
+-- ################################################## [ft_m_lk_adresseetablissement_idsite_delete] ######################################################
 
 -- ####################################################################################################################################################
 -- ###                                                                                                                                              ###
@@ -8358,6 +8551,86 @@ COMMENT ON COLUMN m_activite_eco.lk_eco_locetab.idloc
 
 COMMENT ON COLUMN m_activite_eco.lk_eco_locetab.siren
     IS 'Identifiant unique non signifiant de l''établissement';
+
+-- ############################################################## [lk_eco_locetab] ####################################################################
+
+-- Table: m_activite_eco.lk_adresseetablissement
+
+-- DROP TABLE m_activite_eco.lk_adresseetablissement;
+
+CREATE TABLE m_activite_eco.lk_adresseetablissement
+(
+    idadresse bigint,
+    siret character varying(14) COLLATE pg_catalog."default",
+    id integer NOT NULL DEFAULT nextval('m_activite_eco.lk_adresseetablissement_seq'::regclass)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE m_activite_eco.lk_adresseetablissement
+    OWNER to create_sig;
+
+GRANT ALL ON TABLE m_activite_eco.lk_adresseetablissement TO sig_create;
+
+GRANT ALL ON TABLE m_activite_eco.lk_adresseetablissement TO create_sig;
+
+GRANT SELECT ON TABLE m_activite_eco.lk_adresseetablissement TO baussant;
+
+GRANT SELECT ON TABLE m_activite_eco.lk_adresseetablissement TO sig_read;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_activite_eco.lk_adresseetablissement TO sig_edit;
+
+COMMENT ON TABLE m_activite_eco.lk_adresseetablissement
+    IS 'Table de lien permettant d''affecter les adresses de localisations aux établissements issus de la donnée SIRENE de l''Insee';
+
+COMMENT ON COLUMN m_activite_eco.lk_adresseetablissement.idadresse
+    IS 'Identifiant unique de l''adresse';
+
+COMMENT ON COLUMN m_activite_eco.lk_adresseetablissement.siret
+    IS 'N° SIRET de l''établissement';
+
+
+-- Trigger: t_t1_lk_adresseetablissement_siret_update
+
+-- DROP TRIGGER t_t1_lk_adresseetablissement_siret_update ON m_activite_eco.lk_adresseetablissement;
+
+CREATE TRIGGER t_t1_lk_adresseetablissement_siret_update
+    BEFORE INSERT OR UPDATE 
+    ON m_activite_eco.lk_adresseetablissement
+    FOR EACH ROW
+    EXECUTE PROCEDURE m_activite_eco.ft_m_lk_adresseetablissement_siret_update();
+
+-- Trigger: t_t2_lk_adresseetablissement_idsite
+
+-- DROP TRIGGER t_t2_lk_adresseetablissement_idsite ON m_activite_eco.lk_adresseetablissement;
+
+CREATE TRIGGER t_t2_lk_adresseetablissement_idsite
+    BEFORE INSERT OR UPDATE 
+    ON m_activite_eco.lk_adresseetablissement
+    FOR EACH ROW
+    EXECUTE PROCEDURE m_activite_eco.ft_m_lk_adresseetablissement_idsite();
+
+-- Trigger: t_t3_lk_adresseetablissement_idsite_delete
+
+-- DROP TRIGGER t_t3_lk_adresseetablissement_idsite_delete ON m_activite_eco.lk_adresseetablissement;
+
+CREATE TRIGGER t_t3_lk_adresseetablissement_idsite_delete
+    AFTER DELETE
+    ON m_activite_eco.lk_adresseetablissement
+    FOR EACH ROW
+    EXECUTE PROCEDURE m_activite_eco.ft_m_lk_adresseetablissement_idsite_delete();
+
+-- Trigger: t_t4_lk_etablissementlocal
+
+-- DROP TRIGGER t_t4_lk_etablissementlocal ON m_economie.lk_adresseetablissement;
+
+CREATE TRIGGER t_t4_lk_etablissementlocal
+    AFTER INSERT OR DELETE OR UPDATE 
+    ON m_activite_eco.lk_adresseetablissement
+    FOR EACH ROW
+    EXECUTE PROCEDURE m_activite_eco.ft_m_lk_adresseetablissement();
 
 -- ####################################################################################################################################################
 -- ###                                                                                                                                              ###
