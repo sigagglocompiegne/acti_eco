@@ -73,15 +73,7 @@ DROP TABLE IF EXISTS m_activite_eco.lk_adresseetablissement;
 DROP TABLE IF EXISTS m_activite_eco.lk_eco_bati_adr;
 DROP TABLE IF EXISTS m_activite_eco.lk_eco_loc_adr;
 DROP TABLE IF EXISTS m_foncier.lk_cession_lot;
-DROP TABLE IF EXISTS m_foncier.lt_ces_cond;
-DROP TABLE IF EXISTS m_foncier.lt_ces_doc;
-DROP TABLE IF EXISTS m_foncier.lt_ces_etat;
-DROP TABLE IF EXISTS m_foncier.lt_ces_nota;
-DROP TABLE IF EXISTS m_foncier.lt_ces_orga;
-DROP TABLE IF EXISTS m_foncier.lt_ces_tact;
-DROP TABLE IF EXISTS m_foncier.lt_ces_voca;
-DROP TABLE IF EXISTS m_foncier.lt_rel_lot;
-DROP TABLE IF EXISTS s_sirene.lk_sirene_succesion_seq;
+DROP TABLE IF EXISTS s_sirene.lk_sirene_succession;
 
 /* LISTE DE VALEUR */
 DROP TABLE IF EXISTS m_activite_eco.lt_eco_dest;
@@ -106,6 +98,14 @@ DROP TABLE IF EXISTS r_objet.lt_objet_vocafon;
 DROP TABLE IF EXISTS m_activite_eco.lt_eco_typloc;
 DROP TABLE IF EXISTS m_activite_eco.lt_eco_occuploc;
 DROP TABLE IF EXISTS m_activite_eco.lt_ces_doc;
+DROP TABLE IF EXISTS m_foncier.lt_ces_cond;
+DROP TABLE IF EXISTS m_foncier.lt_ces_doc;
+DROP TABLE IF EXISTS m_foncier.lt_ces_etat;
+DROP TABLE IF EXISTS m_foncier.lt_ces_nota;
+DROP TABLE IF EXISTS m_foncier.lt_ces_orga;
+DROP TABLE IF EXISTS m_foncier.lt_ces_tact;
+DROP TABLE IF EXISTS m_foncier.lt_ces_voca;
+DROP TABLE IF EXISTS m_foncier.lt_rel_lot;
 
 /* SEQUENCE */
 DROP SEQUENCE IF EXISTS m_activite_eco.an_eco_pole_seq;
@@ -143,6 +143,8 @@ DROP SEQUENCE IF EXISTS m_foncier.an_fon_cession_horsarc_media_seq;
 DROP SEQUENCE IF EXISTS m_foncier.an_fon_cession_horsarc_seq;
 DROP SEQUENCE IF EXISTS m_amenagement.an_amt_proc_media_seq;
 DROP SEQUENCE IF EXISTS s_sirene.lk_sirene_succession_seq;
+DROP SEQUENCE IF EXISTS s_sirene.an_etablissement_api_gid_seq;
+DROP SEQUENCE IF EXISTS s_sirene.an_unitelegale_api_gid_seq;
 
 
 /* TRIGGERS */
