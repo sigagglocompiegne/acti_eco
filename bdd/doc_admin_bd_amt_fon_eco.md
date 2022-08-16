@@ -1012,29 +1012,385 @@ Valeurs possibles :
 
 ---
 
+`[m_activite_eco].[lt_eco_typo]` : Liste des valeurs permettant de décrire la valeur des typologies des sites
+
+|Nom attribut | Définition | Type  | Valeurs par défaut |
+|:---|:---|:---|:---|    
+|code|Code de la typologie GéoPicardie du site|character varying(2)| |
+|valeur|Libellé de la typologie GéoPicardie du site|character varying(40)| |
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ code 
+
+Valeurs possibles :
+
+|Code|Valeur|
+|:---|:---|
+|00|Non renseigné|
+|10|Site monofonctionnel|
+|20|Site plurifonctionnel en périphérie|
+|30|Site plurifonctionnel en centre-ville|
+|40|Etablissement isolé|
+
+---
+
+`[m_activite_eco].[lt_eco_typsite]` : Liste des valeurs permettant de décrire la valeur des types de sites
+
+|Nom attribut | Définition | Type  | Valeurs par défaut |
+|:---|:---|:---|:---|    
+|code|Code du type de site|character varying(2)| |
+|valeur|Libellé du type de site|character varying(100)| |
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ code 
+
+Valeurs possibles :
+
+|Code|Valeur|
+|:---|:---|
+|00|Non renseigné|
+|10|ZAE|
+|20|Autre site d'activité identifié (hors ZAE)|
+|30|Autre secteur (non exclusivement économique)|
+
+---
+
+`[m_activite_eco].[lt_eco_typsite]` : Liste des valeurs permettant de décrire la valeur de vocation simplifiée de la zone
+
+|Nom attribut | Définition | Type  | Valeurs par défaut |
+|:---|:---|:---|:---|    
+|code|Code de la vocation du site|character varying(2)| |
+|valeur|Libellé de la vocation du site|character varying(25)| |
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ code 
+
+Valeurs possibles :
+
+|Code|Valeur|
+|:---|:---|
+|00|Non renseigné|
+|10|ZI - zone industrielle|
+|20|ZA - zone artisanale|
+|30|ZC - zone commerciale|
+|40|ZM - zone mixte|
+
+---
+
 ## Classes d'objets des procédures d'aménagements
 
 L'ensemble des classes d'objets de gestion sont stockés dans le schéma `m_amenagement` ,et celles applicatives dans les schémas x_apps (pour les applications pro) ou x_apps_public (pour les applications grands publiques).
 
 ### Classes d'objets de gestion :
   
-`[m_amenagement].[]` : table 
+`[m_amenagement].[an_amt_esppu]` : table alphanumérique sur les emprises des espaces publiques contenus dans les sites opérationnels. Les objets virtuels de référence sont gérés dans le schéma `r_objet`. Cette classe d'objets n'est plus suivie.
    
 |Nom attribut | Définition | Type | Valeurs par défaut |
 |:---|:---|:---|:---|
-
+|idgeopu|Identifiant unique géographique de référence de l'objet virtuel|integer| |
+|idpole|Identifiant unique du pole|character varying(7)| |
+|date_int|Date d'intégration par GéoPicardie dans la base (permet de connaître la dernière donnée intégrée)|date| |
+|op_sai|Libellé de la personne ayant saisie la mise à jour|character varying(80)| |
+|org_sai|Organisme de saisie dont dépend l'opérateur de saisie|character varying(80)| |
+|vocaep|Code de valeurs des vocations des espaces publics|character varying(2)|'00'::character varying|
+|date_sai|Date de saisie des données attributaires|timestamp without time zone| |
+|date_maj|Date de mises à jour des données attributaires|timestamp without time zone| |
 
 
 Particularité(s) à noter :
-* Une clé primaire existe sur le champ `idsite` l'attribution automatique de la référence unique s'effectue via une séquence. 
-* Une clé non primaire sur le champ `idsitereg` contient la référence du site pour les exports OpenData au standard Régional
-* Une clé étrangère existe sur la table de valeur `site_etat` (lien vers la liste de valeurs de l'état du site `lt_eco_etat`)
-* Une clé étrangère existe sur la table de valeur `dest` (lien vers la liste de valeurs de la destination du site `lt_eco_dest`)
-* Une clé étrangère existe sur la table de valeur `typo` (lien vers la liste de valeurs de la typologie du site `lt_eco_typo`)
-* Une clé étrangère existe sur la table de valeur `typsite` (lien vers la liste de valeurs du type de site `lt_eco_typsite`)
-* Une clé étrangère existe sur la table de valeur `site_voca` (lien vers la liste de valeurs de la vocation du site `lt_eco_voca`)
-* Une clé étrangère existe sur la table de valeur `src_geom` (lien vers la liste de valeurs des référentiels de saisie `lt_src_geom`)
+* Une clé primaire existe sur le champ `idgeopu` l'attribution automatique de la référence unique s'effectue via la vue de gestion avec l'identifiant de l'objet urbanisé. 
+* Une clé étrangère existe sur la table de valeur `vocaep` (lien vers la liste de valeurs de l'état du site `lt_amt_empesp_pu`)
+
   
+---
+
+`[m_amenagement].[an_amt_lot_divers]` : table alphanumérique sur les lots divers constituant le site d'activité ou la procédure d'aménagement.  Les objets virtuels de référence sont gérés dans le schéma `r_objet`. 
+   
+|Nom attribut | Définition | Type | Valeurs par défaut |
+|:---|:---|:---|:---|
+|idgeolf|Identifiant unique géographique de référence de l'objet virtuel|integer| |
+|op_sai|Libellé de la personne ayant saisie la mise à jour|character varying(80)| |
+|org_sai|Organisme de saisie dont dépend l'opérateur de saisie|character varying(80)| |
+|l_nom|Libellé|character varying(100)| |
+|surf|Surface du lot divers en m²|double precision| |
+|date_sai|Date de saisie des données attributaires|timestamp without time zone| |
+|date_maj|Date de mise à jour des données attributaires|timestamp without time zone| |
+|l_phase|Phase opérationnelle éventuelle|character varying(10)| |
+
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ `idgeolf` l'attribution automatique de la référence unique s'effectue via la vue de gestion avec l'identifiant de l'objet urbanisé. 
+  
+---
+
+`[m_amenagement].[an_amt_lot_equ]` : table alphanumérique sur les emprises des lots à vocation équipement constituant le site d'activité ou la procédure d'aménagement. Les objets virtuels de référence sont gérés dans le schéma `r_objet`. 
+   
+|Nom attribut | Définition | Type | Valeurs par défaut |
+|:---|:---|:---|:---|
+|idgeolf|Identifiant unique géographique de référence de l'objet virtuel|integer| |
+|op_sai|Libellé de la personne ayant saisie la mise à jour|character varying(80)| |
+|org_sai|Organisme de saisie dont dépend l'opérateur de saisie|character varying(80)| |
+|l_nom|Libellé de l'équipement|character varying(100)| |
+|surf|Surface du lot équipement en m²|double precision| |
+|date_sai|Date de saisie des données attributaires|timestamp without time zone| |
+|date_maj|Date de mise à jour des données attributaires|timestamp without time zone| |
+|l_phase|Phase opérationnelle éventuelle|character varying(10)| |
+|l_surf_l|Surface littérale parcellaire occupée du lot|character varying(15)| |
+
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ `idgeolf` l'attribution automatique de la référence unique s'effectue via la vue de gestion avec l'identifiant de l'objet urbanisé. 
+  
+---
+
+`[m_amenagement].[an_amt_lot_hab]` : table alphanumérique sur les emprises des lots à vocation d'habitat contenus dans les sites opérationnels. Les objets virtuels de référence sont gérés dans le schéma `r_objet`. 
+   
+|Nom attribut | Définition | Type | Valeurs par défaut |
+|:---|:---|:---|:---|
+|idgeolf|Identifiant unique de l'entité géographique lot|integer| |
+|surf|Surface parcellaire occupée du lot|integer| |
+|l_surf_l|Surface littérale parcellaire occupée du lot|character varying(15)| |
+|op_sai|Libellé de l'opérateur de saisie|character varying(80)| |
+|org_sai|Libellé de l'organisme de saisie|character varying(80)| |
+|l_pvente|Prix de vente du lot en HT (€/m²)|double precision| |
+|l_pvente_l|Prix littéral de vente du lot en HT (ex:50€/m²)|character varying(15)| |
+|nb_log|Nombre total de logements|integer| |
+|nb_logind|Nombre de logements individuels|integer| |
+|nb_logindgr|Nombre de logements individuels groupés|integer| |
+|nb_logcol|Nombre de logements collectifs|integer| |
+|nb_logaide|Dont nombre de logements aidés|integer| |
+|l_observ|Observations diverses|character varying(255)| |
+|date_sai|Date de saisie des données attributaires|timestamp without time zone| |
+|date_maj|Date de mise à jour des données attributaires|timestamp without time zone| |
+|l_phase|Information facultative sur l'appartenance du lot à un éventuel phasage de l'opération|character varying(20)| |
+|nb_log_r|Nombre de logements total réalisé|integer|0|
+|nb_logind_r|Nombre de logements individuels réalisé|integer|0|
+|nb_logindgr_r|Nombre de logements individuels groupés réalisé|integer|0|
+|nb_logcol_r|Nombre de logements collectifs réalisé|integer|0|
+|nb_logaide_r|Nombre de logements aidés réalisé|integer|0|
+|l_pvente_lot|Prix de vente du lot (ht)|integer| |
+|nb_logaide_loc_r|Nombre de logements aidés en location réalisé|integer| |
+|nb_logaide_acc_r|Nombre de logements aidés en accession réalisé|integer| |
+
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ `idgeolf` l'attribution automatique de la référence unique s'effectue via la vue de gestion avec l'identifiant de l'objet urbanisé. 
+
+  
+---
+
+`[m_amenagement].[an_amt_lot_mixte]` : table alphanumérique sur les emprises des lots à vocation mixte contenus dans les sites opérationnels. Les objets virtuels de référence sont gérés dans le schéma `r_objet`. 
+   
+|Nom attribut | Définition | Type | Valeurs par défaut |
+|:---|:---|:---|:---|
+|idgeolf|Identifiant unique de l'entité géographique lot|integer| |
+|surf|Surface parcellaire occupée du lot|integer| |
+|l_surf_l|Surface littérale parcellaire occupée du lot|character varying(15)| |
+|op_sai|Libellé de l'opérateur de saisie|character varying(80)| |
+|org_sai|Libellé de l'organisme de saisie|character varying(80)| |
+|l_pvente|Prix de vente du lot en HT (€/m²)|double precision| |
+|l_pvente_l|Prix littéral de vente du lot en HT (ex:50€/m²)|character varying(15)| |
+|nb_log|Nombre total de logements|integer|0|
+|nb_logind|Nombre de logements individuels|integer|0|
+|nb_logindgr|Nombre de logements individuels groupés|integer|0|
+|nb_logcol|Nombre de logements collectifs|integer|0|
+|nb_logaide|Dont nombre de logements aidés|integer|0|
+|l_observ|Observations diverses|character varying(255)| |
+|date_sai|Date de saisie des données attributaires|timestamp without time zone| |
+|date_maj|Date de mise à jour des données attributaires|timestamp without time zone| |
+|l_phase|Information facultative sur l'appartenance du lot à un éventuel phasage de l'opération|character varying(20)| |
+|nb_log_r|Nombre de logements total réalisé|integer|0|
+|nb_logind_r|Nombre de logements individuels réalisé|integer|0|
+|nb_logindgr_r|Nombre de logements individuels groupés réalisé|integer|0|
+|nb_logcol_r|Nombre de logements collectifs réalisé|integer|0|
+|nb_logaide_r|Nombre de logements aidés réalisé|integer|0|
+|l_pvente_lot|Prix de vente du lot (ht)|integer| |
+|l_tact|Type d'activité présent sur le lot|character varying(2)|'00'::character varying|
+|l_tact_99|Précision de l'activité du lot (si Autre sélectionné dans l_tact)|character varying(80)| |
+|l_nom_equ|Libellé des équipements prévus sur le lot|character varying(100)| |
+|nb_logaide_loc_r|Nombre de logements aidés en location réalisé|integer| |
+|nb_logaide_acc_r|Nombre de logements aidés en accession réalisé|integer| |
+|l_lnom|Nom(s) du ou des acquéreurs du lot ou d'une partie des bâtiments|character varying(250)| |
+
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ `idgeolf` l'attribution automatique de la référence unique s'effectue via la vue de gestion avec l'identifiant de l'objet urbanisé. 
+
+
+  
+---
+
+`[m_amenagement].[an_amt_lot_stade]` : table alphanumérique sur les données de la classe stade d''aménagement et de commercialisation. Les objets virtuels de référence sont gérés dans le schéma `r_objet`. 
+   
+|Nom attribut | Définition | Type | Valeurs par défaut |
+|:---|:---|:---|:---|
+|idgeolf|Identifiant unique de l'entité géographique lot|integer| |
+|stade_amng|Code du stade d'aménagement du foncier|character varying(2)|'00'::character varying|
+|l_amng2|Code du stade d'aménagement du foncier spécifique à l'ARC|character varying(2)|'00'::character varying|
+|stade_comm|Code du stade de commercialisation du foncier|character varying(2)|'00'::character varying|
+|l_comm2|Code du stade de commercialisation du foncier spécifique à l'ARC|character varying(2)|'00'::character varying|
+|l_comm2_12|Spécification de la contrainte du lot en vente (code 12 du champ l_comm2)|character varying(80)| |
+|etat_occup|Code de l'état d'occupation du foncier|character varying(2)|'00'::character varying|
+
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ `idgeolf` l'attribution automatique de la référence unique s'effectue via la vue de gestion avec l'identifiant de l'objet urbanisé. 
+* Une clé étrangère existe sur la table de valeur `stade_comm` (lien vers la liste de valeurs de l'état du site `lt_amt_stadecomm`)
+* Une clé étrangère existe sur la table de valeur `etat_occup` (lien vers la liste de valeurs de l'état du site `lt_eco_etat`)
+* Une clé étrangère existe sur la table de valeur `l_amng2` (lien vers la liste de valeurs de l'état du site `lt_amt_stadeamng2`)
+* Une clé étrangère existe sur la table de valeur `l_comm2` (lien vers la liste de valeurs de l'état du site `lt_amt_stadecomm2`)
+* Une clé étrangère existe sur la table de valeur `lt_amt_stadeamng` (lien vers la liste de valeurs de l'état du site `stade_amng`)
+
+  
+---
+
+`[m_amenagement].[lk_amt_lot_site]` : table alphanumérique sur les relations d'appartenance d'un lot à un site
+   
+|Nom attribut | Définition | Type | Valeurs par défaut |
+|:---|:---|:---|:---|
+|id|Identifiant unique non signifiant de la relation|integer|nextval('m_amenagement.lk_amt_lot_site_seq'::regclass)|
+|idsite|Identifiant unique non signifiant de l'objet site|character varying(5)| |
+|idgeolf|Identifiant unique non signifiant de l'objet lot|integer| |
+
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ `id` l'attribution automatique de la référence unique s'effectue via une séquence. 
+  
+---
+
+### classes d'objets applicatives métiers sont classés dans le schéma x_apps :
+
+(à venir)
+
+### classes d'objets applicatives grands publics sont classés dans le schéma x_apps_public :
+
+(à venir)
+
+### classes d'objets opendata sont classés dans le schéma x_opendata :
+
+(à venir)
+
+### Liste de valeurs
+
+`[m_amenagement].[lt_amt_empesp_pu]` : Liste des valeurs permettant de décrire la valeur de la vocation des espaces publics
+
+|Nom attribut | Définition | Type  | Valeurs par défaut |
+|:---|:---|:---|:---|    
+|code|Code de la vocation de l'espace public|character varying(2)| |
+|valeur|Libellé de la vocation de l'espace public|character varying(35)| |
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ code 
+
+Valeurs possibles :
+
+|Code|Valeur|
+|:---|:---|
+|00|Non renseigné|
+|11|Route|
+|12|Trottoir brut|
+|13|Trottoir paysagé|
+|14|Stationnement|
+|15|Terre plein central ou giratoire|
+|16|Voie réservée|
+|17|Esplanade|
+|21|Chemin|
+|22|Circulation douce|
+|31|Bassin d'orage|
+|32|Equipement réseau|
+|33|Equipement public|
+|41|Espace vert|
+|42|Bois|
+|50|Bâtiment public|
+|99|Autre|
+
+---
+
+`[m_amenagement].[lt_amt_stadeamng]` : Liste des valeurs permettant de décrire la valeur du stade d'aménagement
+
+|Nom attribut | Définition | Type  | Valeurs par défaut |
+|:---|:---|:---|:---|    
+|code|Code du stade d'aménagement du lot|character varying(2)| |
+|valeur|Libellé du stade d'aménagement du lot|character varying(15)| |
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ code 
+
+Valeurs possibles :
+
+|Code|Valeur|
+|:---|:---|
+|00|Non renseigné|
+|10|Aucun|
+|20|Non acquis|
+|30|Acquis|
+|40|Viabilisé|
+
+---
+
+`[m_amenagement].[lt_amt_stadeamng2]` : Liste des valeurs permettant de décrire la valeur du stade d'aménagement spécifique ARC
+
+|Nom attribut | Définition | Type  | Valeurs par défaut |
+|:---|:---|:---|:---|    
+|code|Code du stade d'aménagement du lot spécifique ARC|character varying(2)| |
+|valeur|Libellé du stade d'aménagement du lot spécifique ARC|character varying(15)| |
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ code 
+
+Valeurs possibles :
+
+|Code|Valeur|
+|:---|:---|
+|00|Non renseigné|
+|10|Disponible (aménagé ou aménageable rapidement)|
+|20|Indisponible (terrain non acheté)|
+|30|Indisponible (terrain non aménagé)|
+
+---
+
+`[m_amenagement].[lt_amt_stadecomm]` : Liste des valeurs permettant de décrire la valeur du stade de commercialisation
+
+|Nom attribut | Définition | Type  | Valeurs par défaut |
+|:---|:---|:---|:---|    
+|code|Code du stade de commercialisation|character varying(2)| |
+|valeur|Libellé du stade de commercialisation|character varying(20)| |
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ code 
+
+Valeurs possibles :
+
+|Code|Valeur|
+|:---|:---|
+|00|Non renseigné|
+|10|Aucun|
+|20|Commercialisable|
+
+---
+
+`[m_amenagement].[lt_amt_stadecomm2]` : Liste des valeurs permettant de décrire la valeur du stade de commercialisation spécifique ARC
+
+|Nom attribut | Définition | Type  | Valeurs par défaut |
+|:---|:---|:---|:---|    
+|code|Code du stade de commercialisation spécifique à l'ARC|character varying(2)| |
+|valeur|Libellé du stade de commercialisation spécifique à l'ARC|character varying(80)| |
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ code 
+
+Valeurs possibles :
+
+|Code|Valeur|
+|:---|:---|
+|00|Non renseigné|
+|11|En vente|
+|12|En vente (avec contrainte)|
+|20|Vendu|
+|31|Réservé (par une délibération du Conseil d'Agglomération)|
+|32|Réservé (option)|
+|99|Non commercialisé par un acteur public|
+
 ---
 
 ## Classes d'objets de l'urbanisme réglementaire
