@@ -52,6 +52,14 @@ DROP TABLE IF EXISTS m_foncier.an_cession;
 DROP TABLE IF EXISTS m_foncier.an_fon_doc_media;
 DROP TABLE IF EXISTS m_foncier.an_fon_cession_horsarc;
 DROP TABLE IF EXISTS m_foncier.an_fon_cession_horsarc_media;
+DROP TABLE IF EXISTS m_amenagement.an_amt_site_mixte;
+DROP TABLE IF EXISTS m_amenagement.an_amt_site_habitat;
+DROP TABLE IF EXISTS m_amenagement.an_amt_site_equ;
+DROP TABLE IF EXISTS m_amenagement.an_amt_proc_media;
+DROP TABLE IF EXISTS s_sirene.an_etablissement_api;
+DROP TABLE IF EXISTS s_sirene.an_unitelegale_api;
+DROP TABLE IF EXISTS m_amenagement.an_amt_proc_media;
+
 
 /* TABLE DE RELATION */
 DROP TABLE IF EXISTS m_activite_eco.lk_eco_contact;
@@ -65,6 +73,15 @@ DROP TABLE IF EXISTS m_activite_eco.lk_adresseetablissement;
 DROP TABLE IF EXISTS m_activite_eco.lk_eco_bati_adr;
 DROP TABLE IF EXISTS m_activite_eco.lk_eco_loc_adr;
 DROP TABLE IF EXISTS m_foncier.lk_cession_lot;
+DROP TABLE IF EXISTS m_foncier.lt_ces_cond;
+DROP TABLE IF EXISTS m_foncier.lt_ces_doc;
+DROP TABLE IF EXISTS m_foncier.lt_ces_etat;
+DROP TABLE IF EXISTS m_foncier.lt_ces_nota;
+DROP TABLE IF EXISTS m_foncier.lt_ces_orga;
+DROP TABLE IF EXISTS m_foncier.lt_ces_tact;
+DROP TABLE IF EXISTS m_foncier.lt_ces_voca;
+DROP TABLE IF EXISTS m_foncier.lt_rel_lot;
+DROP TABLE IF EXISTS s_sirene.lk_sirene_succesion_seq;
 
 /* LISTE DE VALEUR */
 DROP TABLE IF EXISTS m_activite_eco.lt_eco_dest;
@@ -122,6 +139,11 @@ DROP SEQUENCE IF EXISTS m_activite_eco.lk_eco_bati_adr_seq;
 DROP SEQUENCE IF EXISTS m_activite_eco.lk_eco_loc_adr_seq;
 DROP SEQUENCE IF EXISTS m_foncier.an_fon_doc_media_gid_seq;
 DROP SEQUENCE IF EXISTS m_foncier.ces_seq;
+DROP SEQUENCE IF EXISTS m_foncier.an_fon_cession_horsarc_media_seq;
+DROP SEQUENCE IF EXISTS m_foncier.an_fon_cession_horsarc_seq;
+DROP SEQUENCE IF EXISTS m_amenagement.an_amt_proc_media_seq;
+DROP SEQUENCE IF EXISTS s_sirene.lk_sirene_succession_seq;
+
 
 /* TRIGGERS */
 
@@ -186,6 +208,34 @@ GRANT ALL ON TABLES TO create_sig;
 
 ALTER DEFAULT PRIVILEGES IN SCHEMA m_foncier
 GRANT INSERT, SELECT, UPDATE, DELETE ON TABLES TO sig_edit;
+
+-- SCHEMA: s_sirene
+
+-- DROP SCHEMA s_sirene ;
+
+CREATE SCHEMA s_sirene
+    AUTHORIZATION create_sig;
+
+COMMENT ON SCHEMA s_sirene
+    IS 'Données du référentiel SIRENE de l''INSEE sur les établissements (la table sirene_liste_juil2015 sera remplacée lors de la migration de la base et de la réinjection des historiques de SIRENE réalisée dans le cadre du test sur l''urbanisation des données)';
+
+GRANT ALL ON SCHEMA s_sirene TO create_sig;
+
+GRANT ALL ON SCHEMA s_sirene TO sig_edit;
+
+GRANT ALL ON SCHEMA s_sirene TO sig_read;
+
+ALTER DEFAULT PRIVILEGES IN SCHEMA s_sirene
+GRANT ALL ON TABLES TO create_sig;
+
+ALTER DEFAULT PRIVILEGES IN SCHEMA s_sirene
+GRANT ALL ON TABLES TO sig_create;
+
+ALTER DEFAULT PRIVILEGES IN SCHEMA s_sirene
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLES TO sig_edit;
+
+ALTER DEFAULT PRIVILEGES IN SCHEMA s_sirene
+GRANT SELECT ON TABLES TO sig_read;
 
 */
 
@@ -728,6 +778,25 @@ ALTER SEQUENCE m_urbanisme_reg.an_proc_media_seq
 GRANT ALL ON SEQUENCE m_urbanisme_reg.an_proc_media_seq TO PUBLIC;
 GRANT ALL ON SEQUENCE m_urbanisme_reg.an_proc_media_seq TO create_sig;
 
+-- ############################################################## [an_amt_proc_media_seq] ##################################################################
+
+-- SEQUENCE: m_amenagement.an_amt_proc_media_seq
+
+-- DROP SEQUENCE m_amenagement.an_amt_proc_media_seq;
+
+CREATE SEQUENCE m_amenagement.an_amt_proc_media_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+
+ALTER SEQUENCE m_amenagement.an_amt_proc_media_seq
+    OWNER TO create_sig;
+
+GRANT ALL ON SEQUENCE m_amenagement.an_amt_proc_media_seq TO PUBLIC;
+GRANT ALL ON SEQUENCE m_amenagement.an_amt_proc_media_seq TO create_sig;
+
 
 -- ############################################################## [lk_amt_lot_site_seq] ##################################################################
 
@@ -837,6 +906,76 @@ ALTER SEQUENCE m_foncier.an_fon_cession_horsarc_seq
 GRANT ALL ON SEQUENCE m_foncier.an_fon_cession_horsarc_seq TO PUBLIC;
 
 GRANT ALL ON SEQUENCE m_foncier.an_fon_cession_horsarc_seq TO create_sig;
+
+
+
+-- ####################################################################################################################################################
+-- ###                                                            SEQUENCE S_SIRENE                                                                 ###
+-- ####################################################################################################################################################
+
+-- ############################################################## [lk_sirene_succession_seq] ##################################################################
+
+
+-- SEQUENCE: s_sirene.lk_sirene_succession_seq
+
+-- DROP SEQUENCE s_sirene.lk_sirene_succession_seq;
+
+CREATE SEQUENCE s_sirene.lk_sirene_succession_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+
+ALTER SEQUENCE s_sirene.lk_sirene_succession_seq
+    OWNER TO create_sig;
+
+GRANT ALL ON SEQUENCE s_sirene.lk_sirene_succession_seq TO PUBLIC;
+
+GRANT ALL ON SEQUENCE s_sirene.lk_sirene_succession_seq TO create_sig;
+
+
+-- ############################################################## [an_etablissement_api_gid_seq] ##################################################################
+
+
+-- SEQUENCE: s_sirene.an_etablissement_api_gid_seq
+
+-- DROP SEQUENCE s_sirene.an_etablissement_api_gid_seq;
+
+CREATE SEQUENCE s_sirene.an_etablissement_api_gid_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+
+ALTER SEQUENCE s_sirene.an_etablissement_api_gid_seq
+    OWNER TO create_sig;
+
+GRANT ALL ON SEQUENCE s_sirene.an_etablissement_api_gid_seq TO PUBLIC;
+
+GRANT ALL ON SEQUENCE s_sirene.an_etablissement_api_gid_seq TO create_sig;
+
+-- ############################################################## [an_unitelegale_api_gid_seq] ##################################################################
+
+
+-- SEQUENCE: s_sirene.an_unitelegale_api_gid_seq
+
+-- DROP SEQUENCE s_sirene.an_unitelegale_api_gid_seq;
+
+CREATE SEQUENCE s_sirene.an_unitelegale_api_gid_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+
+ALTER SEQUENCE s_sirene.an_unitelegale_api_gid_seq
+    OWNER TO create_sig;
+
+GRANT ALL ON SEQUENCE s_sirene.an_unitelegale_api_gid_seq TO PUBLIC;
+
+GRANT ALL ON SEQUENCE s_sirene.an_unitelegale_api_gid_seq TO create_sig;
 
 -- ####################################################################################################################################################
 -- ###                                                                                                                                              ###
@@ -4469,7 +4608,7 @@ COMMENT ON FUNCTION m_amenagement.ft_m_modif_lot_mixte()
 
 -- ####################################################################################################################################################
 -- ###                                                          DOMAINES DE VALEURS M_ACTIVITE_ECO                                                  ###
--- #####################################################################################################################################################
+-- ####################################################################################################################################################
 
 
 -- ################################################################# Domaine valeur - [lt_eco_dest]  ##################################################
@@ -8639,6 +8778,628 @@ COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.l_lnom
     IS 'Nom(s) du ou des acquéreurs du lot ou d''une partie des bâtiments';
 
 
+-- ############################################################## [an_amt_site_equ] ####################################################################
+
+-- Table: m_amenagement.an_amt_site_equ
+
+-- DROP TABLE m_amenagement.an_amt_site_equ;
+
+CREATE TABLE m_amenagement.an_amt_site_equ
+(
+    idgeopo integer NOT NULL,
+    idsite character varying(10) COLLATE pg_catalog."default",
+    site_nom character varying(80) COLLATE pg_catalog."default",
+    site_etat character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
+    op_sai character varying(80) COLLATE pg_catalog."default",
+    org_sai character varying(80) COLLATE pg_catalog."default",
+    z_mai_ouvr character varying(80) COLLATE pg_catalog."default",
+    z_compet character varying(80) COLLATE pg_catalog."default",
+    z_amng character varying(80) COLLATE pg_catalog."default",
+    z_gest character varying(80) COLLATE pg_catalog."default",
+    z_anim character varying(80) COLLATE pg_catalog."default",
+    z_comm character varying(80) COLLATE pg_catalog."default",
+    contact character varying(80) COLLATE pg_catalog."default",
+    date_sai timestamp without time zone,
+    date_maj timestamp without time zone,
+    CONSTRAINT an_amt_site_equ_pkey PRIMARY KEY (idgeopo),
+    CONSTRAINT an_amt_site_equ_etat_fkey FOREIGN KEY (site_etat)
+        REFERENCES m_activite_eco.lt_eco_etat (code) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE m_amenagement.an_amt_site_equ
+    OWNER to create_sig;
+
+GRANT ALL ON TABLE m_amenagement.an_amt_site_equ TO sig_create;
+
+GRANT SELECT ON TABLE m_amenagement.an_amt_site_equ TO sig_read;
+
+GRANT ALL ON TABLE m_amenagement.an_amt_site_equ TO create_sig;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_amenagement.an_amt_site_equ TO sig_edit;
+
+COMMENT ON TABLE m_amenagement.an_amt_site_equ
+    IS 'Information alphanumérique sur les Sites à vocation équipement. Les objets virtuels de référence sont gérés dans le schéma r_objet';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_equ.idgeopo
+    IS 'Identifiant unique géographique de référence de l''objet virtuel';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_equ.idsite
+    IS 'Identifiant du site équipement';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_equ.site_nom
+    IS 'Libellé du site';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_equ.site_etat
+    IS 'Code de l''état du site';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_equ.op_sai
+    IS 'Libellé de la personne ayant saisie la mise à jour';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_equ.org_sai
+    IS 'Organisme de saisie dont dépend l''opérateur de saisie';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_equ.z_mai_ouvr
+    IS 'Nom du maître d''ouvrage';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_equ.z_compet
+    IS 'Nom de la collectivité ayant dans ses compétences le développement de la zone';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_equ.z_amng
+    IS 'Nom de l''aménageur de la zone';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_equ.z_gest
+    IS 'Nom du gestionnaire de la zone';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_equ.z_anim
+    IS 'Nom de l''animateur de la zone';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_equ.z_comm
+    IS 'Structure de contact pour la commercialisation';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_equ.contact
+    IS 'Libellé de la personne contact pour la commercialisation';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_equ.date_sai
+    IS 'Date de saisie des données attributaires';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_equ.date_maj
+    IS 'Date de mise à jour des données attributaires';
+COMMENT ON CONSTRAINT an_amt_site_equ_pkey ON m_amenagement.an_amt_site_equ
+    IS 'Clé primaire de la table an_amt_site_equ';
+
+-- ############################################################## [an_amt_site_habitat] ####################################################################
+
+-- Table: m_amenagement.an_amt_site_habitat
+
+-- DROP TABLE m_amenagement.an_amt_site_habitat;
+
+CREATE TABLE m_amenagement.an_amt_site_habitat
+(
+    idgeopo integer NOT NULL,
+    idsite character varying(10) COLLATE pg_catalog."default",
+    site_nom character varying(80) COLLATE pg_catalog."default",
+    site_etat character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
+    op_sai character varying(80) COLLATE pg_catalog."default",
+    org_sai character varying(80) COLLATE pg_catalog."default",
+    nb_log integer,
+    z_mai_ouvr character varying(80) COLLATE pg_catalog."default",
+    z_compet character varying(80) COLLATE pg_catalog."default",
+    z_amng character varying(80) COLLATE pg_catalog."default",
+    z_gest character varying(80) COLLATE pg_catalog."default",
+    z_anim character varying(80) COLLATE pg_catalog."default",
+    z_comm character varying(80) COLLATE pg_catalog."default",
+    contact character varying(80) COLLATE pg_catalog."default",
+    date_sai timestamp without time zone,
+    date_maj timestamp without time zone,
+    CONSTRAINT an_amt_p_habitat_pkey PRIMARY KEY (idgeopo),
+    CONSTRAINT an_amt_site_habitat_etat_fkey FOREIGN KEY (site_etat)
+        REFERENCES m_activite_eco.lt_eco_etat (code) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE m_amenagement.an_amt_site_habitat
+    OWNER to create_sig;
+
+GRANT ALL ON TABLE m_amenagement.an_amt_site_habitat TO sig_create;
+
+GRANT SELECT ON TABLE m_amenagement.an_amt_site_habitat TO sig_read;
+
+GRANT ALL ON TABLE m_amenagement.an_amt_site_habitat TO create_sig;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_amenagement.an_amt_site_habitat TO sig_edit;
+
+COMMENT ON TABLE m_amenagement.an_amt_site_habitat
+    IS 'Information alphanumérique sur les Sites à vocation habitat. Les objets virtuels de référence sont gérés dans le schéma r_objet';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_habitat.idgeopo
+    IS 'Identifiant unique géographique de référence de l''objet virtuel';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_habitat.idsite
+    IS 'Identifiant du site habitat';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_habitat.site_nom
+    IS 'Libellé du site';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_habitat.site_etat
+    IS 'Code de l''état du site';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_habitat.op_sai
+    IS 'Libellé de la personne ayant saisie la mise à jour';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_habitat.org_sai
+    IS 'Organisme de saisie dont dépend l''opérateur de saisie';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_habitat.nb_log
+    IS 'Nombre de logements prévue sur le site';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_habitat.z_mai_ouvr
+    IS 'Nom du maître d''ouvrage';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_habitat.z_compet
+    IS 'Nom de la collectivité ayant dans ses compétences le développement de la zone';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_habitat.z_amng
+    IS 'Nom de l''aménageur de la zone';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_habitat.z_gest
+    IS 'Nom du gestionnaire de la zone';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_habitat.z_anim
+    IS 'Nom de l''animateur de la zone';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_habitat.z_comm
+    IS 'Structure de contact pour la commercialisation';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_habitat.contact
+    IS 'Libellé de la personne contact pour la commercialisation';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_habitat.date_sai
+    IS 'Date de saisie des données attributaires';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_habitat.date_maj
+    IS 'Date de mise à jour des données attributaires';
+COMMENT ON CONSTRAINT an_amt_p_habitat_pkey ON m_amenagement.an_amt_site_habitat
+    IS 'Clé primaire de la table an_amt_site_habitat';
+
+-- ############################################################## [an_amt_site_mixte] ####################################################################
+
+-- Table: m_amenagement.an_amt_site_mixte
+
+-- DROP TABLE m_amenagement.an_amt_site_mixte;
+
+CREATE TABLE m_amenagement.an_amt_site_mixte
+(
+    idgeopo integer NOT NULL,
+    idsite character varying(10) COLLATE pg_catalog."default",
+    idpole character varying(7) COLLATE pg_catalog."default",
+    site_voca character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
+    site_nom character varying(80) COLLATE pg_catalog."default",
+    site_etat character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
+    date_int date,
+    op_sai character varying(80) COLLATE pg_catalog."default",
+    org_sai character varying(80) COLLATE pg_catalog."default",
+    typo character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
+    dest character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
+    p_implant character varying(10) COLLATE pg_catalog."default",
+    z_mai_ouvr character varying(80) COLLATE pg_catalog."default",
+    z_compet character varying(80) COLLATE pg_catalog."default",
+    z_amng character varying(80) COLLATE pg_catalog."default",
+    z_gest character varying(80) COLLATE pg_catalog."default",
+    z_anim character varying(80) COLLATE pg_catalog."default",
+    z_comm character varying(80) COLLATE pg_catalog."default",
+    contact character varying(80) COLLATE pg_catalog."default",
+    z_cession_eco double precision,
+    z_cession_hab double precision,
+    z_env character varying(80) COLLATE pg_catalog."default",
+    z_paysage character varying(80) COLLATE pg_catalog."default",
+    z_rehab character varying(80) COLLATE pg_catalog."default",
+    z_epu character varying(3) COLLATE pg_catalog."default",
+    z_dechet character varying(80) COLLATE pg_catalog."default",
+    z_tr_slect character varying(3) COLLATE pg_catalog."default",
+    res_ass double precision,
+    res_pluvia double precision,
+    res_eau double precision,
+    res_gaz double precision,
+    res_elect double precision,
+    res_net character varying(80) COLLATE pg_catalog."default",
+    res_db_net double precision,
+    z_auto character varying(10) COLLATE pg_catalog."default",
+    z_dst_auto double precision,
+    z_tps_auto double precision,
+    z_ar_f character varying(80) COLLATE pg_catalog."default",
+    z_dst_ar_f double precision,
+    z_ar_v character varying(80) COLLATE pg_catalog."default",
+    z_dst_ar_v double precision,
+    z_fr_f character varying(80) COLLATE pg_catalog."default",
+    z_dst_fr_f double precision,
+    z_fr_v character varying(80) COLLATE pg_catalog."default",
+    z_dst_fr_v double precision,
+    z_pmm character varying(3) COLLATE pg_catalog."default",
+    z_dst_pmm double precision,
+    serv_tc integer,
+    circ_douce character varying(3) COLLATE pg_catalog."default",
+    serv_rest integer,
+    serv_crech integer,
+    serv_autre character varying(80) COLLATE pg_catalog."default",
+    serv_collt character varying(80) COLLATE pg_catalog."default",
+    z_aide_pb character varying(2) COLLATE pg_catalog."default",
+    l_dated_aide_pb date,
+    l_datef_aide_pb date,
+    date_sai timestamp without time zone,
+    date_maj timestamp without time zone,
+    d_paris integer,
+    t_paris integer,
+    d_lille integer,
+    t_lille integer,
+    l_dauto character varying(200) COLLATE pg_catalog."default",
+    l_dtgvhp integer,
+    l_ttgvhp integer,
+    l_dtgvcdg integer,
+    l_ttgvcdg integer,
+    l_tgcomp integer,
+    l_dtille integer,
+    l_ttille integer,
+    l_dcdg integer,
+    l_tcdg integer,
+    l_dlesquin integer,
+    l_tlesquin integer,
+    nb_log integer DEFAULT 0,
+    zae boolean,
+    serv_tc_g boolean,
+    serv_tc_lig character varying(50) COLLATE pg_catalog."default",
+    serv_tc_pas integer,
+    commune character varying(255) COLLATE pg_catalog."default",
+    CONSTRAINT an_amt_site_mixte_pkey PRIMARY KEY (idgeopo),
+    CONSTRAINT an_amt_site_mixte_etat_fkey FOREIGN KEY (site_etat)
+        REFERENCES m_activite_eco.lt_eco_etat (code) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE m_amenagement.an_amt_site_mixte
+    OWNER to create_sig;
+
+GRANT ALL ON TABLE m_amenagement.an_amt_site_mixte TO sig_create;
+
+GRANT SELECT ON TABLE m_amenagement.an_amt_site_mixte TO sig_read;
+
+GRANT ALL ON TABLE m_amenagement.an_amt_site_mixte TO create_sig;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_amenagement.an_amt_site_mixte TO sig_edit;
+
+COMMENT ON TABLE m_amenagement.an_amt_site_mixte
+    IS 'Information alphanumérique sur les Sites d''activités mixte (habitat/Activité). Les objets virtuels de référence sont gérés dans le schéma r_objet';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.idgeopo
+    IS 'Identifiant unique géographique de référence de l''objet virtuel';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.idsite
+    IS 'Identifiant du site mixte';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.idpole
+    IS 'Identifiant du pôle d''appartenance (si existe)';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.site_voca
+    IS 'Code de la vocation simplifiée de la zone';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.site_nom
+    IS 'Libellé du site';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.site_etat
+    IS 'Code de l''état du site';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.date_int
+    IS 'Date d''intégration par GéoPicardie dans la base (permet de connaître la dernière donnée intégrée)';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.op_sai
+    IS 'Libellé de la personne ayant saisie la mise à jour';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.org_sai
+    IS 'Organisme de saisie dont dépend l''opérateur de saisie';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.typo
+    IS 'Typologie du site';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.dest
+    IS 'Destination initiale du site (défini dans les documents d''urbanisme)';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.p_implant
+    IS 'Première implantation des entreprises sur le site (année ou date)';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_mai_ouvr
+    IS 'Nom du maître d''ouvrage';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_compet
+    IS 'Nom de la collectivité ayant dans ses compétences le développement de la zone';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_amng
+    IS 'Nom de l''aménageur de la zone';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_gest
+    IS 'Nom du gestionnaire de la zone';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_anim
+    IS 'Nom de l''animateur de la zone';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_comm
+    IS 'Structure de contact pour la commercialisation';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.contact
+    IS 'Libellé de la personne contact pour la commercialisation';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_cession_eco
+    IS 'Conditions de cession en HT (euro/m²) pour les lots à vocation économique';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_cession_hab
+    IS 'Conditions de cession en HT (euro/m²) pour les lots à vocation habitat';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_env
+    IS 'Démarche environnementale';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_paysage
+    IS 'Démarche paysagère';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_rehab
+    IS 'Procédure de réhabilitaion du site';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_epu
+    IS 'Traitement de l''eau d''épuration';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_dechet
+    IS 'Libellé du gestionnaire des déchets';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_tr_slect
+    IS 'Présence d''un tri sélectif sur le site';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.res_ass
+    IS 'Linéaire de réseau d''assainissement';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.res_pluvia
+    IS 'Linéaire de réseau d''eau pluviale';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.res_eau
+    IS 'Débit du réseau d''eau potable';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.res_gaz
+    IS 'Débit du réseau de gaz';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.res_elect
+    IS 'Débit du réseau électrique';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.res_net
+    IS 'Type de réseau internet';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.res_db_net
+    IS 'Débit internet';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_auto
+    IS 'Libellé de l''autoroute la plus proche';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_dst_auto
+    IS 'Distance en km du diffuseur autoroutier par la route';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_tps_auto
+    IS 'Temps d''accès en minutes du diffuseur autoroutier par la route';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_ar_f
+    IS 'Nom de l''aéroport fret le plus proche';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_dst_ar_f
+    IS 'Distance en km de l''aéroport de fret par la route';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_ar_v
+    IS 'Nom de l''aéroport de voyageurs le plus proche';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_dst_ar_v
+    IS 'Distance en km de l''aéroport de voyageurs par la route';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_fr_f
+    IS 'Gare de fret la plus proche';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_dst_fr_f
+    IS 'Distance en km de la gare de fret la plus proche par la route';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_fr_v
+    IS 'Gare de voyageurs la plus proche';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_dst_fr_v
+    IS 'Distance en km de la gare de voyageurs la plus proche par la route';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_pmm
+    IS 'Présence d''une plate-forme multimodale';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_dst_pmm
+    IS 'Distance en km de la plate-forme multimodale la plus proche par la route';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.serv_tc
+    IS 'Nombre de ligne de transport en commun desservant le site';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.circ_douce
+    IS 'Accès aux sites par un mode doux (pistes cyclables)';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.serv_rest
+    IS 'Nombre de restaurants ou à proximité immédiate';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.serv_crech
+    IS 'Nombre de crèches ou à proximité immédiate';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.serv_autre
+    IS 'Libellé des autres services disponibles sur le site';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.serv_collt
+    IS 'Services collectifs présent sur le site (mutualisation, partage de services)';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_aide_pb
+    IS 'Code de valeurs des aides publiques appliquées sur le site (AFR, ZFU, ZRR, aucun)';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.l_dated_aide_pb
+    IS 'Date de début de la période des aides publiques';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.l_datef_aide_pb
+    IS 'Date de fin de la période des aides publiques';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.date_sai
+    IS 'Date de saisie des données attributaires';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.date_maj
+    IS 'Date de mise à jour des données attributaires';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.d_paris
+    IS 'Distance en km de Paris';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.t_paris
+    IS 'Temps d''accès en minutes à Paris';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.d_lille
+    IS 'Distance en km à Lille';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.t_lille
+    IS 'Temps d''accès en minutes à Lille';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.l_dauto
+    IS 'Libellé de ou des diffuseurs autoroutiers le ou les plus proches';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.l_dtgvhp
+    IS 'Distance à la gare TGV Haute-Picardie';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.l_ttgvhp
+    IS 'Temps d''accès en minutes à la gare TGV Haute Picardie';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.l_dtgvcdg
+    IS 'Distancr en km de la gare TGV Roissy-CDG';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.l_ttgvcdg
+    IS 'Temps d''accès en minutes à la gare TGV Roissy-CDG';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.l_tgcomp
+    IS 'Temps d''accès en minutes à la gare de Compiègne';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.l_dtille
+    IS 'Distance en km de l''aéroport de Beauvais-Tillé';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.l_ttille
+    IS 'Temps d''accès en minutes à l''aéroport de Beauvais-Tillé';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.l_dcdg
+    IS 'Distance en km à l''aéroport de Roissy-Charles de Gaulle';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.l_tcdg
+    IS 'Temps d''accès à l''aéroport en minutes à l''aéroport Roissy Charles de Gaulle';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.l_dlesquin
+    IS 'Distance en km de l''aéroport Lille-Lesquin';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.l_tlesquin
+    IS 'Temps d''accès en minutes à l''aéroport Lille-Lesquin';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.nb_log
+    IS 'Nombre de logements prévisionnel';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.zae
+    IS 'Information sur le fait que le site soit une ZAE (sauf celle indiquée dans la table m_amenagement.geo_amt_zae)  ou non (compétence ARC selon la délibération du CA du 21 décembre 2017). Cette donnée permet de créer une vue matérialisée des ZAE complètes (geo_vmr_zae) avec les informations de la table m_amenagement.geo_amt_zae';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.serv_tc_g
+    IS 'Service de transport en commun gratuit';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.serv_tc_lig
+    IS 'Lignes de transport en commun desservant le site';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.serv_tc_pas
+    IS 'Nombre de passage quotidien cumulé des lignes de transport en commun';
+
+COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.commune
+    IS 'Libellé des communes d''asises des sites';
+COMMENT ON CONSTRAINT an_amt_site_mixte_pkey ON m_amenagement.an_amt_site_mixte
+    IS 'Clé primaire de la table an_amt_site_mixte';
+
+-- ############################################################## [an_amt_proc_media] ##################################################################
+
+-- Table: m_amenagement.an_amt_proc_media
+
+-- DROP TABLE m_amenagement.an_amt_proc_media;
+
+CREATE TABLE m_amenagement.an_amt_proc_media
+(
+    gid integer NOT NULL DEFAULT nextval('m_amenagement.an_amt_proc_media_seq'::regclass),
+    id text COLLATE pg_catalog."default",
+    media text COLLATE pg_catalog."default",
+    miniature bytea,
+    n_fichier text COLLATE pg_catalog."default",
+    t_fichier text COLLATE pg_catalog."default",
+    op_sai character varying(20) COLLATE pg_catalog."default",
+    date_sai timestamp without time zone,
+    l_doc character varying(100) COLLATE pg_catalog."default",
+    t_doc character varying(2) COLLATE pg_catalog."default" DEFAULT '00',		
+    CONSTRAINT an_amt_proc_media_pkey PRIMARY KEY (gid),
+    CONSTRAINT an_amt_proc_media_t_doc_fkey FOREIGN KEY (t_doc)
+    REFERENCES m_activite_eco.lt_eco_tdocmedia (code) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE m_amenagement.an_amt_proc_media
+    OWNER to create_sig;
+
+GRANT ALL ON TABLE m_amenagement.an_amt_proc_media TO sig_create;
+
+GRANT SELECT ON TABLE m_amenagement.an_amt_proc_media TO sig_read;
+
+GRANT ALL ON TABLE m_amenagement.an_amt_proc_media TO create_sig;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_amenagement.an_amt_proc_media TO sig_edit;
+
+COMMENT ON TABLE m_amenagement.an_amt_proc_media
+    IS 'Table gérant les documents intégrés en lien avec un évènement';
+
+COMMENT ON COLUMN m_amenagement.an_amt_proc_media.id
+    IS 'Identifiant interne non signifiant de l''objet saisi';
+
+COMMENT ON COLUMN m_amenagement.an_amt_proc_media.media
+    IS 'Champ Média de GEO';
+
+COMMENT ON COLUMN m_amenagement.an_amt_proc_media.miniature
+    IS 'Champ miniature de GEO';
+
+COMMENT ON COLUMN m_amenagement.an_amt_proc_media.n_fichier
+    IS 'Nom du fichier';
+
+COMMENT ON COLUMN m_amenagement.an_amt_proc_media.t_fichier
+    IS 'Type de média dans GEO';
+
+COMMENT ON COLUMN m_amenagement.an_amt_proc_media.op_sai
+    IS 'Opérateur de saisie (par défaut login de connexion à GEO)';
+
+COMMENT ON COLUMN m_amenagement.an_amt_proc_media.date_sai
+    IS 'Date de la saisie du document';
+
+COMMENT ON COLUMN m_amenagement.an_amt_proc_media.l_doc
+    IS 'Titre du document ou légère description';
+    
+COMMENT ON COLUMN m_amenagement.an_amt_proc_media.t_doc
+    IS 'Type de document';
+
+COMMENT ON COLUMN m_amenagement.an_amt_proc_media.gid
+    IS 'Compteur (identifiant interne)';
+
 -- ####################################################################################################################################################
 -- ###                                                              TABLE R_OBJET                                                                   ###
 -- ####################################################################################################################################################
@@ -9281,7 +10042,432 @@ COMMENT ON TABLE m_foncier.an_fon_cession_horsarc
 COMMENT ON COLUMN m_foncier.an_fon_cession_horsarc.gid
     IS 'Identifiant unique non signifiant';
 
+-- ####################################################################################################################################################
+-- ###                                                              TABLE S_SIRENE                                                                  ###
+-- ####################################################################################################################################################
 
+-- ############################################################## [an_etablissement_api] ####################################################################
+-- Table: s_sirene.an_etablissement_api
+
+-- DROP TABLE s_sirene.an_etablissement_api;
+
+CREATE TABLE s_sirene.an_etablissement_api
+(
+    gid integer NOT NULL DEFAULT nextval('s_sirene.an_etablissement_api_gid_seq'::regclass),
+    date_maj timestamp without time zone,
+    activiteprincipaleetablissement character varying(6) COLLATE pg_catalog."default",
+    activiteprincipaleregistremetiersetablissement character varying(6) COLLATE pg_catalog."default",
+    anneeeffectifsetablissement integer,
+    caractereemployeuretablissement character varying(1) COLLATE pg_catalog."default",
+    codecedex2etablissement character varying(9) COLLATE pg_catalog."default",
+    codecedexetablissement character varying(9) COLLATE pg_catalog."default",
+    codecommune2etablissement character varying(5) COLLATE pg_catalog."default",
+    codecommuneetablissement character varying(5) COLLATE pg_catalog."default",
+    codepaysetranger2etablissement character varying(5) COLLATE pg_catalog."default",
+    codepaysetrangeretablissement character varying(5) COLLATE pg_catalog."default",
+    codepostal2etablissement character varying(5) COLLATE pg_catalog."default",
+    codepostaletablissement character varying(5) COLLATE pg_catalog."default",
+    complementadresse2etablissement character varying(38) COLLATE pg_catalog."default",
+    complementadresseetablissement character varying(38) COLLATE pg_catalog."default",
+    datecreationetablissement timestamp without time zone,
+    datedebut timestamp without time zone,
+    datederniertraitementetablissement timestamp without time zone,
+    denominationusuelleetablissement character varying(100) COLLATE pg_catalog."default",
+    distributionspeciale2etablissement character varying(26) COLLATE pg_catalog."default",
+    distributionspecialeetablissement character varying(26) COLLATE pg_catalog."default",
+    enseigne1etablissement character varying(50) COLLATE pg_catalog."default",
+    enseigne2etablissement character varying(50) COLLATE pg_catalog."default",
+    enseigne3etablissement character varying(50) COLLATE pg_catalog."default",
+    etablissementsiege boolean,
+    etatadministratifetablissement character varying(1) COLLATE pg_catalog."default",
+    indicerepetition2etablissement character varying(1) COLLATE pg_catalog."default",
+    indicerepetitionetablissement character varying(1) COLLATE pg_catalog."default",
+    libellecedex2etablissement character varying(100) COLLATE pg_catalog."default",
+    libellecedexetablissement character varying(100) COLLATE pg_catalog."default",
+    libellecommune2etablissement character varying(100) COLLATE pg_catalog."default",
+    libellecommuneetablissement character varying(100) COLLATE pg_catalog."default",
+    libellecommuneetranger2etablissement character varying(100) COLLATE pg_catalog."default",
+    libellecommuneetrangeretablissement character varying(100) COLLATE pg_catalog."default",
+    libellepaysetranger2etablissement character varying(100) COLLATE pg_catalog."default",
+    libellepaysetrangeretablissement character varying(100) COLLATE pg_catalog."default",
+    libellevoie2etablissement character varying(100) COLLATE pg_catalog."default",
+    libellevoieetablissement character varying(100) COLLATE pg_catalog."default",
+    nic character varying(5) COLLATE pg_catalog."default",
+    nombreperiodesetablissement integer,
+    nomenclatureactiviteprincipaleetablissement character varying(8) COLLATE pg_catalog."default",
+    numerovoie2etablissement character varying(4) COLLATE pg_catalog."default",
+    numerovoieetablissement character varying(4) COLLATE pg_catalog."default",
+    siren character varying(9) COLLATE pg_catalog."default",
+    siret character varying(14) COLLATE pg_catalog."default",
+    statutdiffusionetablissement character varying(1) COLLATE pg_catalog."default",
+    trancheeffectifsetablissement character varying(2) COLLATE pg_catalog."default",
+    typevoie2etablissement character varying(4) COLLATE pg_catalog."default",
+    typevoieetablissement character varying(4) COLLATE pg_catalog."default",
+    recherche_etab_geo character varying(1000) COLLATE pg_catalog."default",
+    nom_etab_geo character varying(1000) COLLATE pg_catalog."default",
+    CONSTRAINT an_etablissement_api_pkey PRIMARY KEY (gid)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE s_sirene.an_etablissement_api
+    OWNER to create_sig;
+
+GRANT ALL ON TABLE s_sirene.an_etablissement_api TO sig_create;
+
+GRANT ALL ON TABLE s_sirene.an_etablissement_api TO create_sig;
+
+GRANT SELECT ON TABLE s_sirene.an_etablissement_api TO sig_read;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE s_sirene.an_etablissement_api TO sig_edit;
+
+COMMENT ON TABLE s_sirene.an_etablissement_api
+    IS 'Liste des établissements de la base de données Sirene dans la nouvelle structure mise en production en avril 2019 et mise à jour via l''API Sirene.';
+
+COMMENT ON COLUMN s_sirene.an_etablissement_api.gid
+    IS 'Identifiant interne non signifiant';
+
+COMMENT ON COLUMN s_sirene.an_etablissement_api.date_maj
+    IS 'Date de mise à jour';
+
+COMMENT ON COLUMN s_sirene.an_etablissement_api.activiteprincipaleetablissement
+    IS 'Activité principale de l''établissement pendant la période active';
+
+COMMENT ON COLUMN s_sirene.an_etablissement_api.activiteprincipaleregistremetiersetablissement
+    IS 'Activité exercée par l''artisan inscrit au registre des métiers';
+
+COMMENT ON COLUMN s_sirene.an_etablissement_api.anneeeffectifsetablissement
+    IS 'Année de validité de la tranche d''effectif salarié de l''établissement';
+
+COMMENT ON COLUMN s_sirene.an_etablissement_api.caractereemployeuretablissement
+    IS 'Caractère employeur de l''établissement';
+
+COMMENT ON COLUMN s_sirene.an_etablissement_api.codecedex2etablissement
+    IS 'Code cedex de l''adresse secondaire';
+
+COMMENT ON COLUMN s_sirene.an_etablissement_api.codecedexetablissement
+    IS 'Code commune de l''établissement';
+
+COMMENT ON COLUMN s_sirene.an_etablissement_api.codecommune2etablissement
+    IS 'Code commune de l''adresse secondaire';
+
+COMMENT ON COLUMN s_sirene.an_etablissement_api.codecommuneetablissement
+    IS 'Code commune de l''établissement';
+
+COMMENT ON COLUMN s_sirene.an_etablissement_api.codepaysetranger2etablissement
+    IS 'Code Pays de l''adresse seondaire pour un établissement situé à l''étranger';
+
+COMMENT ON COLUMN s_sirene.an_etablissement_api.codepaysetrangeretablissement
+    IS 'Code Pays pour un établissement situé à l''étranger';
+
+COMMENT ON COLUMN s_sirene.an_etablissement_api.codepostal2etablissement
+    IS 'Code postal de l''adresse secondaire';
+
+COMMENT ON COLUMN s_sirene.an_etablissement_api.codepostaletablissement
+    IS 'Code postal';
+
+COMMENT ON COLUMN s_sirene.an_etablissement_api.complementadresse2etablissement
+    IS 'Complément d''adresse secondaire';
+
+COMMENT ON COLUMN s_sirene.an_etablissement_api.complementadresseetablissement
+    IS 'Complément d''adresse';
+
+COMMENT ON COLUMN s_sirene.an_etablissement_api.datecreationetablissement
+    IS 'Date de création de l''établissement';
+
+COMMENT ON COLUMN s_sirene.an_etablissement_api.datedebut
+    IS 'Date de début d''une période d''historique d''un établissement';
+
+COMMENT ON COLUMN s_sirene.an_etablissement_api.datederniertraitementetablissement
+    IS 'Date du dernier traitement de l''établissement dans le répertoire Sirene';
+
+COMMENT ON COLUMN s_sirene.an_etablissement_api.denominationusuelleetablissement
+    IS 'Dénomination usuelle de l''établissement';
+
+COMMENT ON COLUMN s_sirene.an_etablissement_api.distributionspeciale2etablissement
+    IS 'Distribution spéciale de l''adresse secondaire de l''établissement';
+
+COMMENT ON COLUMN s_sirene.an_etablissement_api.distributionspecialeetablissement
+    IS 'Distribution spéciale de l''établissement';
+
+COMMENT ON COLUMN s_sirene.an_etablissement_api.enseigne1etablissement
+    IS 'Première ligne d''enseigne de l''établissement';
+
+COMMENT ON COLUMN s_sirene.an_etablissement_api.enseigne2etablissement
+    IS 'Deuxième ligne d''enseigne de l''établissement';
+
+COMMENT ON COLUMN s_sirene.an_etablissement_api.enseigne3etablissement
+    IS 'Troisième ligne d''enseigne de l''établissement';
+
+COMMENT ON COLUMN s_sirene.an_etablissement_api.etablissementsiege
+    IS 'Qualité de siège ou non de l''établissement';
+
+COMMENT ON COLUMN s_sirene.an_etablissement_api.etatadministratifetablissement
+    IS 'Etat administratif de l''établissement';
+
+COMMENT ON COLUMN s_sirene.an_etablissement_api.indicerepetition2etablissement
+    IS 'Indice de répétition secondaire dans la voie';
+
+COMMENT ON COLUMN s_sirene.an_etablissement_api.indicerepetitionetablissement
+    IS 'Indice de répétition dans la voie';
+
+COMMENT ON COLUMN s_sirene.an_etablissement_api.libellecedex2etablissement
+    IS 'Libellé du code cedex de l''adresse secondaire';
+
+COMMENT ON COLUMN s_sirene.an_etablissement_api.libellecedexetablissement
+    IS 'Libellé du code cedex';
+
+COMMENT ON COLUMN s_sirene.an_etablissement_api.libellecommune2etablissement
+    IS 'Libellé de la commune de l''adresse secondaire';
+
+COMMENT ON COLUMN s_sirene.an_etablissement_api.libellecommuneetablissement
+    IS 'Libellé de la commune';
+
+COMMENT ON COLUMN s_sirene.an_etablissement_api.libellecommuneetranger2etablissement
+    IS 'Libellé de la commune de l''adresse secondaire pour un établissement situé à l''étranger';
+
+COMMENT ON COLUMN s_sirene.an_etablissement_api.libellecommuneetrangeretablissement
+    IS 'Libellé de la commune pour un établissement situé à l''étranger';
+
+COMMENT ON COLUMN s_sirene.an_etablissement_api.libellepaysetranger2etablissement
+    IS 'Libellé du Pays de l''adresse secondaire pour un établissement situé à l''étranger';
+
+COMMENT ON COLUMN s_sirene.an_etablissement_api.libellepaysetrangeretablissement
+    IS 'Libellé du Pays pour un établissement situé à l''étranger';
+
+COMMENT ON COLUMN s_sirene.an_etablissement_api.libellevoie2etablissement
+    IS 'Libellé de voie de l''adresse secondaire';
+
+COMMENT ON COLUMN s_sirene.an_etablissement_api.libellevoieetablissement
+    IS 'Libellé de voie';
+
+COMMENT ON COLUMN s_sirene.an_etablissement_api.nic
+    IS 'Numéro interne de classement de l''établissement';
+
+COMMENT ON COLUMN s_sirene.an_etablissement_api.nombreperiodesetablissement
+    IS 'Nombre de période historisé de l''établissement';
+
+COMMENT ON COLUMN s_sirene.an_etablissement_api.nomenclatureactiviteprincipaleetablissement
+    IS 'Nomenclature d''activité de la variable activitePrincipaleEtablissement';
+
+COMMENT ON COLUMN s_sirene.an_etablissement_api.numerovoie2etablissement
+    IS 'Numéro de la voie de l''adresse secondaire';
+
+COMMENT ON COLUMN s_sirene.an_etablissement_api.numerovoieetablissement
+    IS 'Numéro de la voie';
+
+COMMENT ON COLUMN s_sirene.an_etablissement_api.siren
+    IS 'Numéro SIREN';
+
+COMMENT ON COLUMN s_sirene.an_etablissement_api.siret
+    IS 'Numéro SIRET';
+
+COMMENT ON COLUMN s_sirene.an_etablissement_api.statutdiffusionetablissement
+    IS 'Statut de diffusion de l''établissement';
+
+COMMENT ON COLUMN s_sirene.an_etablissement_api.trancheeffectifsetablissement
+    IS 'Tranche d''effectif salarié de l''établissement';
+
+COMMENT ON COLUMN s_sirene.an_etablissement_api.typevoie2etablissement
+    IS 'Type de voie de l''adresse secondaire';
+
+COMMENT ON COLUMN s_sirene.an_etablissement_api.typevoieetablissement
+    IS 'Type de voie';
+
+COMMENT ON COLUMN s_sirene.an_etablissement_api.recherche_etab_geo
+    IS 'Attribut formatant le SIRET et l''ensemble des noms possibles de l''établissement (SIRENE + EPCI) et de l''unité légale (mise à jour à l''intégration des établissements)';
+
+COMMENT ON COLUMN s_sirene.an_etablissement_api.nom_etab_geo
+    IS 'Tout libellé de l''établissement ou de l''unité légale regroupé pour affichage dans fiche dans les appli GEO (mise à jour à l''intégration des établissements)';
+
+-- Trigger: t_t1_date_maj
+
+-- DROP TRIGGER t_t1_date_maj ON s_sirene.an_etablissement_api;
+
+CREATE TRIGGER t_t1_date_maj
+    BEFORE INSERT OR UPDATE 
+    ON s_sirene.an_etablissement_api
+    FOR EACH ROW
+    EXECUTE PROCEDURE public.ft_r_timestamp_maj();
+
+-- ############################################################## [an_unitelegale_api] ####################################################################
+
+-- Table: s_sirene.an_unitelegale_api
+
+-- DROP TABLE s_sirene.an_unitelegale_api;
+
+CREATE TABLE s_sirene.an_unitelegale_api
+(
+    gid integer NOT NULL DEFAULT nextval('s_sirene.an_unitelegale_api_gid_seq'::regclass),
+    date_maj timestamp without time zone,
+    activiteprincipaleunitelegale character varying(6) COLLATE pg_catalog."default",
+    anneecategorieentreprise integer,
+    anneeeffectifsunitelegale integer,
+    caractereemployeurunitelegale character varying(1) COLLATE pg_catalog."default",
+    categorieentreprise character varying(3) COLLATE pg_catalog."default",
+    categoriejuridiqueunitelegale character varying(4) COLLATE pg_catalog."default",
+    datecreationunitelegale timestamp without time zone,
+    datedebut timestamp without time zone,
+    datederniertraitementunitelegale timestamp without time zone,
+    denominationunitelegale character varying(120) COLLATE pg_catalog."default",
+    denominationusuelle1unitelegale character varying(70) COLLATE pg_catalog."default",
+    denominationusuelle2unitelegale character varying(70) COLLATE pg_catalog."default",
+    denominationusuelle3unitelegale character varying(70) COLLATE pg_catalog."default",
+    economiesocialesolidaireunitelegale character varying(1) COLLATE pg_catalog."default",
+    etatadministratifunitelegale character varying(1) COLLATE pg_catalog."default",
+    identifiantassociationunitelegale character varying(10) COLLATE pg_catalog."default",
+    nicsiegeunitelegale character varying(5) COLLATE pg_catalog."default",
+    nombreperiodesunitelegale integer,
+    nomenclatureactiviteprincipaleunitelegale character varying(8) COLLATE pg_catalog."default",
+    nomunitelegale character varying(100) COLLATE pg_catalog."default",
+    nomusageunitelegale character varying(100) COLLATE pg_catalog."default",
+    prenom1unitelegale character varying(20) COLLATE pg_catalog."default",
+    prenom2unitelegale character varying(20) COLLATE pg_catalog."default",
+    prenom3unitelegale character varying(20) COLLATE pg_catalog."default",
+    prenom4unitelegale character varying(20) COLLATE pg_catalog."default",
+    prenomusuelunitelegale character varying(20) COLLATE pg_catalog."default",
+    pseudonymeunitelegale character varying(100) COLLATE pg_catalog."default",
+    sexeunitelegale character varying(1) COLLATE pg_catalog."default",
+    sigleunitelegale character varying(20) COLLATE pg_catalog."default",
+    siren character varying(9) COLLATE pg_catalog."default",
+    statutdiffusionunitelegale character varying(1) COLLATE pg_catalog."default",
+    trancheeffectifsunitelegale character varying(2) COLLATE pg_catalog."default",
+    unitepurgeeunitelegale character varying(4) COLLATE pg_catalog."default",
+    CONSTRAINT an_unitelegale_api_pkey PRIMARY KEY (gid)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE s_sirene.an_unitelegale_api
+    OWNER to create_sig;
+
+GRANT ALL ON TABLE s_sirene.an_unitelegale_api TO sig_create;
+
+GRANT ALL ON TABLE s_sirene.an_unitelegale_api TO create_sig;
+
+GRANT SELECT ON TABLE s_sirene.an_unitelegale_api TO sig_read;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE s_sirene.an_unitelegale_api TO sig_edit;
+
+COMMENT ON TABLE s_sirene.an_unitelegale_api
+    IS 'Liste des unités légales de la base de données Sirene dans la nouvelle structure mise en production en avril 2019 et mise à jour via l''API Sirene.';
+
+COMMENT ON COLUMN s_sirene.an_unitelegale_api.date_maj
+    IS 'Date de mise à jour des données';
+
+COMMENT ON COLUMN s_sirene.an_unitelegale_api.activiteprincipaleunitelegale
+    IS 'Activité principale de l''unité légale';
+
+COMMENT ON COLUMN s_sirene.an_unitelegale_api.anneecategorieentreprise
+    IS 'Année de validité de la catégorie d''entreprise';
+
+COMMENT ON COLUMN s_sirene.an_unitelegale_api.anneeeffectifsunitelegale
+    IS 'Année de validité de la tranche d''effectif salarié de l''unité légale';
+
+COMMENT ON COLUMN s_sirene.an_unitelegale_api.caractereemployeurunitelegale
+    IS 'Caractère employeur de l''unité légale';
+
+COMMENT ON COLUMN s_sirene.an_unitelegale_api.categorieentreprise
+    IS 'Catégorie à laquelle appartient l''entreprise';
+
+COMMENT ON COLUMN s_sirene.an_unitelegale_api.categoriejuridiqueunitelegale
+    IS 'Catégorie juridique de l''unité légale';
+
+COMMENT ON COLUMN s_sirene.an_unitelegale_api.datecreationunitelegale
+    IS 'Date de création de l''unité légale';
+
+COMMENT ON COLUMN s_sirene.an_unitelegale_api.datedebut
+    IS 'Date de début d''une période d''historique d''une unité légale';
+
+COMMENT ON COLUMN s_sirene.an_unitelegale_api.datederniertraitementunitelegale
+    IS 'Date du dernier traitement de l''unité légale dans le répertoire Sirene';
+
+COMMENT ON COLUMN s_sirene.an_unitelegale_api.denominationunitelegale
+    IS 'Dénomination de l''unité légale';
+
+COMMENT ON COLUMN s_sirene.an_unitelegale_api.denominationusuelle1unitelegale
+    IS 'Dénomination usuelle de l''unité légale';
+
+COMMENT ON COLUMN s_sirene.an_unitelegale_api.denominationusuelle2unitelegale
+    IS 'Dénomination usuelle de l''unité légale (deuxième champ)';
+
+COMMENT ON COLUMN s_sirene.an_unitelegale_api.denominationusuelle3unitelegale
+    IS 'Dénomination usuelle de l''unité légale (troisème champ)';
+
+COMMENT ON COLUMN s_sirene.an_unitelegale_api.economiesocialesolidaireunitelegale
+    IS 'Appartenance au champ de l''économie sociale et solidaire';
+
+COMMENT ON COLUMN s_sirene.an_unitelegale_api.etatadministratifunitelegale
+    IS 'Etat administratif de l''unité légale';
+
+COMMENT ON COLUMN s_sirene.an_unitelegale_api.identifiantassociationunitelegale
+    IS 'Numéro au Répertoire National des Associations';
+
+COMMENT ON COLUMN s_sirene.an_unitelegale_api.nicsiegeunitelegale
+    IS 'Numéro interne de classement de l''unité légale';
+
+COMMENT ON COLUMN s_sirene.an_unitelegale_api.nombreperiodesunitelegale
+    IS 'Nombre de périodes de l''unité légale';
+
+COMMENT ON COLUMN s_sirene.an_unitelegale_api.nomenclatureactiviteprincipaleunitelegale
+    IS 'Nomenclature d''activité de la variable activiteprincipaleunitelegale';
+
+COMMENT ON COLUMN s_sirene.an_unitelegale_api.nomunitelegale
+    IS 'Nom de naissance de la personne physique';
+
+COMMENT ON COLUMN s_sirene.an_unitelegale_api.nomusageunitelegale
+    IS 'Nom d''usage de la personne physique';
+
+COMMENT ON COLUMN s_sirene.an_unitelegale_api.prenom1unitelegale
+    IS 'Premier prénom déclaré pour une personne physique';
+
+COMMENT ON COLUMN s_sirene.an_unitelegale_api.prenom2unitelegale
+    IS 'Deuxième prénom déclaré pour une personne physique';
+
+COMMENT ON COLUMN s_sirene.an_unitelegale_api.prenom3unitelegale
+    IS 'Troisème prénom déclaré pour une personne physique';
+
+COMMENT ON COLUMN s_sirene.an_unitelegale_api.prenom4unitelegale
+    IS 'Quatrième prénom déclaré pour une personne physique';
+
+COMMENT ON COLUMN s_sirene.an_unitelegale_api.prenomusuelunitelegale
+    IS 'Prénom usuel de la personne physique';
+
+COMMENT ON COLUMN s_sirene.an_unitelegale_api.pseudonymeunitelegale
+    IS 'Pseudonyme de la personne physique';
+
+COMMENT ON COLUMN s_sirene.an_unitelegale_api.sexeunitelegale
+    IS 'Caractère féminin ou masculin de la personne physique';
+
+COMMENT ON COLUMN s_sirene.an_unitelegale_api.sigleunitelegale
+    IS 'Sigle de l''unité légale';
+
+COMMENT ON COLUMN s_sirene.an_unitelegale_api.siren
+    IS 'Numéro SIREN';
+
+COMMENT ON COLUMN s_sirene.an_unitelegale_api.statutdiffusionunitelegale
+    IS 'Statut de diffusion de l''unité légale';
+
+COMMENT ON COLUMN s_sirene.an_unitelegale_api.trancheeffectifsunitelegale
+    IS 'Tranche d''effectif salarié de l''unité légale';
+
+COMMENT ON COLUMN s_sirene.an_unitelegale_api.unitepurgeeunitelegale
+    IS 'Unité légale purgée';
+
+
+-- Trigger: t_t1_date_maj
+
+-- DROP TRIGGER t_t1_date_maj ON s_sirene.an_unitelegale_api;
+
+CREATE TRIGGER t_t1_date_maj
+    BEFORE INSERT OR UPDATE 
+    ON s_sirene.an_unitelegale_api
+    FOR EACH ROW
+    EXECUTE PROCEDURE public.ft_r_timestamp_maj();
 
 -- ####################################################################################################################################################
 -- ###                                                                                                                                              ###
@@ -9810,6 +10996,52 @@ COMMENT ON COLUMN m_foncier.lk_cession_lot.idgeolf
 
 COMMENT ON COLUMN m_foncier.lk_cession_lot.idces
     IS 'Identifiant du dossier de cession';
+
+
+-- ####################################################################################################################################################
+-- ###                                                        TABLE DE RELATION S_SIRENE                                                            ###
+-- ####################################################################################################################################################
+
+-- ############################################################ [lk_sirene_succession] ################################################################
+
+-- Table: s_sirene.lk_sirene_succession
+
+-- DROP TABLE s_sirene.lk_sirene_succession;
+
+CREATE TABLE s_sirene.lk_sirene_succession
+(
+    id integer NOT NULL DEFAULT nextval('s_sirene.lk_sirene_succession_seq'::regclass),
+    siretold character varying(14) COLLATE pg_catalog."default",
+    siretnew character varying(14) COLLATE pg_catalog."default",
+    CONSTRAINT lk_sirene_succession_pkey PRIMARY KEY (id)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE s_sirene.lk_sirene_succession
+    OWNER to create_sig;
+
+GRANT ALL ON TABLE s_sirene.lk_sirene_succession TO sig_create;
+
+GRANT ALL ON TABLE s_sirene.lk_sirene_succession TO create_sig;
+
+GRANT SELECT ON TABLE s_sirene.lk_sirene_succession TO sig_read;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE s_sirene.lk_sirene_succession TO sig_edit;
+
+COMMENT ON TABLE s_sirene.lk_sirene_succession
+    IS 'Lien entre les SIRET des prédécesseurs et des successeurs présents dans le répertoire Sirene.Ce lien étant déclaratif, tous les liens ne sont pas connus de l''Insee';
+
+
+COMMENT ON COLUMN s_sirene.lk_sirene_succession.siretold
+    IS 'N° SIRET de l''établissement précédent';
+    
+
+COMMENT ON COLUMN s_sirene.lk_sirene_succession.siretold
+    IS 'N° SIRET du nouvel établissement si un lien de succession est déclaré';
+
 
 
 -- ####################################################################################################################################################
