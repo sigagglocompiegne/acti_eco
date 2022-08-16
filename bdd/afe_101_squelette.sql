@@ -4643,13 +4643,13 @@ GRANT ALL ON TABLE m_activite_eco.lt_eco_typevenmt TO create_sig;
 GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_activite_eco.lt_eco_typevenmt TO sig_edit;
 
 COMMENT ON TABLE m_activite_eco.lt_eco_typevenmt
-    IS 'Liste de valeurs des types de contact';
+    IS 'Liste de valeurs des types d''évènement';
 
 COMMENT ON COLUMN m_activite_eco.lt_eco_typevenmt.code
-    IS 'Code du type de contact';
+    IS 'Code du type d''évènement';
 
 COMMENT ON COLUMN m_activite_eco.lt_eco_typevenmt.valeur
-    IS 'Libellé du type de contact';
+    IS 'Libellé du type d''évènement';
 
 INSERT INTO m_activite_eco.lt_eco_typevenmt(
             code, valeur)
