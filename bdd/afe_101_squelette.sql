@@ -4984,10 +4984,10 @@ COMMENT ON TABLE m_amenagement.lt_amt_stadecomm
     IS 'Liste de valeurs du stade de commercialisation';
 
 COMMENT ON COLUMN m_amenagement.lt_amt_stadecomm.code
-    IS 'Code de le typologie d''aménageur';
+    IS 'Code du stade de commercialisation';
 
 COMMENT ON COLUMN m_amenagement.lt_amt_stadecomm.valeur
-    IS 'Libellé de le typologie d''aménageur';
+    IS 'Libellé du stade de commercialisation';
 COMMENT ON CONSTRAINT lt_amt_stadecomm_pkey ON m_amenagement.lt_amt_stadecomm
     IS 'Clé primaire de la table lt_sa_stadecomm';
 
