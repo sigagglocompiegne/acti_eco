@@ -852,13 +852,61 @@ Valeurs possibles :
 |Code|Valeur|
 |:---|:---|
 |00|Non renseigné|
+|10|Existant|
+|20|Extension|
+|30|Création|
+|40|Déclassé|
+|50|Projet de déclassement|
+
+---
+
+`[m_activite_eco].[lt_eco_occuploc]` : Liste des valeurs permettant de décrire la valeur de l'état d'occupation d'un local
+
+|Nom attribut | Définition | Type  | Valeurs par défaut |
+|:---|:---|:---|:---|    
+|code|Code du type d'occupation d'un local|character varying(2)| |
+|valeur|Libellé du type d'occupation d'un local|character varying(100)| |
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ code 
+
+Valeurs possibles :
+
+|Code|Valeur|
+|:---|:---|
+|00|Non renseigné|
+|10|Disponible à la vente (vacant)|
+|11|Disponible à la vente (occupé)|
+|20|Disponible à la location (vacant)|
+|21|Disponible à la location (occupé)|
+|30|Disponible à la vente ou à la location (vacant)|
+|31|Disponible à la vente ou à la location (occupé)|
+|40|Occupé|
+
+---
+
+`[m_activite_eco].[lt_eco_tact]` : Liste des valeurs permettant de décrire la valeur de l'activité du projet d'implantation sur les lots (spécifique à l'ARC)
+
+|Nom attribut | Définition | Type  | Valeurs par défaut |
+|:---|:---|:---|:---|    
+|code|Code de l'activité du projet d'implantation sur les lots (spécifique à l'ARC)|character varying(2)| |
+|valeur|Libellé de l'activité du projet d'implantation sur les lots (spécifique à l'ARC)|character varying(30)| |
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ code 
+
+Valeurs possibles :
+
+|Code|Valeur|
+|:---|:---|
+|00|Non renseigné|
 |10|Artisanat|
-|20|Industrie ou R&D|
-|30|Tertiaire|
-|40|Transport et logistique|
-|50|Commerce|
-|60|Agriculture|
-|70|Service/Négoce|
+|20|Commerce|
+|30|Industrie|
+|40|R & D|
+|50|Service/Négoce|
+|60|Tertiaire|
+|99|Autre|
 
 ---
 
