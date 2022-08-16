@@ -910,7 +910,109 @@ Valeurs possibles :
 
 ---
 
-## Classes d'objets de l'activité économique
+`[m_activite_eco].[lt_eco_tdocmedia]` : Liste des valeurs permettant de décrire la valeur des types de médias
+
+|Nom attribut | Définition | Type  | Valeurs par défaut |
+|:---|:---|:---|:---|    
+|code|Code du type de média|character varying(2)| |
+|valeur|Libellé du type de média|character varying(100)| |
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ code 
+
+Valeurs possibles :
+
+|Code|Valeur|
+|:---|:---|
+|00|Non renseigné|
+|10|Photographie|
+|20|Carte, Plan|
+|30|Présentation|
+|40|Fiche commerciale|
+|50|Compte rendu|
+|60|Actes administratifs divers|
+|61|Délibération|
+|62|Règlement|
+|63|Acte de vente|
+|99|Autre document|
+
+---
+
+`[m_activite_eco].[lt_eco_typcontact]` : Liste des valeurs permettant de décrire la valeur des types de contact
+
+|Nom attribut | Définition | Type  | Valeurs par défaut |
+|:---|:---|:---|:---|    
+|code|Code du type de contact|character varying(2)| |
+|valeur|Libellé du type de contact|character varying(30)| |
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ code 
+
+Valeurs possibles :
+
+|Code|Valeur|
+|:---|:---|
+|00|Non renseigné|
+|10|Entreprise (standard)|
+|11|Directeur - Responsable|
+|12|Assistante|
+|13|DRH|
+|20|Propriétaire|
+|30|Commercialisateur|
+
+---
+
+`[m_activite_eco].[lt_eco_typevenmt]` : Liste des valeurs permettant de décrire la valeur des types d'évènement
+
+|Nom attribut | Définition | Type  | Valeurs par défaut |
+|:---|:---|:---|:---|    
+|code|Code du type d'évènement|character varying(2)| |
+|valeur|Libellé du type d'évènement|character varying(30)| |
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ code 
+
+Valeurs possibles :
+
+|Code|Valeur|
+|:---|:---|
+|00|Non renseigné|
+|10|Contact (générique)|
+|11|Contact téléphonique|
+|12|Contact email|
+|20|Réunion|
+|30|Forum, salon|
+|40|Séminaire|
+
+---
+
+`[m_activite_eco].[lt_eco_typloc]` : Liste des valeurs permettant de décrire la valeur des types de locaux d'activité
+
+|Nom attribut | Définition | Type  | Valeurs par défaut |
+|:---|:---|:---|:---|    
+|code|Code du type de local|character varying(2)| |
+|valeur|Libellé du type de local|character varying(50)| |
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ code 
+
+Valeurs possibles :
+
+|Code|Valeur|
+|:---|:---|
+|00|Non renseigné|
+|10|Terrain vierge|
+|20|Terrain en activité (non bâti)|
+|21|Terrain avec bâtiment léger en activité|
+|22|Parking|
+|23|Surface de dépôt ou de stockage|
+|30|Bureau|
+|40|Commerce|
+|50|Activité|
+
+---
+
+## Classes d'objets des procédures d'aménagements
 
 L'ensemble des classes d'objets de gestion sont stockés dans le schéma `m_amenagement` ,et celles applicatives dans les schémas x_apps (pour les applications pro) ou x_apps_public (pour les applications grands publiques).
 
