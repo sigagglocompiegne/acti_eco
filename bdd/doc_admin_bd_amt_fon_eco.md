@@ -800,17 +800,24 @@ Particularité(s) à noter :
 
 ### classes d'objets applicatives métiers sont classés dans le schéma x_apps :
 
+(à venir)
+
 ### classes d'objets applicatives grands publics sont classés dans le schéma x_apps_public :
+
+(à venir)
 
 ### classes d'objets opendata sont classés dans le schéma x_opendata :
 
+(à venir)
+
 ### Liste de valeurs
 
-`[schema].[table]` : Liste des valeurs permettant de décrire ....
+`[m_activite_eco].[lt_eco_dest]` : Liste des valeurs permettant de décrire la valeur de destination des sites et poles d'activité
 
 |Nom attribut | Définition | Type  | Valeurs par défaut |
 |:---|:---|:---|:---|    
-
+|code|Code de la destination principale du site ou du Pôle|character varying(2)| |
+|valeur|Libellé de la destination principale du site ou du Pôle|character varying(30)| |
 
 Particularité(s) à noter :
 * Une clé primaire existe sur le champ code 
@@ -819,11 +826,66 @@ Valeurs possibles :
 
 |Code|Valeur|
 |:---|:---|
-
+|00|Non renseigné|
+|10|Artisanat|
+|20|Industrie ou R&D|
+|30|Tertiaire|
+|40|Transport et logistique|
+|50|Commerce|
+|60|Agriculture|
+|70|Service/Négoce|
 
 ---
 
-## Classes d'objets de l'aménagement opérationnel
+`[m_activite_eco].[lt_eco_etat]` : Liste des valeurs permettant de décrire la valeur d'état du site d'activité
+
+|Nom attribut | Définition | Type  | Valeurs par défaut |
+|:---|:---|:---|:---|    
+|code|Code de la typologie de la situation du site au regard de l'aménagement|character varying(2)| |
+|valeur|Code de la typologie de la situation du site au regard de l'aménagement|character varying(25)| |
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ code 
+
+Valeurs possibles :
+
+|Code|Valeur|
+|:---|:---|
+|00|Non renseigné|
+|10|Artisanat|
+|20|Industrie ou R&D|
+|30|Tertiaire|
+|40|Transport et logistique|
+|50|Commerce|
+|60|Agriculture|
+|70|Service/Négoce|
+
+---
+
+## Classes d'objets de l'activité économique
+
+L'ensemble des classes d'objets de gestion sont stockés dans le schéma `m_amenagement` ,et celles applicatives dans les schémas x_apps (pour les applications pro) ou x_apps_public (pour les applications grands publiques).
+
+### Classes d'objets de gestion :
+  
+`[m_amenagement].[]` : table 
+   
+|Nom attribut | Définition | Type | Valeurs par défaut |
+|:---|:---|:---|:---|
+
+
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ `idsite` l'attribution automatique de la référence unique s'effectue via une séquence. 
+* Une clé non primaire sur le champ `idsitereg` contient la référence du site pour les exports OpenData au standard Régional
+* Une clé étrangère existe sur la table de valeur `site_etat` (lien vers la liste de valeurs de l'état du site `lt_eco_etat`)
+* Une clé étrangère existe sur la table de valeur `dest` (lien vers la liste de valeurs de la destination du site `lt_eco_dest`)
+* Une clé étrangère existe sur la table de valeur `typo` (lien vers la liste de valeurs de la typologie du site `lt_eco_typo`)
+* Une clé étrangère existe sur la table de valeur `typsite` (lien vers la liste de valeurs du type de site `lt_eco_typsite`)
+* Une clé étrangère existe sur la table de valeur `site_voca` (lien vers la liste de valeurs de la vocation du site `lt_eco_voca`)
+* Une clé étrangère existe sur la table de valeur `src_geom` (lien vers la liste de valeurs des référentiels de saisie `lt_src_geom`)
+  
+---
 
 ## Classes d'objets de l'urbanisme réglementaire
 
