@@ -5254,7 +5254,7 @@ COMMENT ON COLUMN m_activite_eco.lt_eco_occuploc.code
     IS 'Code du type d''occupation d''un local';
 
 COMMENT ON COLUMN m_activite_eco.lt_eco_occuploc.valeur
-    IS 'Libellé du type d''ocuppation d''un local';
+    IS 'Libellé du type d''occupation d''un local';
     
 COMMENT ON CONSTRAINT lt_eco_occuploc_pkey ON m_activite_eco.lt_eco_occuploc
     IS 'Clé primaire de la table lt_eco_occuploc';
