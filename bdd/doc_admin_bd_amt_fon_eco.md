@@ -1659,7 +1659,7 @@ Particularité(s) à noter :
 
 
 Particularité(s) à noter :
-* Une clé primaire existe sur le champ `gis` l'attribution automatique de la référence unique s'effectue via une séquence
+* Une clé primaire existe sur le champ `gid` l'attribution automatique de la référence unique s'effectue via une séquence
 * Une clé étrangère existe sur la table de valeur `l_type` (lien vers la liste de valeurs de l'état du site `lt_ces_doc`)
 
   
@@ -1701,7 +1701,20 @@ Particularité(s) à noter :
 * Une clé primaire existe sur le champ `gid` l'attribution automatique de la référence unique s'effectue via une séquence
 * Une clé étrangère existe sur la table de valeur `l_type` (lien vers la liste de valeurs de l'état du site `lt_ces_doc`)
 
-  
+
+---
+
+`[m_foncier].[lk_cession_lot]` : Table de lien entre les lots et les dossiers de cession
+   
+|Nom attribut | Définition | Type | Valeurs par défaut |
+|:---|:---|:---|:---|
+|idgeolf|Identifiant géographique du lot|integer| |
+|idces|Identifiant du dossier de cession|character varying(6)| |
+
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ `idgeolf` l'attribution automatique de la référence unique s'effectue via la vue de gestion
+
   
 ---
 
@@ -1719,107 +1732,650 @@ Particularité(s) à noter :
 
 ### Liste de valeurs
 
-`[m_urbanisme_reg].[lt_proc_phase]` : Liste de valeurs des phases opérationnelles
+`[m_foncier].[lt_ces_cond]` : Liste de valeurs des conditions de cession
 
 |Nom attribut | Définition | Type  | Valeurs par défaut |
 |:---|:---|:---|:---|    
-|code|Code de la phase de l'opération|character varying(2)| |
-|valeur|Libellé de la phase de l'opération|character varying(50)| |
+|l_condi|Code de conditions de cession|character varying(2)| |
+|condi_lib|Libellé de conditions de cession|character varying(15)| |
 
 Particularité(s) à noter :
-* Une clé primaire existe sur le champ code 
+* Une clé primaire existe sur le champ l_condi 
 
 Valeurs possibles :
 
 |Code|Valeur|
 |:---|:---|
+|10|Amiable|
+|20|Préemption|
+|30|Judiciaire|
 |00|Non renseigné|
-|10|Etude de faisabilité|
-|20|Acquisitions engagées - étude préopérationnelle|
-|30|Opérationnelle|
-|40|Achevée|
+|40|Legs|
 
 ---
 
-`[m_urbanisme_reg].[lt_proc_typ]` : Liste de valeurs des types de procédure
+`[m_foncier].[lt_ces_doc]` : Liste de valeurs des types de documents concernant les cessions ou les acquisitions
 
 |Nom attribut | Définition | Type  | Valeurs par défaut |
 |:---|:---|:---|:---|    
-|code|Code de la procédure|character varying(2)| |
-|valeur|Libellé de la procédure|character varying(20)| |
+|l_type|Code du type de document de cessions ou d'acquisitions|character varying(2)| |
+|type_lib|Libellé du type de documents de cessions ou d'acquisitions|character varying(100)| |
 
 Particularité(s) à noter :
-* Une clé primaire existe sur le champ code 
+* Une clé primaire existe sur le champ l_type 
 
 Valeurs possibles :
 
 |Code|Valeur|
 |:---|:---|
+|10|Lettre d'engagement|
+|20|Estimation des domaines|
+|30|Délibération|
+|50|Compromis de vente|
+|51|Document d'arpentage|
+|60|Acte de vente|
+|99|Autre|
+|40|Acte d'engagement - promesse de vente|
 |00|Non renseigné|
-|10|ZAC|
-|21|Lotissement PA|
-|22|Lotissement DP|
-|30|PC valant division|
-|40|AFU|
+|61|Acte de transfert|
+|62|Acte d'échange|
+|63|Acte modificatif d'état descriptif|
+|64|Acte rectificatif|
+|65|Acte de rétrocession|
+|66|Acte de déclassement|
+|67|Acte d'acquisition|
 
 ---
 
-`[m_urbanisme_reg].[lt_proc_typconso]` : Liste de valeurs des types de consommations foncières
+`[m_foncier].[lt_ces_etat]` : Liste de valeurs de l''état du dossier
 
 |Nom attribut | Définition | Type  | Valeurs par défaut |
 |:---|:---|:---|:---|    
-|code|Code du type de consommation de surface|character varying(2)| |
-|valeur|Libellé du type de consommation de surface|character varying(50)| |
+|l_etat|Code de l'état du dossier de cession|character varying(2)| |
+|etat_lib|Libellé de l'état du dossier de cession|character varying(25)| |
 
 Particularité(s) à noter :
-* Une clé primaire existe sur le champ code 
+* Une clé primaire existe sur le champ l_etat 
 
 Valeurs possibles :
 
 |Code|Valeur|
 |:---|:---|
+|10|Négociation en cours|
+|20|Délibération prise|
+|30|Promesse signée|
+|40|Cédé|
+|50|Réméré|
+|60|Acquis|
+|99|Non cédé par un public|
 |00|Non renseigné|
-|10|Renouvellement|
-|20|Extension|
-|30|Mixte|
+|01|En vente|
+|02|Contact pris|
+|03|Accord du propriétaire|
+|04|En cours d'expropriation|
 
 ---
 
-`[m_urbanisme_reg].[lt_proc_typfon]` : Liste de valeurs des procédures foncières
+`[m_foncier].[lt_ces_nota]` : Liste de valeurs du nom du notaire
 
 |Nom attribut | Définition | Type  | Valeurs par défaut |
 |:---|:---|:---|:---|    
-|code|Code de la procédure foncière|character varying(2)| |
-|valeur|Libellé de la procédure foncière|character varying(50)| |
+|l_notaire|Code du nom du notaire|character varying(2)| |
+|notaire_lib|Libellé du notaire|character varying(20)| |
 
 Particularité(s) à noter :
-* Une clé primaire existe sur le champ code 
+* Une clé primaire existe sur le champ l_notaire 
 
 Valeurs possibles :
 
 |Code|Valeur|
 |:---|:---|
+
+(liste non communicable)
+
+---
+
+`[m_foncier].[lt_ces_orga]` : Liste de valeurs des noms de l''organisme cédant
+
+|Nom attribut | Définition | Type  | Valeurs par défaut |
+|:---|:---|:---|:---|    
+|l_orga|Code du nom de l'organisme cédant|character varying(2)| |
+|orga_lib|Libellé du nom de l'organisme cédant|character varying(50)| |
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ l_orga 
+
+Valeurs possibles :
+
+|Code|Valeur|
+|:---|:---|
+|10|ARC|
+|20|Commune de Armancourt|
+|21|Commune de Bienville|
+|22|Commune de Choisy-au-Bac|
+|23|Commune de Clairoix|
+|24|Commune de Compiègne|
+|25|Commune de Janville|
+|26|Commune de Jaux|
+|27|Commune de Jonquières|
+|28|Commune de Lachelle|
+|29|Commune de Lacroix-St-Ouen|
+|30|Commune de Margny-lès-Compiègne|
+|31|Commune de Le Meux|
+|32|Commune de St-Jean-aux-Bois|
+|33|Commune de St-Sauveur|
+|34|Commune de Venette|
+|36|EPFLO|
 |00|Non renseigné|
-|10|DUP|
-|20|Convention EPFLO|
-|30|Acquisitions amiables|
-|40|Opérateur privé|
+|35|Commune de Vieux-Moulin|
 
+---
 
+`[m_foncier].[lt_ces_tact]` : Liste de valeurs du type d''acte de cession
+
+|Nom attribut | Définition | Type  | Valeurs par défaut |
+|:---|:---|:---|:---|    
+|l_type|Code du type d'acte de cession|character varying(2)| |
+|type_lib|Libellé du type d'acte de cession|character varying(15)| |
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ l_type 
+
+Valeurs possibles :
+
+|Code|Valeur|
+|:---|:---|
+|10|Notarié|
+|20|Administratif|
+|30|Judiciaire|
+|00|Non renseigné|
+
+---
+
+`[m_foncier].[lt_ces_voca]` : Liste de valeurs du type d''acte de cession
+
+|Nom attribut | Définition | Type  | Valeurs par défaut |
+|:---|:---|:---|:---|    
+|l_voca|Code de la vocation de la cession|character varying(2)| |
+|voca_lib|Libellé de la vocation de la cession|character varying(50)| |
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ l_voca 
+
+Valeurs possibles :
+
+|Code|Valeur|
+|:---|:---|
+|14|Centre-bourg de Jaux|
+|15|Centre-bourg de St-Sauveur|
+|16|Chemin Mètresse|
+|19|Divers|
+|21|Ecole d'Etat Major|
+|22|Ecoquartier de Jaux|
+|23|Grammont|
+|25|Lainemont|
+|31|Muid Marcel|
+|33|Parc technologique des Rives de l'Oise|
+|34|Parc tertiaire et scientifique|
+|36|Piste cyclable rive droite|
+|37|Piste cyclable rive gauche|
+|38|Pôle de développement des Hauts de Margny|
+|41|Rétrocession|
+|45|Zone commerciale de Jaux|
+|46|Zone de loisirs de Jaux|
+|47|Zone industrielle Le Meux|
+|24|Les Jardins|
+|29|ZAC du Maubon|
+|17|Le Clos Féron|
+|30|Le Moulin Bacot|
+|32|La Pantoufière|
+|35|La Petite Couture|
+|39|ZAC de la Prairie - 2ème tranche|
+|40|ZAC des Prés Moireaux|
+|43|Les Tambouraines|
+|13|ZAC du Camp du Roy|
+|12|Les Cailloux|
+|11|Parc d'activité du Bois de Plaisance|
+|10|ZAC des Sablons (25ème RGA)|
+|44|ZA du Valadan|
+|26|ZAC des Longues Rayes|
+|28|Les Marronniers|
+|27|Le Maraiquet|
+|20|Quai de l'écluse|
+|48|Réserve foncière|
+|00|Non renseigné|
+|49|ZAC du Camp de Royallieu|
+|50|Rocade Nord-Est|
+|51|Site des Haras|
+|ZZ|Non concerné|
+|52|ZAE ZI NORD - PONT DES RETS|
+|18|ZAC des Deux Rives|
+|42|ZAC de la Gare (Les Roses de Picardie)|
+|53|Lotissement Abbé Stock|
+
+---
+
+`[m_foncier].[lt_rel_lot]` : Liste de valeurs du type de relation entre le dossier de cession et les lots
+
+|Nom attribut | Définition | Type  | Valeurs par défaut |
+|:---|:---|:---|:---|    
+|l_rel|Code de la relation|character varying(2)| |
+|rel_lib|Libellé de la relation|character varying(25)| |
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ l_rel 
+
+Valeurs possibles :
+
+|Code|Valeur|
+|:---|:---|
+|10|1 dossier = 1 lot|
+|20|1 dossier = n lot|
 
 
 ## Classes d'objets de la base SIRENE
 
+L'ensemble des classes d'objets de la référence externe Insee-SIRENE sont stockés dans le schéma `s_sirene`, et celles applicatives dans les schémas x_apps (pour les applications pro) ou x_apps_public (pour les applications grands publiques).
+
+### Classes d'objets de gestion :
+  
+`[s_sirene].[an_etablissement_api]` : Liste des établissements de la base de données Sirene dans la nouvelle structure mise en production en avril 2019 et mise à jour via l''API Sirene
+   
+|Nom attribut | Définition | Type | Valeurs par défaut |
+|:---|:---|:---|:---|
+|gid|Identifiant interne non signifiant|integer| |
+|date_maj|Date de mise à jour|timestamp without time zone| |
+|activiteprincipaleetablissement|Activité principale de l'établissement pendant la période active|character varying(6)| |
+|activiteprincipaleregistremetiersetablissement|Activité exercée par l'artisan inscrit au registre des métiers|character varying(6)| |
+|anneeeffectifsetablissement|Année de validité de la tranche d'effectif salarié de l'établissement|integer| |
+|caractereemployeuretablissement|Caractère employeur de l'établissement|character varying(1)| |
+|codecedex2etablissement|Code cedex de l'adresse secondaire|character varying(9)| |
+|codecedexetablissement|Code commune de l'établissement|character varying(9)| |
+|codecommune2etablissement|Code commune de l'adresse secondaire|character varying(5)| |
+|codecommuneetablissement|Code commune de l'établissement|character varying(5)| |
+|codepaysetranger2etablissement|Code Pays de l'adresse seondaire pour un établissement situé à l'étranger|character varying(5)| |
+|codepaysetrangeretablissement|Code Pays pour un établissement situé à l'étranger|character varying(5)| |
+|codepostal2etablissement|Code postal de l'adresse secondaire|character varying(5)| |
+|codepostaletablissement|Code postal|character varying(5)| |
+|complementadresse2etablissement|Complément d'adresse secondaire|character varying(38)| |
+|complementadresseetablissement|Complément d'adresse|character varying(38)| |
+|datecreationetablissement|Date de création de l'établissement|timestamp without time zone| |
+|datedebut|Date de début d'une période d'historique d'un établissement|timestamp without time zone| |
+|datederniertraitementetablissement|Date du dernier traitement de l'établissement dans le répertoire Sirene|timestamp without time zone| |
+|denominationusuelleetablissement|Dénomination usuelle de l'établissement|character varying(100)| |
+|distributionspeciale2etablissement|Distribution spéciale de l'adresse secondaire de l'établissement|character varying(26)| |
+|distributionspecialeetablissement|Distribution spéciale de l'établissement|character varying(26)| |
+|enseigne1etablissement|Première ligne d'enseigne de l'établissement|character varying(50)| |
+|enseigne2etablissement|Deuxième ligne d'enseigne de l'établissement|character varying(50)| |
+|enseigne3etablissement|Troisième ligne d'enseigne de l'établissement|character varying(50)| |
+|etablissementsiege|Qualité de siège ou non de l'établissement|boolean| |
+|etatadministratifetablissement|Etat administratif de l'établissement|character varying(1)| |
+|indicerepetition2etablissement|Indice de répétition secondaire dans la voie|character varying(1)| |
+|indicerepetitionetablissement|Indice de répétition dans la voie|character varying(1)| |
+|libellecedex2etablissement|Libellé du code cedex de l'adresse secondaire|character varying(100)| |
+|libellecedexetablissement|Libellé du code cedex|character varying(100)| |
+|libellecommune2etablissement|Libellé de la commune de l'adresse secondaire|character varying(100)| |
+|libellecommuneetablissement|Libellé de la commune|character varying(100)| |
+|libellecommuneetranger2etablissement|Libellé de la commune de l'adresse secondaire pour un établissement situé à l'étranger|character varying(100)| |
+|libellecommuneetrangeretablissement|Libellé de la commune pour un établissement situé à l'étranger|character varying(100)| |
+|libellepaysetranger2etablissement|Libellé du Pays de l'adresse secondaire pour un établissement situé à l'étranger|character varying(100)| |
+|libellepaysetrangeretablissement|Libellé du Pays pour un établissement situé à l'étranger|character varying(100)| |
+|libellevoie2etablissement|Libellé de voie de l'adresse secondaire|character varying(100)| |
+|libellevoieetablissement|Libellé de voie|character varying(100)| |
+|nic|Numéro interne de classement de l'établissement|character varying(5)| |
+|nombreperiodesetablissement|Nombre de période historisé de l'établissement|integer| |
+|nomenclatureactiviteprincipaleetablissement|Nomenclature d'activité de la variable activitePrincipaleEtablissement|character varying(8)| |
+|numerovoie2etablissement|Numéro de la voie de l'adresse secondaire|character varying(4)| |
+|numerovoieetablissement|Numéro de la voie|character varying(4)| |
+|siren|Numéro SIREN|character varying(9)| |
+|siret|Numéro SIRET|character varying(14)| |
+|statutdiffusionetablissement|Statut de diffusion de l'établissement|character varying(1)| |
+|trancheeffectifsetablissement|Tranche d'effectif salarié de l'établissement|character varying(2)| |
+|typevoie2etablissement|Type de voie de l'adresse secondaire|character varying(4)| |
+|typevoieetablissement|Type de voie|character varying(4)| |
+|recherche_etab_geo|Attribut formatant le SIRET et l'ensemble des noms possibles de l'établissement (SIRENE + EPCI) et de l'unité légale (mise à jour à l'intégration des établissements)|character varying(1000)| |
+|nom_etab_geo|Tout libellé de l'établissement ou de l'unité légale regroupé pour affichage dans fiche dans les appli GEO (mise à jour à l'intégration des établissements)|character varying(1000)| |
+
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ `gid` l'attribution automatique de la référence unique s'effectue via une séquence
+* Une clé étrangère non liée existe sur la table de valeur `caractereemployeuretablissement` (lien vers la liste de valeurs de l'état du site `lt_cemployeur`)
+* Une clé étrangère non liée existe sur la table de valeur `etatadministratifetablissement` (lien vers la liste de valeurs de l'état du site `lt_etatadmin`)
+* Une clé étrangère non liée existe sur la table de valeur `trancheeffectifsetablissement` (lien vers la liste de valeurs de l'état du site `lt_trancheeff`)
+* Une clé étrangère non liée existe sur la table de valeur `activiteprincipaleetablissement` (lien vers la liste de valeurs de l'état du site `naf_n5`)
+
+
+* 2 attributs supplémentaires sont implémentés et mise à jour à l'intégration des mises à jour de l'API afin de faciliuter la recherche multiples par n° SIRET ou par nom de l'établissement ou de l'unité légale :
+ * recherche_etab_geo
+ * nom_etab_geo 
+
+  
+---
+
+`[s_sirene].[an_unitelegale_api]` : Liste des unités légales de la base de données Sirene dans la nouvelle structure mise en production en avril 2019 et mise à jour via l''API Sirene.
+   
+|Nom attribut | Définition | Type | Valeurs par défaut |
+|:---|:---|:---|:---|
+|gid|Identifiant interne non signifiant|integer| |
+|date_maj|Date de mise à jour des données|timestamp without time zone| |
+|activiteprincipaleunitelegale|Activité principale de l'unité légale|character varying(6)| |
+|anneecategorieentreprise|Année de validité de la catégorie d'entreprise|integer| |
+|anneeeffectifsunitelegale|Année de validité de la tranche d'effectif salarié de l'unité légale|integer| |
+|caractereemployeurunitelegale|Caractère employeur de l'unité légale|character varying(1)| |
+|categorieentreprise|Catégorie à laquelle appartient l'entreprise|character varying(3)| |
+|categoriejuridiqueunitelegale|Catégorie juridique de l'unité légale|character varying(4)| |
+|datecreationunitelegale|Date de création de l'unité légale|timestamp without time zone| |
+|datedebut|Date de début d'une période d'historique d'une unité légale|timestamp without time zone| |
+|datederniertraitementunitelegale|Date du dernier traitement de l'unité légale dans le répertoire Sirene|timestamp without time zone| |
+|denominationunitelegale|Dénomination de l'unité légale|character varying(120)| |
+|denominationusuelle1unitelegale|Dénomination usuelle de l'unité légale|character varying(70)| |
+|denominationusuelle2unitelegale|Dénomination usuelle de l'unité légale (deuxième champ)|character varying(70)| |
+|denominationusuelle3unitelegale|Dénomination usuelle de l'unité légale (troisème champ)|character varying(70)| |
+|economiesocialesolidaireunitelegale|Appartenance au champ de l'économie sociale et solidaire|character varying(1)| |
+|etatadministratifunitelegale|Etat administratif de l'unité légale|character varying(1)| |
+|identifiantassociationunitelegale|Numéro au Répertoire National des Associations|character varying(10)| |
+|nicsiegeunitelegale|Numéro interne de classement de l'unité légale|character varying(5)| |
+|nombreperiodesunitelegale|Nombre de périodes de l'unité légale|integer| |
+|nomenclatureactiviteprincipaleunitelegale|Nomenclature d'activité de la variable activiteprincipaleunitelegale|character varying(8)| |
+|nomunitelegale|Nom de naissance de la personne physique|character varying(100)| |
+|nomusageunitelegale|Nom d'usage de la personne physique|character varying(100)| |
+|prenom1unitelegale|Premier prénom déclaré pour une personne physique|character varying(20)| |
+|prenom2unitelegale|Deuxième prénom déclaré pour une personne physique|character varying(20)| |
+|prenom3unitelegale|Troisème prénom déclaré pour une personne physique|character varying(20)| |
+|prenom4unitelegale|Quatrième prénom déclaré pour une personne physique|character varying(20)| |
+|prenomusuelunitelegale|Prénom usuel de la personne physique|character varying(20)| |
+|pseudonymeunitelegale|Pseudonyme de la personne physique|character varying(100)| |
+|sexeunitelegale|Caractère féminin ou masculin de la personne physique|character varying(1)| |
+|sigleunitelegale|Sigle de l'unité légale|character varying(20)| |
+|siren|Numéro SIREN|character varying(9)| |
+|statutdiffusionunitelegale|Statut de diffusion de l'unité légale|character varying(1)| |
+|trancheeffectifsunitelegale|Tranche d'effectif salarié de l'unité légale|character varying(2)| |
+|unitepurgeeunitelegale|Unité légale purgée|character varying(4)| |
+
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ `gid` l'attribution automatique de la référence unique s'effectue via une séquence
+* Une clé étrangère non liée existe sur la table de valeur `activiteprincipaleunitelegale` (lien vers la liste de valeurs de l'état du site `naf_n5`)
+* Une clé étrangère non liée existe sur la table de valeur `caractereemployeurunitelegale` (lien vers la liste de valeurs de l'état du site `lt_cemployeur`)
+* Une clé étrangère non liée existe sur la table de valeur `economiesocialesolidaireunitelegale` (lien vers la liste de valeurs de l'état du site `lt_essul`)
+* Une clé étrangère non liée existe sur la table de valeur `categoriejuridiqueunitelegale` (lien vers la liste de valeurs de l'état du site `lt_catejuri_n3`)
+* Une clé étrangère non liée existe sur la table de valeur `etatadministratifunitelegale` (lien vers la liste de valeurs de l'état du site `lt_etatadmin`)
+* Une clé étrangère non liée existe sur la table de valeur `trancheeffectifsunitelegale` (lien vers la liste de valeurs de l'état du site `lt_trancheeff`)
+ 
+
+
+### classes d'objets applicatives métiers sont classés dans le schéma x_apps :
+
+(à venir)
+
+### classes d'objets applicatives grands publics sont classés dans le schéma x_apps_public :
+
+(à venir)
+
+### classes d'objets opendata sont classés dans le schéma x_opendata :
+
+(à venir)
+
+### Liste de valeurs
+
+`[s_sirene].[lt_catejuri_n1]` : Liste de valeurs des conditions de cession
+
+|Nom attribut | Définition | Type  | Valeurs par défaut |
+|:---|:---|:---|:---|    
+|code|Code de la catégorie juridique de niveau 1|character varying(1)| |
+|valeur|Valeur de la catégorie juridique de niveau 1|character varying(250)| |
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ code 
+
+Valeurs possibles :
+
+|Code|Valeur|
+|:---|:---|
+|0|Organisme de placement collectif en valeurs mobilières sans personnalité morale|
+|1|Entrepreneur individuel|
+|2|Groupement de droit privé non doté de la personnalité morale|
+|3|Personne morale de droit étranger|
+|4|Personne morale de droit public soumise au droit commercial|
+|5|Société commerciale|
+|6|Autre personne morale immatriculée au RCS|
+|7|Personne morale et organisme soumis au droit administratif|
+|8|Organisme privé spécialisé|
+|9|Groupement de droit privé|
+
+---
+
+`[s_sirene].[lt_catejuri_n2]` : Liste de valeurs des types de documents concernant les cessions ou les acquisitions
+
+|Nom attribut | Définition | Type  | Valeurs par défaut |
+|:---|:---|:---|:---|    
+|l_type|Code du type de document de cessions ou d'acquisitions|character varying(2)| |
+|type_lib|Libellé du type de documents de cessions ou d'acquisitions|character varying(100)| |
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ l_type 
+
+Valeurs possibles :
+
+|Code|Valeur|
+|:---|:---|
+|10|Lettre d'engagement|
+|20|Estimation des domaines|
+|30|Délibération|
+|50|Compromis de vente|
+|51|Document d'arpentage|
+|60|Acte de vente|
+|99|Autre|
+|40|Acte d'engagement - promesse de vente|
+|00|Non renseigné|
+|61|Acte de transfert|
+|62|Acte d'échange|
+|63|Acte modificatif d'état descriptif|
+|64|Acte rectificatif|
+|65|Acte de rétrocession|
+|66|Acte de déclassement|
+|67|Acte d'acquisition|
+
+---
+
+`[m_foncier].[lt_ces_etat]` : Liste de valeurs de l''état du dossier
+
+|Nom attribut | Définition | Type  | Valeurs par défaut |
+|:---|:---|:---|:---|    
+|l_etat|Code de l'état du dossier de cession|character varying(2)| |
+|etat_lib|Libellé de l'état du dossier de cession|character varying(25)| |
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ l_etat 
+
+Valeurs possibles :
+
+|Code|Valeur|
+|:---|:---|
+|10|Négociation en cours|
+|20|Délibération prise|
+|30|Promesse signée|
+|40|Cédé|
+|50|Réméré|
+|60|Acquis|
+|99|Non cédé par un public|
+|00|Non renseigné|
+|01|En vente|
+|02|Contact pris|
+|03|Accord du propriétaire|
+|04|En cours d'expropriation|
+
+---
+
+`[m_foncier].[lt_ces_nota]` : Liste de valeurs du nom du notaire
+
+|Nom attribut | Définition | Type  | Valeurs par défaut |
+|:---|:---|:---|:---|    
+|l_notaire|Code du nom du notaire|character varying(2)| |
+|notaire_lib|Libellé du notaire|character varying(20)| |
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ l_notaire 
+
+Valeurs possibles :
+
+|Code|Valeur|
+|:---|:---|
+
+(liste non communicable)
+
+---
+
+`[m_foncier].[lt_ces_orga]` : Liste de valeurs des noms de l''organisme cédant
+
+|Nom attribut | Définition | Type  | Valeurs par défaut |
+|:---|:---|:---|:---|    
+|l_orga|Code du nom de l'organisme cédant|character varying(2)| |
+|orga_lib|Libellé du nom de l'organisme cédant|character varying(50)| |
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ l_orga 
+
+Valeurs possibles :
+
+|Code|Valeur|
+|:---|:---|
+|10|ARC|
+|20|Commune de Armancourt|
+|21|Commune de Bienville|
+|22|Commune de Choisy-au-Bac|
+|23|Commune de Clairoix|
+|24|Commune de Compiègne|
+|25|Commune de Janville|
+|26|Commune de Jaux|
+|27|Commune de Jonquières|
+|28|Commune de Lachelle|
+|29|Commune de Lacroix-St-Ouen|
+|30|Commune de Margny-lès-Compiègne|
+|31|Commune de Le Meux|
+|32|Commune de St-Jean-aux-Bois|
+|33|Commune de St-Sauveur|
+|34|Commune de Venette|
+|36|EPFLO|
+|00|Non renseigné|
+|35|Commune de Vieux-Moulin|
+
+---
+
+`[m_foncier].[lt_ces_tact]` : Liste de valeurs du type d''acte de cession
+
+|Nom attribut | Définition | Type  | Valeurs par défaut |
+|:---|:---|:---|:---|    
+|l_type|Code du type d'acte de cession|character varying(2)| |
+|type_lib|Libellé du type d'acte de cession|character varying(15)| |
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ l_type 
+
+Valeurs possibles :
+
+|Code|Valeur|
+|:---|:---|
+|10|Notarié|
+|20|Administratif|
+|30|Judiciaire|
+|00|Non renseigné|
+
+---
+
+`[m_foncier].[lt_ces_voca]` : Liste de valeurs du type d''acte de cession
+
+|Nom attribut | Définition | Type  | Valeurs par défaut |
+|:---|:---|:---|:---|    
+|l_voca|Code de la vocation de la cession|character varying(2)| |
+|voca_lib|Libellé de la vocation de la cession|character varying(50)| |
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ l_voca 
+
+Valeurs possibles :
+
+|Code|Valeur|
+|:---|:---|
+|14|Centre-bourg de Jaux|
+|15|Centre-bourg de St-Sauveur|
+|16|Chemin Mètresse|
+|19|Divers|
+|21|Ecole d'Etat Major|
+|22|Ecoquartier de Jaux|
+|23|Grammont|
+|25|Lainemont|
+|31|Muid Marcel|
+|33|Parc technologique des Rives de l'Oise|
+|34|Parc tertiaire et scientifique|
+|36|Piste cyclable rive droite|
+|37|Piste cyclable rive gauche|
+|38|Pôle de développement des Hauts de Margny|
+|41|Rétrocession|
+|45|Zone commerciale de Jaux|
+|46|Zone de loisirs de Jaux|
+|47|Zone industrielle Le Meux|
+|24|Les Jardins|
+|29|ZAC du Maubon|
+|17|Le Clos Féron|
+|30|Le Moulin Bacot|
+|32|La Pantoufière|
+|35|La Petite Couture|
+|39|ZAC de la Prairie - 2ème tranche|
+|40|ZAC des Prés Moireaux|
+|43|Les Tambouraines|
+|13|ZAC du Camp du Roy|
+|12|Les Cailloux|
+|11|Parc d'activité du Bois de Plaisance|
+|10|ZAC des Sablons (25ème RGA)|
+|44|ZA du Valadan|
+|26|ZAC des Longues Rayes|
+|28|Les Marronniers|
+|27|Le Maraiquet|
+|20|Quai de l'écluse|
+|48|Réserve foncière|
+|00|Non renseigné|
+|49|ZAC du Camp de Royallieu|
+|50|Rocade Nord-Est|
+|51|Site des Haras|
+|ZZ|Non concerné|
+|52|ZAE ZI NORD - PONT DES RETS|
+|18|ZAC des Deux Rives|
+|42|ZAC de la Gare (Les Roses de Picardie)|
+|53|Lotissement Abbé Stock|
+
+---
+
+`[m_foncier].[lt_rel_lot]` : Liste de valeurs du type de relation entre le dossier de cession et les lots
+
+|Nom attribut | Définition | Type  | Valeurs par défaut |
+|:---|:---|:---|:---|    
+|l_rel|Code de la relation|character varying(2)| |
+|rel_lib|Libellé de la relation|character varying(25)| |
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ l_rel 
+
+Valeurs possibles :
+
+|Code|Valeur|
+|:---|:---|
+|10|1 dossier = 1 lot|
+|20|1 dossier = n lot|
+
+
 
 ## Projet QGIS pour la gestion
 
+(à venir)
 
 ## Traitement automatisé mis en place (Workflow de l'ETL FME)
 
+(à venir)
 
 ## Export Open Data
 
-
+(à venir)
 
 
 ---
