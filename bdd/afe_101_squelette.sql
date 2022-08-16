@@ -5984,7 +5984,7 @@ GRANT ALL ON TABLE m_urbanisme_reg.an_proc_media TO create_sig;
 GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_urbanisme_reg.an_proc_media TO sig_edit;
 
 COMMENT ON TABLE m_urbanisme_reg.an_proc_media
-    IS 'Table gérant les documents intégrés pour la gestion des données du marché immobilier d''entreprises';
+    IS 'Table gérant les documents intégrés pour la gestion des procédures d''aménagement';
 
 COMMENT ON COLUMN m_urbanisme_reg.an_proc_media.id
     IS 'Identifiant interne non signifiant de l''objet saisi';
