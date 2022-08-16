@@ -37,7 +37,7 @@ Pour rappel des grands principes :
 
 ## Dépendances
 
-Cette base de donnnées est interdépendante du fait d'une partie urbanisée. Les données de l'activité éconique sont liées en partie à des données d'aménagements opérationnels, de foncier, ou de ressources externes comme les données de la base SIRENE de l'Insee.
+Cette base de donnnées est interdépendante du fait d'une partie urbanisée. Les données de l'activité économique sont liées en partie à des données d'aménagements opérationnels, de foncier, ou de ressources externes comme les données de la base SIRENE de l'Insee.
 
 ## Classes d'objets urbanisé ou partagé
 
