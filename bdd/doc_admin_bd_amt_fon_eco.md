@@ -1395,6 +1395,214 @@ Valeurs possibles :
 
 ## Classes d'objets de l'urbanisme réglementaire
 
+L'ensemble des classes d'objets de gestion sont stockés dans le schéma `m_urbanisme_reg` ,et celles applicatives dans les schémas x_apps (pour les applications pro) ou x_apps_public (pour les applications grands publiques).
+
+### Classes d'objets de gestion :
+  
+`[m_urbanisme_reg].[an_proc_media]` : table alphanumérique gérant les documents intégrés pour la gestion des procédures d'aménagement
+   
+|Nom attribut | Définition | Type | Valeurs par défaut |
+|:---|:---|:---|:---|
+|gid|Compteur (identifiant interne)|integer|nextval('m_urbanisme_reg.an_proc_media_seq'::regclass)|
+|id|Identifiant interne non signifiant de l'objet saisi|text| |
+|media|Champ Média de GEO|text| |
+|miniature|Champ miniature de GEO|bytea| |
+|n_fichier|Nom du fichier|text| |
+|t_fichier|Type de média dans GEO|text| |
+|op_sai|Opérateur de saisie (par défaut login de connexion à GEO)|character varying(20)| |
+|date_sai|Date de la saisie du document|timestamp without time zone| |
+|l_doc|Titre du document ou légère description|character varying(100)| |
+
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ `gid` l'attribution automatique de la référence unique s'effectue via une séquence
+* Une clé étrangère existe sur la table de valeur `t_doc` (lien vers la liste de valeurs de l'état du site `lt_eco_tdocmedia`)
+
+  
+---
+
+`[m_urbanisme_reg].[geo_proced]` : table des objets contenant les données des procédures d''aménagement
+   
+|Nom attribut | Définition | Type | Valeurs par défaut |
+|:---|:---|:---|:---|
+|idproc|Identifiant non signifiant de la procédure|character varying(5)|('PR'::text || nextval('m_urbanisme_reg.geo_proc_seq'::regclass))|
+|nom|Libellé de l'opération|character varying(255)| |
+|alias|Alias du nom de l'opération|character varying(255)| |
+|dest|Code de la destination du Site (issu de la liste des valeurs du modèle CNIG sur les PLU)|character varying(2)|'00'::character varying|
+|z_proced|Code de la procédure d'aménagement|character varying(2)|'00'::character varying|
+|phase|Phase de l'opération|character varying(2)| |
+|moa|Maitrise d'ouvrage de l'opération|character varying(80)| |
+|conso_type|Type de consommation foncière|character varying(2)| |
+|pr_urb|Procédure d'urbanisme|boolean|false|
+|date_crea|Date de création de la ZAC|date| |
+|pr_fon|Procédure foncière|boolean|false|
+|pr_fon_date|Date de la procédure foncière|date| |
+|surf_ha|Superficie totale programmée de l'opération en ha|double precision| |
+|existe|Existance du site|boolean|true|
+|pr_fon_type|Procédure foncière engagée|character varying(2)| |
+|ref_compta|Référence comptable du projet|character varying(5)| |
+|surf_cess_ha|Surface cessible programmée en ha|numeric| |
+|date_clo|Date de cloture de l'opération|timestamp without time zone| |
+|nb_log|Nombre total de logements programmés|integer| |
+|nb_logind|Nombre de logements individuels programmés|integer| |
+|nb_logindgr|Nombre de logements individuels groupés programmés|integer| |
+|nb_logcol|Nombre de logements collectifs programmés|integer| |
+|nb_logaide|Nombre total de logements aidés programmés|integer| |
+|nb_logaide_loc|Nombre total de logements aidés en location programmés|integer| |
+|nb_logaide_acc|Nombre total de logements en accession en location programmés|integer| |
+|nom_cp|Nom du chef de projet suivant la procédure|character varying(80)| |
+|op_sai|Libellé de la personne ayant saisie l'objet|character varying(80)| |
+|date_sai|Date de saisie des données attributaires|timestamp without time zone| |
+|date_maj|Date de mise à jour des données attributaires|timestamp without time zone| |
+|epci|Autorité compétente|character varying(10)| |
+|observ|Observations diverses|character varying(1000)| |
+
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ `idproc` l'attribution automatique de la référence unique s'effectue via une séquence
+* Une clé étrangère existe sur la table de valeur `conso_type` (lien vers la liste de valeurs de l'état du site `lt_proc_typconso`)
+* Une clé étrangère existe sur la table de valeur `phase` (lien vers la liste de valeurs de l'état du site `lt_proc_phase`)
+* Une clé étrangère existe sur la table de valeur `pr_fon_type` (lien vers la liste de valeurs de l'état du site `lt_proc_typfon`)
+* Une clé étrangère existe sur la table de valeur `z_proced` (lien vers la liste de valeurs de l'état du site `lt_proc_typ`)
+  
+  
+---
+
+### classes d'objets applicatives métiers sont classés dans le schéma x_apps :
+
+(à venir)
+
+### classes d'objets applicatives grands publics sont classés dans le schéma x_apps_public :
+
+(à venir)
+
+### classes d'objets opendata sont classés dans le schéma x_opendata :
+
+(à venir)
+
+### Liste de valeurs
+
+`[m_amenagement].[lt_amt_empesp_pu]` : Liste des valeurs permettant de décrire la valeur de la vocation des espaces publics
+
+|Nom attribut | Définition | Type  | Valeurs par défaut |
+|:---|:---|:---|:---|    
+|code|Code de la vocation de l'espace public|character varying(2)| |
+|valeur|Libellé de la vocation de l'espace public|character varying(35)| |
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ code 
+
+Valeurs possibles :
+
+|Code|Valeur|
+|:---|:---|
+|00|Non renseigné|
+|11|Route|
+|12|Trottoir brut|
+|13|Trottoir paysagé|
+|14|Stationnement|
+|15|Terre plein central ou giratoire|
+|16|Voie réservée|
+|17|Esplanade|
+|21|Chemin|
+|22|Circulation douce|
+|31|Bassin d'orage|
+|32|Equipement réseau|
+|33|Equipement public|
+|41|Espace vert|
+|42|Bois|
+|50|Bâtiment public|
+|99|Autre|
+
+---
+
+`[m_amenagement].[lt_amt_stadeamng]` : Liste des valeurs permettant de décrire la valeur du stade d'aménagement
+
+|Nom attribut | Définition | Type  | Valeurs par défaut |
+|:---|:---|:---|:---|    
+|code|Code du stade d'aménagement du lot|character varying(2)| |
+|valeur|Libellé du stade d'aménagement du lot|character varying(15)| |
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ code 
+
+Valeurs possibles :
+
+|Code|Valeur|
+|:---|:---|
+|00|Non renseigné|
+|10|Aucun|
+|20|Non acquis|
+|30|Acquis|
+|40|Viabilisé|
+
+---
+
+`[m_amenagement].[lt_amt_stadeamng2]` : Liste des valeurs permettant de décrire la valeur du stade d'aménagement spécifique ARC
+
+|Nom attribut | Définition | Type  | Valeurs par défaut |
+|:---|:---|:---|:---|    
+|code|Code du stade d'aménagement du lot spécifique ARC|character varying(2)| |
+|valeur|Libellé du stade d'aménagement du lot spécifique ARC|character varying(15)| |
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ code 
+
+Valeurs possibles :
+
+|Code|Valeur|
+|:---|:---|
+|00|Non renseigné|
+|10|Disponible (aménagé ou aménageable rapidement)|
+|20|Indisponible (terrain non acheté)|
+|30|Indisponible (terrain non aménagé)|
+
+---
+
+`[m_amenagement].[lt_amt_stadecomm]` : Liste des valeurs permettant de décrire la valeur du stade de commercialisation
+
+|Nom attribut | Définition | Type  | Valeurs par défaut |
+|:---|:---|:---|:---|    
+|code|Code du stade de commercialisation|character varying(2)| |
+|valeur|Libellé du stade de commercialisation|character varying(20)| |
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ code 
+
+Valeurs possibles :
+
+|Code|Valeur|
+|:---|:---|
+|00|Non renseigné|
+|10|Aucun|
+|20|Commercialisable|
+
+---
+
+`[m_amenagement].[lt_amt_stadecomm2]` : Liste des valeurs permettant de décrire la valeur du stade de commercialisation spécifique ARC
+
+|Nom attribut | Définition | Type  | Valeurs par défaut |
+|:---|:---|:---|:---|    
+|code|Code du stade de commercialisation spécifique à l'ARC|character varying(2)| |
+|valeur|Libellé du stade de commercialisation spécifique à l'ARC|character varying(80)| |
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ code 
+
+Valeurs possibles :
+
+|Code|Valeur|
+|:---|:---|
+|00|Non renseigné|
+|11|En vente|
+|12|En vente (avec contrainte)|
+|20|Vendu|
+|31|Réservé (par une délibération du Conseil d'Agglomération)|
+|32|Réservé (option)|
+|99|Non commercialisé par un acteur public|
+
+---
+
 ## Classes d'objets du foncier
 
 ## Classes d'objets de la base SIRENE
