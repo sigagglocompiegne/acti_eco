@@ -2102,6 +2102,20 @@ Particularité(s) à noter :
 * Une clé étrangère non liée existe sur la table de valeur `etatadministratifunitelegale` (lien vers la liste de valeurs de l'état du site `lt_etatadmin`)
 * Une clé étrangère non liée existe sur la table de valeur `trancheeffectifsunitelegale` (lien vers la liste de valeurs de l'état du site `lt_trancheeff`)
  
+---
+
+`[s_sirene].[lk_sirene_succession]` : Lien entre les SIRET des prédécesseurs et des successeurs présents dans le répertoire Sirene.Ce lien étant déclaratif, tous les liens ne sont pas connus de l''Insee
+   
+|Nom attribut | Définition | Type | Valeurs par défaut |
+|:---|:---|:---|:---|
+|id|Identifiant non signifiant|integer|nextval('s_sirene.lk_sirene_succession_seq'::regclass)|
+|siretold|N° SIRET de l'ancien établissement|character varying(14)| |
+|siretnew|N° SIRET du nouvel établissement si un lien de succession est déclaré|character varying(14)| |
+
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ `id` l'attribution automatique de la référence unique s'effectue via une séquence
+
 
 
 ### classes d'objets applicatives métiers sont classés dans le schéma x_apps :
