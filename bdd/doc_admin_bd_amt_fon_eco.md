@@ -1256,7 +1256,36 @@ Particularité(s) à noter :
 Particularité(s) à noter :
 * Une clé primaire existe sur le champ `id` l'attribution automatique de la référence unique s'effectue via une séquence. 
   
+
 ---
+
+`[m_amenagement].[an_amt_site_equ]` : Information alphanumérique sur les Sites à vocation équipement. Les objets virtuels de référence sont gérés dans le schéma r_objet 
+   
+|Nom attribut | Définition | Type | Valeurs par défaut |
+|:---|:---|:---|:---|
+
+
+
+Particularité(s) à noter :
+* ...
+
+---
+
+`[m_amenagement].[an_amt_site_habitat]` : Information alphanumérique sur les Sites à vocation habitat. Les objets virtuels de référence sont gérés dans le schéma r_objet
+   
+|Nom attribut | Définition | Type | Valeurs par défaut |
+|:---|:---|:---|:---|
+
+---
+
+`[m_amenagement].[an_amt_site_mixte]` : Information alphanumérique sur les Sites d''activités mixte (habitat/Activité). Les objets virtuels de référence sont gérés dans le schéma r_objet';
+   
+|Nom attribut | Définition | Type | Valeurs par défaut |
+|:---|:---|:---|:---|
+
+
+Particularité(s) à noter :
+* ...
 
 ### classes d'objets applicatives métiers sont classés dans le schéma x_apps :
 
