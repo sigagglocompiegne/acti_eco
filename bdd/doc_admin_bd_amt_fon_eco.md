@@ -1482,12 +1482,12 @@ Particularité(s) à noter :
 
 ### Liste de valeurs
 
-`[m_amenagement].[lt_amt_empesp_pu]` : Liste des valeurs permettant de décrire la valeur de la vocation des espaces publics
+`[m_urbanisme_reg].[lt_proc_phase]` : Liste de valeurs des phases opérationnelles
 
 |Nom attribut | Définition | Type  | Valeurs par défaut |
 |:---|:---|:---|:---|    
-|code|Code de la vocation de l'espace public|character varying(2)| |
-|valeur|Libellé de la vocation de l'espace public|character varying(35)| |
+|code|Code de la phase de l'opération|character varying(2)| |
+|valeur|Libellé de la phase de l'opération|character varying(50)| |
 
 Particularité(s) à noter :
 * Une clé primaire existe sur le champ code 
@@ -1497,31 +1497,19 @@ Valeurs possibles :
 |Code|Valeur|
 |:---|:---|
 |00|Non renseigné|
-|11|Route|
-|12|Trottoir brut|
-|13|Trottoir paysagé|
-|14|Stationnement|
-|15|Terre plein central ou giratoire|
-|16|Voie réservée|
-|17|Esplanade|
-|21|Chemin|
-|22|Circulation douce|
-|31|Bassin d'orage|
-|32|Equipement réseau|
-|33|Equipement public|
-|41|Espace vert|
-|42|Bois|
-|50|Bâtiment public|
-|99|Autre|
+|10|Etude de faisabilité|
+|20|Acquisitions engagées - étude préopérationnelle|
+|30|Opérationnelle|
+|40|Achevée|
 
 ---
 
-`[m_amenagement].[lt_amt_stadeamng]` : Liste des valeurs permettant de décrire la valeur du stade d'aménagement
+`[m_urbanisme_reg].[lt_proc_typ]` : Liste de valeurs des types de procédure
 
 |Nom attribut | Définition | Type  | Valeurs par défaut |
 |:---|:---|:---|:---|    
-|code|Code du stade d'aménagement du lot|character varying(2)| |
-|valeur|Libellé du stade d'aménagement du lot|character varying(15)| |
+|code|Code de la procédure|character varying(2)| |
+|valeur|Libellé de la procédure|character varying(20)| |
 
 Particularité(s) à noter :
 * Une clé primaire existe sur le champ code 
@@ -1531,19 +1519,20 @@ Valeurs possibles :
 |Code|Valeur|
 |:---|:---|
 |00|Non renseigné|
-|10|Aucun|
-|20|Non acquis|
-|30|Acquis|
-|40|Viabilisé|
+|10|ZAC|
+|21|Lotissement PA|
+|22|Lotissement DP|
+|30|PC valant division|
+|40|AFU|
 
 ---
 
-`[m_amenagement].[lt_amt_stadeamng2]` : Liste des valeurs permettant de décrire la valeur du stade d'aménagement spécifique ARC
+`[m_urbanisme_reg].[lt_proc_typconso]` : Liste de valeurs des types de consommations foncières
 
 |Nom attribut | Définition | Type  | Valeurs par défaut |
 |:---|:---|:---|:---|    
-|code|Code du stade d'aménagement du lot spécifique ARC|character varying(2)| |
-|valeur|Libellé du stade d'aménagement du lot spécifique ARC|character varying(15)| |
+|code|Code du type de consommation de surface|character varying(2)| |
+|valeur|Libellé du type de consommation de surface|character varying(50)| |
 
 Particularité(s) à noter :
 * Une clé primaire existe sur le champ code 
@@ -1553,18 +1542,18 @@ Valeurs possibles :
 |Code|Valeur|
 |:---|:---|
 |00|Non renseigné|
-|10|Disponible (aménagé ou aménageable rapidement)|
-|20|Indisponible (terrain non acheté)|
-|30|Indisponible (terrain non aménagé)|
+|10|Renouvellement|
+|20|Extension|
+|30|Mixte|
 
 ---
 
-`[m_amenagement].[lt_amt_stadecomm]` : Liste des valeurs permettant de décrire la valeur du stade de commercialisation
+`[m_urbanisme_reg].[lt_proc_typfon]` : Liste de valeurs des procédures foncières
 
 |Nom attribut | Définition | Type  | Valeurs par défaut |
 |:---|:---|:---|:---|    
-|code|Code du stade de commercialisation|character varying(2)| |
-|valeur|Libellé du stade de commercialisation|character varying(20)| |
+|code|Code de la procédure foncière|character varying(2)| |
+|valeur|Libellé de la procédure foncière|character varying(50)| |
 
 Particularité(s) à noter :
 * Une clé primaire existe sur le champ code 
@@ -1574,36 +1563,250 @@ Valeurs possibles :
 |Code|Valeur|
 |:---|:---|
 |00|Non renseigné|
-|10|Aucun|
-|20|Commercialisable|
+|10|DUP|
+|20|Convention EPFLO|
+|30|Acquisitions amiables|
+|40|Opérateur privé|
 
----
-
-`[m_amenagement].[lt_amt_stadecomm2]` : Liste des valeurs permettant de décrire la valeur du stade de commercialisation spécifique ARC
-
-|Nom attribut | Définition | Type  | Valeurs par défaut |
-|:---|:---|:---|:---|    
-|code|Code du stade de commercialisation spécifique à l'ARC|character varying(2)| |
-|valeur|Libellé du stade de commercialisation spécifique à l'ARC|character varying(80)| |
-
-Particularité(s) à noter :
-* Une clé primaire existe sur le champ code 
-
-Valeurs possibles :
-
-|Code|Valeur|
-|:---|:---|
-|00|Non renseigné|
-|11|En vente|
-|12|En vente (avec contrainte)|
-|20|Vendu|
-|31|Réservé (par une délibération du Conseil d'Agglomération)|
-|32|Réservé (option)|
-|99|Non commercialisé par un acteur public|
-
----
 
 ## Classes d'objets du foncier
+
+L'ensemble des classes d'objets de gestion sont stockés dans le schéma `m_foncier`, et celles applicatives dans les schémas x_apps (pour les applications pro) ou x_apps_public (pour les applications grands publiques).
+
+### Classes d'objets de gestion :
+  
+`[m_foncier].[an_cession]` : Table alphanumérique contenant les données des cessions de lots
+   
+|Nom attribut | Définition | Type | Valeurs par défaut |
+|:---|:---|:---|:---|
+|idces|Identifiant du dossier de cession ou n° de dossier|character varying(6)|nextval('m_foncier.ces_seq'::regclass)|
+|l_rel|Type de relation avec les lots|character varying(2)|'10'::character varying|
+|l_compo|Composition de la cession : si true (coché) la cession ne correspond pas au lot vendu par le service économie (cf le commentaire pour plus de précision)|boolean|false|
+|l_etat|Code de l'état du dossier de cession|character varying(2)|'00'::character varying|
+|l_orga|Code du nom de l'organisme|character varying(50)|'00'::character varying|
+|d_delib_1|Date de la délibération de l'organisme cédant 1 ou de décision du président en cas de droit de préemption|date| |
+|d_delib_2|Date de la délibération de l'organisme cédant 2|date| |
+|d_delib_3|Date de la délibération de l'organisme cédant 3|date| |
+|insee|Code insee de la commune|character varying(5)| |
+|l_date_i|Date d'ouverture du dossier dans le SIG|date| |
+|l_voca|Code de la vocation de la cession|character varying(2)|'00'::character varying|
+|l_acque|Nom de l'acquéreur|character varying(80)| |
+|l_parcelle_i|Numéro(s) de(s) parcelle(s) initiale(s) concernée(s) par le périmètre|character varying(500)| |
+|l_parcelle_f|Numéro(s) de(s) nouvelle(s) parcelle(s) concernée(s) par le périmètre|character varying(500)| |
+|d_esti_1|Date d'estimation des domaines 1|date| |
+|d_esti_2|Date d'estimation des domaines 2|date| |
+|d_esti_3|Date d'estimation des domaines 3|date| |
+|l_esti_ht|Montant total de(s) estimation(s) des domaines|double precision| |
+|l_surf|Superficie cadastrée du périmètre de cession en m²|integer| |
+|l_condi|Code de conditions de cession|character varying(2)|'00'::character varying|
+|l_type|Code du type d'acte de cession|character varying(2)|'00'::character varying|
+|d_prome|Date de la promesse de vente|date| |
+|d_acte|Date de l'acte|date| |
+|l_notaire|Code du nom de l'étude notariale|character varying(2)|'00'::character varying|
+|l_notaire_a|Nom de l'étude notariale si pas dans la liste des études notariales du champ l_notaire|character varying(254)| |
+|l_pvente_ht|Montant de la vente HT|double precision| |
+|l_pvente_ttc|Montant de la vente TTC|double precision| |
+|l_frais_a|Type de frais : aucun (champ non utilisé)|boolean|false|
+|l_frais_b|Type de frais : Géomètre  (champ non utilisé)|boolean|false|
+|l_frais_c|Type de frais : Notaire  (champ non utilisé)|boolean|false|
+|l_frais_d|Type de frais : Agence immobilière  (champ non utilisé)|boolean|false|
+|l_frais_e|Type de frais : Indemnités diverses  (champ non utilisé)|boolean|false|
+|l_mfrais_ht|Frais cumulés de cession en € HT (champ non utilisé)|double precision| |
+|l_mfrais_ttc|Frais cumulés de cession en € TTC|double precision| |
+|l_pvente_s|Prix de vente en € HT au m² (sans les frais)|double precision| |
+|l_type_a|Typologie du montant de cession : terrain|boolean|false|
+|l_type_b|Typologie du montant de cession : bâti|boolean|false|
+|l_type_c|Typologie du montant de cession : SHON|boolean|false|
+|l_observ|Commentaires|character varying(255)| |
+|l_mfrais_g_ttc|Montant des frais de géomètre TTC|double precision| |
+|l_mfrais_n_ttc|Montant des frais de notaires ttc|double precision| |
+|l_mfrais_a_ttc|Montant des autres frais (agence, ...)|double precision| |
+|idsite|Identifiant du site|character varying(10)| |
+|idces_d|Ancien numéro de cession DynMap|character varying(10)| |
+|d_delib_4|Date de la délibération de l'organisme cédant 4|date| |
+|date_sai|Date de saisie|timestamp without time zone| |
+|date_maj|Date de mise à jour|timestamp without time zone| |
+|op_sai|Opérateur de saisie|character varying(80)| |
+
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ `idces` l'attribution automatique de la référence unique s'effectue via une vue de gestion
+* Une clé étrangère existe sur la table de valeur `l_rel` (lien vers la liste de valeurs de l'état du site `lt_rel_lot`)
+* Une clé étrangère existe sur la table de valeur `l_condi` (lien vers la liste de valeurs de l'état du site `lt_ces_cond`)
+* Une clé étrangère existe sur la table de valeur `l_etat` (lien vers la liste de valeurs de l'état du site `lt_ces_etat`)
+* Une clé étrangère existe sur la table de valeur `lt_ces_nota` (lien vers la liste de valeurs de l'état du site `l_notaire`)
+* Une clé étrangère existe sur la table de valeur `lt_ces_orga` (lien vers la liste de valeurs de l'état du site `l_orga`)
+* Une clé étrangère existe sur la table de valeur `lt_ces_tact` (lien vers la liste de valeurs de l'état du site `l_type`)
+* Une clé étrangère existe sur la table de valeur `lt_ces_voca` (lien vers la liste de valeurs de l'état du site `l_voca`)
+
+  
+---
+
+`[m_foncier].[an_fon_doc_media]` : Table gérant la liste des documents de suivi d'une cession ou d'une acquisition et gérer avec le module média dans GEO (application Foncier)
+   
+|Nom attribut | Définition | Type | Valeurs par défaut |
+|:---|:---|:---|:---|
+|gid|Identifiant unique non signifiant|integer| |
+|id|Identifiant de cession ou d'acquisition|character varying(10)| |
+|media|Champ Média de GEO|text| |
+|miniature|Champ miniature de GEO|bytea| |
+|n_fichier|Nom du fichier|text| |
+|t_fichier|Type de média dans GEO|text| |
+|op_sai|Libellé de l'opérateur ayant intégrer le document|character varying(100)| |
+|date_sai|Date d'intégration du document|timestamp without time zone| |
+|l_type|Code du type de document de cessions ou d'acquisitions|character varying(2)| |
+|l_prec|Précision sur le document|character varying(254)| |
+
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ `gis` l'attribution automatique de la référence unique s'effectue via une séquence
+* Une clé étrangère existe sur la table de valeur `l_type` (lien vers la liste de valeurs de l'état du site `lt_ces_doc`)
+
+  
+  
+---
+
+`[m_foncier].[an_fon_cession_horsarc]` : Table gérant les données de suivi des ventes de foncier des collectivités du Grand Compiégnois hors ARC. Table en cours de réfléxion (peut-être uniquement une table de documents suffira)
+   
+|Nom attribut | Définition | Type | Valeurs par défaut |
+|:---|:---|:---|:---|
+
+(à déterminer)
+
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ `...` l'attribution automatique de la référence unique s'effectue via une ....
+
+
+ 
+---
+
+`[m_foncier].[an_fon_cession_horsarc_media]` : Table gérant la liste des documents de suivi d'une cession ou d'une acquisition (par les EPCI du Grand COmpiégnois hors ARC) et gérer avec le module média dans GEO (application Activités Economiques)
+   
+|Nom attribut | Définition | Type | Valeurs par défaut |
+|:---|:---|:---|:---|
+|gid|Identifiant unique non signifiant|integer| |
+|id|Identifiant de cession ou d'acquisition|character varying(10)| |
+|media|Champ Média de GEO|text| |
+|miniature|Champ miniature de GEO|bytea| |
+|n_fichier|Nom du fichier|text| |
+|t_fichier|Type de média dans GEO|text| |
+|op_sai|Libellé de l'opérateur ayant intégrer le document|character varying(100)| |
+|date_sai|Date d'intégration du document|timestamp without time zone| |
+|l_type|Code du type de document de cessions ou d'acquisitions|character varying(2)| |
+|l_prec|Précision sur le document|character varying(254)| |
+
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ `gid` l'attribution automatique de la référence unique s'effectue via une séquence
+* Une clé étrangère existe sur la table de valeur `l_type` (lien vers la liste de valeurs de l'état du site `lt_ces_doc`)
+
+  
+  
+---
+
+### classes d'objets applicatives métiers sont classés dans le schéma x_apps :
+
+(à venir)
+
+### classes d'objets applicatives grands publics sont classés dans le schéma x_apps_public :
+
+(à venir)
+
+### classes d'objets opendata sont classés dans le schéma x_opendata :
+
+(à venir)
+
+### Liste de valeurs
+
+`[m_urbanisme_reg].[lt_proc_phase]` : Liste de valeurs des phases opérationnelles
+
+|Nom attribut | Définition | Type  | Valeurs par défaut |
+|:---|:---|:---|:---|    
+|code|Code de la phase de l'opération|character varying(2)| |
+|valeur|Libellé de la phase de l'opération|character varying(50)| |
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ code 
+
+Valeurs possibles :
+
+|Code|Valeur|
+|:---|:---|
+|00|Non renseigné|
+|10|Etude de faisabilité|
+|20|Acquisitions engagées - étude préopérationnelle|
+|30|Opérationnelle|
+|40|Achevée|
+
+---
+
+`[m_urbanisme_reg].[lt_proc_typ]` : Liste de valeurs des types de procédure
+
+|Nom attribut | Définition | Type  | Valeurs par défaut |
+|:---|:---|:---|:---|    
+|code|Code de la procédure|character varying(2)| |
+|valeur|Libellé de la procédure|character varying(20)| |
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ code 
+
+Valeurs possibles :
+
+|Code|Valeur|
+|:---|:---|
+|00|Non renseigné|
+|10|ZAC|
+|21|Lotissement PA|
+|22|Lotissement DP|
+|30|PC valant division|
+|40|AFU|
+
+---
+
+`[m_urbanisme_reg].[lt_proc_typconso]` : Liste de valeurs des types de consommations foncières
+
+|Nom attribut | Définition | Type  | Valeurs par défaut |
+|:---|:---|:---|:---|    
+|code|Code du type de consommation de surface|character varying(2)| |
+|valeur|Libellé du type de consommation de surface|character varying(50)| |
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ code 
+
+Valeurs possibles :
+
+|Code|Valeur|
+|:---|:---|
+|00|Non renseigné|
+|10|Renouvellement|
+|20|Extension|
+|30|Mixte|
+
+---
+
+`[m_urbanisme_reg].[lt_proc_typfon]` : Liste de valeurs des procédures foncières
+
+|Nom attribut | Définition | Type  | Valeurs par défaut |
+|:---|:---|:---|:---|    
+|code|Code de la procédure foncière|character varying(2)| |
+|valeur|Libellé de la procédure foncière|character varying(50)| |
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ code 
+
+Valeurs possibles :
+
+|Code|Valeur|
+|:---|:---|
+|00|Non renseigné|
+|10|DUP|
+|20|Convention EPFLO|
+|30|Acquisitions amiables|
+|40|Opérateur privé|
+
+
+
 
 ## Classes d'objets de la base SIRENE
 
