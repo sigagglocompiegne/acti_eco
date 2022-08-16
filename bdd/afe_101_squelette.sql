@@ -4387,8 +4387,8 @@ GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_activite_eco.lt_eco_etat TO sig_
 
 COMMENT ON TABLE m_activite_eco.lt_eco_etat
   IS 'Liste des valeurs de l''état du site';
-COMMENT ON COLUMN m_activite_eco.lt_eco_etat.code IS 'Code de la typologie de la situation du site au regard de l''aménagement';
-COMMENT ON COLUMN m_activite_eco.lt_eco_etat.valeur IS 'Code de la typologie de la situation du site au regard de l''aménagement';
+COMMENT ON COLUMN m_activite_eco.lt_eco_etat.code IS 'Code de l''état du site';
+COMMENT ON COLUMN m_activite_eco.lt_eco_etat.valeur IS 'Valeur de de l''état du site';
 
 INSERT INTO m_activite_eco.lt_eco_etat(
             code, valeur)
