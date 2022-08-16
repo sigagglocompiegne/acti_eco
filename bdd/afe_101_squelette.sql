@@ -48,6 +48,10 @@ DROP TABLE IF EXISTS m_activite_eco.geo_eco_geoloc_salarie;
 DROP TABLE IF EXISTS m_activite_eco.geo_eco_site_zu;
 DROP TABLE IF EXISTS m_activite_eco.h_an_eco_etab;
 DROP TABLE IF EXISTS m_activite_eco.h_an_eco_site;
+DROP TABLE IF EXISTS m_foncier.an_cession;
+DROP TABLE IF EXISTS m_foncier.an_fon_doc_media;
+DROP TABLE IF EXISTS m_foncier.an_fon_cession_horsarc;
+DROP TABLE IF EXISTS m_foncier.an_fon_cession_horsarc_media;
 
 /* TABLE DE RELATION */
 DROP TABLE IF EXISTS m_activite_eco.lk_eco_contact;
@@ -60,6 +64,7 @@ DROP TABLE IF EXISTS m_activite_eco.lk_eco_loc_etab;
 DROP TABLE IF EXISTS m_activite_eco.lk_adresseetablissement;
 DROP TABLE IF EXISTS m_activite_eco.lk_eco_bati_adr;
 DROP TABLE IF EXISTS m_activite_eco.lk_eco_loc_adr;
+DROP TABLE IF EXISTS m_foncier.lk_cession_lot;
 
 /* LISTE DE VALEUR */
 DROP TABLE IF EXISTS m_activite_eco.lt_eco_dest;
@@ -83,7 +88,7 @@ DROP TABLE IF EXISTS m_amenagement.lt_amt_empesp_pu;
 DROP TABLE IF EXISTS r_objet.lt_objet_vocafon;
 DROP TABLE IF EXISTS m_activite_eco.lt_eco_typloc;
 DROP TABLE IF EXISTS m_activite_eco.lt_eco_occuploc;
-
+DROP TABLE IF EXISTS m_activite_eco.lt_ces_doc;
 
 /* SEQUENCE */
 DROP SEQUENCE IF EXISTS m_activite_eco.an_eco_pole_seq;
@@ -115,6 +120,8 @@ DROP SEQUENCE IF EXISTS m_activite_eco.h_an_eco_etab_seq;
 DROP SEQUENCE IF EXISTS m_activite_eco.lk_adresseetablissement_seq;
 DROP SEQUENCE IF EXISTS m_activite_eco.lk_eco_bati_adr_seq;
 DROP SEQUENCE IF EXISTS m_activite_eco.lk_eco_loc_adr_seq;
+DROP SEQUENCE IF EXISTS m_foncier.an_fon_doc_media_gid_seq;
+DROP SEQUENCE IF EXISTS m_foncier.ces_seq;
 
 /* TRIGGERS */
 
@@ -152,6 +159,34 @@ GRANT ALL ON TABLES TO create_sig;
 ALTER DEFAULT PRIVILEGES IN SCHEMA m_activite_eco
 GRANT INSERT, SELECT, UPDATE, DELETE ON TABLES TO sig_edit;
 
+-- SCHEMA: m_foncier
+
+-- DROP SCHEMA m_foncier ;
+
+CREATE SCHEMA m_foncier
+    AUTHORIZATION create_sig;
+
+COMMENT ON SCHEMA m_foncier
+    IS 'Données géographiques métiers sur le thème du foncier';
+
+GRANT ALL ON SCHEMA m_foncier TO create_sig;
+
+GRANT ALL ON SCHEMA m_foncier TO sig_edit;
+
+GRANT ALL ON SCHEMA m_foncier TO sig_read;
+
+ALTER DEFAULT PRIVILEGES IN SCHEMA m_foncier
+GRANT ALL ON TABLES TO sig_create;
+
+ALTER DEFAULT PRIVILEGES IN SCHEMA m_foncier
+GRANT SELECT ON TABLES TO sig_read;
+
+ALTER DEFAULT PRIVILEGES IN SCHEMA m_foncier
+GRANT ALL ON TABLES TO create_sig;
+
+ALTER DEFAULT PRIVILEGES IN SCHEMA m_foncier
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLES TO sig_edit;
+
 */
 
 -- ####################################################################################################################################################
@@ -159,6 +194,13 @@ GRANT INSERT, SELECT, UPDATE, DELETE ON TABLES TO sig_edit;
 -- ###                                                                SEQUENCE                                                                      ###
 -- ###                                                                                                                                              ###
 -- ####################################################################################################################################################
+
+
+-- ####################################################################################################################################################
+-- ###                                                          SEQUENCE M_ACTIVITE_ECO                                                             ###
+-- ####################################################################################################################################################
+
+
 
 -- ############################################################## [an_eco_pole_seq] ###################################################################
 
@@ -275,27 +317,6 @@ ALTER SEQUENCE m_activite_eco.an_eco_evenmt_seq
 GRANT ALL ON SEQUENCE m_activite_eco.an_eco_evenmt_seq TO PUBLIC;
 GRANT ALL ON SEQUENCE m_activite_eco.an_eco_evenmt_seq TO create_sig;
 
-
--- ############################################################## [geo_proced_seq] ##################################################################
-
--- SEQUENCE: m_urbanisme_reg.geo_proced_seq
-
--- DROP SEQUENCE m_urbanisme_reg.geo_proced_seq;
-
-CREATE SEQUENCE m_urbanisme_reg.geo_proced_seq
-    INCREMENT 1
-    START 1
-    MINVALUE 1
-    MAXVALUE 9223372036854775807
-    CACHE 1;
-
-ALTER SEQUENCE m_urbanisme_reg.geo_proced_seq
-    OWNER TO create_sig;
-
-GRANT ALL ON SEQUENCE m_urbanisme_reg.geo_proced_seq TO PUBLIC;
-GRANT ALL ON SEQUENCE m_urbanisme_reg.geo_proced_seq TO create_sig;
-
-
 -- ############################################################## [lk_eco_proc_seq] ##################################################################
 
 -- SEQUENCE: m_activite_eco.lk_eco_proc_seq
@@ -314,46 +335,6 @@ ALTER SEQUENCE m_activite_eco.lk_eco_proc_seq
 
 GRANT ALL ON SEQUENCE m_activite_eco.lk_eco_proc_seq TO PUBLIC;
 GRANT ALL ON SEQUENCE m_activite_eco.lk_eco_proc_seq TO create_sig;
-
-
--- ############################################################## [an_proc_media_seq] ##################################################################
-
--- SEQUENCE: m_urbanisme_reg.an_proc_media_seq
-
--- DROP SEQUENCE m_urbanisme_reg.an_proc_media_seq;
-
-CREATE SEQUENCE m_urbanisme_reg.an_proc_media_seq
-    INCREMENT 1
-    START 1
-    MINVALUE 1
-    MAXVALUE 9223372036854775807
-    CACHE 1;
-
-ALTER SEQUENCE m_urbanisme_reg.an_proc_media_seq
-    OWNER TO create_sig;
-
-GRANT ALL ON SEQUENCE m_urbanisme_reg.an_proc_media_seq TO PUBLIC;
-GRANT ALL ON SEQUENCE m_urbanisme_reg.an_proc_media_seq TO create_sig;
-
-
--- ############################################################## [lk_amt_lot_site_seq] ##################################################################
-
--- SEQUENCE: m_amenagement.lk_amt_lot_site_seq
-
--- DROP SEQUENCE m_amenagement.lk_amt_lot_site_seq;
-
-CREATE SEQUENCE m_amenagement.lk_amt_lot_site_seq
-    INCREMENT 1
-    START 1
-    MINVALUE 1
-    MAXVALUE 9223372036854775807
-    CACHE 1;
-
-ALTER SEQUENCE m_amenagement.lk_amt_lot_site_seq
-    OWNER TO create_sig;
-
-GRANT ALL ON SEQUENCE m_amenagement.lk_amt_lot_site_seq TO PUBLIC;
-GRANT ALL ON SEQUENCE m_amenagement.lk_amt_lot_site_seq TO create_sig;
 
 -- ############################################################## [lk_eco_bati_site_seq] ##################################################################
 
@@ -701,10 +682,172 @@ GRANT ALL ON SEQUENCE m_activite_eco.lk_eco_loc_adr_seq TO PUBLIC;
 GRANT ALL ON SEQUENCE m_activite_eco.lk_eco_loc_adr_seq TO create_sig;
 
 -- ####################################################################################################################################################
+-- ###                                                            SEQUENCE M_AMENAGEMENT                                                            ###
+-- ####################################################################################################################################################
+
+
+-- ############################################################## [geo_proced_seq] ##################################################################
+
+-- SEQUENCE: m_urbanisme_reg.geo_proced_seq
+
+-- DROP SEQUENCE m_urbanisme_reg.geo_proced_seq;
+
+CREATE SEQUENCE m_urbanisme_reg.geo_proced_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+
+ALTER SEQUENCE m_urbanisme_reg.geo_proced_seq
+    OWNER TO create_sig;
+
+GRANT ALL ON SEQUENCE m_urbanisme_reg.geo_proced_seq TO PUBLIC;
+GRANT ALL ON SEQUENCE m_urbanisme_reg.geo_proced_seq TO create_sig;
+
+
+
+
+
+-- ############################################################## [an_proc_media_seq] ##################################################################
+
+-- SEQUENCE: m_urbanisme_reg.an_proc_media_seq
+
+-- DROP SEQUENCE m_urbanisme_reg.an_proc_media_seq;
+
+CREATE SEQUENCE m_urbanisme_reg.an_proc_media_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+
+ALTER SEQUENCE m_urbanisme_reg.an_proc_media_seq
+    OWNER TO create_sig;
+
+GRANT ALL ON SEQUENCE m_urbanisme_reg.an_proc_media_seq TO PUBLIC;
+GRANT ALL ON SEQUENCE m_urbanisme_reg.an_proc_media_seq TO create_sig;
+
+
+-- ############################################################## [lk_amt_lot_site_seq] ##################################################################
+
+-- SEQUENCE: m_amenagement.lk_amt_lot_site_seq
+
+-- DROP SEQUENCE m_amenagement.lk_amt_lot_site_seq;
+
+CREATE SEQUENCE m_amenagement.lk_amt_lot_site_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+
+ALTER SEQUENCE m_amenagement.lk_amt_lot_site_seq
+    OWNER TO create_sig;
+
+GRANT ALL ON SEQUENCE m_amenagement.lk_amt_lot_site_seq TO PUBLIC;
+GRANT ALL ON SEQUENCE m_amenagement.lk_amt_lot_site_seq TO create_sig;
+
+-- ####################################################################################################################################################
+-- ###                                                               SEQUENCE M_FONCIER                                                             ###
+-- ####################################################################################################################################################
+
+
+-- ############################################################## [ces_seq] ##################################################################
+
+-- SEQUENCE: m_foncier.ces_seq
+
+-- DROP SEQUENCE m_foncier.ces_seq;
+
+CREATE SEQUENCE m_foncier.ces_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+
+ALTER SEQUENCE m_foncier.ces_seq
+    OWNER TO create_sig;
+
+GRANT ALL ON SEQUENCE m_foncier.ces_seq TO PUBLIC;
+
+GRANT ALL ON SEQUENCE m_foncier.ces_seq TO create_sig;
+
+GRANT ALL ON SEQUENCE m_foncier.ces_seq TO postgres;
+
+-- ############################################################## [an_fon_doc_media_gid_seq] ##################################################################
+
+-- SEQUENCE: m_foncier.an_fon_doc_media_gid_seq
+
+-- DROP SEQUENCE m_foncier.an_fon_doc_media_gid_seq;
+
+CREATE SEQUENCE m_foncier.an_fon_doc_media_gid_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+
+ALTER SEQUENCE m_foncier.an_fon_doc_media_gid_seq
+    OWNER TO create_sig;
+
+GRANT ALL ON SEQUENCE m_foncier.an_fon_doc_media_gid_seq TO PUBLIC;
+
+GRANT ALL ON SEQUENCE m_foncier.an_fon_doc_media_gid_seq TO create_sig;
+
+-- ############################################################## [an_fon_cession_horsarc_media_seq] ##################################################################
+
+
+-- SEQUENCE: m_foncier.an_fon_cession_horsarc_media_seq
+
+-- DROP SEQUENCE m_foncier.an_fon_cession_horsarc_media_seq;
+
+CREATE SEQUENCE m_foncier.an_fon_cession_horsarc_media_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+
+ALTER SEQUENCE m_foncier.an_fon_cession_horsarc_media_seq
+    OWNER TO create_sig;
+
+GRANT ALL ON SEQUENCE m_foncier.an_fon_cession_horsarc_media_seq TO PUBLIC;
+
+GRANT ALL ON SEQUENCE m_foncier.an_fon_cession_horsarc_media_seq TO create_sig;
+
+
+-- ############################################################## [an_fon_cession_horsarc_seq] ##################################################################
+
+
+-- SEQUENCE: m_foncier.an_fon_cession_horsarc_seq
+
+-- DROP SEQUENCE m_foncier.an_fon_cession_horsarc_seq;
+
+CREATE SEQUENCE m_foncier.an_fon_cession_horsarc_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+
+ALTER SEQUENCE m_foncier.an_fon_cession_horsarc_seq
+    OWNER TO create_sig;
+
+GRANT ALL ON SEQUENCE m_foncier.an_fon_cession_horsarc_seq TO PUBLIC;
+
+GRANT ALL ON SEQUENCE m_foncier.an_fon_cession_horsarc_seq TO create_sig;
+
+-- ####################################################################################################################################################
 -- ###                                                                                                                                              ###
 -- ###                                                                FONCTION                                                                      ###
 -- ###                                                                                                                                              ###
 -- ####################################################################################################################################################
+
+-- ####################################################################################################################################################
+-- ###                                                         FONCTION M_ACTIVITE_ECO                                                              ###
+-- ####################################################################################################################################################
+
 
 -- ##################################################### [m_activite_eco.ft_m_delete_lot_eco] #########################################################
 
@@ -1019,6 +1162,513 @@ ALTER FUNCTION m_activite_eco.ft_m_modif_lot_eco()
 GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_modif_lot_eco() TO PUBLIC;
 
 GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_modif_lot_eco() TO create_sig;
+
+
+-- ############################################################ [ft_m_an_sa_etab_l_nom_null] #######################################################################
+
+-- FUNCTION: m_activite_eco.ft_m_an_sa_etab_l_nom_null()
+
+-- DROP FUNCTION m_activite_eco.ft_m_an_sa_etab_l_nom_null();
+
+CREATE OR REPLACE FUNCTION m_activite_eco.ft_m_an_sa_etab_l_nom_null()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$
+
+begin
+
+ -- gestion des valeurs '' quand suppression d'une valeur dans une fiche GEO
+ update m_activite_eco.an_eco_etab set l_nom = null where l_nom = '';        
+
+
+	return new; 
+end;
+
+$BODY$;
+
+ALTER FUNCTION m_activite_eco.ft_m_an_sa_etab_l_nom_null()
+    OWNER TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_an_sa_etab_l_nom_null() TO PUBLIC;
+
+GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_an_sa_etab_l_nom_null() TO create_sig;
+
+COMMENT ON FUNCTION m_activite_eco.ft_m_an_sa_etab_l_nom_null()
+    IS 'Fonction forçant le champ à null quand insertion ou mise à jour de l''attribut pour éviter les '''' (pb d''afficchage des étiquettes dans GEO)';
+
+
+
+-- ############################################################ [ft_m_an_sa_etab_oldsiret] #######################################################################
+
+-- FUNCTION: m_activite_eco.ft_m_an_sa_etab_oldsiret()
+
+-- DROP FUNCTION m_activite_eco.ft_m_an_sa_etab_oldsiret();
+
+CREATE OR REPLACE FUNCTION m_activite_eco.ft_m_an_sa_etab_oldsiret()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$BEGIN
+
+
+IF new.old_siret is not null or new.old_siret <> '' THEN
+
+update m_activite_eco.an_eco_etab set eff_etab = (select eff_etab from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_activite_eco.an_eco_etab set source_eff = (select source_eff from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_activite_eco.an_eco_etab set l_date_eff = (select l_date_eff from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_activite_eco.an_eco_etab set op_sai = (select op_sai from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_activite_eco.an_eco_etab set org_sai = (select org_sai from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_activite_eco.an_eco_etab set l_tel = (select l_tel from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_activite_eco.an_eco_etab set l_mail = (select l_mail from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_activite_eco.an_eco_etab set l_url = (select l_url from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_activite_eco.an_eco_etab set l_nom_dir = (select l_nom_dir from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_activite_eco.an_eco_etab set l_titre = (select l_titre from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_activite_eco.an_eco_etab set source_maj_dir = (select source_maj_dir from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_activite_eco.an_eco_etab set date_maj_dir = (select date_maj_dir from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_activite_eco.an_eco_etab set l_mail_dir = (select l_mail_dir from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_activite_eco.an_eco_etab set l_tel_dir = (select l_tel_dir from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_activite_eco.an_eco_etab set l_telp_dir = (select l_telp_dir from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_activite_eco.an_eco_etab set l_nom_aut = (select l_nom_aut from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_activite_eco.an_eco_etab set l_titre_aut = (select l_titre_aut from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_activite_eco.an_eco_etab set date_maj_aut = (select date_maj_aut from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_activite_eco.an_eco_etab set l_mail_aut = (select l_mail_aut from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_activite_eco.an_eco_etab set l_tel_aut = (select l_tel_aut from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_activite_eco.an_eco_etab set l_telp_aut = (select l_telp_aut from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_activite_eco.an_eco_etab set l_nom_drh = (select l_nom_drh from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_activite_eco.an_eco_etab set l_titre_drh = (select l_titre_drh from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_activite_eco.an_eco_etab set date_maj_drh = (select date_maj_drh from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_activite_eco.an_eco_etab set l_mail_drh = (select l_mail_drh from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_activite_eco.an_eco_etab set l_tel_drh = (select l_tel_drh from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_activite_eco.an_eco_etab set l_drh_ss = (select l_drh_ss from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_activite_eco.an_eco_etab set l_drh_ad = (select l_drh_ad from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_activite_eco.an_eco_etab set l_nom_ad = (select l_nom_ad from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_activite_eco.an_eco_etab set l_titre_ad = (select l_titre_ad from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_activite_eco.an_eco_etab set date_maj_ad = (select date_maj_ad from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_activite_eco.an_eco_etab set l_mail_ad = (select l_mail_ad from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_activite_eco.an_eco_etab set l_tel_ad = (select l_tel_ad from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_activite_eco.an_eco_etab set l_comp_ad = (select l_comp_ad from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_activite_eco.an_eco_etab set l_url_bil = (select l_url_bil from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_activite_eco.an_eco_etab set l_observ = (select l_observ from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+
+update m_activite_eco.an_eco_etab set eff_etab_d = (select eff_etab_d from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
+update m_activite_eco.an_eco_etab set old_siret = null WHERE idsiret=new.idsiret;
+
+
+END IF;
+
+IF new.old_id is not null or new.old_id > 0 THEN
+
+update m_activite_eco.an_eco_etab set l_observ = (select l_observ from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_activite_eco.an_eco_etab set eff_etab = (select eff_etab from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_activite_eco.an_eco_etab set source_eff = (select source_eff from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_activite_eco.an_eco_etab set l_date_eff = (select date_eff from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_activite_eco.an_eco_etab set op_sai = (select op_sai from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_activite_eco.an_eco_etab set org_sai = (select org_sai from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_activite_eco.an_eco_etab set l_tel = (select l_tel from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_activite_eco.an_eco_etab set l_mail = (select l_mail from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_activite_eco.an_eco_etab set l_url = (select l_url from m_activite_eco.geo_sa_egeo_eco_etabptabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_activite_eco.an_eco_etab set l_nom_dir = (select l_nom_dir from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_activite_eco.an_eco_etab set l_titre = (select l_titre from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_activite_eco.an_eco_etab set source_maj_dir = (select source_maj_dir from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_activite_eco.an_eco_etab set date_maj_dir = (select date_maj_dir from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_activite_eco.an_eco_etab set l_mail_dir = (select l_mail_dir from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_activite_eco.an_eco_etab set l_tel_dir = (select l_tel_dir from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_activite_eco.an_eco_etab set l_telp_dir = (select l_telp_dir from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_activite_eco.an_eco_etab set l_nom_aut = (select l_nom_aut from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_activite_eco.an_eco_etab set l_titre_aut = (select l_titre_aut from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_activite_eco.an_eco_etab set date_maj_aut = (select date_maj_aut from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_activite_eco.an_eco_etab set l_mail_aut = (select l_mail_aut from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_activite_eco.an_eco_etab set l_tel_aut = (select l_tel_aut from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_activite_eco.an_eco_etab set l_telp_aut = (select l_telp_aut from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_activite_eco.an_eco_etab set l_nom_drh = (select l_nom_drh from m_economie.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_activite_eco.an_eco_etab set l_titre_drh = (select l_titre_drh from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_activite_eco.an_eco_etab set date_maj_drh = (select date_maj_drh from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_activite_eco.an_eco_etab set l_mail_drh = (select l_mail_drh from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_activite_eco.an_eco_etab set l_tel_drh = (select l_tel_drh from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_activite_eco.an_eco_etab set l_drh_ss = (select l_drh_ss from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_activite_eco.an_eco_etab set l_drh_ad = (select l_drh_ad from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_activite_eco.an_eco_etab set l_nom_ad = (select l_nom_ad from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_activite_eco.an_eco_etab set l_titre_ad = (select l_titre_ad from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_activite_eco.an_eco_etab set date_maj_ad = (select date_maj_ad from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_activite_eco.an_eco_etab set l_mail_ad = (select l_mail_ad from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_activite_eco.an_eco_etab set l_tel_ad = (select l_tel_ad from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+
+update m_activite_eco.an_eco_etab set l_comp_ad = (select l_comp_ad from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_activite_eco.an_eco_etab set l_url_bil = (select l_url_bil from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+update m_activite_eco.an_eco_etab set eff_etab_d = (select eff_etab_d from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
+
+
+update m_activite_eco.an_eco_etab set old_id = null WHERE idgeoet=new.idgeoet;
+
+DELETE FROM m_activite_eco.geo_eco_etabp where idgeoet = new.old_id;
+
+END IF;
+
+
+
+return new;
+END$BODY$;
+
+ALTER FUNCTION m_activite_eco.ft_m_an_sa_etab_oldsiret()
+    OWNER TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_an_sa_etab_oldsiret() TO PUBLIC;
+
+GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_an_sa_etab_oldsiret() TO create_sig;
+
+COMMENT ON FUNCTION m_activite_eco.ft_m_an_sa_etab_oldsiret()
+    IS 'Fonction dont l''objet est de récupérer les anciens contacts d''un établissement fermé pour les réinscrires au même établissement ayant changer de SIRET';
+
+
+-- ############################################################ [ft_m_etiquette_local] #######################################################################
+
+-- FUNCTION: m_activite_eco.ft_m_etiquette_local()
+
+-- DROP FUNCTION m_activite_eco.ft_m_etiquette_local();
+
+CREATE OR REPLACE FUNCTION m_activite_eco.ft_m_etiquette_local()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$
+
+BEGIN
+
+-- refraichissement de la vue matérialisée des points établissements à l'adresse
+REFRESH MATERIALIZED VIEW x_apps.xapps_geo_vmr_etab_api;
+REFRESH MATERIALIZED VIEW x_apps.xapps_geo_vmr_immo_bati;
+
+return new;
+
+END;
+
+$BODY$;
+
+ALTER FUNCTION m_activite_eco.ft_m_etiquette_local()
+    OWNER TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_etiquette_local() TO PUBLIC;
+
+GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_etiquette_local() TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_etiquette_local() TO sig_edit;
+
+
+
+-- ############################################################ [ft_m_etabp_insert] #######################################################################
+
+-- FUNCTION: m_activite_eco.ft_m_etabp_insert()
+
+-- DROP FUNCTION m_activite_eco.ft_m_etabp_insert();
+
+CREATE OR REPLACE FUNCTION m_activite_eco.ft_m_etabp_insert()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$
+
+DECLARE v_idgeoet integer;
+
+BEGIN
+    
+    new.date_sai=current_timestamp;
+    v_idgeoet := (SELECT nextval('r_objet.idgeo_seq'::regclass));
+    new.idgeoet = v_idgeoet;
+    -- insertion du numéro du site
+    new.idsite = (SELECT DISTINCT
+				an_sa_site.idsite 
+		  FROM 
+				m_economie.an_sa_site, r_objet.geo_objet_ope
+		  WHERE
+				geo_objet_ope.idsite=an_sa_site.idsite
+		  AND
+				st_intersects(geo_objet_ope.geom,new.geom) = true
+		  );
+
+    return new ;
+END;
+
+$BODY$;
+
+ALTER FUNCTION m_activite_eco.ft_m_etabp_insert()
+    OWNER TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_etabp_insert() TO PUBLIC;
+
+GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_etabp_insert() TO create_sig;
+
+-- ############################################################ [ft_m_etabp_update] #######################################################################
+
+-- FUNCTION: m_activite_eco.ft_m_etabp_update()
+
+-- DROP FUNCTION m_activite_eco.ft_m_etabp_update();
+
+CREATE OR REPLACE FUNCTION m_activite_eco.ft_m_etabp_update()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$
+
+BEGIN
+
+    new.date_maj=current_timestamp;
+    -- insertion du numéro du site
+    new.idsite = (SELECT DISTINCT
+				an_sa_site.idsite 
+		  FROM 
+				m_economie.an_sa_site, r_objet.geo_objet_ope
+		  WHERE
+				geo_objet_ope.idsite=an_sa_site.idsite
+		  AND
+				st_intersects(geo_objet_ope.geom,new.geom) = true
+		  );
+	
+ 
+
+return new ;
+
+END;
+
+$BODY$;
+
+ALTER FUNCTION m_activite_eco.ft_m_etabp_update()
+    OWNER TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_etabp_update() TO PUBLIC;
+
+GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_etabp_update() TO create_sig;
+
+
+
+-- ############################################################ [ft_m_etabp_null] #######################################################################
+
+-- FUNCTION: m_activite_eco.ft_m_etabp_null()
+
+-- DROP FUNCTION m_activite_eco.ft_m_etabp_null();
+
+CREATE OR REPLACE FUNCTION m_activite_eco.ft_m_etabp_null()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$
+
+BEGIN
+
+    -- insertion du numéro du site
+    UPDATE m_activite_eco.geo_eco_etabp SET idsiren = null WHERE idsiren='';
+    UPDATE m_activite_eco.geo_eco_etabp SET idsiret = null WHERE idsiret='';
+    UPDATE m_activite_eco.geo_eco_etabp SET op_sai = null WHERE op_sai='';
+    UPDATE m_activite_eco.geo_eco_etabp SET org_sai = null WHERE org_sai='';
+    UPDATE m_activite_eco.geo_eco_etabp SET l_nom = null WHERE l_nom='';
+    UPDATE m_activite_eco.geo_eco_etabp SET source_eff = null WHERE source_eff='';
+    UPDATE m_activite_eco.geo_eco_etabp SET l_ape = null WHERE l_ape='';
+    UPDATE m_activite_eco.geo_eco_etabp SET l_nom_dir = null WHERE l_nom_dir='';
+    UPDATE m_activite_eco.geo_eco_etabp SET source_maj_dir = null WHERE source_maj_dir='';
+    UPDATE m_activite_eco.geo_eco_etabp SET l_tel = null WHERE l_tel='';
+    UPDATE m_activite_eco.geo_eco_etabp SET l_mail = null WHERE l_mail='';
+    UPDATE m_activite_eco.geo_eco_etabp SET l_observ = null WHERE l_observ='';
+    return new ;
+END;
+
+
+
+
+$BODY$;
+
+ALTER FUNCTION m_activite_eco.ft_m_etabp_null()
+    OWNER TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_etabp_null() TO PUBLIC;
+
+GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_etabp_null() TO create_sig;
+
+
+-- ################################################## [ft_m_lk_adresseetablissement_siret_update] ######################################################
+
+-- FUNCTION: m_activite_eco.ft_m_lk_adresseetablissement_idsite_update()
+
+-- DROP FUNCTION m_activite_eco.ft_m_lk_adresseetablissement_idsite_update();
+
+CREATE OR REPLACE FUNCTION m_activite_eco.ft_m_lk_adresseetablissement_idsite_update()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$
+
+BEGIN
+
+IF (old.idadresse || old.siret ) <> (new.idadresse || new.siret) THEN
+
+
+-- suppression de l'appariemment du siret à l'adresse car siret adressé à une autre auparavant
+DELETE FROM m_activite_eco.lk_adresseetablissement WHERE siret = old.siret;
+END IF;
+
+return new;
+
+END;
+
+
+$BODY$;
+
+ALTER FUNCTION m_activite_eco.ft_m_lk_adresseetablissement_idsite_update()
+    OWNER TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_lk_adresseetablissement_idsite_update() TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_lk_adresseetablissement_idsite_update() TO PUBLIC;
+
+
+-- ################################################## [ft_m_lk_adresseetablissement_siret_update] ######################################################
+
+-- FUNCTION: m_activite_eco.ft_m_lk_adresseetablissement_siret_update()
+
+-- DROP FUNCTION m_activite_eco.ft_m_lk_adresseetablissement_siret_update();
+
+CREATE OR REPLACE FUNCTION m_activite_eco.ft_m_lk_adresseetablissement_siret_update()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$
+
+BEGIN
+
+-- si j'ai déjà un établissement à une adresse et qu'il est adressé à une autre, je supprime d'abord les appariemments
+IF (SELECT COUNT(*) FROM m_activite_eco.lk_adresseetablissement WHERE siret = new.siret) > 0 THEN
+DELETE FROM m_activite_eco.lk_adresseetablissement WHERE siret = new.siret;
+END IF;
+
+return new;
+
+END;
+
+$BODY$;
+
+ALTER FUNCTION m_activite_eco.ft_m_lk_adresseetablissement_siret_update()
+    OWNER TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_lk_adresseetablissement_siret_update() TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_lk_adresseetablissement_siret_update() TO PUBLIC;
+
+
+
+-- ################################################## [ft_m_lk_adresseetablissement_idsite] ######################################################
+
+-- FUNCTION: m_activite_eco.ft_m_lk_adresseetablissement_idsite()
+
+-- DROP FUNCTION m_activite_eco.ft_m_lk_adresseetablissement_idsite();
+
+CREATE OR REPLACE FUNCTION m_activite_eco.ft_m_lk_adresseetablissement_idsite()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$
+
+
+BEGIN
+
+/** A REVOIR ICI **/
+/**
+UPDATE m_economie.an_eco_etab SET idsite = 
+(SELECT DISTINCT idsite FROM r_objet.geo_objet_ope WHERE st_intersects(geo_objet_ope.geom,(SELECT a.geom FROM x_apps.xapps_geo_vmr_adresse a WHERE a.id_adresse = new.idadresse)) = true and idsite <> '60382zz' AND (destdomi='02' or destdomi='03'))
+WHERE idsiret = new.siret;
+**/
+
+
+return new;
+
+END;
+
+
+$BODY$;
+
+ALTER FUNCTION m_activite_eco.ft_m_lk_adresseetablissement_idsite()
+    OWNER TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_lk_adresseetablissement_idsite() TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_lk_adresseetablissement_idsite() TO PUBLIC;
+
+
+
+-- ################################################## [ft_m_lk_adresseetablissement_idsite_delete] ######################################################
+
+-- FUNCTION: m_activite_eco.ft_m_lk_adresseetablissement_idsite_delete()
+
+-- DROP FUNCTION m_activite_eco.ft_m_lk_adresseetablissement_idsite_delete();
+
+CREATE OR REPLACE FUNCTION m_activite_eco.ft_m_lk_adresseetablissement_idsite_delete()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$
+
+BEGIN
+
+-- suppression de l'appariemment du siret à l'adresse
+DELETE FROM m_activite_eco.lk_adresseetablissement WHERE siret = old.siret;
+
+return new;
+
+END;
+
+$BODY$;
+
+ALTER FUNCTION m_activite_eco.ft_m_lk_adresseetablissement_idsite_delete()
+    OWNER TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_lk_adresseetablissement_idsite_delete() TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_lk_adresseetablissement_idsite_delete() TO PUBLIC;
+
+-- ################################################## [ft_m_lk_adresseetablissement] ######################################################
+
+-- FUNCTION: m_activite_eco.ft_m_lk_adresseetablissement()
+
+-- DROP FUNCTION m_activite_eco.ft_m_lk_adresseetablissement();
+
+CREATE OR REPLACE FUNCTION m_activite_eco.ft_m_lk_adresseetablissement()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$
+
+BEGIN
+
+-- refraichissement de la vue matérialisée des points établissements à l'adresse
+REFRESH MATERIALIZED VIEW x_apps.xapps_geo_vmr_etab_api;
+
+return new;
+
+END;
+
+$BODY$;
+
+ALTER FUNCTION m_activite_eco.ft_m_lk_adresseetablissement()
+    OWNER TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_lk_adresseetablissement() TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_lk_adresseetablissement() TO PUBLIC;
+
+
+-- ####################################################################################################################################################
+-- ###                                                            FONCTION R_OBJET                                                                  ###
+-- ####################################################################################################################################################
+
 
 
 -- ##################################################### [r_objet.ft_m_foncier_delete] #########################################################
@@ -2944,6 +3594,11 @@ COMMENT ON FUNCTION r_objet.ft_m_foncier_l_nom()
     IS 'Fonction dont l''objet de forcer à null le champ l_nom après effacement par exemple pour éviter les doubles cotes';
 
 
+-- ####################################################################################################################################################
+-- ###                                                       FONCTION M_AMENAGEMENT                                                                 ###
+-- ####################################################################################################################################################
+
+
 -- ############################################################ [ft_m_delete_lot_equ] #######################################################################
 
 -- FUNCTION: m_amenagement.ft_m_delete_lot_equ()
@@ -3800,505 +4455,6 @@ GRANT EXECUTE ON FUNCTION m_amenagement.ft_m_modif_lot_mixte() TO PUBLIC;
 COMMENT ON FUNCTION m_amenagement.ft_m_modif_lot_mixte()
     IS 'Fonction gérant la mise à jour des données liées aux lots à vocation mixte lors de la mise à jour de l''objet';
 
--- ############################################################ [ft_m_an_sa_etab_l_nom_null] #######################################################################
-
--- FUNCTION: m_activite_eco.ft_m_an_sa_etab_l_nom_null()
-
--- DROP FUNCTION m_activite_eco.ft_m_an_sa_etab_l_nom_null();
-
-CREATE OR REPLACE FUNCTION m_activite_eco.ft_m_an_sa_etab_l_nom_null()
-    RETURNS trigger
-    LANGUAGE 'plpgsql'
-    COST 100
-    VOLATILE NOT LEAKPROOF
-AS $BODY$
-
-begin
-
- -- gestion des valeurs '' quand suppression d'une valeur dans une fiche GEO
- update m_activite_eco.an_eco_etab set l_nom = null where l_nom = '';        
-
-
-	return new; 
-end;
-
-$BODY$;
-
-ALTER FUNCTION m_activite_eco.ft_m_an_sa_etab_l_nom_null()
-    OWNER TO create_sig;
-
-GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_an_sa_etab_l_nom_null() TO PUBLIC;
-
-GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_an_sa_etab_l_nom_null() TO create_sig;
-
-COMMENT ON FUNCTION m_activite_eco.ft_m_an_sa_etab_l_nom_null()
-    IS 'Fonction forçant le champ à null quand insertion ou mise à jour de l''attribut pour éviter les '''' (pb d''afficchage des étiquettes dans GEO)';
-
-
-
--- ############################################################ [ft_m_an_sa_etab_oldsiret] #######################################################################
-
--- FUNCTION: m_activite_eco.ft_m_an_sa_etab_oldsiret()
-
--- DROP FUNCTION m_activite_eco.ft_m_an_sa_etab_oldsiret();
-
-CREATE OR REPLACE FUNCTION m_activite_eco.ft_m_an_sa_etab_oldsiret()
-    RETURNS trigger
-    LANGUAGE 'plpgsql'
-    COST 100
-    VOLATILE NOT LEAKPROOF
-AS $BODY$BEGIN
-
-
-IF new.old_siret is not null or new.old_siret <> '' THEN
-
-update m_activite_eco.an_eco_etab set eff_etab = (select eff_etab from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
-update m_activite_eco.an_eco_etab set source_eff = (select source_eff from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
-update m_activite_eco.an_eco_etab set l_date_eff = (select l_date_eff from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
-update m_activite_eco.an_eco_etab set op_sai = (select op_sai from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
-update m_activite_eco.an_eco_etab set org_sai = (select org_sai from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
-update m_activite_eco.an_eco_etab set l_tel = (select l_tel from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
-update m_activite_eco.an_eco_etab set l_mail = (select l_mail from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
-update m_activite_eco.an_eco_etab set l_url = (select l_url from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
-update m_activite_eco.an_eco_etab set l_nom_dir = (select l_nom_dir from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
-update m_activite_eco.an_eco_etab set l_titre = (select l_titre from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
-update m_activite_eco.an_eco_etab set source_maj_dir = (select source_maj_dir from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
-update m_activite_eco.an_eco_etab set date_maj_dir = (select date_maj_dir from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
-update m_activite_eco.an_eco_etab set l_mail_dir = (select l_mail_dir from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
-update m_activite_eco.an_eco_etab set l_tel_dir = (select l_tel_dir from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
-update m_activite_eco.an_eco_etab set l_telp_dir = (select l_telp_dir from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
-update m_activite_eco.an_eco_etab set l_nom_aut = (select l_nom_aut from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
-update m_activite_eco.an_eco_etab set l_titre_aut = (select l_titre_aut from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
-update m_activite_eco.an_eco_etab set date_maj_aut = (select date_maj_aut from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
-update m_activite_eco.an_eco_etab set l_mail_aut = (select l_mail_aut from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
-update m_activite_eco.an_eco_etab set l_tel_aut = (select l_tel_aut from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
-update m_activite_eco.an_eco_etab set l_telp_aut = (select l_telp_aut from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
-update m_activite_eco.an_eco_etab set l_nom_drh = (select l_nom_drh from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
-update m_activite_eco.an_eco_etab set l_titre_drh = (select l_titre_drh from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
-update m_activite_eco.an_eco_etab set date_maj_drh = (select date_maj_drh from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
-update m_activite_eco.an_eco_etab set l_mail_drh = (select l_mail_drh from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
-update m_activite_eco.an_eco_etab set l_tel_drh = (select l_tel_drh from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
-update m_activite_eco.an_eco_etab set l_drh_ss = (select l_drh_ss from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
-update m_activite_eco.an_eco_etab set l_drh_ad = (select l_drh_ad from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
-update m_activite_eco.an_eco_etab set l_nom_ad = (select l_nom_ad from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
-update m_activite_eco.an_eco_etab set l_titre_ad = (select l_titre_ad from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
-update m_activite_eco.an_eco_etab set date_maj_ad = (select date_maj_ad from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
-update m_activite_eco.an_eco_etab set l_mail_ad = (select l_mail_ad from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
-update m_activite_eco.an_eco_etab set l_tel_ad = (select l_tel_ad from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
-update m_activite_eco.an_eco_etab set l_comp_ad = (select l_comp_ad from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
-update m_activite_eco.an_eco_etab set l_url_bil = (select l_url_bil from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
-update m_activite_eco.an_eco_etab set l_observ = (select l_observ from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
-
-update m_activite_eco.an_eco_etab set eff_etab_d = (select eff_etab_d from m_activite_eco.an_eco_etab where idsiret = new.old_siret) WHERE idsiret=new.idsiret;
-update m_activite_eco.an_eco_etab set old_siret = null WHERE idsiret=new.idsiret;
-
-
-END IF;
-
-IF new.old_id is not null or new.old_id > 0 THEN
-
-update m_activite_eco.an_eco_etab set l_observ = (select l_observ from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
-update m_activite_eco.an_eco_etab set eff_etab = (select eff_etab from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
-update m_activite_eco.an_eco_etab set source_eff = (select source_eff from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
-update m_activite_eco.an_eco_etab set l_date_eff = (select date_eff from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
-update m_activite_eco.an_eco_etab set op_sai = (select op_sai from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
-update m_activite_eco.an_eco_etab set org_sai = (select org_sai from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
-update m_activite_eco.an_eco_etab set l_tel = (select l_tel from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
-update m_activite_eco.an_eco_etab set l_mail = (select l_mail from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
-update m_activite_eco.an_eco_etab set l_url = (select l_url from m_activite_eco.geo_sa_egeo_eco_etabptabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
-update m_activite_eco.an_eco_etab set l_nom_dir = (select l_nom_dir from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
-update m_activite_eco.an_eco_etab set l_titre = (select l_titre from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
-update m_activite_eco.an_eco_etab set source_maj_dir = (select source_maj_dir from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
-update m_activite_eco.an_eco_etab set date_maj_dir = (select date_maj_dir from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
-update m_activite_eco.an_eco_etab set l_mail_dir = (select l_mail_dir from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
-update m_activite_eco.an_eco_etab set l_tel_dir = (select l_tel_dir from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
-update m_activite_eco.an_eco_etab set l_telp_dir = (select l_telp_dir from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
-update m_activite_eco.an_eco_etab set l_nom_aut = (select l_nom_aut from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
-update m_activite_eco.an_eco_etab set l_titre_aut = (select l_titre_aut from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
-update m_activite_eco.an_eco_etab set date_maj_aut = (select date_maj_aut from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
-update m_activite_eco.an_eco_etab set l_mail_aut = (select l_mail_aut from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
-update m_activite_eco.an_eco_etab set l_tel_aut = (select l_tel_aut from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
-update m_activite_eco.an_eco_etab set l_telp_aut = (select l_telp_aut from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
-update m_activite_eco.an_eco_etab set l_nom_drh = (select l_nom_drh from m_economie.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
-update m_activite_eco.an_eco_etab set l_titre_drh = (select l_titre_drh from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
-update m_activite_eco.an_eco_etab set date_maj_drh = (select date_maj_drh from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
-update m_activite_eco.an_eco_etab set l_mail_drh = (select l_mail_drh from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
-update m_activite_eco.an_eco_etab set l_tel_drh = (select l_tel_drh from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
-update m_activite_eco.an_eco_etab set l_drh_ss = (select l_drh_ss from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
-update m_activite_eco.an_eco_etab set l_drh_ad = (select l_drh_ad from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
-update m_activite_eco.an_eco_etab set l_nom_ad = (select l_nom_ad from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
-update m_activite_eco.an_eco_etab set l_titre_ad = (select l_titre_ad from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
-update m_activite_eco.an_eco_etab set date_maj_ad = (select date_maj_ad from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
-update m_activite_eco.an_eco_etab set l_mail_ad = (select l_mail_ad from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
-update m_activite_eco.an_eco_etab set l_tel_ad = (select l_tel_ad from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
-
-update m_activite_eco.an_eco_etab set l_comp_ad = (select l_comp_ad from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
-update m_activite_eco.an_eco_etab set l_url_bil = (select l_url_bil from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
-update m_activite_eco.an_eco_etab set eff_etab_d = (select eff_etab_d from m_activite_eco.geo_eco_etabp where idgeoet = new.old_id) WHERE idgeoet=new.idgeoet;
-
-
-update m_activite_eco.an_eco_etab set old_id = null WHERE idgeoet=new.idgeoet;
-
-DELETE FROM m_activite_eco.geo_eco_etabp where idgeoet = new.old_id;
-
-END IF;
-
-
-
-return new;
-END$BODY$;
-
-ALTER FUNCTION m_activite_eco.ft_m_an_sa_etab_oldsiret()
-    OWNER TO create_sig;
-
-GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_an_sa_etab_oldsiret() TO PUBLIC;
-
-GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_an_sa_etab_oldsiret() TO create_sig;
-
-COMMENT ON FUNCTION m_activite_eco.ft_m_an_sa_etab_oldsiret()
-    IS 'Fonction dont l''objet est de récupérer les anciens contacts d''un établissement fermé pour les réinscrires au même établissement ayant changer de SIRET';
-
-
--- ############################################################ [ft_m_etiquette_local] #######################################################################
-
--- FUNCTION: m_activite_eco.ft_m_etiquette_local()
-
--- DROP FUNCTION m_activite_eco.ft_m_etiquette_local();
-
-CREATE OR REPLACE FUNCTION m_activite_eco.ft_m_etiquette_local()
-    RETURNS trigger
-    LANGUAGE 'plpgsql'
-    COST 100
-    VOLATILE NOT LEAKPROOF
-AS $BODY$
-
-BEGIN
-
--- refraichissement de la vue matérialisée des points établissements à l'adresse
-REFRESH MATERIALIZED VIEW x_apps.xapps_geo_vmr_etab_api;
-REFRESH MATERIALIZED VIEW x_apps.xapps_geo_vmr_immo_bati;
-
-return new;
-
-END;
-
-$BODY$;
-
-ALTER FUNCTION m_activite_eco.ft_m_etiquette_local()
-    OWNER TO create_sig;
-
-GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_etiquette_local() TO PUBLIC;
-
-GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_etiquette_local() TO create_sig;
-
-GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_etiquette_local() TO sig_edit;
-
-
-
--- ############################################################ [ft_m_etabp_insert] #######################################################################
-
--- FUNCTION: m_activite_eco.ft_m_etabp_insert()
-
--- DROP FUNCTION m_activite_eco.ft_m_etabp_insert();
-
-CREATE OR REPLACE FUNCTION m_activite_eco.ft_m_etabp_insert()
-    RETURNS trigger
-    LANGUAGE 'plpgsql'
-    COST 100
-    VOLATILE NOT LEAKPROOF
-AS $BODY$
-
-DECLARE v_idgeoet integer;
-
-BEGIN
-    
-    new.date_sai=current_timestamp;
-    v_idgeoet := (SELECT nextval('r_objet.idgeo_seq'::regclass));
-    new.idgeoet = v_idgeoet;
-    -- insertion du numéro du site
-    new.idsite = (SELECT DISTINCT
-				an_sa_site.idsite 
-		  FROM 
-				m_economie.an_sa_site, r_objet.geo_objet_ope
-		  WHERE
-				geo_objet_ope.idsite=an_sa_site.idsite
-		  AND
-				st_intersects(geo_objet_ope.geom,new.geom) = true
-		  );
-
-    return new ;
-END;
-
-$BODY$;
-
-ALTER FUNCTION m_activite_eco.ft_m_etabp_insert()
-    OWNER TO create_sig;
-
-GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_etabp_insert() TO PUBLIC;
-
-GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_etabp_insert() TO create_sig;
-
--- ############################################################ [ft_m_etabp_update] #######################################################################
-
--- FUNCTION: m_activite_eco.ft_m_etabp_update()
-
--- DROP FUNCTION m_activite_eco.ft_m_etabp_update();
-
-CREATE OR REPLACE FUNCTION m_activite_eco.ft_m_etabp_update()
-    RETURNS trigger
-    LANGUAGE 'plpgsql'
-    COST 100
-    VOLATILE NOT LEAKPROOF
-AS $BODY$
-
-BEGIN
-
-    new.date_maj=current_timestamp;
-    -- insertion du numéro du site
-    new.idsite = (SELECT DISTINCT
-				an_sa_site.idsite 
-		  FROM 
-				m_economie.an_sa_site, r_objet.geo_objet_ope
-		  WHERE
-				geo_objet_ope.idsite=an_sa_site.idsite
-		  AND
-				st_intersects(geo_objet_ope.geom,new.geom) = true
-		  );
-	
- 
-
-return new ;
-
-END;
-
-$BODY$;
-
-ALTER FUNCTION m_activite_eco.ft_m_etabp_update()
-    OWNER TO create_sig;
-
-GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_etabp_update() TO PUBLIC;
-
-GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_etabp_update() TO create_sig;
-
-
-
--- ############################################################ [ft_m_etabp_null] #######################################################################
-
--- FUNCTION: m_activite_eco.ft_m_etabp_null()
-
--- DROP FUNCTION m_activite_eco.ft_m_etabp_null();
-
-CREATE OR REPLACE FUNCTION m_activite_eco.ft_m_etabp_null()
-    RETURNS trigger
-    LANGUAGE 'plpgsql'
-    COST 100
-    VOLATILE NOT LEAKPROOF
-AS $BODY$
-
-BEGIN
-
-    -- insertion du numéro du site
-    UPDATE m_activite_eco.geo_eco_etabp SET idsiren = null WHERE idsiren='';
-    UPDATE m_activite_eco.geo_eco_etabp SET idsiret = null WHERE idsiret='';
-    UPDATE m_activite_eco.geo_eco_etabp SET op_sai = null WHERE op_sai='';
-    UPDATE m_activite_eco.geo_eco_etabp SET org_sai = null WHERE org_sai='';
-    UPDATE m_activite_eco.geo_eco_etabp SET l_nom = null WHERE l_nom='';
-    UPDATE m_activite_eco.geo_eco_etabp SET source_eff = null WHERE source_eff='';
-    UPDATE m_activite_eco.geo_eco_etabp SET l_ape = null WHERE l_ape='';
-    UPDATE m_activite_eco.geo_eco_etabp SET l_nom_dir = null WHERE l_nom_dir='';
-    UPDATE m_activite_eco.geo_eco_etabp SET source_maj_dir = null WHERE source_maj_dir='';
-    UPDATE m_activite_eco.geo_eco_etabp SET l_tel = null WHERE l_tel='';
-    UPDATE m_activite_eco.geo_eco_etabp SET l_mail = null WHERE l_mail='';
-    UPDATE m_activite_eco.geo_eco_etabp SET l_observ = null WHERE l_observ='';
-    return new ;
-END;
-
-
-
-
-$BODY$;
-
-ALTER FUNCTION m_activite_eco.ft_m_etabp_null()
-    OWNER TO create_sig;
-
-GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_etabp_null() TO PUBLIC;
-
-GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_etabp_null() TO create_sig;
-
-
--- ################################################## [ft_m_lk_adresseetablissement_siret_update] ######################################################
-
--- FUNCTION: m_activite_eco.ft_m_lk_adresseetablissement_idsite_update()
-
--- DROP FUNCTION m_activite_eco.ft_m_lk_adresseetablissement_idsite_update();
-
-CREATE OR REPLACE FUNCTION m_activite_eco.ft_m_lk_adresseetablissement_idsite_update()
-    RETURNS trigger
-    LANGUAGE 'plpgsql'
-    COST 100
-    VOLATILE NOT LEAKPROOF
-AS $BODY$
-
-BEGIN
-
-IF (old.idadresse || old.siret ) <> (new.idadresse || new.siret) THEN
-
-
--- suppression de l'appariemment du siret à l'adresse car siret adressé à une autre auparavant
-DELETE FROM m_activite_eco.lk_adresseetablissement WHERE siret = old.siret;
-END IF;
-
-return new;
-
-END;
-
-
-$BODY$;
-
-ALTER FUNCTION m_activite_eco.ft_m_lk_adresseetablissement_idsite_update()
-    OWNER TO create_sig;
-
-GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_lk_adresseetablissement_idsite_update() TO create_sig;
-
-GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_lk_adresseetablissement_idsite_update() TO PUBLIC;
-
-
--- ################################################## [ft_m_lk_adresseetablissement_siret_update] ######################################################
-
--- FUNCTION: m_activite_eco.ft_m_lk_adresseetablissement_siret_update()
-
--- DROP FUNCTION m_activite_eco.ft_m_lk_adresseetablissement_siret_update();
-
-CREATE OR REPLACE FUNCTION m_activite_eco.ft_m_lk_adresseetablissement_siret_update()
-    RETURNS trigger
-    LANGUAGE 'plpgsql'
-    COST 100
-    VOLATILE NOT LEAKPROOF
-AS $BODY$
-
-BEGIN
-
--- si j'ai déjà un établissement à une adresse et qu'il est adressé à une autre, je supprime d'abord les appariemments
-IF (SELECT COUNT(*) FROM m_activite_eco.lk_adresseetablissement WHERE siret = new.siret) > 0 THEN
-DELETE FROM m_activite_eco.lk_adresseetablissement WHERE siret = new.siret;
-END IF;
-
-return new;
-
-END;
-
-$BODY$;
-
-ALTER FUNCTION m_activite_eco.ft_m_lk_adresseetablissement_siret_update()
-    OWNER TO create_sig;
-
-GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_lk_adresseetablissement_siret_update() TO create_sig;
-
-GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_lk_adresseetablissement_siret_update() TO PUBLIC;
-
-
-
--- ################################################## [ft_m_lk_adresseetablissement_idsite] ######################################################
-
--- FUNCTION: m_activite_eco.ft_m_lk_adresseetablissement_idsite()
-
--- DROP FUNCTION m_activite_eco.ft_m_lk_adresseetablissement_idsite();
-
-CREATE OR REPLACE FUNCTION m_activite_eco.ft_m_lk_adresseetablissement_idsite()
-    RETURNS trigger
-    LANGUAGE 'plpgsql'
-    COST 100
-    VOLATILE NOT LEAKPROOF
-AS $BODY$
-
-
-BEGIN
-
-/** A REVOIR ICI **/
-/**
-UPDATE m_economie.an_eco_etab SET idsite = 
-(SELECT DISTINCT idsite FROM r_objet.geo_objet_ope WHERE st_intersects(geo_objet_ope.geom,(SELECT a.geom FROM x_apps.xapps_geo_vmr_adresse a WHERE a.id_adresse = new.idadresse)) = true and idsite <> '60382zz' AND (destdomi='02' or destdomi='03'))
-WHERE idsiret = new.siret;
-**/
-
-
-return new;
-
-END;
-
-
-$BODY$;
-
-ALTER FUNCTION m_activite_eco.ft_m_lk_adresseetablissement_idsite()
-    OWNER TO create_sig;
-
-GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_lk_adresseetablissement_idsite() TO create_sig;
-
-GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_lk_adresseetablissement_idsite() TO PUBLIC;
-
-
-
--- ################################################## [ft_m_lk_adresseetablissement_idsite_delete] ######################################################
-
--- FUNCTION: m_activite_eco.ft_m_lk_adresseetablissement_idsite_delete()
-
--- DROP FUNCTION m_activite_eco.ft_m_lk_adresseetablissement_idsite_delete();
-
-CREATE OR REPLACE FUNCTION m_activite_eco.ft_m_lk_adresseetablissement_idsite_delete()
-    RETURNS trigger
-    LANGUAGE 'plpgsql'
-    COST 100
-    VOLATILE NOT LEAKPROOF
-AS $BODY$
-
-BEGIN
-
--- suppression de l'appariemment du siret à l'adresse
-DELETE FROM m_activite_eco.lk_adresseetablissement WHERE siret = old.siret;
-
-return new;
-
-END;
-
-$BODY$;
-
-ALTER FUNCTION m_activite_eco.ft_m_lk_adresseetablissement_idsite_delete()
-    OWNER TO create_sig;
-
-GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_lk_adresseetablissement_idsite_delete() TO create_sig;
-
-GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_lk_adresseetablissement_idsite_delete() TO PUBLIC;
-
--- ################################################## [ft_m_lk_adresseetablissement] ######################################################
-
--- FUNCTION: m_activite_eco.ft_m_lk_adresseetablissement()
-
--- DROP FUNCTION m_activite_eco.ft_m_lk_adresseetablissement();
-
-CREATE OR REPLACE FUNCTION m_activite_eco.ft_m_lk_adresseetablissement()
-    RETURNS trigger
-    LANGUAGE 'plpgsql'
-    COST 100
-    VOLATILE NOT LEAKPROOF
-AS $BODY$
-
-BEGIN
-
--- refraichissement de la vue matérialisée des points établissements à l'adresse
-REFRESH MATERIALIZED VIEW x_apps.xapps_geo_vmr_etab_api;
-
-return new;
-
-END;
-
-$BODY$;
-
-ALTER FUNCTION m_activite_eco.ft_m_lk_adresseetablissement()
-    OWNER TO create_sig;
-
-GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_lk_adresseetablissement() TO create_sig;
-
-GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_lk_adresseetablissement() TO PUBLIC;
 
 
 
@@ -4309,6 +4465,12 @@ GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_lk_adresseetablissement() TO PUBLI
 -- ###                                                                DOMAINES DE VALEURS                                                           ###
 -- ###                                                                                                                                              ###
 -- ####################################################################################################################################################
+
+
+-- ####################################################################################################################################################
+-- ###                                                          DOMAINES DE VALEURS M_ACTIVITE_ECO                                                  ###
+-- #####################################################################################################################################################
+
 
 -- ################################################################# Domaine valeur - [lt_eco_dest]  ##################################################
 
@@ -4662,6 +4824,60 @@ INSERT INTO m_activite_eco.lt_eco_typevenmt(
     ('30','Forum, salon'),
     ('40','Séminaire');
 
+-- ################################################################ Domaine valeur - [lt_eco_tact]  ################################################
+
+-- Table: m_activite_eco.lt_eco_tact
+
+-- DROP TABLE m_activite_eco.lt_eco_tact;
+
+CREATE TABLE m_activite_eco.lt_eco_tact
+(
+    code character varying(2) COLLATE pg_catalog."default" NOT NULL,
+    valeur character varying(30) COLLATE pg_catalog."default",
+    CONSTRAINT lt_eco_tact_pkey PRIMARY KEY (code)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE m_activite_eco.lt_eco_tact
+    OWNER to create_sig;
+
+GRANT ALL ON TABLE m_activite_eco.lt_eco_tact TO sig_create;
+
+GRANT SELECT ON TABLE m_activite_eco.lt_eco_tact TO sig_read;
+
+GRANT ALL ON TABLE m_activite_eco.lt_eco_tact TO create_sig;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_activite_eco.lt_eco_tact TO sig_edit;
+
+COMMENT ON TABLE m_activite_eco.lt_eco_tact
+    IS 'Liste de valeurs de l''activité du projet d''implantation sur les lots (spécifique à l''ARC)';
+
+COMMENT ON COLUMN m_activite_eco.lt_eco_tact.code
+    IS 'Code de l''activité du projet d''implantation sur les lots (spécifique à l''ARC)';
+
+COMMENT ON COLUMN m_activite_eco.lt_eco_tact.valeur
+    IS 'Libellé de l''activité du projet d''implantation sur les lots (spécifique à l''ARC)';
+
+INSERT INTO m_activite_eco.lt_eco_tact(
+            code, valeur)
+    VALUES
+    ('00','Non renseigné'),
+    ('10','Artisanat'),
+    ('20','Commerce'),
+    ('30','Industrie'),
+    ('40','R & D'),
+    ('50','Service/Négoce'),
+    ('60','Tertiaire'),
+    ('99','Autre');
+
+-- ####################################################################################################################################################
+-- ###                                                          DOMAINES DE VALEURS M_URBANISME REG                                                 ###
+-- #####################################################################################################################################################
+
+
 -- ################################################################ Domaine valeur - [lt_proc_typconso]  ################################################
 
 -- Table: m_urbanisme_reg.lt_proc_typconso
@@ -4805,54 +5021,11 @@ INSERT INTO m_urbanisme_reg.lt_proc_typfon(
     ('30','Acquisitions amiables'),
     ('40','Opérateur privé');
 
--- ################################################################ Domaine valeur - [lt_eco_tact]  ################################################
 
--- Table: m_activite_eco.lt_eco_tact
+-- ####################################################################################################################################################
+-- ###                                                          DOMAINES DE VALEURS M_AMENAGEMENT                                                   ###
+-- #####################################################################################################################################################
 
--- DROP TABLE m_activite_eco.lt_eco_tact;
-
-CREATE TABLE m_activite_eco.lt_eco_tact
-(
-    code character varying(2) COLLATE pg_catalog."default" NOT NULL,
-    valeur character varying(30) COLLATE pg_catalog."default",
-    CONSTRAINT lt_eco_tact_pkey PRIMARY KEY (code)
-)
-WITH (
-    OIDS = FALSE
-)
-TABLESPACE pg_default;
-
-ALTER TABLE m_activite_eco.lt_eco_tact
-    OWNER to create_sig;
-
-GRANT ALL ON TABLE m_activite_eco.lt_eco_tact TO sig_create;
-
-GRANT SELECT ON TABLE m_activite_eco.lt_eco_tact TO sig_read;
-
-GRANT ALL ON TABLE m_activite_eco.lt_eco_tact TO create_sig;
-
-GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_activite_eco.lt_eco_tact TO sig_edit;
-
-COMMENT ON TABLE m_activite_eco.lt_eco_tact
-    IS 'Liste de valeurs de l''activité du projet d''implantation sur les lots (spécifique à l''ARC)';
-
-COMMENT ON COLUMN m_activite_eco.lt_eco_tact.code
-    IS 'Code de l''activité du projet d''implantation sur les lots (spécifique à l''ARC)';
-
-COMMENT ON COLUMN m_activite_eco.lt_eco_tact.valeur
-    IS 'Libellé de l''activité du projet d''implantation sur les lots (spécifique à l''ARC)';
-
-INSERT INTO m_activite_eco.lt_eco_tact(
-            code, valeur)
-    VALUES
-    ('00','Non renseigné'),
-    ('10','Artisanat'),
-    ('20','Commerce'),
-    ('30','Industrie'),
-    ('40','R & D'),
-    ('50','Service/Négoce'),
-    ('60','Tertiaire'),
-    ('99','Autre');
 
 -- ################################################################ Domaine valeur - [lt_amt_stadeamng]  ################################################
 
@@ -5108,6 +5281,10 @@ INSERT INTO m_amenagement.lt_amt_empesp_pu(
     ('50','Bâtiment public'),
     ('99','Autre');
     
+-- ####################################################################################################################################################
+-- ###                                                               DOMAINES DE VALEURS R_OBJET                                                    ###
+-- #####################################################################################################################################################
+
 
 -- ############################################################## [Domaine valeur - lt_objet_vocafon] #######################################################################
 
@@ -5273,10 +5450,329 @@ INSERT INTO m_activite_eco.lt_eco_occuploc(
     ('31','Disponible à la vente ou à la location (occupé)'),
     ('40','Occupé');
 
+
+-- ####################################################################################################################################################
+-- ###                                                     DOMAINES DE VALEURS M_FONCIER                                                            ###
+-- #####################################################################################################################################################
+
+-- ############################################################## [Domaine valeur - lt_ces_cond] #######################################################################
+
+-- Table: m_foncier.lt_ces_cond
+
+-- DROP TABLE m_foncier.lt_ces_cond;
+
+CREATE TABLE m_foncier.lt_ces_cond
+(
+    l_condi character varying(2) COLLATE pg_catalog."default" NOT NULL,
+    condi_lib character varying(15) COLLATE pg_catalog."default",
+    CONSTRAINT lt_ces_cond_pkey PRIMARY KEY (l_condi)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE m_foncier.lt_ces_cond
+    OWNER to create_sig;
+
+GRANT ALL ON TABLE m_foncier.lt_ces_cond TO sig_create;
+
+GRANT SELECT ON TABLE m_foncier.lt_ces_cond TO sig_read;
+
+GRANT ALL ON TABLE m_foncier.lt_ces_cond TO create_sig;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_foncier.lt_ces_cond TO sig_edit;
+
+COMMENT ON TABLE m_foncier.lt_ces_cond
+    IS 'Liste de valeurs des conditions de cession';
+
+COMMENT ON COLUMN m_foncier.lt_ces_cond.l_condi
+    IS 'Code de conditions de cession';
+
+COMMENT ON COLUMN m_foncier.lt_ces_cond.condi_lib
+    IS 'Libellé de conditions de cession';
+COMMENT ON CONSTRAINT lt_ces_cond_pkey ON m_foncier.lt_ces_cond
+    IS 'Clé primaire de la table lt_ces_cond';
+
+-- ############################################################## [Domaine valeur - lt_ces_doc] #######################################################################
+
+-- Table: m_foncier.lt_ces_doc
+
+-- DROP TABLE m_foncier.lt_ces_doc;
+
+CREATE TABLE m_foncier.lt_ces_doc
+(
+    l_type character varying(2) COLLATE pg_catalog."default" NOT NULL,
+    type_lib character varying(100) COLLATE pg_catalog."default",
+    CONSTRAINT lt_ces_doc_pkey PRIMARY KEY (l_type)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE m_foncier.lt_ces_doc
+    OWNER to create_sig;
+
+GRANT ALL ON TABLE m_foncier.lt_ces_doc TO sig_create;
+
+GRANT SELECT ON TABLE m_foncier.lt_ces_doc TO sig_read;
+
+GRANT ALL ON TABLE m_foncier.lt_ces_doc TO create_sig;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_foncier.lt_ces_doc TO sig_edit;
+
+COMMENT ON TABLE m_foncier.lt_ces_doc
+    IS 'Liste de valeurs des types de documents concernant les cessions ou les acquisitions';
+
+COMMENT ON COLUMN m_foncier.lt_ces_doc.l_type
+    IS 'Code du type de document de cessions ou d''acquisitions';
+
+COMMENT ON COLUMN m_foncier.lt_ces_doc.type_lib
+    IS 'Libellé du type de documents de cessions ou d''acquisitions';
+
+-- ############################################################## [Domaine valeur - lt_ces_etat] #######################################################################
+
+-- Table: m_foncier.lt_ces_etat
+
+-- DROP TABLE m_foncier.lt_ces_etat;
+
+CREATE TABLE m_foncier.lt_ces_etat
+(
+    l_etat character varying(2) COLLATE pg_catalog."default" NOT NULL,
+    etat_lib character varying(25) COLLATE pg_catalog."default",
+    CONSTRAINT lt_ces_etat_pkey PRIMARY KEY (l_etat)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE m_foncier.lt_ces_etat
+    OWNER to create_sig;
+
+GRANT ALL ON TABLE m_foncier.lt_ces_etat TO sig_create;
+
+GRANT SELECT ON TABLE m_foncier.lt_ces_etat TO sig_read;
+
+GRANT ALL ON TABLE m_foncier.lt_ces_etat TO create_sig;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_foncier.lt_ces_etat TO sig_edit;
+
+COMMENT ON TABLE m_foncier.lt_ces_etat
+    IS 'Liste de valeurs de l''état du dossier';
+
+COMMENT ON COLUMN m_foncier.lt_ces_etat.l_etat
+    IS 'Code de l''état du dossier de cession';
+
+COMMENT ON COLUMN m_foncier.lt_ces_etat.etat_lib
+    IS 'Libellé de l''état du dossier de cession';
+COMMENT ON CONSTRAINT lt_ces_etat_pkey ON m_foncier.lt_ces_etat
+    IS 'Clé primaire de la table lt_ces_etat';
+
+-- ############################################################## [Domaine valeur - lt_ces_nota] #######################################################################
+
+-- Table: m_foncier.lt_ces_nota
+
+-- DROP TABLE m_foncier.lt_ces_nota;
+
+CREATE TABLE m_foncier.lt_ces_nota
+(
+    l_notaire character varying(2) COLLATE pg_catalog."default" NOT NULL,
+    notaire_lib character varying(20) COLLATE pg_catalog."default",
+    CONSTRAINT lt_ces_nota_pkey PRIMARY KEY (l_notaire)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE m_foncier.lt_ces_nota
+    OWNER to create_sig;
+
+GRANT ALL ON TABLE m_foncier.lt_ces_nota TO sig_create;
+
+GRANT SELECT ON TABLE m_foncier.lt_ces_nota TO sig_read;
+
+GRANT ALL ON TABLE m_foncier.lt_ces_nota TO create_sig;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_foncier.lt_ces_nota TO sig_edit;
+
+COMMENT ON TABLE m_foncier.lt_ces_nota
+    IS 'Liste de valeurs du nom du notaire';
+
+COMMENT ON COLUMN m_foncier.lt_ces_nota.l_notaire
+    IS 'Code du nom du notaire';
+
+COMMENT ON COLUMN m_foncier.lt_ces_nota.notaire_lib
+    IS 'Libellé du notaire';
+COMMENT ON CONSTRAINT lt_ces_nota_pkey ON m_foncier.lt_ces_nota
+    IS 'Clé primaire de la table lt_ces_nota';
+
+-- ############################################################## [Domaine valeur - lt_ces_orga] #######################################################################
+
+-- Table: m_foncier.lt_ces_orga
+
+-- DROP TABLE m_foncier.lt_ces_orga;
+
+CREATE TABLE m_foncier.lt_ces_orga
+(
+    l_orga character varying(2) COLLATE pg_catalog."default" NOT NULL,
+    orga_lib character varying(50) COLLATE pg_catalog."default",
+    CONSTRAINT lt_ces_orga_pkey PRIMARY KEY (l_orga)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE m_foncier.lt_ces_orga
+    OWNER to create_sig;
+
+GRANT ALL ON TABLE m_foncier.lt_ces_orga TO sig_create;
+
+GRANT SELECT ON TABLE m_foncier.lt_ces_orga TO sig_read;
+
+GRANT ALL ON TABLE m_foncier.lt_ces_orga TO create_sig;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_foncier.lt_ces_orga TO sig_edit;
+
+COMMENT ON TABLE m_foncier.lt_ces_orga
+    IS 'Liste de valeurs des noms de l''organisme cédant';
+
+COMMENT ON COLUMN m_foncier.lt_ces_orga.l_orga
+    IS 'Code du nom de l''organisme cédant';
+
+COMMENT ON COLUMN m_foncier.lt_ces_orga.orga_lib
+    IS 'Libellé du nom de l''organisme cédant';
+COMMENT ON CONSTRAINT lt_ces_orga_pkey ON m_foncier.lt_ces_orga
+    IS 'Clé primaire de la table lt_ces_orga';
+    
+-- ############################################################## [Domaine valeur - lt_ces_tact] #######################################################################
+
+-- Table: m_foncier.lt_ces_tact
+
+-- DROP TABLE m_foncier.lt_ces_tact;
+
+CREATE TABLE m_foncier.lt_ces_tact
+(
+    l_type character varying(2) COLLATE pg_catalog."default" NOT NULL,
+    type_lib character varying(15) COLLATE pg_catalog."default",
+    CONSTRAINT lt_ces_tact_pkey PRIMARY KEY (l_type)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE m_foncier.lt_ces_tact
+    OWNER to create_sig;
+
+GRANT ALL ON TABLE m_foncier.lt_ces_tact TO sig_create;
+
+GRANT SELECT ON TABLE m_foncier.lt_ces_tact TO sig_read;
+
+GRANT ALL ON TABLE m_foncier.lt_ces_tact TO create_sig;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_foncier.lt_ces_tact TO sig_edit;
+
+COMMENT ON TABLE m_foncier.lt_ces_tact
+    IS 'Liste de valeurs du type d''acte de cession';
+
+COMMENT ON COLUMN m_foncier.lt_ces_tact.l_type
+    IS 'Code du type d''acte de cession';
+
+COMMENT ON COLUMN m_foncier.lt_ces_tact.type_lib
+    IS 'Libellé du type d''acte de cession';
+COMMENT ON CONSTRAINT lt_ces_tact_pkey ON m_foncier.lt_ces_tact
+    IS 'Clé primaire de la table lt_ces_tact';
+
+-- ############################################################## [Domaine valeur - lt_ces_voca] #######################################################################
+
+-- Table: m_foncier.lt_ces_voca
+
+-- DROP TABLE m_foncier.lt_ces_voca;
+
+CREATE TABLE m_foncier.lt_ces_voca
+(
+    l_voca character varying(2) COLLATE pg_catalog."default" NOT NULL,
+    voca_lib character varying(50) COLLATE pg_catalog."default",
+    CONSTRAINT lt_ces_voca_pkey PRIMARY KEY (l_voca)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE m_foncier.lt_ces_voca
+    OWNER to create_sig;
+
+GRANT ALL ON TABLE m_foncier.lt_ces_voca TO sig_create;
+
+GRANT SELECT ON TABLE m_foncier.lt_ces_voca TO sig_read;
+
+GRANT ALL ON TABLE m_foncier.lt_ces_voca TO create_sig;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_foncier.lt_ces_voca TO sig_edit;
+
+COMMENT ON TABLE m_foncier.lt_ces_voca
+    IS 'Liste de valeurs de la vocation de la cession';
+
+COMMENT ON COLUMN m_foncier.lt_ces_voca.l_voca
+    IS 'Code de la vocation de la cession';
+
+COMMENT ON COLUMN m_foncier.lt_ces_voca.voca_lib
+    IS 'Libellé de la vocation de la cession';
+COMMENT ON CONSTRAINT lt_ces_voca_pkey ON m_foncier.lt_ces_voca
+    IS 'Clé primaire de la table lt_ces_voca';
+
+-- ############################################################## [Domaine valeur - lt_rel_lot] #######################################################################
+
+-- Table: m_foncier.lt_rel_lot
+
+-- DROP TABLE m_foncier.lt_rel_lot;
+
+CREATE TABLE m_foncier.lt_rel_lot
+(
+    l_rel character varying(2) COLLATE pg_catalog."default" NOT NULL,
+    rel_lib character varying(25) COLLATE pg_catalog."default",
+    CONSTRAINT lt_rel_lot_pkey PRIMARY KEY (l_rel)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE m_foncier.lt_rel_lot
+    OWNER to create_sig;
+
+GRANT ALL ON TABLE m_foncier.lt_rel_lot TO sig_create;
+
+GRANT SELECT ON TABLE m_foncier.lt_rel_lot TO sig_read;
+
+GRANT ALL ON TABLE m_foncier.lt_rel_lot TO create_sig;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_foncier.lt_rel_lot TO sig_edit;
+
+COMMENT ON TABLE m_foncier.lt_rel_lot
+    IS 'Liste de valeurs du type de relation entre le dossier de cession et les lots';
+
+COMMENT ON COLUMN m_foncier.lt_rel_lot.l_rel
+    IS 'Code de la relation';
+
+COMMENT ON COLUMN m_foncier.lt_rel_lot.rel_lib
+    IS 'Libellé de la relation';
+COMMENT ON CONSTRAINT lt_rel_lot_pkey ON m_foncier.lt_rel_lot
+    IS 'Clé primaire de la table lt_rel_lot';
+
 -- ####################################################################################################################################################
 -- ###                                                                                                                                              ###
 -- ###                                                                TABLE                                                                         ###
 -- ###                                                                                                                                              ###
+-- ####################################################################################################################################################
+
+-- ####################################################################################################################################################
+-- ###                                                         TABLE M_ACTIVITE_ECO                                                                 ###
 -- ####################################################################################################################################################
 
 
@@ -5690,178 +6186,6 @@ COMMENT ON COLUMN m_activite_eco.geo_eco_site.observ
 COMMENT ON COLUMN m_activite_eco.geo_eco_site.geom
     IS 'Géométrie des objets sites';
 
--- ############################################################## [geo_proced] ##################################################################
-
--- Table: m_urbanisme_reg.geo_proced
-
--- DROP TABLE m_urbanisme_reg.geo_proced;
-
-CREATE TABLE m_urbanisme_reg.geo_proced
-(
-    idproc character varying(5) NOT NULL DEFAULT 'PR' || nextval('m_urbanisme_reg.geo_proc_seq'::regclass),
-    nom character varying(255) COLLATE pg_catalog."default",
-    alias character varying(255) COLLATE pg_catalog."default",
-    dest character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
-    z_proced character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
-    phase character varying(2) COLLATE pg_catalog."default",
-    moa character varying(80) COLLATE pg_catalog."default",
-    conso_type character varying(2) COLLATE pg_catalog."default",
-    pr_urb boolean NOT NULL DEFAULT false,
-    date_crea date,
-    pr_fon boolean NOT NULL DEFAULT false,
-    pr_fon_date date,
-    surf_ha double precision,
-    existe boolean NOT NULL DEFAULT true,
-    pr_fon_type character varying(2) COLLATE pg_catalog."default",
-    ref_compta character varying(5) COLLATE pg_catalog."default",
-    surf_cess_ha numeric(10,2),
-    date_clo timestamp without time zone,
-    nb_log integer,
-    nb_logind integer,
-    nb_logindgr integer,
-    nb_logcol integer,
-    nb_logaide integer,
-    nb_logaide_loc integer,
-    nb_logaide_acc integer,
-    nom_cp character varying(80) COLLATE pg_catalog."default",
-    op_sai character varying(80) COLLATE pg_catalog."default",
-    date_sai timestamp without time zone,
-    date_maj timestamp without time zone,
-    epci character varying(10) COLLATE pg_catalog."default",
-    observ character varying(1000) COLLATE pg_catalog."default",
-    CONSTRAINT geo_proced_pkey PRIMARY KEY (idproc),
-    CONSTRAINT geo_proced_consotype_fkey FOREIGN KEY (conso_type)
-        REFERENCES m_urbanisme_reg.lt_proc_typconso (code) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION,
-    CONSTRAINT geo_proced_phase_fkey FOREIGN KEY (phase)
-        REFERENCES m_urbanisme_reg.lt_proc_phase (code) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION,
-    CONSTRAINT geo_proced_prfontype_fkey FOREIGN KEY (pr_fon_type)
-        REFERENCES m_urbanisme_reg.lt_proc_typfon (code) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION,
-    CONSTRAINT geo_proced_z_proced_fkey FOREIGN KEY (z_proced)
-        REFERENCES m_urbanisme_reg.lt_proc_typ (code) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION
-)
-WITH (
-    OIDS = FALSE
-)
-TABLESPACE pg_default;
-
-ALTER TABLE m_urbanisme_reg.geo_proced
-    OWNER to create_sig;
-
-GRANT ALL ON TABLE m_urbanisme_reg.geo_proced TO sig_create;
-
-GRANT SELECT ON TABLE m_urbanisme_reg.geo_proced TO sig_read;
-
-GRANT ALL ON TABLE m_urbanisme_reg.geo_proced TO create_sig;
-
-GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_urbanisme_reg.geo_proced TO sig_edit;
-
-COMMENT ON TABLE m_urbanisme_reg.geo_proced
-    IS 'Classe d''objets contenant les données des procédures d''aménagement';
-
-COMMENT ON COLUMN m_urbanisme_reg.geo_proced.idproc
-    IS 'Identifiant non signifiant de la procédure';
-
-COMMENT ON COLUMN m_urbanisme_reg.geo_proced.nom
-    IS 'Libellé de l''opération';
-
-COMMENT ON COLUMN m_urbanisme_reg.geo_proced.alias
-    IS 'Alias du nom de l''opération';
-
-COMMENT ON COLUMN m_urbanisme_reg.geo_proced.dest
-    IS 'Code de la destination du Site (issu de la liste des valeurs du modèle CNIG sur les PLU)';
-
-COMMENT ON COLUMN m_urbanisme_reg.geo_proced.z_proced
-    IS 'Code de la procédure d''aménagement';
-
-COMMENT ON COLUMN m_urbanisme_reg.geo_proced.op_sai
-    IS 'Libellé de la personne ayant saisie l''objet';
-
-COMMENT ON COLUMN m_urbanisme_reg.geo_proced.phase
-    IS 'Phase de l''opération';
-
-COMMENT ON COLUMN m_urbanisme_reg.geo_proced.moa
-    IS 'Maitrise d''ouvrage de l''opération';
-
-COMMENT ON COLUMN m_urbanisme_reg.geo_proced.conso_type
-    IS 'Type de consommation foncière';
-
-COMMENT ON COLUMN m_urbanisme_reg.geo_proced.pr_urb
-    IS 'Procédure d''urbanisme';
-
-COMMENT ON COLUMN m_urbanisme_reg.geo_proced.date_crea
-    IS 'Date de création de la ZAC';
-
-COMMENT ON COLUMN m_urbanisme_reg.geo_proced.pr_fon
-    IS 'Procédure foncière';
-
-COMMENT ON COLUMN m_urbanisme_reg.geo_proced.pr_fon_date
-    IS 'Date de la procédure foncière';
-
-COMMENT ON COLUMN m_urbanisme_reg.geo_proced.surf_ha
-    IS 'Superficie totale programmée de l''opération en ha';
-
-COMMENT ON COLUMN m_urbanisme_reg.geo_proced.existe
-    IS 'Existance du site';
-
-COMMENT ON COLUMN m_urbanisme_reg.geo_proced.pr_fon_type
-    IS 'Procédure foncière engagée';
-
-COMMENT ON COLUMN m_urbanisme_reg.geo_proced.ref_compta
-    IS 'Référence comptable du projet';
-
-COMMENT ON COLUMN m_urbanisme_reg.geo_proced.observ
-    IS 'Commentaire';
-
-COMMENT ON COLUMN m_urbanisme_reg.geo_proced.date_sai
-    IS 'Date de saisie des données attributaires';
-
-COMMENT ON COLUMN m_urbanisme_reg.geo_proced.date_maj
-    IS 'Date de mise à jour des données attributaires';
-
-COMMENT ON COLUMN m_urbanisme_reg.geo_proced.surf_cess_ha
-    IS 'Surface cessible programmée en ha';
-
-COMMENT ON COLUMN m_urbanisme_reg.geo_proced.date_clo
-    IS 'Date de cloture de l''opération';
-
-COMMENT ON COLUMN m_urbanisme_reg.geo_proced.nb_log
-    IS 'Nombre total de logements programmés';
-
-COMMENT ON COLUMN m_urbanisme_reg.geo_proced.nb_logind
-    IS 'Nombre de logements individuels programmés';
-
-COMMENT ON COLUMN m_urbanisme_reg.geo_proced.nb_logindgr
-    IS 'Nombre de logements individuels groupés programmés';
-
-COMMENT ON COLUMN m_urbanisme_reg.geo_proced.nb_logcol
-    IS 'Nombre de logements collectifs programmés';
-
-COMMENT ON COLUMN m_urbanisme_reg.geo_proced.nb_logaide
-    IS 'Nombre total de logements aidés programmés';
-
-COMMENT ON COLUMN m_urbanisme_reg.geo_proced.nb_logaide_loc
-    IS 'Nombre total de logements aidés en location programmés';
-
-COMMENT ON COLUMN m_urbanisme_reg.geo_proced.nb_logaide_acc
-    IS 'Nombre total de logements en accession en location programmés';
-
-COMMENT ON COLUMN m_urbanisme_reg.geo_proced.nom_cp
-    IS 'Nom du chef de projet suivant la procédure';
-    
-COMMENT ON COLUMN m_urbanisme_reg.geo_proced.epci
-    IS 'Autorité compétente';
-
-COMMENT ON COLUMN m_urbanisme_reg.geo_proced.observ
-    IS 'Observations diverses';
-
 -- ############################################################## [an_eco_media] ##################################################################
 
 -- Table: m_activite_eco.an_eco_media
@@ -5941,77 +6265,6 @@ COMMENT ON COLUMN m_activite_eco.an_eco_media.alaune
     IS 'Média poussé à la une de l''annonce immobilière';
 
 COMMENT ON COLUMN m_activite_eco.an_eco_media.gid
-    IS 'Compteur (identifiant interne)';
-    
--- ############################################################## [an_proc_media] ##################################################################
-
--- Table: m_urbanisme_reg.an_proc_media
-
--- DROP TABLE m_urbanisme_reg.an_proc_media;
-
-CREATE TABLE m_urbanisme_reg.an_proc_media
-(
-    gid integer NOT NULL DEFAULT nextval('m_urbanisme_reg.an_proc_media_seq'::regclass),
-    id text COLLATE pg_catalog."default",
-    media text COLLATE pg_catalog."default",
-    miniature bytea,
-    n_fichier text COLLATE pg_catalog."default",
-    t_fichier text COLLATE pg_catalog."default",
-    op_sai character varying(20) COLLATE pg_catalog."default",
-    date_sai timestamp without time zone,
-    l_doc character varying(100) COLLATE pg_catalog."default",
-    t_doc character varying(2) COLLATE pg_catalog."default" DEFAULT '00',		
-    CONSTRAINT an_proc_media_pkey PRIMARY KEY (gid),
-    CONSTRAINT an_proc_media_t_doc_fkey FOREIGN KEY (t_doc)
-    REFERENCES m_activite_eco.lt_eco_tdocmedia (code) MATCH SIMPLE
-    ON UPDATE NO ACTION
-    ON DELETE NO ACTION
-)
-WITH (
-    OIDS = FALSE
-)
-TABLESPACE pg_default;
-
-ALTER TABLE m_urbanisme_reg.an_proc_media
-    OWNER to create_sig;
-
-GRANT ALL ON TABLE m_urbanisme_reg.an_proc_media TO sig_create;
-
-GRANT SELECT ON TABLE m_urbanisme_reg.an_proc_media TO sig_read;
-
-GRANT ALL ON TABLE m_urbanisme_reg.an_proc_media TO create_sig;
-
-GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_urbanisme_reg.an_proc_media TO sig_edit;
-
-COMMENT ON TABLE m_urbanisme_reg.an_proc_media
-    IS 'Table gérant les documents intégrés pour la gestion des procédures d''aménagement';
-
-COMMENT ON COLUMN m_urbanisme_reg.an_proc_media.id
-    IS 'Identifiant interne non signifiant de l''objet saisi';
-
-COMMENT ON COLUMN m_urbanisme_reg.an_proc_media.media
-    IS 'Champ Média de GEO';
-
-COMMENT ON COLUMN m_urbanisme_reg.an_proc_media.miniature
-    IS 'Champ miniature de GEO';
-
-COMMENT ON COLUMN m_urbanisme_reg.an_proc_media.n_fichier
-    IS 'Nom du fichier';
-
-COMMENT ON COLUMN m_urbanisme_reg.an_proc_media.t_fichier
-    IS 'Type de média dans GEO';
-
-COMMENT ON COLUMN m_urbanisme_reg.an_proc_media.op_sai
-    IS 'Opérateur de saisie (par défaut login de connexion à GEO)';
-
-COMMENT ON COLUMN m_urbanisme_reg.an_proc_media.date_sai
-    IS 'Date de la saisie du document';
-
-COMMENT ON COLUMN m_urbanisme_reg.an_proc_media.l_doc
-    IS 'Titre du document ou légère description';
-
-
-COMMENT ON COLUMN m_urbanisme_reg.an_proc_media.gid
     IS 'Compteur (identifiant interne)';
 
 -- ############################################################## [an_eco_contact] ##################################################################
@@ -6342,712 +6595,6 @@ COMMENT ON COLUMN m_activite_eco.an_eco_lot.insee
 
 COMMENT ON COLUMN m_activite_eco.an_eco_lot.commune
     IS 'Libellé de la ou des communes contenant le lot';
-
--- ############################################################## [an_amt_lot_stade] ##################################################################
-
--- Table: m_amenagement.an_amt_lot_stade
-
--- DROP TABLE m_amenagement.an_amt_lot_stade;
-
-CREATE TABLE m_amenagement.an_amt_lot_stade
-(
-    idgeolf integer NOT NULL,
-    stade_amng character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
-    l_amng2 character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
-    stade_comm character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
-    l_comm2 character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
-    l_comm2_12 character varying(80) COLLATE pg_catalog."default",
-    etat_occup character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
-    CONSTRAINT an_amt_lot_stade_pkey PRIMARY KEY (idgeolf),  
-    	CONSTRAINT an_amt_lot_stade_etat_fkey FOREIGN KEY (etat_occup)
-    REFERENCES m_activite_eco.lt_eco_etat (code) MATCH SIMPLE
-    ON UPDATE NO ACTION
-    ON DELETE NO ACTION,
-	CONSTRAINT an_amt_lot_stade_lamng2_fkey FOREIGN KEY (l_amng2)
-    REFERENCES m_amenagement.lt_amt_stadeamng2 (code) MATCH SIMPLE
-    ON UPDATE NO ACTION
-    ON DELETE NO ACTION,
-	CONSTRAINT an_amt_lot_stade_lcomm2_fkey FOREIGN KEY (l_comm2)
-    REFERENCES m_amenagement.lt_amt_stadecomm2 (code) MATCH SIMPLE
-    ON UPDATE NO ACTION
-    ON DELETE NO ACTION,
-	CONSTRAINT an_amt_lot_stade_comm_fkey FOREIGN KEY (stade_comm)
-    REFERENCES m_amenagement.lt_amt_stadecomm (code) MATCH SIMPLE
-    ON UPDATE NO ACTION
-    ON DELETE NO ACTION,
-	CONSTRAINT an_amt_lot_stade_stadeamng_fkey FOREIGN KEY (stade_amng)
-    REFERENCES m_amenagement.lt_amt_stadeamng (code) MATCH SIMPLE
-    ON UPDATE NO ACTION
-    ON DELETE NO ACTION
-)
-WITH (
-    OIDS = FALSE
-)
-TABLESPACE pg_default;
-
-ALTER TABLE m_amenagement.an_amt_lot_stade
-    OWNER to create_sig;
-
-GRANT ALL ON TABLE m_amenagement.an_amt_lot_stade TO sig_create;
-
-GRANT ALL ON TABLE m_amenagement.an_amt_lot_stade TO create_sig;
-
-GRANT ALL ON TABLE m_amenagement.an_amt_lot_stade TO sig_stage WITH GRANT OPTION;
-
-GRANT SELECT ON TABLE m_amenagement.an_amt_lot_stade TO sig_read;
-
-GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_amenagement.an_amt_lot_stade TO sig_edit;
-
-COMMENT ON TABLE m_amenagement.an_amt_lot_stade
-    IS 'Table alphanumérique contenant les données de la classe stade d''aménagement et de commercialisation';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_stade.idgeolf
-    IS 'Identifiant unique de l''entité géographique lot';
-
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_stade.stade_amng
-    IS 'Code du stade d''aménagement du foncier';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_stade.l_amng2
-    IS 'Code du stade d''aménagement du foncier spécifique à l''ARC';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_stade.stade_comm
-    IS 'Code du stade de commercialisation du foncier';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_stade.l_comm2
-    IS 'Code du stade de commercialisation du foncier spécifique à l''ARC';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_stade.l_comm2_12
-    IS 'Spécification de la contrainte du lot en vente (code 12 du champ l_comm2)';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_stade.etat_occup
-    IS 'Code de l''état d''occupation du foncier';
-
--- ############################################################## [an_amt_esppu] ##################################################################
-
--- Table: m_amenagement.an_amt_esppu
-
--- DROP TABLE m_amenagement.an_amt_esppu;
-
-CREATE TABLE m_amenagement.an_amt_esppu
-(
-    idgeopu integer NOT NULL,
-    idpole character varying(7) COLLATE pg_catalog."default",
-    date_int date,
-    op_sai character varying(80) COLLATE pg_catalog."default",
-    org_sai character varying(80) COLLATE pg_catalog."default",
-    vocaep character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
-    date_sai timestamp without time zone,
-    date_maj timestamp without time zone,
-    CONSTRAINT an_amt_esppu_pkey PRIMARY KEY (idgeopu),
-    CONSTRAINT lt_amt_empesp_pu_fkey FOREIGN KEY (vocaep)
-        REFERENCES m_amenagement.lt_amt_empesp_pu (code) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION
-)
-WITH (
-    OIDS = FALSE
-)
-TABLESPACE pg_default;
-
-ALTER TABLE m_amenagement.an_amt_esppu
-    OWNER to create_sig;
-
-GRANT SELECT ON TABLE m_amenagement.an_amt_esppu TO sig_read;
-
-GRANT ALL ON TABLE m_amenagement.an_amt_esppu TO sig_create;
-
-GRANT ALL ON TABLE m_amenagement.an_amt_esppu TO create_sig;
-
-GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_amenagement.an_amt_esppu TO sig_edit;
-
-COMMENT ON TABLE m_amenagement.an_amt_esppu
-    IS 'Information alphanumérique sur les emprises des espaces publiques contenus dans les sites opérationnels. Les objets virtuels de référence sont gérés dans le schéma r_objet';
-
-COMMENT ON COLUMN m_amenagement.an_amt_esppu.idgeopu
-    IS 'Identifiant unique géographique de référence de l''objet virtuel';
-
-
-COMMENT ON COLUMN m_amenagement.an_amt_esppu.idpole
-    IS 'Identifiant unique du pole';
-
-COMMENT ON COLUMN m_amenagement.an_amt_esppu.date_int
-    IS 'Date d''intégration par GéoPicardie dans la base (permet de connaître la dernière donnée intégrée)';
-
-COMMENT ON COLUMN m_amenagement.an_amt_esppu.op_sai
-    IS 'Libellé de la personne ayant saisie la mise à jour';
-
-COMMENT ON COLUMN m_amenagement.an_amt_esppu.org_sai
-    IS 'Organisme de saisie dont dépend l''opérateur de saisie';
-
-COMMENT ON COLUMN m_amenagement.an_amt_esppu.vocaep
-    IS 'Code de valeurs des vocations des espaces publics';
-
-COMMENT ON COLUMN m_amenagement.an_amt_esppu.date_sai
-    IS 'Date de saisie des données attributaires';
-
-COMMENT ON COLUMN m_amenagement.an_amt_esppu.date_maj
-    IS 'Date de mises à jour des données attributaires';
-
--- ############################################################## [an_amt_lot_divers] ##################################################################
-
--- Table: m_amenagement.an_amt_lot_divers
-
--- DROP TABLE m_amenagement.an_amt_lot_divers;
-
-CREATE TABLE m_amenagement.an_amt_lot_divers
-(
-    idgeolf integer NOT NULL,
-    op_sai character varying(80) COLLATE pg_catalog."default",
-    org_sai character varying(80) COLLATE pg_catalog."default",
-    l_nom character varying(100) COLLATE pg_catalog."default",
-    surf double precision,
-    date_sai timestamp without time zone,
-    date_maj timestamp without time zone,
-    l_phase character varying(10) COLLATE pg_catalog."default",
-    l_surf_l character varying(15) COLLATE pg_catalog."default",
-    CONSTRAINT an_amt_lot_divers_pkey PRIMARY KEY (idgeolf)
-)
-WITH (
-    OIDS = FALSE
-)
-TABLESPACE pg_default;
-
-ALTER TABLE m_amenagement.an_amt_lot_divers
-    OWNER to create_sig;
-
-GRANT ALL ON TABLE m_amenagement.an_amt_lot_divers TO sig_create;
-
-GRANT ALL ON TABLE m_amenagement.an_amt_lot_divers TO create_sig;
-
-GRANT SELECT ON TABLE m_amenagement.an_amt_lot_divers TO sig_read;
-
-GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_amenagement.an_amt_lot_divers TO sig_edit;
-
-COMMENT ON TABLE m_amenagement.an_amt_lot_divers
-    IS 'Information alphanumérique sur les lots divers';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_divers.idgeolf
-    IS 'Identifiant unique géographique de référence de l''objet virtuel';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_divers.op_sai
-    IS 'Libellé de la personne ayant saisie la mise à jour';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_divers.org_sai
-    IS 'Organisme de saisie dont dépend l''opérateur de saisie';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_divers.l_nom
-    IS 'Libellé';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_divers.surf
-    IS 'Surface du lot divers en m²';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_divers.date_sai
-    IS 'Date de saisie des données attributaires';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_divers.date_maj
-    IS 'Date de mise à jour des données attributaires';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_divers.l_phase
-    IS 'Phase opérationnelle éventuelle';
-
--- ############################################################## [an_amt_lot_equ] ##################################################################
-
--- Table: m_amenagement.an_amt_lot_equ
-
--- DROP TABLE m_amenagement.an_amt_lot_equ;
-
-CREATE TABLE m_amenagement.an_amt_lot_equ
-(
-    idgeolf integer NOT NULL,
-    op_sai character varying(80) COLLATE pg_catalog."default",
-    org_sai character varying(80) COLLATE pg_catalog."default",
-    l_nom character varying(100) COLLATE pg_catalog."default",
-    surf double precision,
-    date_sai timestamp without time zone,
-    date_maj timestamp without time zone,
-    l_phase character varying(10) COLLATE pg_catalog."default",
-    l_surf_l character varying(15) COLLATE pg_catalog."default",
-    CONSTRAINT an_amt_lot_equ_pkey PRIMARY KEY (idgeolf)
-)
-WITH (
-    OIDS = FALSE
-)
-TABLESPACE pg_default;
-
-ALTER TABLE m_amenagement.an_amt_lot_equ
-    OWNER to create_sig;
-
-GRANT ALL ON TABLE m_amenagement.an_amt_lot_equ TO sig_create;
-
-GRANT ALL ON TABLE m_amenagement.an_amt_lot_equ TO create_sig;
-
-GRANT SELECT ON TABLE m_amenagement.an_amt_lot_equ TO sig_read;
-
-GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_amenagement.an_amt_lot_equ TO sig_edit;
-
-COMMENT ON TABLE m_amenagement.an_amt_lot_equ
-    IS 'Information alphanumérique sur les lots équipements';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_equ.idgeolf
-    IS 'Identifiant unique géographique de référence de l''objet virtuel';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_equ.op_sai
-    IS 'Libellé de la personne ayant saisie la mise à jour';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_equ.org_sai
-    IS 'Organisme de saisie dont dépend l''opérateur de saisie';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_equ.l_nom
-    IS 'Libellé de l''équipement';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_equ.surf
-    IS 'Surface du lot équipement en m²';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_equ.date_sai
-    IS 'Date de saisie des données attributaires';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_equ.date_maj
-    IS 'Date de mise à jour des données attributaires';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_equ.l_phase
-    IS 'Phase opérationnelle éventuelle';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_equ.l_surf_l
-    IS 'Surface littérale parcellaire occupée du lot';
-
--- ############################################################## [an_amt_lot_hab] ##################################################################
-
--- Table: m_amenagement.an_amt_lot_hab
-
--- DROP TABLE m_amenagement.an_amt_lot_hab;
-
-CREATE TABLE m_amenagement.an_amt_lot_hab
-(
-    idgeolf integer NOT NULL,
-    surf integer,
-    l_surf_l character varying(15) COLLATE pg_catalog."default",
-    op_sai character varying(80) COLLATE pg_catalog."default",
-    org_sai character varying(80) COLLATE pg_catalog."default",
-    l_pvente double precision,
-    l_pvente_l character varying(15) COLLATE pg_catalog."default",
-    nb_log integer,
-    nb_logind integer,
-    nb_logindgr integer,
-    nb_logcol integer,
-    nb_logaide integer,
-    l_observ character varying(255) COLLATE pg_catalog."default",
-    date_sai timestamp without time zone,
-    date_maj timestamp without time zone,
-    l_phase character varying(20) COLLATE pg_catalog."default",
-    nb_log_r integer DEFAULT 0,
-    nb_logind_r integer DEFAULT 0,
-    nb_logindgr_r integer DEFAULT 0,
-    nb_logcol_r integer DEFAULT 0,
-    nb_logaide_r integer DEFAULT 0,
-    l_pvente_lot integer,
-    nb_logaide_loc_r integer,
-    nb_logaide_acc_r integer,
-    CONSTRAINT an_amt_lot_hab_pkey PRIMARY KEY (idgeolf)
-)
-WITH (
-    OIDS = FALSE
-)
-TABLESPACE pg_default;
-
-ALTER TABLE m_amenagement.an_amt_lot_hab
-    OWNER to create_sig;
-
-GRANT ALL ON TABLE m_amenagement.an_amt_lot_hab TO sig_create;
-
-GRANT ALL ON TABLE m_amenagement.an_amt_lot_hab TO create_sig;
-
-GRANT SELECT ON TABLE m_amenagement.an_amt_lot_hab TO sig_read;
-
-GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_amenagement.an_amt_lot_hab TO sig_edit;
-
-COMMENT ON TABLE m_amenagement.an_amt_lot_hab
-    IS 'Table alphanumérique contenant les données des lots à vocation habitat';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.idgeolf
-    IS 'Identifiant unique de l''entité géographique lot';
-
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.surf
-    IS 'Surface parcellaire occupée du lot';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.l_surf_l
-    IS 'Surface littérale parcellaire occupée du lot';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.op_sai
-    IS 'Libellé de l''opérateur de saisie';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.org_sai
-    IS 'Libellé de l''organisme de saisie';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.l_pvente
-    IS 'Prix de vente du lot en HT (€/m²)';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.l_pvente_l
-    IS 'Prix littéral de vente du lot en HT (ex:50€/m²)';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.nb_log
-    IS 'Nombre total de logements';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.nb_logind
-    IS 'Nombre de logements individuels';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.nb_logindgr
-    IS 'Nombre de logements individuels groupés';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.nb_logcol
-    IS 'Nombre de logements collectifs';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.nb_logaide
-    IS 'Dont nombre de logements aidés';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.l_observ
-    IS 'Observations diverses';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.date_sai
-    IS 'Date de saisie des données attributaires';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.date_maj
-    IS 'Date de mise à jour des données attributaires';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.l_phase
-    IS 'Information facultative sur l''appartenance du lot à un éventuel phasage de l''opération';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.nb_log_r
-    IS 'Nombre de logements total réalisé';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.nb_logind_r
-    IS 'Nombre de logements individuels réalisé';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.nb_logindgr_r
-    IS 'Nombre de logements individuels groupés réalisé';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.nb_logcol_r
-    IS 'Nombre de logements collectifs réalisé';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.nb_logaide_r
-    IS 'Nombre de logements aidés réalisé';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.l_pvente_lot
-    IS 'Prix de vente du lot (ht)';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.nb_logaide_loc_r
-    IS 'Nombre de logements aidés en location réalisé';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.nb_logaide_acc_r
-    IS 'Nombre de logements aidés en accession réalisé';
-
--- ############################################################## [an_amt_lot_mixte] ##################################################################
-
--- Table: m_amenagement.an_amt_lot_mixte
-
--- DROP TABLE m_amenagement.an_amt_lot_mixte;
-
-CREATE TABLE m_amenagement.an_amt_lot_mixte
-(
-    idgeolf integer NOT NULL,
-    surf integer,
-    l_surf_l character varying(15) COLLATE pg_catalog."default",
-    op_sai character varying(80) COLLATE pg_catalog."default",
-    org_sai character varying(80) COLLATE pg_catalog."default",
-    l_pvente double precision,
-    l_pvente_l character varying(15) COLLATE pg_catalog."default",
-    nb_log integer DEFAULT 0,
-    nb_logind integer DEFAULT 0,
-    nb_logindgr integer DEFAULT 0,
-    nb_logcol integer DEFAULT 0,
-    nb_logaide integer DEFAULT 0,
-    l_observ character varying(255) COLLATE pg_catalog."default",
-    date_sai timestamp without time zone,
-    date_maj timestamp without time zone,
-    l_phase character varying(20) COLLATE pg_catalog."default",
-    nb_log_r integer DEFAULT 0,
-    nb_logind_r integer DEFAULT 0,
-    nb_logindgr_r integer DEFAULT 0,
-    nb_logcol_r integer DEFAULT 0,
-    nb_logaide_r integer DEFAULT 0,
-    l_pvente_lot integer,
-    l_tact character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
-    l_tact_99 character varying(80) COLLATE pg_catalog."default",
-    l_nom_equ character varying(100) COLLATE pg_catalog."default",
-    nb_logaide_loc_r integer,
-    nb_logaide_acc_r integer,
-    l_lnom character varying(250) COLLATE pg_catalog."default",
-    CONSTRAINT an_amt_lot_mixte_pkey PRIMARY KEY (idgeolf)
-)
-WITH (
-    OIDS = FALSE
-)
-TABLESPACE pg_default;
-
-ALTER TABLE m_amenagement.an_amt_lot_mixte
-    OWNER to create_sig;
-
-GRANT ALL ON TABLE m_amenagement.an_amt_lot_mixte TO sig_create;
-
-GRANT ALL ON TABLE m_amenagement.an_amt_lot_mixte TO create_sig;
-
-GRANT SELECT ON TABLE m_amenagement.an_amt_lot_mixte TO sig_read;
-
-GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_amenagement.an_amt_lot_mixte TO sig_edit;
-
-COMMENT ON TABLE m_amenagement.an_amt_lot_mixte
-    IS 'Table alphanumérique contenant les données des lots à vocation mixte';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.idgeolf
-    IS 'Identifiant unique de l''entité géographique lot';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.surf
-    IS 'Surface parcellaire occupée du lot';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.l_surf_l
-    IS 'Surface littérale parcellaire occupée du lot';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.op_sai
-    IS 'Libellé de l''opérateur de saisie';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.org_sai
-    IS 'Libellé de l''organisme de saisie';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.l_pvente
-    IS 'Prix de vente du lot en HT (€/m²)';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.l_pvente_l
-    IS 'Prix littéral de vente du lot en HT (ex:50€/m²)';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.nb_log
-    IS 'Nombre total de logements';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.nb_logind
-    IS 'Nombre de logements individuels';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.nb_logindgr
-    IS 'Nombre de logements individuels groupés';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.nb_logcol
-    IS 'Nombre de logements collectifs';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.nb_logaide
-    IS 'Dont nombre de logements aidés';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.l_observ
-    IS 'Observations diverses';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.date_sai
-    IS 'Date de saisie des données attributaires';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.date_maj
-    IS 'Date de mise à jour des données attributaires';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.l_phase
-    IS 'Information facultative sur l''appartenance du lot à un éventuel phasage de l''opération';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.nb_log_r
-    IS 'Nombre de logements total réalisé';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.nb_logind_r
-    IS 'Nombre de logements individuels réalisé';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.nb_logindgr_r
-    IS 'Nombre de logements individuels groupés réalisé';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.nb_logcol_r
-    IS 'Nombre de logements collectifs réalisé';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.nb_logaide_r
-    IS 'Nombre de logements aidés réalisé';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.l_pvente_lot
-    IS 'Prix de vente du lot (ht)';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.l_tact
-    IS 'Type d''activité présent sur le lot';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.l_tact_99
-    IS 'Précision de l''activité du lot (si Autre sélectionné dans l_tact)';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.l_nom_equ
-    IS 'Libellé des équipements prévus sur le lot';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.nb_logaide_loc_r
-    IS 'Nombre de logements aidés en location réalisé';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.nb_logaide_acc_r
-    IS 'Nombre de logements aidés en accession réalisé';
-
-COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.l_lnom
-    IS 'Nom(s) du ou des acquéreurs du lot ou d''une partie des bâtiments';
-
-
--- ############################################################## [geo_objet_empesp_pu] ####################################################################
-
--- Table: r_objet.geo_objet_empesp_pu
-
--- DROP TABLE r_objet.geo_objet_empesp_pu;
-
-CREATE TABLE r_objet.geo_objet_empesp_pu
-(
-    idgeopu integer NOT NULL,
-    op_sai character varying(80) COLLATE pg_catalog."default",
-    src_geom character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
-    sup_m2 double precision,
-    geom geometry(MultiPolygon,2154) NOT NULL,
-    date_sai timestamp without time zone,
-    date_maj timestamp without time zone,
-    CONSTRAINT geo_objet_empesp_pu_pkey PRIMARY KEY (idgeopu),
-    CONSTRAINT geo_objet_empesp_pu_srcgeom_fkey FOREIGN KEY (src_geom)
-        REFERENCES r_objet.lt_src_geom (code) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION
-)
-WITH (
-    OIDS = FALSE
-)
-TABLESPACE pg_default;
-
-ALTER TABLE r_objet.geo_objet_empesp_pu
-    OWNER to create_sig;
-
-GRANT SELECT ON TABLE r_objet.geo_objet_empesp_pu TO sig_read;
-
-GRANT ALL ON TABLE r_objet.geo_objet_empesp_pu TO sig_create;
-
-GRANT ALL ON TABLE r_objet.geo_objet_empesp_pu TO create_sig;
-
-GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE r_objet.geo_objet_empesp_pu TO sig_edit;
-
-COMMENT ON TABLE r_objet.geo_objet_empesp_pu
-    IS 'Données géographiques contenant les espaces publics';
-
-COMMENT ON COLUMN r_objet.geo_objet_empesp_pu.idgeopu
-    IS 'Identifiant unique de l''objet';
-
-COMMENT ON COLUMN r_objet.geo_objet_empesp_pu.op_sai
-    IS 'Opérateur de saisir d''objet à l''ARC';
-
-COMMENT ON COLUMN r_objet.geo_objet_empesp_pu.src_geom
-    IS 'Référentiel spatial de saisie';
-
-COMMENT ON COLUMN r_objet.geo_objet_empesp_pu.sup_m2
-    IS 'Surface totale de l''objet en m²';
-
-COMMENT ON COLUMN r_objet.geo_objet_empesp_pu.geom
-    IS 'Champ contenant la géométrie';
-
-COMMENT ON COLUMN r_objet.geo_objet_empesp_pu.date_sai
-    IS 'Date de saisie de l''objet';
-
-COMMENT ON COLUMN r_objet.geo_objet_empesp_pu.date_maj
-    IS 'Date de mise à jour de l''objet';
-
--- ############################################################## [geo_objet_fon_lot] ####################################################################
-
--- Table: r_objet.geo_objet_fon_lot
-
--- DROP TABLE r_objet.geo_objet_fon_lot;
-
-CREATE TABLE r_objet.geo_objet_fon_lot
-(
-    idgeolf integer NOT NULL,
-    op_sai character varying(80) COLLATE pg_catalog."default",
-    src_geom character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
-    sup_m2 double precision,
-    l_voca character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
-    geom geometry(MultiPolygon,2154) NOT NULL,
-    date_sai timestamp without time zone,
-    date_maj timestamp without time zone,
-    l_nom character varying(80) COLLATE pg_catalog."default",
-    CONSTRAINT geo_objet_fon_lot_pkey PRIMARY KEY (idgeolf),
-    CONSTRAINT geo_objet_fon_lot_scrgeom_fkey FOREIGN KEY (src_geom)
-        REFERENCES r_objet.lt_src_geom (code) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION,
-    CONSTRAINT lt_objet_vocafon_fkey FOREIGN KEY (l_voca)
-        REFERENCES r_objet.lt_objet_vocafon (code) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION
-)
-WITH (
-    OIDS = FALSE
-)
-TABLESPACE pg_default;
-
-ALTER TABLE r_objet.geo_objet_fon_lot
-    OWNER to create_sig;
-
-GRANT SELECT ON TABLE r_objet.geo_objet_fon_lot TO sig_read;
-
-GRANT ALL ON TABLE r_objet.geo_objet_fon_lot TO sig_create;
-
-GRANT ALL ON TABLE r_objet.geo_objet_fon_lot TO create_sig;
-
-GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE r_objet.geo_objet_fon_lot TO sig_edit;
-
-COMMENT ON TABLE r_objet.geo_objet_fon_lot
-    IS 'Données géographiques contenant les lots fonciers des sites';
-
-COMMENT ON COLUMN r_objet.geo_objet_fon_lot.idgeolf
-    IS 'Identifiant unique de l''objet';
-
-COMMENT ON COLUMN r_objet.geo_objet_fon_lot.op_sai
-    IS 'Opérateur de saisir d''objet à l''ARC';
-
-COMMENT ON COLUMN r_objet.geo_objet_fon_lot.src_geom
-    IS 'Référentiel spatial de saisie';
-
-COMMENT ON COLUMN r_objet.geo_objet_fon_lot.sup_m2
-    IS 'Surface totale de l''objet en m²';
-
-COMMENT ON COLUMN r_objet.geo_objet_fon_lot.l_voca
-    IS 'Vocation du foncier';
-
-COMMENT ON COLUMN r_objet.geo_objet_fon_lot.geom
-    IS 'Champ contenant la géométrie';
-
-COMMENT ON COLUMN r_objet.geo_objet_fon_lot.date_sai
-    IS 'Date de saisie de l''objet';
-
-COMMENT ON COLUMN r_objet.geo_objet_fon_lot.date_maj
-    IS 'Date de mise à jour';
-
-COMMENT ON COLUMN r_objet.geo_objet_fon_lot.l_nom
-    IS 'Nom de lot donné au moment du plan d''aménagement (ex : lot 1)';
-
-
--- Trigger: t_t1_foncier_insert_date_maj
-
--- DROP TRIGGER t_t1_foncier_insert_date_maj ON r_objet.geo_objet_fon_lot;
-
-CREATE TRIGGER t_t1_foncier_insert_date_maj
-    BEFORE INSERT OR UPDATE 
-    ON r_objet.geo_objet_fon_lot
-    FOR EACH ROW
-    EXECUTE PROCEDURE public.ft_r_timestamp_maj();
-
--- Trigger: t_t2_foncier_insert_surf
-
--- DROP TRIGGER t_t2_foncier_insert_surf ON r_objet.geo_objet_fon_lot;
-
-CREATE TRIGGER t_t2_foncier_insert_surf
-    BEFORE INSERT OR UPDATE OF geom
-    ON r_objet.geo_objet_fon_lot
-    FOR EACH ROW
-    EXECUTE PROCEDURE public.ft_r_sup_m2_maj();
-
--- Trigger: t_t3_foncier_l_nom
-
--- DROP TRIGGER t_t3_foncier_l_nom ON r_objet.geo_objet_fon_lot;
-
-CREATE TRIGGER t_t3_foncier_l_nom
-    BEFORE INSERT OR UPDATE OF l_nom
-    ON r_objet.geo_objet_fon_lot
-    FOR EACH ROW
-    EXECUTE PROCEDURE r_objet.ft_m_foncier_l_nom();
 
 -- ############################################################## [geo_eco_bati_act] ####################################################################
 
@@ -8294,11 +7841,1458 @@ Cette table est incrémentée chaque année par un Workflow FME (Y:\Ressources\4
 COMMENT ON COLUMN m_activite_eco.h_an_eco_site.id
     IS 'Identifiant unique interne';
 
+
+-- ####################################################################################################################################################
+-- ###                                                         TABLE M_URBANISME_REG                                                                ###
+-- ####################################################################################################################################################
+
+
+-- ############################################################## [geo_proced] ##################################################################
+
+-- Table: m_urbanisme_reg.geo_proced
+
+-- DROP TABLE m_urbanisme_reg.geo_proced;
+
+CREATE TABLE m_urbanisme_reg.geo_proced
+(
+    idproc character varying(5) NOT NULL DEFAULT 'PR' || nextval('m_urbanisme_reg.geo_proc_seq'::regclass),
+    nom character varying(255) COLLATE pg_catalog."default",
+    alias character varying(255) COLLATE pg_catalog."default",
+    dest character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
+    z_proced character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
+    phase character varying(2) COLLATE pg_catalog."default",
+    moa character varying(80) COLLATE pg_catalog."default",
+    conso_type character varying(2) COLLATE pg_catalog."default",
+    pr_urb boolean NOT NULL DEFAULT false,
+    date_crea date,
+    pr_fon boolean NOT NULL DEFAULT false,
+    pr_fon_date date,
+    surf_ha double precision,
+    existe boolean NOT NULL DEFAULT true,
+    pr_fon_type character varying(2) COLLATE pg_catalog."default",
+    ref_compta character varying(5) COLLATE pg_catalog."default",
+    surf_cess_ha numeric(10,2),
+    date_clo timestamp without time zone,
+    nb_log integer,
+    nb_logind integer,
+    nb_logindgr integer,
+    nb_logcol integer,
+    nb_logaide integer,
+    nb_logaide_loc integer,
+    nb_logaide_acc integer,
+    nom_cp character varying(80) COLLATE pg_catalog."default",
+    op_sai character varying(80) COLLATE pg_catalog."default",
+    date_sai timestamp without time zone,
+    date_maj timestamp without time zone,
+    epci character varying(10) COLLATE pg_catalog."default",
+    observ character varying(1000) COLLATE pg_catalog."default",
+    CONSTRAINT geo_proced_pkey PRIMARY KEY (idproc),
+    CONSTRAINT geo_proced_consotype_fkey FOREIGN KEY (conso_type)
+        REFERENCES m_urbanisme_reg.lt_proc_typconso (code) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT geo_proced_phase_fkey FOREIGN KEY (phase)
+        REFERENCES m_urbanisme_reg.lt_proc_phase (code) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT geo_proced_prfontype_fkey FOREIGN KEY (pr_fon_type)
+        REFERENCES m_urbanisme_reg.lt_proc_typfon (code) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT geo_proced_z_proced_fkey FOREIGN KEY (z_proced)
+        REFERENCES m_urbanisme_reg.lt_proc_typ (code) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE m_urbanisme_reg.geo_proced
+    OWNER to create_sig;
+
+GRANT ALL ON TABLE m_urbanisme_reg.geo_proced TO sig_create;
+
+GRANT SELECT ON TABLE m_urbanisme_reg.geo_proced TO sig_read;
+
+GRANT ALL ON TABLE m_urbanisme_reg.geo_proced TO create_sig;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_urbanisme_reg.geo_proced TO sig_edit;
+
+COMMENT ON TABLE m_urbanisme_reg.geo_proced
+    IS 'Classe d''objets contenant les données des procédures d''aménagement';
+
+COMMENT ON COLUMN m_urbanisme_reg.geo_proced.idproc
+    IS 'Identifiant non signifiant de la procédure';
+
+COMMENT ON COLUMN m_urbanisme_reg.geo_proced.nom
+    IS 'Libellé de l''opération';
+
+COMMENT ON COLUMN m_urbanisme_reg.geo_proced.alias
+    IS 'Alias du nom de l''opération';
+
+COMMENT ON COLUMN m_urbanisme_reg.geo_proced.dest
+    IS 'Code de la destination du Site (issu de la liste des valeurs du modèle CNIG sur les PLU)';
+
+COMMENT ON COLUMN m_urbanisme_reg.geo_proced.z_proced
+    IS 'Code de la procédure d''aménagement';
+
+COMMENT ON COLUMN m_urbanisme_reg.geo_proced.op_sai
+    IS 'Libellé de la personne ayant saisie l''objet';
+
+COMMENT ON COLUMN m_urbanisme_reg.geo_proced.phase
+    IS 'Phase de l''opération';
+
+COMMENT ON COLUMN m_urbanisme_reg.geo_proced.moa
+    IS 'Maitrise d''ouvrage de l''opération';
+
+COMMENT ON COLUMN m_urbanisme_reg.geo_proced.conso_type
+    IS 'Type de consommation foncière';
+
+COMMENT ON COLUMN m_urbanisme_reg.geo_proced.pr_urb
+    IS 'Procédure d''urbanisme';
+
+COMMENT ON COLUMN m_urbanisme_reg.geo_proced.date_crea
+    IS 'Date de création de la ZAC';
+
+COMMENT ON COLUMN m_urbanisme_reg.geo_proced.pr_fon
+    IS 'Procédure foncière';
+
+COMMENT ON COLUMN m_urbanisme_reg.geo_proced.pr_fon_date
+    IS 'Date de la procédure foncière';
+
+COMMENT ON COLUMN m_urbanisme_reg.geo_proced.surf_ha
+    IS 'Superficie totale programmée de l''opération en ha';
+
+COMMENT ON COLUMN m_urbanisme_reg.geo_proced.existe
+    IS 'Existance du site';
+
+COMMENT ON COLUMN m_urbanisme_reg.geo_proced.pr_fon_type
+    IS 'Procédure foncière engagée';
+
+COMMENT ON COLUMN m_urbanisme_reg.geo_proced.ref_compta
+    IS 'Référence comptable du projet';
+
+COMMENT ON COLUMN m_urbanisme_reg.geo_proced.observ
+    IS 'Commentaire';
+
+COMMENT ON COLUMN m_urbanisme_reg.geo_proced.date_sai
+    IS 'Date de saisie des données attributaires';
+
+COMMENT ON COLUMN m_urbanisme_reg.geo_proced.date_maj
+    IS 'Date de mise à jour des données attributaires';
+
+COMMENT ON COLUMN m_urbanisme_reg.geo_proced.surf_cess_ha
+    IS 'Surface cessible programmée en ha';
+
+COMMENT ON COLUMN m_urbanisme_reg.geo_proced.date_clo
+    IS 'Date de cloture de l''opération';
+
+COMMENT ON COLUMN m_urbanisme_reg.geo_proced.nb_log
+    IS 'Nombre total de logements programmés';
+
+COMMENT ON COLUMN m_urbanisme_reg.geo_proced.nb_logind
+    IS 'Nombre de logements individuels programmés';
+
+COMMENT ON COLUMN m_urbanisme_reg.geo_proced.nb_logindgr
+    IS 'Nombre de logements individuels groupés programmés';
+
+COMMENT ON COLUMN m_urbanisme_reg.geo_proced.nb_logcol
+    IS 'Nombre de logements collectifs programmés';
+
+COMMENT ON COLUMN m_urbanisme_reg.geo_proced.nb_logaide
+    IS 'Nombre total de logements aidés programmés';
+
+COMMENT ON COLUMN m_urbanisme_reg.geo_proced.nb_logaide_loc
+    IS 'Nombre total de logements aidés en location programmés';
+
+COMMENT ON COLUMN m_urbanisme_reg.geo_proced.nb_logaide_acc
+    IS 'Nombre total de logements en accession en location programmés';
+
+COMMENT ON COLUMN m_urbanisme_reg.geo_proced.nom_cp
+    IS 'Nom du chef de projet suivant la procédure';
+    
+COMMENT ON COLUMN m_urbanisme_reg.geo_proced.epci
+    IS 'Autorité compétente';
+
+COMMENT ON COLUMN m_urbanisme_reg.geo_proced.observ
+    IS 'Observations diverses';
+
+
+    
+-- ############################################################## [an_proc_media] ##################################################################
+
+-- Table: m_urbanisme_reg.an_proc_media
+
+-- DROP TABLE m_urbanisme_reg.an_proc_media;
+
+CREATE TABLE m_urbanisme_reg.an_proc_media
+(
+    gid integer NOT NULL DEFAULT nextval('m_urbanisme_reg.an_proc_media_seq'::regclass),
+    id text COLLATE pg_catalog."default",
+    media text COLLATE pg_catalog."default",
+    miniature bytea,
+    n_fichier text COLLATE pg_catalog."default",
+    t_fichier text COLLATE pg_catalog."default",
+    op_sai character varying(20) COLLATE pg_catalog."default",
+    date_sai timestamp without time zone,
+    l_doc character varying(100) COLLATE pg_catalog."default",
+    t_doc character varying(2) COLLATE pg_catalog."default" DEFAULT '00',		
+    CONSTRAINT an_proc_media_pkey PRIMARY KEY (gid),
+    CONSTRAINT an_proc_media_t_doc_fkey FOREIGN KEY (t_doc)
+    REFERENCES m_activite_eco.lt_eco_tdocmedia (code) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE m_urbanisme_reg.an_proc_media
+    OWNER to create_sig;
+
+GRANT ALL ON TABLE m_urbanisme_reg.an_proc_media TO sig_create;
+
+GRANT SELECT ON TABLE m_urbanisme_reg.an_proc_media TO sig_read;
+
+GRANT ALL ON TABLE m_urbanisme_reg.an_proc_media TO create_sig;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_urbanisme_reg.an_proc_media TO sig_edit;
+
+COMMENT ON TABLE m_urbanisme_reg.an_proc_media
+    IS 'Table gérant les documents intégrés pour la gestion des procédures d''aménagement';
+
+COMMENT ON COLUMN m_urbanisme_reg.an_proc_media.id
+    IS 'Identifiant interne non signifiant de l''objet saisi';
+
+COMMENT ON COLUMN m_urbanisme_reg.an_proc_media.media
+    IS 'Champ Média de GEO';
+
+COMMENT ON COLUMN m_urbanisme_reg.an_proc_media.miniature
+    IS 'Champ miniature de GEO';
+
+COMMENT ON COLUMN m_urbanisme_reg.an_proc_media.n_fichier
+    IS 'Nom du fichier';
+
+COMMENT ON COLUMN m_urbanisme_reg.an_proc_media.t_fichier
+    IS 'Type de média dans GEO';
+
+COMMENT ON COLUMN m_urbanisme_reg.an_proc_media.op_sai
+    IS 'Opérateur de saisie (par défaut login de connexion à GEO)';
+
+COMMENT ON COLUMN m_urbanisme_reg.an_proc_media.date_sai
+    IS 'Date de la saisie du document';
+
+COMMENT ON COLUMN m_urbanisme_reg.an_proc_media.l_doc
+    IS 'Titre du document ou légère description';
+
+
+COMMENT ON COLUMN m_urbanisme_reg.an_proc_media.gid
+    IS 'Compteur (identifiant interne)';
+
+
+-- ####################################################################################################################################################
+-- ###                                                           TABLE M_AMENAGEMENT                                                                ###
+-- ####################################################################################################################################################
+
+
+-- ############################################################## [an_amt_lot_stade] ##################################################################
+
+-- Table: m_amenagement.an_amt_lot_stade
+
+-- DROP TABLE m_amenagement.an_amt_lot_stade;
+
+CREATE TABLE m_amenagement.an_amt_lot_stade
+(
+    idgeolf integer NOT NULL,
+    stade_amng character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
+    l_amng2 character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
+    stade_comm character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
+    l_comm2 character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
+    l_comm2_12 character varying(80) COLLATE pg_catalog."default",
+    etat_occup character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
+    CONSTRAINT an_amt_lot_stade_pkey PRIMARY KEY (idgeolf),  
+    	CONSTRAINT an_amt_lot_stade_etat_fkey FOREIGN KEY (etat_occup)
+    REFERENCES m_activite_eco.lt_eco_etat (code) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION,
+	CONSTRAINT an_amt_lot_stade_lamng2_fkey FOREIGN KEY (l_amng2)
+    REFERENCES m_amenagement.lt_amt_stadeamng2 (code) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION,
+	CONSTRAINT an_amt_lot_stade_lcomm2_fkey FOREIGN KEY (l_comm2)
+    REFERENCES m_amenagement.lt_amt_stadecomm2 (code) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION,
+	CONSTRAINT an_amt_lot_stade_comm_fkey FOREIGN KEY (stade_comm)
+    REFERENCES m_amenagement.lt_amt_stadecomm (code) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION,
+	CONSTRAINT an_amt_lot_stade_stadeamng_fkey FOREIGN KEY (stade_amng)
+    REFERENCES m_amenagement.lt_amt_stadeamng (code) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE m_amenagement.an_amt_lot_stade
+    OWNER to create_sig;
+
+GRANT ALL ON TABLE m_amenagement.an_amt_lot_stade TO sig_create;
+
+GRANT ALL ON TABLE m_amenagement.an_amt_lot_stade TO create_sig;
+
+GRANT ALL ON TABLE m_amenagement.an_amt_lot_stade TO sig_stage WITH GRANT OPTION;
+
+GRANT SELECT ON TABLE m_amenagement.an_amt_lot_stade TO sig_read;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_amenagement.an_amt_lot_stade TO sig_edit;
+
+COMMENT ON TABLE m_amenagement.an_amt_lot_stade
+    IS 'Table alphanumérique contenant les données de la classe stade d''aménagement et de commercialisation';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_stade.idgeolf
+    IS 'Identifiant unique de l''entité géographique lot';
+
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_stade.stade_amng
+    IS 'Code du stade d''aménagement du foncier';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_stade.l_amng2
+    IS 'Code du stade d''aménagement du foncier spécifique à l''ARC';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_stade.stade_comm
+    IS 'Code du stade de commercialisation du foncier';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_stade.l_comm2
+    IS 'Code du stade de commercialisation du foncier spécifique à l''ARC';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_stade.l_comm2_12
+    IS 'Spécification de la contrainte du lot en vente (code 12 du champ l_comm2)';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_stade.etat_occup
+    IS 'Code de l''état d''occupation du foncier';
+
+-- ############################################################## [an_amt_esppu] ##################################################################
+
+-- Table: m_amenagement.an_amt_esppu
+
+-- DROP TABLE m_amenagement.an_amt_esppu;
+
+CREATE TABLE m_amenagement.an_amt_esppu
+(
+    idgeopu integer NOT NULL,
+    idpole character varying(7) COLLATE pg_catalog."default",
+    date_int date,
+    op_sai character varying(80) COLLATE pg_catalog."default",
+    org_sai character varying(80) COLLATE pg_catalog."default",
+    vocaep character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
+    date_sai timestamp without time zone,
+    date_maj timestamp without time zone,
+    CONSTRAINT an_amt_esppu_pkey PRIMARY KEY (idgeopu),
+    CONSTRAINT lt_amt_empesp_pu_fkey FOREIGN KEY (vocaep)
+        REFERENCES m_amenagement.lt_amt_empesp_pu (code) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE m_amenagement.an_amt_esppu
+    OWNER to create_sig;
+
+GRANT SELECT ON TABLE m_amenagement.an_amt_esppu TO sig_read;
+
+GRANT ALL ON TABLE m_amenagement.an_amt_esppu TO sig_create;
+
+GRANT ALL ON TABLE m_amenagement.an_amt_esppu TO create_sig;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_amenagement.an_amt_esppu TO sig_edit;
+
+COMMENT ON TABLE m_amenagement.an_amt_esppu
+    IS 'Information alphanumérique sur les emprises des espaces publiques contenus dans les sites opérationnels. Les objets virtuels de référence sont gérés dans le schéma r_objet';
+
+COMMENT ON COLUMN m_amenagement.an_amt_esppu.idgeopu
+    IS 'Identifiant unique géographique de référence de l''objet virtuel';
+
+
+COMMENT ON COLUMN m_amenagement.an_amt_esppu.idpole
+    IS 'Identifiant unique du pole';
+
+COMMENT ON COLUMN m_amenagement.an_amt_esppu.date_int
+    IS 'Date d''intégration par GéoPicardie dans la base (permet de connaître la dernière donnée intégrée)';
+
+COMMENT ON COLUMN m_amenagement.an_amt_esppu.op_sai
+    IS 'Libellé de la personne ayant saisie la mise à jour';
+
+COMMENT ON COLUMN m_amenagement.an_amt_esppu.org_sai
+    IS 'Organisme de saisie dont dépend l''opérateur de saisie';
+
+COMMENT ON COLUMN m_amenagement.an_amt_esppu.vocaep
+    IS 'Code de valeurs des vocations des espaces publics';
+
+COMMENT ON COLUMN m_amenagement.an_amt_esppu.date_sai
+    IS 'Date de saisie des données attributaires';
+
+COMMENT ON COLUMN m_amenagement.an_amt_esppu.date_maj
+    IS 'Date de mises à jour des données attributaires';
+
+-- ############################################################## [an_amt_lot_divers] ##################################################################
+
+-- Table: m_amenagement.an_amt_lot_divers
+
+-- DROP TABLE m_amenagement.an_amt_lot_divers;
+
+CREATE TABLE m_amenagement.an_amt_lot_divers
+(
+    idgeolf integer NOT NULL,
+    op_sai character varying(80) COLLATE pg_catalog."default",
+    org_sai character varying(80) COLLATE pg_catalog."default",
+    l_nom character varying(100) COLLATE pg_catalog."default",
+    surf double precision,
+    date_sai timestamp without time zone,
+    date_maj timestamp without time zone,
+    l_phase character varying(10) COLLATE pg_catalog."default",
+    l_surf_l character varying(15) COLLATE pg_catalog."default",
+    CONSTRAINT an_amt_lot_divers_pkey PRIMARY KEY (idgeolf)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE m_amenagement.an_amt_lot_divers
+    OWNER to create_sig;
+
+GRANT ALL ON TABLE m_amenagement.an_amt_lot_divers TO sig_create;
+
+GRANT ALL ON TABLE m_amenagement.an_amt_lot_divers TO create_sig;
+
+GRANT SELECT ON TABLE m_amenagement.an_amt_lot_divers TO sig_read;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_amenagement.an_amt_lot_divers TO sig_edit;
+
+COMMENT ON TABLE m_amenagement.an_amt_lot_divers
+    IS 'Information alphanumérique sur les lots divers';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_divers.idgeolf
+    IS 'Identifiant unique géographique de référence de l''objet virtuel';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_divers.op_sai
+    IS 'Libellé de la personne ayant saisie la mise à jour';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_divers.org_sai
+    IS 'Organisme de saisie dont dépend l''opérateur de saisie';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_divers.l_nom
+    IS 'Libellé';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_divers.surf
+    IS 'Surface du lot divers en m²';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_divers.date_sai
+    IS 'Date de saisie des données attributaires';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_divers.date_maj
+    IS 'Date de mise à jour des données attributaires';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_divers.l_phase
+    IS 'Phase opérationnelle éventuelle';
+
+-- ############################################################## [an_amt_lot_equ] ##################################################################
+
+-- Table: m_amenagement.an_amt_lot_equ
+
+-- DROP TABLE m_amenagement.an_amt_lot_equ;
+
+CREATE TABLE m_amenagement.an_amt_lot_equ
+(
+    idgeolf integer NOT NULL,
+    op_sai character varying(80) COLLATE pg_catalog."default",
+    org_sai character varying(80) COLLATE pg_catalog."default",
+    l_nom character varying(100) COLLATE pg_catalog."default",
+    surf double precision,
+    date_sai timestamp without time zone,
+    date_maj timestamp without time zone,
+    l_phase character varying(10) COLLATE pg_catalog."default",
+    l_surf_l character varying(15) COLLATE pg_catalog."default",
+    CONSTRAINT an_amt_lot_equ_pkey PRIMARY KEY (idgeolf)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE m_amenagement.an_amt_lot_equ
+    OWNER to create_sig;
+
+GRANT ALL ON TABLE m_amenagement.an_amt_lot_equ TO sig_create;
+
+GRANT ALL ON TABLE m_amenagement.an_amt_lot_equ TO create_sig;
+
+GRANT SELECT ON TABLE m_amenagement.an_amt_lot_equ TO sig_read;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_amenagement.an_amt_lot_equ TO sig_edit;
+
+COMMENT ON TABLE m_amenagement.an_amt_lot_equ
+    IS 'Information alphanumérique sur les lots équipements';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_equ.idgeolf
+    IS 'Identifiant unique géographique de référence de l''objet virtuel';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_equ.op_sai
+    IS 'Libellé de la personne ayant saisie la mise à jour';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_equ.org_sai
+    IS 'Organisme de saisie dont dépend l''opérateur de saisie';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_equ.l_nom
+    IS 'Libellé de l''équipement';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_equ.surf
+    IS 'Surface du lot équipement en m²';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_equ.date_sai
+    IS 'Date de saisie des données attributaires';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_equ.date_maj
+    IS 'Date de mise à jour des données attributaires';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_equ.l_phase
+    IS 'Phase opérationnelle éventuelle';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_equ.l_surf_l
+    IS 'Surface littérale parcellaire occupée du lot';
+
+-- ############################################################## [an_amt_lot_hab] ##################################################################
+
+-- Table: m_amenagement.an_amt_lot_hab
+
+-- DROP TABLE m_amenagement.an_amt_lot_hab;
+
+CREATE TABLE m_amenagement.an_amt_lot_hab
+(
+    idgeolf integer NOT NULL,
+    surf integer,
+    l_surf_l character varying(15) COLLATE pg_catalog."default",
+    op_sai character varying(80) COLLATE pg_catalog."default",
+    org_sai character varying(80) COLLATE pg_catalog."default",
+    l_pvente double precision,
+    l_pvente_l character varying(15) COLLATE pg_catalog."default",
+    nb_log integer,
+    nb_logind integer,
+    nb_logindgr integer,
+    nb_logcol integer,
+    nb_logaide integer,
+    l_observ character varying(255) COLLATE pg_catalog."default",
+    date_sai timestamp without time zone,
+    date_maj timestamp without time zone,
+    l_phase character varying(20) COLLATE pg_catalog."default",
+    nb_log_r integer DEFAULT 0,
+    nb_logind_r integer DEFAULT 0,
+    nb_logindgr_r integer DEFAULT 0,
+    nb_logcol_r integer DEFAULT 0,
+    nb_logaide_r integer DEFAULT 0,
+    l_pvente_lot integer,
+    nb_logaide_loc_r integer,
+    nb_logaide_acc_r integer,
+    CONSTRAINT an_amt_lot_hab_pkey PRIMARY KEY (idgeolf)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE m_amenagement.an_amt_lot_hab
+    OWNER to create_sig;
+
+GRANT ALL ON TABLE m_amenagement.an_amt_lot_hab TO sig_create;
+
+GRANT ALL ON TABLE m_amenagement.an_amt_lot_hab TO create_sig;
+
+GRANT SELECT ON TABLE m_amenagement.an_amt_lot_hab TO sig_read;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_amenagement.an_amt_lot_hab TO sig_edit;
+
+COMMENT ON TABLE m_amenagement.an_amt_lot_hab
+    IS 'Table alphanumérique contenant les données des lots à vocation habitat';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.idgeolf
+    IS 'Identifiant unique de l''entité géographique lot';
+
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.surf
+    IS 'Surface parcellaire occupée du lot';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.l_surf_l
+    IS 'Surface littérale parcellaire occupée du lot';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.op_sai
+    IS 'Libellé de l''opérateur de saisie';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.org_sai
+    IS 'Libellé de l''organisme de saisie';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.l_pvente
+    IS 'Prix de vente du lot en HT (€/m²)';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.l_pvente_l
+    IS 'Prix littéral de vente du lot en HT (ex:50€/m²)';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.nb_log
+    IS 'Nombre total de logements';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.nb_logind
+    IS 'Nombre de logements individuels';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.nb_logindgr
+    IS 'Nombre de logements individuels groupés';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.nb_logcol
+    IS 'Nombre de logements collectifs';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.nb_logaide
+    IS 'Dont nombre de logements aidés';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.l_observ
+    IS 'Observations diverses';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.date_sai
+    IS 'Date de saisie des données attributaires';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.date_maj
+    IS 'Date de mise à jour des données attributaires';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.l_phase
+    IS 'Information facultative sur l''appartenance du lot à un éventuel phasage de l''opération';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.nb_log_r
+    IS 'Nombre de logements total réalisé';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.nb_logind_r
+    IS 'Nombre de logements individuels réalisé';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.nb_logindgr_r
+    IS 'Nombre de logements individuels groupés réalisé';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.nb_logcol_r
+    IS 'Nombre de logements collectifs réalisé';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.nb_logaide_r
+    IS 'Nombre de logements aidés réalisé';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.l_pvente_lot
+    IS 'Prix de vente du lot (ht)';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.nb_logaide_loc_r
+    IS 'Nombre de logements aidés en location réalisé';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.nb_logaide_acc_r
+    IS 'Nombre de logements aidés en accession réalisé';
+
+-- ############################################################## [an_amt_lot_mixte] ##################################################################
+
+-- Table: m_amenagement.an_amt_lot_mixte
+
+-- DROP TABLE m_amenagement.an_amt_lot_mixte;
+
+CREATE TABLE m_amenagement.an_amt_lot_mixte
+(
+    idgeolf integer NOT NULL,
+    surf integer,
+    l_surf_l character varying(15) COLLATE pg_catalog."default",
+    op_sai character varying(80) COLLATE pg_catalog."default",
+    org_sai character varying(80) COLLATE pg_catalog."default",
+    l_pvente double precision,
+    l_pvente_l character varying(15) COLLATE pg_catalog."default",
+    nb_log integer DEFAULT 0,
+    nb_logind integer DEFAULT 0,
+    nb_logindgr integer DEFAULT 0,
+    nb_logcol integer DEFAULT 0,
+    nb_logaide integer DEFAULT 0,
+    l_observ character varying(255) COLLATE pg_catalog."default",
+    date_sai timestamp without time zone,
+    date_maj timestamp without time zone,
+    l_phase character varying(20) COLLATE pg_catalog."default",
+    nb_log_r integer DEFAULT 0,
+    nb_logind_r integer DEFAULT 0,
+    nb_logindgr_r integer DEFAULT 0,
+    nb_logcol_r integer DEFAULT 0,
+    nb_logaide_r integer DEFAULT 0,
+    l_pvente_lot integer,
+    l_tact character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
+    l_tact_99 character varying(80) COLLATE pg_catalog."default",
+    l_nom_equ character varying(100) COLLATE pg_catalog."default",
+    nb_logaide_loc_r integer,
+    nb_logaide_acc_r integer,
+    l_lnom character varying(250) COLLATE pg_catalog."default",
+    CONSTRAINT an_amt_lot_mixte_pkey PRIMARY KEY (idgeolf)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE m_amenagement.an_amt_lot_mixte
+    OWNER to create_sig;
+
+GRANT ALL ON TABLE m_amenagement.an_amt_lot_mixte TO sig_create;
+
+GRANT ALL ON TABLE m_amenagement.an_amt_lot_mixte TO create_sig;
+
+GRANT SELECT ON TABLE m_amenagement.an_amt_lot_mixte TO sig_read;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_amenagement.an_amt_lot_mixte TO sig_edit;
+
+COMMENT ON TABLE m_amenagement.an_amt_lot_mixte
+    IS 'Table alphanumérique contenant les données des lots à vocation mixte';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.idgeolf
+    IS 'Identifiant unique de l''entité géographique lot';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.surf
+    IS 'Surface parcellaire occupée du lot';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.l_surf_l
+    IS 'Surface littérale parcellaire occupée du lot';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.op_sai
+    IS 'Libellé de l''opérateur de saisie';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.org_sai
+    IS 'Libellé de l''organisme de saisie';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.l_pvente
+    IS 'Prix de vente du lot en HT (€/m²)';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.l_pvente_l
+    IS 'Prix littéral de vente du lot en HT (ex:50€/m²)';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.nb_log
+    IS 'Nombre total de logements';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.nb_logind
+    IS 'Nombre de logements individuels';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.nb_logindgr
+    IS 'Nombre de logements individuels groupés';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.nb_logcol
+    IS 'Nombre de logements collectifs';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.nb_logaide
+    IS 'Dont nombre de logements aidés';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.l_observ
+    IS 'Observations diverses';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.date_sai
+    IS 'Date de saisie des données attributaires';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.date_maj
+    IS 'Date de mise à jour des données attributaires';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.l_phase
+    IS 'Information facultative sur l''appartenance du lot à un éventuel phasage de l''opération';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.nb_log_r
+    IS 'Nombre de logements total réalisé';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.nb_logind_r
+    IS 'Nombre de logements individuels réalisé';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.nb_logindgr_r
+    IS 'Nombre de logements individuels groupés réalisé';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.nb_logcol_r
+    IS 'Nombre de logements collectifs réalisé';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.nb_logaide_r
+    IS 'Nombre de logements aidés réalisé';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.l_pvente_lot
+    IS 'Prix de vente du lot (ht)';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.l_tact
+    IS 'Type d''activité présent sur le lot';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.l_tact_99
+    IS 'Précision de l''activité du lot (si Autre sélectionné dans l_tact)';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.l_nom_equ
+    IS 'Libellé des équipements prévus sur le lot';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.nb_logaide_loc_r
+    IS 'Nombre de logements aidés en location réalisé';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.nb_logaide_acc_r
+    IS 'Nombre de logements aidés en accession réalisé';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.l_lnom
+    IS 'Nom(s) du ou des acquéreurs du lot ou d''une partie des bâtiments';
+
+
+-- ####################################################################################################################################################
+-- ###                                                              TABLE R_OBJET                                                                   ###
+-- ####################################################################################################################################################
+
+
+-- ############################################################## [geo_objet_empesp_pu] ####################################################################
+
+-- Table: r_objet.geo_objet_empesp_pu
+
+-- DROP TABLE r_objet.geo_objet_empesp_pu;
+
+CREATE TABLE r_objet.geo_objet_empesp_pu
+(
+    idgeopu integer NOT NULL,
+    op_sai character varying(80) COLLATE pg_catalog."default",
+    src_geom character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
+    sup_m2 double precision,
+    geom geometry(MultiPolygon,2154) NOT NULL,
+    date_sai timestamp without time zone,
+    date_maj timestamp without time zone,
+    CONSTRAINT geo_objet_empesp_pu_pkey PRIMARY KEY (idgeopu),
+    CONSTRAINT geo_objet_empesp_pu_srcgeom_fkey FOREIGN KEY (src_geom)
+        REFERENCES r_objet.lt_src_geom (code) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE r_objet.geo_objet_empesp_pu
+    OWNER to create_sig;
+
+GRANT SELECT ON TABLE r_objet.geo_objet_empesp_pu TO sig_read;
+
+GRANT ALL ON TABLE r_objet.geo_objet_empesp_pu TO sig_create;
+
+GRANT ALL ON TABLE r_objet.geo_objet_empesp_pu TO create_sig;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE r_objet.geo_objet_empesp_pu TO sig_edit;
+
+COMMENT ON TABLE r_objet.geo_objet_empesp_pu
+    IS 'Données géographiques contenant les espaces publics';
+
+COMMENT ON COLUMN r_objet.geo_objet_empesp_pu.idgeopu
+    IS 'Identifiant unique de l''objet';
+
+COMMENT ON COLUMN r_objet.geo_objet_empesp_pu.op_sai
+    IS 'Opérateur de saisir d''objet à l''ARC';
+
+COMMENT ON COLUMN r_objet.geo_objet_empesp_pu.src_geom
+    IS 'Référentiel spatial de saisie';
+
+COMMENT ON COLUMN r_objet.geo_objet_empesp_pu.sup_m2
+    IS 'Surface totale de l''objet en m²';
+
+COMMENT ON COLUMN r_objet.geo_objet_empesp_pu.geom
+    IS 'Champ contenant la géométrie';
+
+COMMENT ON COLUMN r_objet.geo_objet_empesp_pu.date_sai
+    IS 'Date de saisie de l''objet';
+
+COMMENT ON COLUMN r_objet.geo_objet_empesp_pu.date_maj
+    IS 'Date de mise à jour de l''objet';
+
+-- ############################################################## [geo_objet_fon_lot] ####################################################################
+
+-- Table: r_objet.geo_objet_fon_lot
+
+-- DROP TABLE r_objet.geo_objet_fon_lot;
+
+CREATE TABLE r_objet.geo_objet_fon_lot
+(
+    idgeolf integer NOT NULL,
+    op_sai character varying(80) COLLATE pg_catalog."default",
+    src_geom character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
+    sup_m2 double precision,
+    l_voca character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
+    geom geometry(MultiPolygon,2154) NOT NULL,
+    date_sai timestamp without time zone,
+    date_maj timestamp without time zone,
+    l_nom character varying(80) COLLATE pg_catalog."default",
+    CONSTRAINT geo_objet_fon_lot_pkey PRIMARY KEY (idgeolf),
+    CONSTRAINT geo_objet_fon_lot_scrgeom_fkey FOREIGN KEY (src_geom)
+        REFERENCES r_objet.lt_src_geom (code) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT lt_objet_vocafon_fkey FOREIGN KEY (l_voca)
+        REFERENCES r_objet.lt_objet_vocafon (code) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE r_objet.geo_objet_fon_lot
+    OWNER to create_sig;
+
+GRANT SELECT ON TABLE r_objet.geo_objet_fon_lot TO sig_read;
+
+GRANT ALL ON TABLE r_objet.geo_objet_fon_lot TO sig_create;
+
+GRANT ALL ON TABLE r_objet.geo_objet_fon_lot TO create_sig;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE r_objet.geo_objet_fon_lot TO sig_edit;
+
+COMMENT ON TABLE r_objet.geo_objet_fon_lot
+    IS 'Données géographiques contenant les lots fonciers des sites';
+
+COMMENT ON COLUMN r_objet.geo_objet_fon_lot.idgeolf
+    IS 'Identifiant unique de l''objet';
+
+COMMENT ON COLUMN r_objet.geo_objet_fon_lot.op_sai
+    IS 'Opérateur de saisir d''objet à l''ARC';
+
+COMMENT ON COLUMN r_objet.geo_objet_fon_lot.src_geom
+    IS 'Référentiel spatial de saisie';
+
+COMMENT ON COLUMN r_objet.geo_objet_fon_lot.sup_m2
+    IS 'Surface totale de l''objet en m²';
+
+COMMENT ON COLUMN r_objet.geo_objet_fon_lot.l_voca
+    IS 'Vocation du foncier';
+
+COMMENT ON COLUMN r_objet.geo_objet_fon_lot.geom
+    IS 'Champ contenant la géométrie';
+
+COMMENT ON COLUMN r_objet.geo_objet_fon_lot.date_sai
+    IS 'Date de saisie de l''objet';
+
+COMMENT ON COLUMN r_objet.geo_objet_fon_lot.date_maj
+    IS 'Date de mise à jour';
+
+COMMENT ON COLUMN r_objet.geo_objet_fon_lot.l_nom
+    IS 'Nom de lot donné au moment du plan d''aménagement (ex : lot 1)';
+
+
+-- Trigger: t_t1_foncier_insert_date_maj
+
+-- DROP TRIGGER t_t1_foncier_insert_date_maj ON r_objet.geo_objet_fon_lot;
+
+CREATE TRIGGER t_t1_foncier_insert_date_maj
+    BEFORE INSERT OR UPDATE 
+    ON r_objet.geo_objet_fon_lot
+    FOR EACH ROW
+    EXECUTE PROCEDURE public.ft_r_timestamp_maj();
+
+-- Trigger: t_t2_foncier_insert_surf
+
+-- DROP TRIGGER t_t2_foncier_insert_surf ON r_objet.geo_objet_fon_lot;
+
+CREATE TRIGGER t_t2_foncier_insert_surf
+    BEFORE INSERT OR UPDATE OF geom
+    ON r_objet.geo_objet_fon_lot
+    FOR EACH ROW
+    EXECUTE PROCEDURE public.ft_r_sup_m2_maj();
+
+-- Trigger: t_t3_foncier_l_nom
+
+-- DROP TRIGGER t_t3_foncier_l_nom ON r_objet.geo_objet_fon_lot;
+
+CREATE TRIGGER t_t3_foncier_l_nom
+    BEFORE INSERT OR UPDATE OF l_nom
+    ON r_objet.geo_objet_fon_lot
+    FOR EACH ROW
+    EXECUTE PROCEDURE r_objet.ft_m_foncier_l_nom();
+
+-- ####################################################################################################################################################
+-- ###                                                              TABLE M_FONCIER                                                                 ###
+-- ####################################################################################################################################################
+
+-- ############################################################## [an_fon_doc_media] ####################################################################
+
+-- Table: m_foncier.an_fon_doc_media
+
+-- DROP TABLE m_foncier.an_fon_doc_media;
+
+CREATE TABLE m_foncier.an_fon_doc_media
+(
+    gid integer NOT NULL DEFAULT nextval('m_foncier.an_fon_doc_media_gid_seq'::regclass),
+    id character varying(10) COLLATE pg_catalog."default",
+    media text COLLATE pg_catalog."default",
+    miniature bytea,
+    n_fichier text COLLATE pg_catalog."default",
+    t_fichier text COLLATE pg_catalog."default",
+    op_sai character varying(100) COLLATE pg_catalog."default",
+    date_sai timestamp without time zone,
+    l_type character varying(2) COLLATE pg_catalog."default",
+    l_prec character varying(254) COLLATE pg_catalog."default",
+    CONSTRAINT an_fon_doc_media_pkey PRIMARY KEY (gid),
+    CONSTRAINT an_fon_doc_media_fkey FOREIGN KEY (l_type)
+        REFERENCES m_foncier.lt_ces_doc (l_type) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE m_foncier.an_fon_doc_media
+    OWNER to create_sig;
+
+GRANT ALL ON TABLE m_foncier.an_fon_doc_media TO sig_create;
+
+GRANT SELECT ON TABLE m_foncier.an_fon_doc_media TO sig_read;
+
+GRANT ALL ON TABLE m_foncier.an_fon_doc_media TO create_sig;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_foncier.an_fon_doc_media TO sig_edit;
+
+COMMENT ON TABLE m_foncier.an_fon_doc_media
+    IS 'Table gérant la liste des documents de suivi d''une cession ou d''une acquisition et gérer avec le module média dans GEO (application Foncier)';
+
+COMMENT ON COLUMN m_foncier.an_fon_doc_media.gid
+    IS 'Identifiant unique non signifiant';
+
+COMMENT ON COLUMN m_foncier.an_fon_doc_media.id
+    IS 'Identifiant de cession ou d''acquisition';
+
+COMMENT ON COLUMN m_foncier.an_fon_doc_media.media
+    IS 'Champ Média de GEO';
+
+COMMENT ON COLUMN m_foncier.an_fon_doc_media.miniature
+    IS 'Champ miniature de GEO';
+
+COMMENT ON COLUMN m_foncier.an_fon_doc_media.n_fichier
+    IS 'Nom du fichier';
+
+COMMENT ON COLUMN m_foncier.an_fon_doc_media.t_fichier
+    IS 'Type de média dans GEO';
+
+COMMENT ON COLUMN m_foncier.an_fon_doc_media.op_sai
+    IS 'Libellé de l''opérateur ayant intégrer le document';
+
+COMMENT ON COLUMN m_foncier.an_fon_doc_media.date_sai
+    IS 'Date d''intégration du document';
+
+COMMENT ON COLUMN m_foncier.an_fon_doc_media.l_type
+    IS 'Code du type de document de cessions ou d''acquisitions';
+
+COMMENT ON COLUMN m_foncier.an_fon_doc_media.l_prec
+    IS 'Précision sur le document';
+
+-- Trigger: t_t1_an_fon_doc_media_insert_date_sai
+
+-- DROP TRIGGER t_t1_an_fon_doc_media_insert_date_sai ON m_foncier.an_fon_doc_media;
+
+CREATE TRIGGER t_t1_an_fon_doc_media_insert_date_sai
+    BEFORE INSERT
+    ON m_foncier.an_fon_doc_media
+    FOR EACH ROW
+    EXECUTE PROCEDURE public.ft_r_timestamp_sai();
+
+-- ############################################################## [an_cession] ####################################################################
+
+-- Table: m_foncier.an_cession
+
+-- DROP TABLE m_foncier.an_cession;
+
+CREATE TABLE m_foncier.an_cession
+(
+    idces character varying(6) COLLATE pg_catalog."default" NOT NULL DEFAULT nextval('m_foncier.ces_seq'::regclass),
+    l_rel character varying(2) COLLATE pg_catalog."default" DEFAULT '10'::character varying,
+    l_compo boolean DEFAULT false,
+    l_etat character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
+    l_orga character varying(50) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
+    d_delib_1 date,
+    d_delib_2 date,
+    d_delib_3 date,
+    insee character varying(5) COLLATE pg_catalog."default",
+    l_date_i date,
+    l_voca character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
+    l_acque character varying(80) COLLATE pg_catalog."default",
+    l_parcelle_i character varying(500) COLLATE pg_catalog."default",
+    l_parcelle_f character varying(500) COLLATE pg_catalog."default",
+    d_esti_1 date,
+    d_esti_2 date,
+    d_esti_3 date,
+    l_esti_ht double precision,
+    l_surf integer,
+    l_condi character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
+    l_type character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
+    d_prome date,
+    d_acte date,
+    l_notaire character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
+    l_notaire_a character varying(254) COLLATE pg_catalog."default",
+    l_pvente_ht double precision,
+    l_pvente_ttc double precision,
+    l_frais_a boolean DEFAULT false,
+    l_frais_b boolean DEFAULT false,
+    l_frais_c boolean DEFAULT false,
+    l_frais_d boolean DEFAULT false,
+    l_frais_e boolean DEFAULT false,
+    l_mfrais_ht double precision,
+    l_mfrais_ttc double precision,
+    l_pvente_s double precision,
+    l_type_a boolean DEFAULT false,
+    l_type_b boolean DEFAULT false,
+    l_type_c boolean DEFAULT false,
+    l_observ character varying(255) COLLATE pg_catalog."default",
+    l_mfrais_g_ttc double precision,
+    l_mfrais_n_ttc double precision,
+    l_mfrais_a_ttc double precision,
+    idsite character varying(10) COLLATE pg_catalog."default",
+    idces_d character varying(10) COLLATE pg_catalog."default",
+    d_delib_4 date,
+    date_sai timestamp without time zone,
+    date_maj timestamp without time zone,
+    op_sai character varying(80) COLLATE pg_catalog."default",
+    CONSTRAINT an_cession_pkey PRIMARY KEY (idces),
+    CONSTRAINT an_cession_rel_fkey FOREIGN KEY (l_rel)
+        REFERENCES m_foncier.lt_rel_lot (l_rel) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT lt_ces_cond_fkey FOREIGN KEY (l_condi)
+        REFERENCES m_foncier.lt_ces_cond (l_condi) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT lt_ces_etat_fkey FOREIGN KEY (l_etat)
+        REFERENCES m_foncier.lt_ces_etat (l_etat) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT lt_ces_nota_fkey FOREIGN KEY (l_notaire)
+        REFERENCES m_foncier.lt_ces_nota (l_notaire) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT lt_ces_orga_fkey FOREIGN KEY (l_orga)
+        REFERENCES m_foncier.lt_ces_orga (l_orga) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT lt_ces_tact_fkey FOREIGN KEY (l_type)
+        REFERENCES m_foncier.lt_ces_tact (l_type) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT lt_ces_voca_fkey FOREIGN KEY (l_voca)
+        REFERENCES m_foncier.lt_ces_voca (l_voca) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE m_foncier.an_cession
+    OWNER to create_sig;
+
+GRANT ALL ON TABLE m_foncier.an_cession TO sig_create;
+
+GRANT SELECT ON TABLE m_foncier.an_cession TO sig_read;
+
+GRANT ALL ON TABLE m_foncier.an_cession TO create_sig;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_foncier.an_cession TO sig_edit;
+
+COMMENT ON TABLE m_foncier.an_cession
+    IS 'Table alphanumérique contenant les données des cessions de lots';
+
+COMMENT ON COLUMN m_foncier.an_cession.idces
+    IS 'Identifiant du dossier de cession ou n° de dossier';
+
+COMMENT ON COLUMN m_foncier.an_cession.l_rel
+    IS 'Type de relation avec les lots';
+
+COMMENT ON COLUMN m_foncier.an_cession.l_compo
+    IS 'Composition de la cession : si true (coché) la cession ne correspond pas au lot vendu par le service économie (cf le commentaire pour plus de précision)';
+
+COMMENT ON COLUMN m_foncier.an_cession.l_etat
+    IS 'Code de l''état du dossier de cession';
+
+COMMENT ON COLUMN m_foncier.an_cession.l_orga
+    IS 'Code du nom de l''organisme';
+
+COMMENT ON COLUMN m_foncier.an_cession.d_delib_1
+    IS 'Date de la délibération de l''organisme cédant 1 ou de décision du président en cas de droit de préemption';
+
+COMMENT ON COLUMN m_foncier.an_cession.d_delib_2
+    IS 'Date de la délibération de l''organisme cédant 2';
+
+COMMENT ON COLUMN m_foncier.an_cession.d_delib_3
+    IS 'Date de la délibération de l''organisme cédant 3';
+
+COMMENT ON COLUMN m_foncier.an_cession.insee
+    IS 'Code insee de la commune';
+
+COMMENT ON COLUMN m_foncier.an_cession.l_date_i
+    IS 'Date d''ouverture du dossier dans le SIG';
+
+COMMENT ON COLUMN m_foncier.an_cession.l_voca
+    IS 'Code de la vocation de la cession';
+
+COMMENT ON COLUMN m_foncier.an_cession.l_acque
+    IS 'Nom de l''acquéreur';
+
+COMMENT ON COLUMN m_foncier.an_cession.l_parcelle_i
+    IS 'Numéro(s) de(s) parcelle(s) initiale(s) concernée(s) par le périmètre';
+
+COMMENT ON COLUMN m_foncier.an_cession.l_parcelle_f
+    IS 'Numéro(s) de(s) nouvelle(s) parcelle(s) concernée(s) par le périmètre';
+
+COMMENT ON COLUMN m_foncier.an_cession.d_esti_1
+    IS 'Date d''estimation des domaines 1';
+
+COMMENT ON COLUMN m_foncier.an_cession.d_esti_2
+    IS 'Date d''estimation des domaines 2';
+
+COMMENT ON COLUMN m_foncier.an_cession.d_esti_3
+    IS 'Date d''estimation des domaines 3';
+
+COMMENT ON COLUMN m_foncier.an_cession.l_esti_ht
+    IS 'Montant total de(s) estimation(s) des domaines';
+
+COMMENT ON COLUMN m_foncier.an_cession.l_surf
+    IS 'Superficie cadastrée du périmètre de cession en m²';
+
+COMMENT ON COLUMN m_foncier.an_cession.l_condi
+    IS 'Code de conditions de cession';
+
+COMMENT ON COLUMN m_foncier.an_cession.l_type
+    IS 'Code du type d''acte de cession';
+
+COMMENT ON COLUMN m_foncier.an_cession.d_prome
+    IS 'Date de la promesse de vente';
+
+COMMENT ON COLUMN m_foncier.an_cession.d_acte
+    IS 'Date de l''acte';
+
+COMMENT ON COLUMN m_foncier.an_cession.l_notaire
+    IS 'Code du nom de l''étude notariale';
+
+COMMENT ON COLUMN m_foncier.an_cession.l_notaire_a
+    IS 'Nom de l''étude notariale si pas dans la liste des études notariales du champ l_notaire';
+
+COMMENT ON COLUMN m_foncier.an_cession.l_pvente_ht
+    IS 'Montant de la vente HT';
+
+COMMENT ON COLUMN m_foncier.an_cession.l_pvente_ttc
+    IS 'Montant de la vente TTC';
+
+COMMENT ON COLUMN m_foncier.an_cession.l_frais_a
+    IS 'Type de frais : aucun (champ non utilisé)';
+
+COMMENT ON COLUMN m_foncier.an_cession.l_frais_b
+    IS 'Type de frais : Géomètre  (champ non utilisé)';
+
+COMMENT ON COLUMN m_foncier.an_cession.l_frais_c
+    IS 'Type de frais : Notaire  (champ non utilisé)';
+
+COMMENT ON COLUMN m_foncier.an_cession.l_frais_d
+    IS 'Type de frais : Agence immobilière  (champ non utilisé)';
+
+COMMENT ON COLUMN m_foncier.an_cession.l_frais_e
+    IS 'Type de frais : Indemnités diverses  (champ non utilisé)';
+
+COMMENT ON COLUMN m_foncier.an_cession.l_mfrais_ht
+    IS 'Frais cumulés de cession en € HT (champ non utilisé)';
+
+COMMENT ON COLUMN m_foncier.an_cession.l_mfrais_ttc
+    IS 'Frais cumulés de cession en € TTC';
+
+COMMENT ON COLUMN m_foncier.an_cession.l_pvente_s
+    IS 'Prix de vente en € HT au m² (sans les frais)';
+
+COMMENT ON COLUMN m_foncier.an_cession.l_type_a
+    IS 'Typologie du montant de cession : terrain';
+
+COMMENT ON COLUMN m_foncier.an_cession.l_type_b
+    IS 'Typologie du montant de cession : bâti';
+
+COMMENT ON COLUMN m_foncier.an_cession.l_type_c
+    IS 'Typologie du montant de cession : SHON';
+
+COMMENT ON COLUMN m_foncier.an_cession.l_observ
+    IS 'Commentaires';
+
+COMMENT ON COLUMN m_foncier.an_cession.l_mfrais_g_ttc
+    IS 'Montant des frais de géomètre TTC';
+
+COMMENT ON COLUMN m_foncier.an_cession.l_mfrais_n_ttc
+    IS 'Montant des frais de notaires ttc';
+
+COMMENT ON COLUMN m_foncier.an_cession.l_mfrais_a_ttc
+    IS 'Montant des autres frais (agence, ...)';
+
+COMMENT ON COLUMN m_foncier.an_cession.idsite
+    IS 'Identifiant du site';
+
+COMMENT ON COLUMN m_foncier.an_cession.idces_d
+    IS 'Ancien numéro de cession DynMap';
+
+COMMENT ON COLUMN m_foncier.an_cession.d_delib_4
+    IS 'Date de la délibération de l''organisme cédant 4';
+
+COMMENT ON COLUMN m_foncier.an_cession.date_sai
+    IS 'Date de saisie';
+
+COMMENT ON COLUMN m_foncier.an_cession.date_maj
+    IS 'Date de mise à jour';
+
+COMMENT ON COLUMN m_foncier.an_cession.op_sai
+    IS 'Opérateur de saisie';
+
+-- Trigger: t_t1_an_cession_date_sai
+
+-- DROP TRIGGER t_t1_an_cession_date_sai ON m_foncier.an_cession;
+
+CREATE TRIGGER t_t1_an_cession_date_sai
+    BEFORE INSERT
+    ON m_foncier.an_cession
+    FOR EACH ROW
+    EXECUTE PROCEDURE public.ft_r_timestamp_sai();
+
+-- Trigger: t_t2_an_cession_date_maj
+
+-- DROP TRIGGER t_t2_an_cession_date_maj ON m_foncier.an_cession;
+
+CREATE TRIGGER t_t2_an_cession_date_maj
+    BEFORE UPDATE 
+    ON m_foncier.an_cession
+    FOR EACH ROW
+    EXECUTE PROCEDURE public.ft_r_timestamp_maj();
+
+-- ############################################################## [an_fon_cession_horsarc_media] ####################################################################
+
+-- Table: m_foncier.an_fon_doc_media
+
+-- DROP TABLE m_foncier.an_fon_cession_horsarc_media;
+
+CREATE TABLE m_foncier.an_fon_cession_horsarc_media
+(
+    gid integer NOT NULL DEFAULT nextval('m_foncier.an_fon_cession_horsarc_media_seq'::regclass),
+    id character varying(10) COLLATE pg_catalog."default",
+    media text COLLATE pg_catalog."default",
+    miniature bytea,
+    n_fichier text COLLATE pg_catalog."default",
+    t_fichier text COLLATE pg_catalog."default",
+    op_sai character varying(100) COLLATE pg_catalog."default",
+    date_sai timestamp without time zone,
+    l_type character varying(2) COLLATE pg_catalog."default",
+    l_prec character varying(254) COLLATE pg_catalog."default",
+    CONSTRAINT an_fon_cession_horsarc_media_pkey PRIMARY KEY (gid),
+    CONSTRAINT an_fon_cession_horsarc_media_fkey FOREIGN KEY (l_type)
+        REFERENCES m_foncier.lt_ces_doc (l_type) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE m_foncier.an_fon_cession_horsarc_media
+    OWNER to create_sig;
+
+GRANT ALL ON TABLE m_foncier.an_fon_cession_horsarc_media TO sig_create;
+
+GRANT SELECT ON TABLE m_foncier.an_fon_cession_horsarc_media TO sig_read;
+
+GRANT ALL ON TABLE m_foncier.an_fon_cession_horsarc_media TO create_sig;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_foncier.an_fon_cession_horsarc_media TO sig_edit;
+
+COMMENT ON TABLE m_foncier.an_fon_cession_horsarc_media
+    IS 'Table gérant la liste des documents de suivi des ventes pour les autres EPCI du Grand Compiégnois (hors ARC) avec le module média dans GEO (application Foncier)';
+
+COMMENT ON COLUMN m_foncier.an_fon_cession_horsarc_media.gid
+    IS 'Identifiant unique non signifiant';
+
+COMMENT ON COLUMN m_foncier.an_fon_cession_horsarc_media.id
+    IS 'Identifiant de cession ou d''acquisition';
+
+COMMENT ON COLUMN m_foncier.an_fon_cession_horsarc_media.media
+    IS 'Champ Média de GEO';
+
+COMMENT ON COLUMN m_foncier.an_fon_cession_horsarc_media.miniature
+    IS 'Champ miniature de GEO';
+
+COMMENT ON COLUMN m_foncier.an_fon_cession_horsarc_media.n_fichier
+    IS 'Nom du fichier';
+
+COMMENT ON COLUMN m_foncier.an_fon_cession_horsarc_media.t_fichier
+    IS 'Type de média dans GEO';
+
+COMMENT ON COLUMN m_foncier.an_fon_cession_horsarc_media.op_sai
+    IS 'Libellé de l''opérateur ayant intégrer le document';
+
+COMMENT ON COLUMN m_foncier.an_fon_cession_horsarc_media.date_sai
+    IS 'Date d''intégration du document';
+
+COMMENT ON COLUMN m_foncier.an_fon_cession_horsarc_media.l_type
+    IS 'Code du type de document de cessions ou d''acquisitions';
+
+COMMENT ON COLUMN m_foncier.an_fon_cession_horsarc_media.l_prec
+    IS 'Précision sur le document';
+
+-- Trigger: t_t1_an_fon_doc_media_insert_date_sai
+
+-- DROP TRIGGER t_t1_an_fon_doc_media_insert_date_sai ON m_foncier.an_fon_doc_media;
+
+CREATE TRIGGER t_t1_an_fon_doc_media_insert_date_sai
+    BEFORE INSERT
+    ON m_foncier.an_fon_cession_horsarc_media
+    FOR EACH ROW
+    EXECUTE PROCEDURE public.ft_r_timestamp_sai();
+    
+-- ############################################################## [an_fon_cession_horsarc] ####################################################################
+
+-- Table: m_foncier.an_fon_cession_horsarc
+
+-- DROP TABLE m_foncier.an_fon_cession_horsarc;
+
+CREATE TABLE m_foncier.an_fon_cession_horsarc
+(
+    gid integer NOT NULL DEFAULT nextval('m_foncier.an_fon_cession_horsarc_seq'::regclass)
+
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE m_foncier.an_fon_cession_horsarc
+    OWNER to create_sig;
+
+GRANT ALL ON TABLE m_foncier.an_fon_cession_horsarc TO sig_create;
+
+GRANT SELECT ON TABLE m_foncier.an_fon_cession_horsarc TO sig_read;
+
+GRANT ALL ON TABLE m_foncier.an_fon_cession_horsarc TO create_sig;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_foncier.an_fon_cession_horsarc TO sig_edit;
+
+COMMENT ON TABLE m_foncier.an_fon_cession_horsarc
+    IS 'Table gérant les ventes des EPCI du Grand Compiégnois (hors ARC)';
+
+COMMENT ON COLUMN m_foncier.an_fon_cession_horsarc.gid
+    IS 'Identifiant unique non signifiant';
+
+
+
 -- ####################################################################################################################################################
 -- ###                                                                                                                                              ###
 -- ###                                                             TABLE DE RELATION                                                                ### 
 -- ###                                                                                                                                              ###
 -- ####################################################################################################################################################
+
+-- ####################################################################################################################################################
+-- ###                                                       TABLE DE RELATION M_ACTIVITE_ECO                                                       ###
+-- ####################################################################################################################################################
+
 
 -- ############################################################## [lk_eco_contact] ####################################################################
 
@@ -8387,51 +9381,7 @@ COMMENT ON COLUMN m_activite_eco.lk_eco_proc.idproc
 
 COMMENT ON COLUMN m_activite_eco.lk_eco_proc.idsite
     IS 'Identifiant unique non signifiant de l''objet site';
-    
- 
--- ############################################################## [lk_amt_lot_site] ####################################################################
 
--- Table: m_amenagement.lk_amt_lot_site
-
--- DROP TABLE m_amenagement.lk_amt_lot_site;
-
-CREATE TABLE m_amenagement.lk_amt_lot_site
-(
-    id integer NOT NULL DEFAULT nextval('m_amenagement.lk_amt_lot_site_seq'::regclass),
-    idsite character varying(5) NOT NULL,
-    idgeolf integer NOT NULL,
-    CONSTRAINT lk_amt_lot_site_pkey PRIMARY KEY (id)
-)
-WITH (
-    OIDS = FALSE
-)
-TABLESPACE pg_default;
-
-ALTER TABLE m_amenagement.lk_amt_lot_site
-    OWNER to create_sig;
-
-GRANT ALL ON TABLE m_amenagement.lk_amt_lot_site TO sig_create;
-
-GRANT ALL ON TABLE m_amenagement.lk_amt_lot_site TO create_sig;
-
-GRANT ALL ON TABLE m_amenagement.lk_amt_lot_site TO sig_stage WITH GRANT OPTION;
-
-GRANT SELECT ON TABLE m_amenagement.lk_amt_lot_site TO sig_read;
-
-GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_amenagement.lk_amt_lot_site TO sig_edit;
-
-COMMENT ON TABLE m_amenagement.lk_amt_lot_site
-    IS 'Table alphanumérique d''appartenance des lots à un ou plusieurs sites';
-
-COMMENT ON COLUMN m_amenagement.lk_amt_lot_site.id
-    IS 'Identifiant unique non signifiant de la relation';
-
-COMMENT ON COLUMN m_amenagement.lk_amt_lot_site.idgeolf
-    IS 'Identifiant unique non signifiant de l''objet lot';
-
-COMMENT ON COLUMN m_amenagement.lk_amt_lot_site.idsite
-    IS 'Identifiant unique non signifiant de l''objet site';
-				  
 -- ############################################################## [lk_eco_bati_site] ####################################################################
 
 -- Table: m_activite_eco.lk_eco_bati_site
@@ -8773,6 +9723,94 @@ CREATE TRIGGER t_t4_lk_etablissementlocal
     ON m_activite_eco.lk_adresseetablissement
     FOR EACH ROW
     EXECUTE PROCEDURE m_activite_eco.ft_m_lk_adresseetablissement();
+
+-- ####################################################################################################################################################
+-- ###                                                       TABLE DE RELATION M_AMENAGEMENT                                                        ###
+-- ####################################################################################################################################################
+
+ 
+-- ############################################################## [lk_amt_lot_site] ####################################################################
+
+-- Table: m_amenagement.lk_amt_lot_site
+
+-- DROP TABLE m_amenagement.lk_amt_lot_site;
+
+CREATE TABLE m_amenagement.lk_amt_lot_site
+(
+    id integer NOT NULL DEFAULT nextval('m_amenagement.lk_amt_lot_site_seq'::regclass),
+    idsite character varying(5) NOT NULL,
+    idgeolf integer NOT NULL,
+    CONSTRAINT lk_amt_lot_site_pkey PRIMARY KEY (id)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE m_amenagement.lk_amt_lot_site
+    OWNER to create_sig;
+
+GRANT ALL ON TABLE m_amenagement.lk_amt_lot_site TO sig_create;
+
+GRANT ALL ON TABLE m_amenagement.lk_amt_lot_site TO create_sig;
+
+GRANT ALL ON TABLE m_amenagement.lk_amt_lot_site TO sig_stage WITH GRANT OPTION;
+
+GRANT SELECT ON TABLE m_amenagement.lk_amt_lot_site TO sig_read;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_amenagement.lk_amt_lot_site TO sig_edit;
+
+COMMENT ON TABLE m_amenagement.lk_amt_lot_site
+    IS 'Table alphanumérique d''appartenance des lots à un ou plusieurs sites';
+
+COMMENT ON COLUMN m_amenagement.lk_amt_lot_site.id
+    IS 'Identifiant unique non signifiant de la relation';
+
+COMMENT ON COLUMN m_amenagement.lk_amt_lot_site.idgeolf
+    IS 'Identifiant unique non signifiant de l''objet lot';
+
+COMMENT ON COLUMN m_amenagement.lk_amt_lot_site.idsite
+    IS 'Identifiant unique non signifiant de l''objet site';
+				  
+-- ####################################################################################################################################################
+-- ###                                                       TABLE DE RELATION M_FONCIER                                                            ###
+-- ####################################################################################################################################################
+
+-- Table: m_foncier.lk_cession_lot
+
+-- DROP TABLE m_foncier.lk_cession_lot;
+
+CREATE TABLE m_foncier.lk_cession_lot
+(
+    idgeolf integer NOT NULL,
+    idces character varying(6) COLLATE pg_catalog."default",
+    CONSTRAINT lk_cession_lot_pkey PRIMARY KEY (idgeolf)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE m_foncier.lk_cession_lot
+    OWNER to create_sig;
+
+GRANT ALL ON TABLE m_foncier.lk_cession_lot TO sig_create;
+
+GRANT SELECT ON TABLE m_foncier.lk_cession_lot TO sig_read;
+
+GRANT ALL ON TABLE m_foncier.lk_cession_lot TO create_sig;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_foncier.lk_cession_lot TO sig_edit;
+
+COMMENT ON TABLE m_foncier.lk_cession_lot
+    IS 'Table de lien entre les lots et les dossiers de cession';
+
+COMMENT ON COLUMN m_foncier.lk_cession_lot.idgeolf
+    IS 'Identifiant géographique du lot';
+
+COMMENT ON COLUMN m_foncier.lk_cession_lot.idces
+    IS 'Identifiant du dossier de cession';
+
 
 -- ####################################################################################################################################################
 -- ###                                                                                                                                              ###
