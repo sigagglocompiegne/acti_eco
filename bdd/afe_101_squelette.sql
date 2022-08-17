@@ -6021,7 +6021,6 @@ CREATE TABLE m_activite_eco.geo_eco_site
     z_dst_ar_f integer,
     z_ar_v character varying(80) COLLATE pg_catalog."default",
     z_dst_ar_v integer,
-    l_dst_ar_v integer,
     z_fr_f character varying(80) COLLATE pg_catalog."default",
     z_dst_fr_f integer,
     z_fr_v character varying(80) COLLATE pg_catalog."default",
