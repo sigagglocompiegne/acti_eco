@@ -2137,9 +2137,11 @@ Particularité(s) à noter :
    
 |Nom attribut | Définition | Type | Valeurs par défaut |
 |:---|:---|:---|:---|
-|id|Identifiant non signifiant|integer|nextval('s_sirene.lk_sirene_succession_seq'::regclass)|
-|siretold|N° SIRET de l'ancien établissement|character varying(14)| |
-|siretnew|N° SIRET du nouvel établissement si un lien de succession est déclaré|character varying(14)| |
+|siretold|N° SIRET du nouvel établissement si un lien de succession est déclaré|character varying(14)| |
+|date_lien|Date d'effet du lien de succsession|date| |
+|tsiege|Indicatrice de transfert de siège|boolean| |
+|conteco|Indicatrice de continuité économique entre les deux établissements|boolean| |
+|datedtrait|Date de traitement du lien de succession|date| |
 
 
 Particularité(s) à noter :
