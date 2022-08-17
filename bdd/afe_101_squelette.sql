@@ -11014,7 +11014,11 @@ CREATE TABLE s_sirene.lk_sirene_succession
 (
     id integer NOT NULL DEFAULT nextval('s_sirene.lk_sirene_succession_seq'::regclass),
     siretold character varying(14) COLLATE pg_catalog."default",
-    siretnew character varying(14) COLLATE pg_catalog."default",
+    siretnew character varying(14) COLLATE pg_catalog."default", 
+    date_lien date,
+    tsiege boolean,
+    conteco boolean,
+    datedtrait date,
     CONSTRAINT lk_sirene_succession_pkey PRIMARY KEY (id)
 )
 WITH (
@@ -11043,8 +11047,22 @@ COMMENT ON COLUMN s_sirene.lk_sirene_succession.siretold
 
 COMMENT ON COLUMN s_sirene.lk_sirene_succession.siretold
     IS 'N° SIRET du nouvel établissement si un lien de succession est déclaré';
+    
+
+COMMENT ON COLUMN s_sirene.lk_sirene_succession.date_lien
+    IS 'Date d''effet du lien de succsession';
 
 
+COMMENT ON COLUMN s_sirene.lk_sirene_succession.tsiege
+    IS 'Indicatrice de transfert de siège';
+
+
+COMMENT ON COLUMN s_sirene.lk_sirene_succession.conteco
+    IS 'Indicatrice de continuité économique entre les deux établissements';
+    
+
+COMMENT ON COLUMN s_sirene.lk_sirene_succession.datedtrait
+    IS 'Date de traitement du lien de succession';
 
 -- ####################################################################################################################################################
 -- ###                                                                                                                                              ###
