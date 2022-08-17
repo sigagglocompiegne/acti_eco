@@ -6345,7 +6345,7 @@ GRANT ALL ON TABLE m_activite_eco.an_eco_media TO create_sig;
 GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_activite_eco.an_eco_media TO sig_edit;
 
 COMMENT ON TABLE m_activite_eco.an_eco_media
-    IS 'Table gérant les documents intégrés pour la gestion des données du marché immobilier d''entreprises';
+    IS 'Table gérant les documents intégrés pour la gestion des données des sites, lots et locaux et bâtiments d''activité';
 
 COMMENT ON COLUMN m_activite_eco.an_eco_media.id
     IS 'Identifiant interne non signifiant de l''objet saisi';
