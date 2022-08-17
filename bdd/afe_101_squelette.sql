@@ -6060,7 +6060,7 @@ CREATE TABLE m_activite_eco.geo_eco_site
     serv_autre character varying(1000) COLLATE pg_catalog."default",
     z_aide_pb boolean DEFAULT false,
     src_geom character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
-    src_date character varying(4) COLLATE pg_catalog."default" NOT NULL DEFAULT '0000'::bpchar,
+    src_date character varying(4) COLLATE pg_catalog."default" DEFAULT '0000'::bpchar,
     date_sai timestamp without time zone,
     date_maj timestamp without time zone,
     op_sai character varying(80) COLLATE pg_catalog."default",
