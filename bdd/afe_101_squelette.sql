@@ -911,30 +911,6 @@ GRANT ALL ON SEQUENCE m_foncier.an_fon_cession_horsarc_seq TO create_sig;
 
 
 
--- ####################################################################################################################################################
--- ###                                                            SEQUENCE S_SIRENE                                                                 ###
--- ####################################################################################################################################################
-
--- ############################################################## [lk_sirene_succession_seq] ##################################################################
-
-
--- SEQUENCE: s_sirene.lk_sirene_succession_seq
-
--- DROP SEQUENCE s_sirene.lk_sirene_succession_seq;
-
-CREATE SEQUENCE s_sirene.lk_sirene_succession_seq
-    INCREMENT 1
-    START 1
-    MINVALUE 1
-    MAXVALUE 9223372036854775807
-    CACHE 1;
-
-ALTER SEQUENCE s_sirene.lk_sirene_succession_seq
-    OWNER TO create_sig;
-
-GRANT ALL ON SEQUENCE s_sirene.lk_sirene_succession_seq TO PUBLIC;
-
-GRANT ALL ON SEQUENCE s_sirene.lk_sirene_succession_seq TO create_sig;
 
 
 -- ############################################################## [an_etablissement_api_gid_seq] ##################################################################
@@ -11012,7 +10988,7 @@ COMMENT ON COLUMN m_foncier.lk_cession_lot.idces
 
 CREATE TABLE s_sirene.lk_sirene_succession
 (
-    id integer NOT NULL DEFAULT nextval('s_sirene.lk_sirene_succession_seq'::regclass),
+    id integer NOT NULL,
     siretold character varying(14) COLLATE pg_catalog."default",
     siretnew character varying(14) COLLATE pg_catalog."default", 
     date_lien date,
