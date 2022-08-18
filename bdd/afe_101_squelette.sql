@@ -4573,9 +4573,453 @@ COMMENT ON FUNCTION m_amenagement.ft_m_modif_lot_mixte()
     IS 'Fonction gérant la mise à jour des données liées aux lots à vocation mixte lors de la mise à jour de l''objet';
 
 
+-- ############################################################ [ft_m_delete_lot_divers] ######################################################################
+
+-- FUNCTION: m_amenagement.ft_m_delete_lot_divers()
+
+-- DROP FUNCTION m_amenagement.ft_m_delete_lot_divers();
+
+CREATE OR REPLACE FUNCTION m_amenagement.ft_m_delete_lot_divers()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$
 
 
--- ################################################## [ft_m_lk_adresseetablissement_idsite_delete] ######################################################
+BEGIN
+
+    DELETE FROM m_foncier.an_cession WHERE idces=(SELECT lf.idces FROM m_foncier.an_cession f, m_foncier.lk_cession_lot lf WHERE f.idces=lf.idces AND lf.idgeolf=old.idgeolf);
+    DELETE FROM m_foncier.lk_cession_lot WHERE idgeolf=old.idgeolf;
+    DELETE FROM m_amenagement.an_amt_lot_divers WHERE idgeolf=old.idgeolf;
+    DELETE FROM m_amenagement.an_amt_lot_stade WHERE idgeolf=old.idgeolf;
+    DELETE FROM r_objet.geo_objet_fon_lot WHERE idgeolf=old.idgeolf;
+    return new ;
+
+END;
+
+$BODY$;
+
+ALTER FUNCTION m_amenagement.ft_m_delete_lot_divers()
+    OWNER TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_amenagement.ft_m_delete_lot_divers() TO PUBLIC;
+
+GRANT EXECUTE ON FUNCTION m_amenagement.ft_m_delete_lot_divers() TO create_sig;
+
+COMMENT ON FUNCTION m_amenagement.ft_m_delete_lot_divers()
+    IS 'Fonction gérant la suppression des données liées aux lots à vocation divers lors de la suppression de l''objet';
+
+
+-- ############################################################ [ft_m_insert_lot_divers] ######################################################################
+
+-- FUNCTION: m_amenagement.ft_m_insert_lot_divers()
+
+-- DROP FUNCTION m_amenagement.ft_m_insert_lot_divers();
+
+CREATE OR REPLACE FUNCTION m_amenagement.ft_m_insert_lot_divers()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$
+
+DECLARE v_idces integer;
+DECLARE v_idgeolf integer;
+DECLARE lot_surf integer;
+
+BEGIN
+
+     v_idgeolf := (SELECT nextval('idgeo_seq'::regclass));
+
+     INSERT INTO r_objet.geo_objet_fon_lot SELECT v_idgeolf,new.op_sai,new.ref_spa,null,'40',new.geom,null,null,new.l_nom_lot;
+
+     INSERT INTO m_amenagement.an_amt_lot_stade SELECT v_idgeolf,
+						 (
+							SELECT DISTINCT
+								idsite 
+							FROM 
+								r_objet.geo_objet_ope
+							WHERE
+								st_intersects(geo_objet_ope.geom,ST_PointOnSurface(new.geom)) = true
+								
+						  ),
+						  new.stade_amng,
+						  new.l_amng2,
+						  new.stade_comm,
+						  new.l_comm2,
+						  new.l_comm2_12,
+						  new.etat_occup;
+
+     lot_surf:=round(cast(st_area(new.geom) as numeric),0);
+
+    -- insertion des lots uniquements mixte 
+    -- recherche si le lot dessiner est dans un site : si oui copie une ligne dans le métier site et foncier, si non copie uniquement dans le métier foncier
+    
+
+						INSERT INTO m_amenagement.an_amt_lot_divers SELECT v_idgeolf,
+							(
+							SELECT DISTINCT
+								idsite 
+							FROM 
+								r_objet.geo_objet_ope
+							WHERE
+								st_intersects(geo_objet_ope.geom,new.geom) = true
+								
+							),-- recherche auto de l'IDSITE
+							new.op_sai,
+							new.org_sai,
+							new.l_nom,
+							lot_surf,
+							now(),
+							null,
+							new.l_phase,
+							CASE WHEN length(cast (lot_surf as character varying)) >= 1 and length(cast (lot_surf as character varying)) <= 3 THEN lot_surf || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 4 THEN replace(to_char(lot_surf,'FM9G999'),',',' ') || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 5 THEN replace(to_char(lot_surf,'FM99G999'),',',' ') || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 6 THEN replace(to_char(lot_surf,'FM999G999'),',',' ') || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 7 THEN replace(to_char(lot_surf,'FM9G999G999'),',',' ') || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 8 THEN replace(to_char(lot_surf,'FM99G999G999'),',',' ') || 'm²'
+								   END
+							;
+					  			 			
+     
+     
+
+     -- calcul de l'identifiant du dossier de cession
+     v_idces := (SELECT nextval('m_foncier.ces_seq'::regclass));
+
+     -- insertion de tous lots fonciers dans la table métier foncier
+     INSERT INTO m_foncier.lk_cession_lot SELECT v_idgeolf, v_idces;	
+
+
+     -- insertion d'une ligne dans an_cession en créant un idces qui est lui même réinjecté dans lk_cession_lot
+
+     /* ATTENTION : LEUR DE LA MISE EN PRODUCTION REMETTRE DANS L'ORDRE LES CHAMPS SUIVANTS IDCES, L_COMPO, L_OBSERV ==> cd table an_cession pour vérification */
+     
+     INSERT INTO m_foncier.an_cession VALUES 	(
+						v_idces, -- idces
+						'10',
+						false, -- relation
+						'00',
+						'00',
+						null,
+						null,
+						null,
+						(SELECT insee FROM r_osm.geo_osm_commune WHERE st_intersects(st_pointonsurface(new.geom),geom)),
+						null,
+						'00',
+						null,
+						null,
+						null,
+						null,
+						null,
+						null,
+						null,
+						null,
+						'00',
+						'00',
+						null,
+						null,
+						'00',
+						null,
+						null,
+						null,
+						false,
+						false,
+						false,
+						false,
+						false,
+						null,
+						null,
+						null,
+						false,
+						false,
+						false,
+						null,
+						null,
+						null,
+						null,
+						null,
+						(SELECT DISTINCT
+								idsite 
+							FROM 
+								r_objet.geo_objet_ope
+							WHERE
+								st_intersects(geo_objet_ope.geom,st_pointonsurface(new.geom)) = true
+								
+							),
+							null
+						);
+
+     return new ;
+
+END;
+
+$BODY$;
+
+ALTER FUNCTION m_amenagement.ft_m_insert_lot_divers()
+    OWNER TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_amenagement.ft_m_insert_lot_divers() TO PUBLIC;
+
+GRANT EXECUTE ON FUNCTION m_amenagement.ft_m_insert_lot_divers() TO create_sig;
+
+COMMENT ON FUNCTION m_amenagement.ft_m_insert_lot_divers()
+    IS 'Fonction gérant l''insertion des données liées aux lots à vocation divers lors de l''insertion de l''objet';
+
+
+-- ############################################################ [ft_m_modif_lot_divers] ######################################################################
+
+-- FUNCTION: m_amenagement.ft_m_modif_lot_divers()
+
+-- DROP FUNCTION m_amenagement.ft_m_modif_lot_divers();
+
+CREATE OR REPLACE FUNCTION m_amenagement.ft_m_modif_lot_divers()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$
+
+DECLARE DECLARE lot_surf integer;
+
+BEGIN
+
+--calcul de la surface de l'objet
+lot_surf:=round(cast(st_area(new.geom) as numeric),0);
+
+		UPDATE r_objet.geo_objet_fon_lot SET geom = new.geom, date_maj = now(), src_geom = new.ref_spa, op_sai=new.op_sai,l_nom = new.l_nom_lot WHERE idgeolf = new.idgeolf;
+
+	        UPDATE m_amenagement.an_amt_lot_stade SET stade_amng = new.stade_amng, l_amng2 = new.l_amng2, stade_comm = new.stade_comm, l_comm2 = new.l_comm2, l_comm2_12 = new.l_comm2_12, etat_occup =  new.etat_occup WHERE idgeolf = new.idgeolf;
+
+		UPDATE m_amenagement.an_amt_lot_divers SET
+
+							surf = new.surf,
+							l_surf_l = 
+								   CASE WHEN length(cast (new.surf as character varying)) >= 1 and length(cast (new.surf as character varying)) <= 3 THEN new.surf || 'm²'
+								   WHEN length(cast (new.surf as character varying)) = 4 THEN replace(to_char(new.surf,'FM9G999'),',',' ') || 'm²'
+								   WHEN length(cast (new.surf as character varying)) = 5 THEN replace(to_char(new.surf,'FM99G999'),',',' ') || 'm²'
+								   WHEN length(cast (new.surf as character varying)) = 6 THEN replace(to_char(new.surf,'FM999G999'),',',' ') || 'm²'
+								   WHEN length(cast (new.surf as character varying)) = 7 THEN replace(to_char(new.surf,'FM9G999G999'),',',' ') || 'm²'
+								   WHEN length(cast (new.surf as character varying)) = 8 THEN replace(to_char(new.surf,'FM99G999G999'),',',' ') || 'm²'
+								   END,
+							op_sai = new.op_sai,
+							org_sai = new.org_sai,
+							l_nom = new.l_nom,
+							date_maj = now(),
+							l_phase = new.l_phase
+		WHERE an_amt_lot_divers.idgeolf=new.idgeolf;
+
+     return new;
+END
+$BODY$;
+
+ALTER FUNCTION m_amenagement.ft_m_modif_lot_divers()
+    OWNER TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_amenagement.ft_m_modif_lot_divers() TO PUBLIC;
+
+GRANT EXECUTE ON FUNCTION m_amenagement.ft_m_modif_lot_divers() TO create_sig;
+
+COMMENT ON FUNCTION m_amenagement.ft_m_modif_lot_divers()
+    IS 'Fonction gérant la mise à jour des données liées aux lots à vocation divers lors de la mise à jour de l''objet';
+
+
+-- ############################################################ [ft_m_delete_lot_esppu] ######################################################################
+
+-- FUNCTION: m_amenagement.ft_m_delete_lot_esppu()
+
+-- DROP FUNCTION m_amenagement.ft_m_delete_lot_esppu();
+
+CREATE OR REPLACE FUNCTION m_amenagement.ft_m_delete_lot_esppu()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$
+
+
+BEGIN
+
+    DELETE FROM m_foncier.an_cession WHERE idces=(SELECT lf.idces FROM m_foncier.an_cession f, m_foncier.lk_cession_lot lf WHERE f.idces=lf.idces AND lf.idgeolf=old.idgeolf);
+    DELETE FROM m_foncier.lk_cession_lot WHERE idgeolf=old.idgeolf;
+    DELETE FROM m_amenagement.an_amt_lot_stade WHERE idgeolf=old.idgeolf;
+    DELETE FROM r_objet.geo_objet_fon_lot WHERE idgeolf=old.idgeolf;
+    return new ;
+
+END;
+
+$BODY$;
+
+ALTER FUNCTION m_amenagement.ft_m_delete_lot_esppu()
+    OWNER TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_amenagement.ft_m_delete_lot_esppu() TO PUBLIC;
+
+GRANT EXECUTE ON FUNCTION m_amenagement.ft_m_delete_lot_esppu() TO create_sig;
+
+COMMENT ON FUNCTION m_amenagement.ft_m_delete_lot_esppu()
+    IS 'Fonction gérant la suppression des données liées aux lots à vocation espace public lors de la suppression de l''objet';
+
+-- ############################################################ [ft_m_insert_lot_esppu] ######################################################################
+
+-- FUNCTION: m_amenagement.ft_m_insert_lot_esppu()
+
+-- DROP FUNCTION m_amenagement.ft_m_insert_lot_esppu();
+
+CREATE OR REPLACE FUNCTION m_amenagement.ft_m_insert_lot_esppu()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$
+
+DECLARE v_idces integer;
+DECLARE v_idgeolf integer;
+DECLARE lot_surf integer;
+
+BEGIN
+
+     v_idgeolf := (SELECT nextval('idgeo_seq'::regclass));
+
+     INSERT INTO r_objet.geo_objet_fon_lot SELECT v_idgeolf,new.op_sai,new.ref_spa,null,'50',new.geom,null,null,new.l_nom_lot;
+
+     INSERT INTO m_amenagement.an_amt_lot_stade SELECT v_idgeolf,
+						 (
+							SELECT DISTINCT
+								idsite 
+							FROM 
+								r_objet.geo_objet_ope
+							WHERE
+								st_intersects(geo_objet_ope.geom,ST_PointOnSurface(new.geom)) = true
+								
+						  ),
+						  new.stade_amng,
+						  new.l_amng2,
+						  new.stade_comm,
+						  new.l_comm2,
+						  new.l_comm2_12,
+						  new.etat_occup;
+
+     
+     -- calcul de l'identifiant du dossier de cession
+     v_idces := (SELECT nextval('m_foncier.ces_seq'::regclass));
+
+     -- insertion de tous lots fonciers dans la table métier foncier
+     INSERT INTO m_foncier.lk_cession_lot SELECT v_idgeolf, v_idces;	
+
+
+     -- insertion d'une ligne dans an_cession en créant un idces qui est lui même réinjecté dans lk_cession_lot
+
+     /* ATTENTION : LEUR DE LA MISE EN PRODUCTION REMETTRE DANS L'ORDRE LES CHAMPS SUIVANTS IDCES, L_COMPO, L_OBSERV ==> cd table an_cession pour vérification */
+     
+     INSERT INTO m_foncier.an_cession VALUES 	(
+						v_idces, -- idces
+						'10',
+						false, -- relation
+						'00',
+						'00',
+						null,
+						null,
+						null,
+						(SELECT insee FROM r_osm.geo_osm_commune WHERE st_intersects(st_pointonsurface(new.geom),geom)),
+						null,
+						'00',
+						null,
+						null,
+						null,
+						null,
+						null,
+						null,
+						null,
+						null,
+						'00',
+						'00',
+						null,
+						null,
+						'00',
+						null,
+						null,
+						null,
+						false,
+						false,
+						false,
+						false,
+						false,
+						null,
+						null,
+						null,
+						false,
+						false,
+						false,
+						null,
+						null,
+						null,
+						null,
+						null,
+						(SELECT DISTINCT
+								idsite 
+							FROM 
+								r_objet.geo_objet_ope
+							WHERE
+								st_intersects(geo_objet_ope.geom,st_pointonsurface(new.geom)) = true
+								
+							),
+							null
+						);
+
+     return new ;
+
+END;
+
+$BODY$;
+
+ALTER FUNCTION m_amenagement.ft_m_insert_lot_esppu()
+    OWNER TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_amenagement.ft_m_insert_lot_esppu() TO PUBLIC;
+
+GRANT EXECUTE ON FUNCTION m_amenagement.ft_m_insert_lot_esppu() TO create_sig;
+
+COMMENT ON FUNCTION m_amenagement.ft_m_insert_lot_esppu()
+    IS 'Fonction gérant l''insertion des données liées aux lots à vocation espace public lors de l''insertion de l''objet';
+
+-- ############################################################ [ft_m_modif_lot_esppu] ######################################################################
+
+-- FUNCTION: m_amenagement.ft_m_modif_lot_esppu()
+
+-- DROP FUNCTION m_amenagement.ft_m_modif_lot_esppu();
+
+CREATE OR REPLACE FUNCTION m_amenagement.ft_m_modif_lot_esppu()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$
+
+BEGIN
+
+		UPDATE r_objet.geo_objet_fon_lot SET geom = new.geom, date_maj = now(), src_geom = new.ref_spa, op_sai=new.op_sai,l_nom=new.l_nom_lot WHERE idgeolf = new.idgeolf;
+
+	        UPDATE m_amenagement.an_amt_lot_stade SET stade_amng = new.stade_amng, l_amng2 = new.l_amng2, stade_comm = new.stade_comm, l_comm2 = new.l_comm2, l_comm2_12 = new.l_comm2_12, etat_occup =  new.etat_occup WHERE idgeolf = new.idgeolf;
+
+		
+
+     return new;
+END
+$BODY$;
+
+ALTER FUNCTION m_amenagement.ft_m_modif_lot_esppu()
+    OWNER TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_amenagement.ft_m_modif_lot_esppu() TO PUBLIC;
+
+GRANT EXECUTE ON FUNCTION m_amenagement.ft_m_modif_lot_esppu() TO create_sig;
+
+COMMENT ON FUNCTION m_amenagement.ft_m_modif_lot_esppu()
+    IS 'Fonction gérant la mise à jour des données liées aux lots à vocation espace public lors de la mise à jour de l''objet';
+
 
 -- ####################################################################################################################################################
 -- ###                                                                                                                                              ###
@@ -11116,6 +11560,7 @@ CREATE OR REPLACE VIEW m_activite_eco.geo_v_eco_lot
     f.pc_mo,
     f.oripro,
     f.descrip,
+    f.insee,
     f.commune,
     o.geom,
     false AS maj_plan
@@ -11469,6 +11914,123 @@ CREATE TRIGGER t_t3_modif_lot_mixte
     ON m_amenagement.geo_v_lot_mixte
     FOR EACH ROW
     EXECUTE PROCEDURE m_amenagement.ft_m_modif_lot_mixte();
+
+-- ############################################################### [geo_v_lot_divers] ######################################################################
+
+-- View: m_amenagement.geo_v_lot_divers
+
+-- DROP VIEW m_amenagement.geo_v_lot_divers;
+
+CREATE OR REPLACE VIEW m_amenagement.geo_v_lot_divers
+ AS
+ SELECT o.idgeolf,
+    s.stade_amng,
+    s.l_amng2,
+    s.stade_comm,
+    s.l_comm2,
+    s.l_comm2_12,
+    s.etat_occup,
+    d.date_sai,
+    d.date_maj,
+    d.op_sai,
+    d.org_sai,
+    o.src_geom AS ref_spa,
+    d.surf,
+    d.l_surf_l,
+    o.l_voca,
+    d.l_nom,
+    o.l_nom AS l_nom_lot,
+    d.l_phase,
+    o.geom
+   FROM r_objet.geo_objet_fon_lot o,
+    m_amenagement.an_amt_lot_divers d,
+    m_amenagement.an_amt_lot_stade s
+  WHERE d.idgeolf = o.idgeolf AND o.l_voca::text = '40'::text AND o.idgeolf = s.idgeolf;
+
+ALTER TABLE m_amenagement.geo_v_lot_divers
+    OWNER TO create_sig;
+COMMENT ON VIEW m_amenagement.geo_v_lot_divers
+    IS 'Vue éditable géographique des lots à vocation divers';
+
+GRANT ALL ON TABLE m_amenagement.geo_v_lot_divers TO sig_create;
+GRANT SELECT ON TABLE m_amenagement.geo_v_lot_divers TO sig_read;
+GRANT ALL ON TABLE m_amenagement.geo_v_lot_divers TO create_sig;
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_amenagement.geo_v_lot_divers TO sig_edit;
+
+CREATE TRIGGER t_t1_delete_lot_divers
+    INSTEAD OF DELETE
+    ON m_amenagement.geo_v_lot_divers
+    FOR EACH ROW
+    EXECUTE PROCEDURE m_amenagement.ft_m_delete_lot_divers();
+
+
+CREATE TRIGGER t_t2_insert_lot_divers
+    INSTEAD OF INSERT
+    ON m_amenagement.geo_v_lot_divers
+    FOR EACH ROW
+    EXECUTE PROCEDURE m_amenagement.ft_m_insert_lot_divers();
+
+
+CREATE TRIGGER t_t3_modif_lot_divers
+    INSTEAD OF UPDATE 
+    ON m_amenagement.geo_v_lot_divers
+    FOR EACH ROW
+    EXECUTE PROCEDURE m_amenagement.ft_m_modif_lot_divers();
+
+-- ############################################################### [geo_v_lot_esppu] ######################################################################
+
+
+-- View: m_amenagement.geo_v_lot_esppu
+
+-- DROP VIEW m_amenagement.geo_v_lot_esppu;
+
+CREATE OR REPLACE VIEW m_amenagement.geo_v_lot_esppu
+ AS
+ SELECT o.idgeolf,
+    s.stade_amng,
+    s.l_amng2,
+    s.stade_comm,
+    s.l_comm2,
+    s.l_comm2_12,
+    s.etat_occup,
+    o.src_geom AS ref_spa,
+    o.op_sai,
+    o.l_voca,
+    o.l_nom AS l_nom_lot,
+    o.geom
+   FROM r_objet.geo_objet_fon_lot o,
+    m_amenagement.an_amt_lot_stade s
+  WHERE o.idgeolf = s.idgeolf AND o.l_voca::text = '50'::text;
+
+ALTER TABLE m_amenagement.geo_v_lot_esppu
+    OWNER TO create_sig;
+COMMENT ON VIEW m_amenagement.geo_v_lot_esppu
+    IS 'Vue éditable géographique des lots dont la vocation est un espace public';
+
+GRANT ALL ON TABLE m_amenagement.geo_v_lot_esppu TO sig_create;
+GRANT SELECT ON TABLE m_amenagement.geo_v_lot_esppu TO sig_read;
+GRANT ALL ON TABLE m_amenagement.geo_v_lot_esppu TO create_sig;
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_amenagement.geo_v_lot_esppu TO sig_edit;
+
+CREATE TRIGGER t_t1_delete_lot_esppu
+    INSTEAD OF DELETE
+    ON m_amenagement.geo_v_lot_esppu
+    FOR EACH ROW
+    EXECUTE PROCEDURE m_amenagement.ft_m_delete_lot_esppu();
+
+
+CREATE TRIGGER t_t2_insert_lot_esppu
+    INSTEAD OF INSERT
+    ON m_amenagement.geo_v_lot_esppu
+    FOR EACH ROW
+    EXECUTE PROCEDURE m_amenagement.ft_m_insert_lot_esppu();
+
+
+CREATE TRIGGER t_t3_modif_lot_esppu
+    INSTEAD OF UPDATE 
+    ON m_amenagement.geo_v_lot_esppu
+    FOR EACH ROW
+    EXECUTE PROCEDURE m_amenagement.ft_m_modif_lot_esppu();
 
 
 
