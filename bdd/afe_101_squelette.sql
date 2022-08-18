@@ -6403,6 +6403,7 @@ CREATE TABLE m_activite_eco.an_eco_contact
     epci character varying(10) COLLATE pg_catalog."default",
     observ character varying(1000) COLLATE pg_catalog."default",  
     idobjet character varying(10) COLLATE pg_catalog."default",
+    idevenmt integer,
     CONSTRAINT an_eco_contact_pkey PRIMARY KEY (idcontact),
     CONSTRAINT lt_eco_typcontact_fkey FOREIGN KEY (typcontact)
         REFERENCES m_activite_eco.lt_eco_typcontact (code) MATCH SIMPLE
@@ -6430,6 +6431,9 @@ COMMENT ON TABLE m_activite_eco.an_eco_contact
 
 COMMENT ON COLUMN m_activite_eco.an_eco_contact.idcontact
     IS 'Identifiant unique non signifiant du contact';
+    
+    COMMENT ON COLUMN m_activite_eco.an_eco_contact.idevenmt
+    IS 'Identifiant unique non signifiant de l''évènement (en attente résolution pb relation N..M dans Geo';
 
 
 COMMENT ON COLUMN m_activite_eco.an_eco_contact.nom
@@ -8010,6 +8014,7 @@ CREATE TABLE m_urbanisme_reg.geo_proced
     date_maj timestamp without time zone,
     epci character varying(10) COLLATE pg_catalog."default",
     observ character varying(1000) COLLATE pg_catalog."default",
+    geom geometry(MultiPolygon,2154),
     CONSTRAINT geo_proced_pkey PRIMARY KEY (idproc),
     CONSTRAINT geo_proced_consotype_fkey FOREIGN KEY (conso_type)
         REFERENCES m_urbanisme_reg.lt_proc_typconso (code) MATCH SIMPLE
@@ -8142,6 +8147,10 @@ COMMENT ON COLUMN m_urbanisme_reg.geo_proced.epci
 
 COMMENT ON COLUMN m_urbanisme_reg.geo_proced.observ
     IS 'Observations diverses';
+    
+    
+COMMENT ON COLUMN m_urbanisme_reg.geo_proced.geom
+    IS 'Géométrie des objets';
 
 
     
