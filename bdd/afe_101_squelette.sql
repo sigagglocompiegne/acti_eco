@@ -7095,7 +7095,7 @@ COMMENT ON COLUMN m_activite_eco.an_eco_patri_media.gid
 CREATE TABLE m_activite_eco.an_eco_evenmt_media
 (
     gid integer NOT NULL DEFAULT nextval('m_activite_eco.an_eco_evenmt_media_seq'::regclass),
-    id text COLLATE pg_catalog."default",
+    id integer,
     media text COLLATE pg_catalog."default",
     miniature bytea,
     n_fichier text COLLATE pg_catalog."default",
