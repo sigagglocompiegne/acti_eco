@@ -6479,6 +6479,7 @@ COMMENT ON COLUMN m_activite_eco.an_eco_contact.observ
 CREATE TABLE m_activite_eco.an_eco_evenmt
 (
     idevenmt integer NOT NULL DEFAULT nextval('m_activite_eco.an_eco_evenmt_seq'::regclass),
+    idobjet character varying(10)  COLLATE pg_catalog."default",
     libelle character varying(254) COLLATE pg_catalog."default",
     typevenmt character varying(2) COLLATE pg_catalog."default",
     motif character varying(254) COLLATE pg_catalog."default",
@@ -6517,6 +6518,9 @@ COMMENT ON TABLE m_activite_eco.an_eco_evenmt
 COMMENT ON COLUMN m_activite_eco.an_eco_evenmt.idevenmt
     IS 'Identifiant unique non signifiant du contact';
 
+
+COMMENT ON COLUMN m_activite_eco.an_eco_evenmt.idobjet
+    IS 'Identifiant de l''objet lié';
 
 COMMENT ON COLUMN m_activite_eco.an_eco_evenmt.libelle
     IS 'Libellé de l''éveènement';
