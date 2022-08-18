@@ -6030,8 +6030,8 @@ CREATE TABLE m_activite_eco.geo_eco_site
     serv_tc boolean DEFAULT false,
     serv_tc_g boolean DEFAULT false,	
     circ_douce boolean DEFAULT false,
-    serv_rest integer,
-    serv_crech integer,
+    serv_rest boolean DEFAULT false,
+    serv_crech boolean DEFAULT false,
     serv_autre character varying(1000) COLLATE pg_catalog."default",
     z_aide_pb boolean DEFAULT false,
     src_geom character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
@@ -6401,7 +6401,8 @@ CREATE TABLE m_activite_eco.an_eco_contact
     date_maj timestamp without time zone,
     op_sai character varying(80) COLLATE pg_catalog."default",
     epci character varying(10) COLLATE pg_catalog."default",
-    observ character varying(1000) COLLATE pg_catalog."default",
+    observ character varying(1000) COLLATE pg_catalog."default",  
+    idobjet character varying(10) COLLATE pg_catalog."default",
     CONSTRAINT an_eco_contact_pkey PRIMARY KEY (idcontact),
     CONSTRAINT lt_eco_typcontact_fkey FOREIGN KEY (typcontact)
         REFERENCES m_activite_eco.lt_eco_typcontact (code) MATCH SIMPLE
@@ -6465,6 +6466,9 @@ COMMENT ON COLUMN m_activite_eco.an_eco_contact.epci
 
 COMMENT ON COLUMN m_activite_eco.an_eco_contact.observ
     IS 'Observations diverses';
+    
+    COMMENT ON COLUMN m_activite_eco.an_eco_contact.idobjet
+    IS 'Clé temporaire pour la relation direct dans GEO en attendant la correction sur les relations N..M';
     
 -- ############################################################## [an_eco_evenmt] ##################################################################
 
