@@ -421,7 +421,6 @@ Particularité(s) à noter :
 |Nom attribut | Définition | Type | Valeurs par défaut |
 |:---|:---|:---|:---|
 |idgeolf|Identifiant unique de l'entité géographique lot|integer| |
-|lidgeolf|Identifiant unique de l'entité géographique lot accolé d'ujne lettre pour gestion commune des médias|integer| |
 |surf|Surface parcellaire occupée du lot|integer| |
 |surf_l|Surface littérale parcellaire occupée du lot|character varying(15)| |
 |date_int|Date renseignée par GéoPicardie lors de l'intégration (correspond aux dernières données reçues)|date| |
