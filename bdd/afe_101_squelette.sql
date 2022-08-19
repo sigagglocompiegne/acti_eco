@@ -10371,7 +10371,7 @@ CREATE TRIGGER t_t2_an_cession_date_maj
 CREATE TABLE m_foncier.an_fon_cession_horsarc_media
 (
     gid integer NOT NULL DEFAULT nextval('m_foncier.an_fon_cession_horsarc_media_seq'::regclass),
-    id character varying(10) COLLATE pg_catalog."default",
+    id integer,
     media text COLLATE pg_catalog."default",
     miniature bytea,
     n_fichier text COLLATE pg_catalog."default",
