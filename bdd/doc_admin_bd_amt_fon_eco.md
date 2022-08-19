@@ -479,6 +479,7 @@ Particularité(s) à noter :
 |t_doc|Titre du document ou légère description|character varying(100)| |
 |d_photo|Date de la prise de vue|timestamp without time zone| |
 |alaune|Média poussé à la une de l'annonce immobilière|boolean|false|
+|alaunesite|Média poussé à la une de la fiche de présentation du site|boolean|false|
 
 
 Particularité(s) à noter :
