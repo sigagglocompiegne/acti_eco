@@ -11518,6 +11518,7 @@ COMMENT ON COLUMN s_sirene.lk_sirene_succession.datedtrait
 CREATE OR REPLACE VIEW m_activite_eco.geo_v_eco_lot
  AS
  SELECT o.idgeolf,
+    f.lidgeolf,
     o.op_sai,
     o.src_geom AS ref_spa,
     o.sup_m2,
