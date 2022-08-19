@@ -11567,7 +11567,7 @@ CREATE OR REPLACE VIEW m_activite_eco.geo_v_eco_lot
    FROM m_activite_eco.an_eco_lot f,
     r_objet.geo_objet_fon_lot o,
     m_amenagement.an_amt_lot_stade s
-  WHERE o.l_voca::text = '20'::text AND f.idgeolf = o.idgeolf;
+  WHERE o.l_voca::text = '20'::text AND f.idgeolf = o.idgeolf AND o.idgeolf = s.idgeolf;
 
 ALTER TABLE m_activite_eco.geo_v_eco_lot
     OWNER TO create_sig;
