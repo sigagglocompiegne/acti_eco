@@ -10145,7 +10145,6 @@ CREATE TABLE m_foncier.an_cession
     l_mfrais_g_ttc double precision,
     l_mfrais_n_ttc double precision,
     l_mfrais_a_ttc double precision,
-    idsite character varying(10) COLLATE pg_catalog."default",
     idces_d character varying(10) COLLATE pg_catalog."default",
     d_delib_4 date,
     date_sai timestamp without time zone,
@@ -10326,8 +10325,7 @@ COMMENT ON COLUMN m_foncier.an_cession.l_mfrais_n_ttc
 COMMENT ON COLUMN m_foncier.an_cession.l_mfrais_a_ttc
     IS 'Montant des autres frais (agence, ...)';
 
-COMMENT ON COLUMN m_foncier.an_cession.idsite
-    IS 'Identifiant du site';
+
 
 COMMENT ON COLUMN m_foncier.an_cession.idces_d
     IS 'Ancien numéro de cession DynMap';
