@@ -10453,8 +10453,9 @@ CREATE TRIGGER t_t1_an_fon_doc_media_insert_date_sai
 
 CREATE TABLE m_foncier.an_fon_cession_horsarc
 (
-    gid integer NOT NULL DEFAULT nextval('m_foncier.an_fon_cession_horsarc_seq'::regclass)
-
+ gid integer NOT NULL DEFAULT nextval('m_foncier.an_fon_cession_horsarc_seq'::regclass),
+    idgeolf integer NOT NULL,
+    CONSTRAINT an_fon_cession_horsarc_pkey PRIMARY KEY (gid)
 )
 WITH (
     OIDS = FALSE
