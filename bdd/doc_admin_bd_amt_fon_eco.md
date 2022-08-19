@@ -1650,7 +1650,6 @@ L'ensemble des classes d'objets de gestion sont stockés dans le schéma `m_fonc
 |l_mfrais_g_ttc|Montant des frais de géomètre TTC|double precision| |
 |l_mfrais_n_ttc|Montant des frais de notaires ttc|double precision| |
 |l_mfrais_a_ttc|Montant des autres frais (agence, ...)|double precision| |
-|idsite|Identifiant du site|character varying(10)| |
 |idces_d|Ancien numéro de cession DynMap|character varying(10)| |
 |d_delib_4|Date de la délibération de l'organisme cédant 4|date| |
 |date_sai|Date de saisie|timestamp without time zone| |
