@@ -21,6 +21,7 @@ DROP VIEW IF EXISTS m_amenagement.geo_v_empesp_pu;
 DROP TABLE IF EXISTS  m_activite_eco.an_eco_pole;
 DROP TABLE IF EXISTS  m_activite_eco.geo_eco_site;
 DROP TABLE IF EXISTS m_activite_eco.an_eco_media;
+DROP TABLE IF EXISTS m_activite_eco.an_eco_lot_media;
 DROP TABLE IF EXISTS m_urbanisme_reg.an_proc_media;
 DROP TABLE IF EXISTS m_activite_eco.an_eco_contact CASCADE;
 DROP TABLE IF EXISTS m_activite_eco.an_eco_evenmt;
@@ -6830,6 +6831,93 @@ COMMENT ON COLUMN m_activite_eco.an_eco_media.d_photo
 COMMENT ON COLUMN m_activite_eco.an_eco_media.alaune
     IS 'Média poussé à la une de l''annonce immobilière';
 	COMMENT ON COLUMN m_activite_eco.an_eco_media.alaunesite
+    IS 'Média poussé à la une de la fiche de présentation du site';
+    
+
+-- ############################################################## [an_eco_lot_media] ##################################################################
+
+-- Table: m_activite_eco.an_eco_lot_media
+
+-- DROP TABLE m_activite_eco.an_eco_lot_media;
+
+CREATE TABLE m_activite_eco.an_eco_lot_media
+(
+    gid integer NOT NULL DEFAULT nextval('m_activite_eco.an_eco_media_seq'::regclass),
+    id integer COLLATE pg_catalog."default",
+    media text COLLATE pg_catalog."default",
+    miniature bytea,
+    n_fichier text COLLATE pg_catalog."default",
+    t_fichier text COLLATE pg_catalog."default",
+    op_sai character varying(20) COLLATE pg_catalog."default",
+    date_sai timestamp without time zone,
+    l_doc character varying(100) COLLATE pg_catalog."default",
+    t_doc character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
+    d_photo timestamp without time zone,
+    alaune boolean NOT NULL DEFAULT false,
+	alaunesite boolean NOT NULL DEFAULT false,
+    CONSTRAINT an_eco_media_pkey PRIMARY KEY (gid),
+    CONSTRAINT an_eco_media_t_doc_fkey FOREIGN KEY (t_doc)
+        REFERENCES m_activite_eco.lt_eco_tdocmedia (code) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE m_activite_eco.an_eco_lot_media
+    OWNER to create_sig;
+
+GRANT ALL ON TABLE m_activite_eco.an_eco_lot_media TO sig_create;
+
+GRANT ALL ON TABLE m_activite_eco.an_eco_lot_media TO create_sig;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_activite_eco.an_eco_lot_media TO sig_edit;
+
+GRANT ALL ON TABLE m_activite_eco.an_eco_lot_media TO sig_stage WITH GRANT OPTION;
+
+GRANT SELECT ON TABLE m_activite_eco.an_eco_lot_media TO sig_read;
+
+COMMENT ON TABLE m_activite_eco.an_eco_lot_media
+    IS 'Table gérant les documents intégrés pour la gestion des données des sites, lots et locaux et bâtiments d''activité';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_lot_media.gid
+    IS 'Compteur (identifiant interne)';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_lot_media.id
+    IS 'Identifiant interne non signifiant de l''objet saisi';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_lot_media.media
+    IS 'Champ Média de GEO';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_lot_media.miniature
+    IS 'Champ miniature de GEO';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_lot_media.n_fichier
+    IS 'Nom du fichier';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_lot_media.t_fichier
+    IS 'Type de média dans GEO';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_lot_media.op_sai
+    IS 'Opérateur de saisie (par défaut login de connexion à GEO)';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_lot_media.date_sai
+    IS 'Date de la saisie du document';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_lot_media.l_doc
+    IS 'Titre du document ou légère description';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_lot_media.t_doc
+    IS 'Type de documents';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_lot_media.d_photo
+    IS 'Date de la prise de vue';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_lot_media.alaune
+    IS 'Média poussé à la une de l''annonce immobilière';
+	COMMENT ON COLUMN m_activite_eco.an_eco_lot_media.alaunesite
     IS 'Média poussé à la une de la fiche de présentation du site';
 
 -- ############################################################## [an_eco_contact] ##################################################################
