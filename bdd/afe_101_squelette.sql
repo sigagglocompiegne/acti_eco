@@ -6763,14 +6763,15 @@ CREATE TABLE m_activite_eco.an_eco_media
     op_sai character varying(20) COLLATE pg_catalog."default",
     date_sai timestamp without time zone,
     l_doc character varying(100) COLLATE pg_catalog."default",
-    t_doc character varying(2) COLLATE pg_catalog."default" DEFAULT '00',	
-    d_photo timestamp without time zone,	
+    t_doc character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
+    d_photo timestamp without time zone,
     alaune boolean NOT NULL DEFAULT false,
+	alaunesite boolean NOT NULL DEFAULT false,
     CONSTRAINT an_eco_media_pkey PRIMARY KEY (gid),
     CONSTRAINT an_eco_media_t_doc_fkey FOREIGN KEY (t_doc)
-    REFERENCES m_activite_eco.lt_eco_tdocmedia (code) MATCH SIMPLE
-    ON UPDATE NO ACTION
-    ON DELETE NO ACTION
+        REFERENCES m_activite_eco.lt_eco_tdocmedia (code) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
 )
 WITH (
     OIDS = FALSE
@@ -6782,14 +6783,19 @@ ALTER TABLE m_activite_eco.an_eco_media
 
 GRANT ALL ON TABLE m_activite_eco.an_eco_media TO sig_create;
 
-GRANT SELECT ON TABLE m_activite_eco.an_eco_media TO sig_read;
-
 GRANT ALL ON TABLE m_activite_eco.an_eco_media TO create_sig;
 
 GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_activite_eco.an_eco_media TO sig_edit;
 
+GRANT ALL ON TABLE m_activite_eco.an_eco_media TO sig_stage WITH GRANT OPTION;
+
+GRANT SELECT ON TABLE m_activite_eco.an_eco_media TO sig_read;
+
 COMMENT ON TABLE m_activite_eco.an_eco_media
     IS 'Table gérant les documents intégrés pour la gestion des données des sites, lots et locaux et bâtiments d''activité';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_media.gid
+    IS 'Compteur (identifiant interne)';
 
 COMMENT ON COLUMN m_activite_eco.an_eco_media.id
     IS 'Identifiant interne non signifiant de l''objet saisi';
@@ -6814,8 +6820,8 @@ COMMENT ON COLUMN m_activite_eco.an_eco_media.date_sai
 
 COMMENT ON COLUMN m_activite_eco.an_eco_media.l_doc
     IS 'Titre du document ou légère description';
-    
-    COMMENT ON COLUMN m_activite_eco.an_eco_media.t_doc
+
+COMMENT ON COLUMN m_activite_eco.an_eco_media.t_doc
     IS 'Type de documents';
 
 COMMENT ON COLUMN m_activite_eco.an_eco_media.d_photo
@@ -6823,9 +6829,8 @@ COMMENT ON COLUMN m_activite_eco.an_eco_media.d_photo
 
 COMMENT ON COLUMN m_activite_eco.an_eco_media.alaune
     IS 'Média poussé à la une de l''annonce immobilière';
-
-COMMENT ON COLUMN m_activite_eco.an_eco_media.gid
-    IS 'Compteur (identifiant interne)';
+	COMMENT ON COLUMN m_activite_eco.an_eco_media.alaunesite
+    IS 'Média poussé à la une de la fiche de présentation du site';
 
 -- ############################################################## [an_eco_contact] ##################################################################
 
