@@ -146,6 +146,7 @@ DROP SEQUENCE IF EXISTS m_amenagement.an_amt_proc_media_seq;
 DROP SEQUENCE IF EXISTS s_sirene.lk_sirene_succession_seq;
 DROP SEQUENCE IF EXISTS s_sirene.an_etablissement_api_gid_seq;
 DROP SEQUENCE IF EXISTS s_sirene.an_unitelegale_api_gid_seq;
+DROP SEQUENCE IF EXISTS r_objet.idgeo_seq;
 
 
 /* TRIGGERS */
@@ -955,6 +956,31 @@ ALTER SEQUENCE s_sirene.an_unitelegale_api_gid_seq
 GRANT ALL ON SEQUENCE s_sirene.an_unitelegale_api_gid_seq TO PUBLIC;
 
 GRANT ALL ON SEQUENCE s_sirene.an_unitelegale_api_gid_seq TO create_sig;
+
+-- ####################################################################################################################################################
+-- ###                                                               SEQUENCE R_OBJET                                                               ###
+-- ####################################################################################################################################################
+
+
+-- ############################################################## [idgeo_seq] ##################################################################
+
+-- SEQUENCE: r_objet.idgeo_seq
+
+-- DROP SEQUENCE r_objet.idgeo_seq;
+
+CREATE SEQUENCE r_objet.idgeo_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 100000
+    MAXVALUE 99999999999999999
+    CACHE 1;
+
+ALTER SEQUENCE r_objet.idgeo_seq
+    OWNER TO postgres;
+
+GRANT SELECT ON SEQUENCE public.idgeo_seq TO PUBLIC;
+
+GRANT ALL ON SEQUENCE public.idgeo_seq TO postgres;
 
 -- ####################################################################################################################################################
 -- ###                                                                                                                                              ###
