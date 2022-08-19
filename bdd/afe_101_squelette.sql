@@ -7007,6 +7007,7 @@ COMMENT ON COLUMN m_activite_eco.an_eco_evenmt.observ
 CREATE TABLE m_activite_eco.an_eco_lot
 (
     idgeolf integer NOT NULL,
+    lidgeolf text NOT NULL,
     surf integer,
     surf_l character varying(15) COLLATE pg_catalog."default",
     date_int date,
@@ -7067,6 +7068,9 @@ COMMENT ON TABLE m_activite_eco.an_eco_lot
 
 COMMENT ON COLUMN m_activite_eco.an_eco_lot.idgeolf
     IS 'Identifiant unique de l''entité géographique lot';
+    
+    COMMENT ON COLUMN m_activite_eco.an_eco_lot.lidgeolf
+    IS 'Identifiant unique du lot accolé d''une lettre pour une gestion centralisée des documents des objets économiques (Lot, site et locaux)';
 
 
 COMMENT ON COLUMN m_activite_eco.an_eco_lot.surf
