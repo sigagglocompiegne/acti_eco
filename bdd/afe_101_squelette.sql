@@ -15,7 +15,7 @@ DROP VIEW IF EXISTS m_amenagement.geo_v_empesp_pu;
 DROP VIEW IF EXISTS m_amenagement.geo_v_lot_equ;
 DROP VIEW IF EXISTS m_amenagement.geo_v_lot_hab;
 DROP VIEW IF EXISTS m_amenagement.geo_v_lot_mixte;
-DROP VIEW IF EXISTS m_amenagement.geo_v_empesp_pu;
+DROP VIEW IF EXISTS m_amenagement.geo_v_lot_esppu;
 
 /* TABLE */
 DROP TABLE IF EXISTS  m_activite_eco.an_eco_pole;
