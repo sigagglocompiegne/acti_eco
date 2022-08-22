@@ -987,11 +987,19 @@ CREATE OR REPLACE FUNCTION m_activite_eco.ft_m_delete_lot_eco()
     VOLATILE NOT LEAKPROOF
 AS $BODY$
 
-
 BEGIN
 
+    IF (select insee from r_osm.geo_osm_commune where st_intersects(st_pointonsurface(old.geom),geom)) 
+	 IN ('60023','60067','60068','60070','60151','60156','60159','60323','60325','60326','60337','60338','60382','60402','60447',
+		'60447','60578','60579','60597','60600','60665','60667','60674') THEN 
+    
     DELETE FROM m_foncier.an_cession WHERE idces=(SELECT lf.idces FROM m_foncier.an_cession f, m_foncier.lk_cession_lot lf WHERE f.idces=lf.idces AND lf.idgeolf=old.idgeolf);
     DELETE FROM m_foncier.lk_cession_lot WHERE idgeolf=old.idgeolf;
+    ELSE
+	DELETE FROM m_foncier.an_fon_cession_horsarc_media WHERE id = old.idgeolf;
+	
+	END IF;
+    DELETE FROM m_amenagement.lk_amt_lot_site WHERE idgeolf=old.idgeolf;
     DELETE FROM m_activite_eco.an_eco_lot WHERE idgeolf=old.idgeolf;
     DELETE FROM r_objet.geo_objet_fon_lot WHERE idgeolf=old.idgeolf;
     DELETE FROM m_amenagement.an_amt_lot_stade WHERE idgeolf=old.idgeolf;
@@ -1015,11 +1023,11 @@ COMMENT ON FUNCTION m_activite_eco.ft_m_delete_lot_eco()
 -- ##################################################### [m_activite_eco.ft_m_insert_lot_eco] #########################################################
 
 
--- FUNCTION: m_economie.ft_m_insert_lot_eco()
+-- FUNCTION: m_activite_eco.ft_m_insert_lot_eco()
 
--- DROP FUNCTION m_economie.ft_m_insert_lot_eco();
+-- DROP FUNCTION m_activite_eco.ft_m_insert_lot_eco();
 
-CREATE OR REPLACE FUNCTION m_activite_eco.ft_m_insert_lot_eco()
+CREATE  OR REPLACE FUNCTION m_activite_eco.ft_m_insert_lot_eco()
     RETURNS trigger
     LANGUAGE 'plpgsql'
     COST 100
@@ -1029,27 +1037,14 @@ AS $BODY$
 DECLARE v_idces integer;
 DECLARE v_idgeolf integer;
 DECLARE lot_surf integer;
+DECLARE v_idces_horsarc integer;
 
 BEGIN
 
-     v_idgeolf := (SELECT nextval('idgeo_seq'::regclass));
+     v_idgeolf := (SELECT nextval('r_objet.idgeo_seq'::regclass));
 
      INSERT INTO r_objet.geo_objet_fon_lot SELECT v_idgeolf,new.op_sai,new.ref_spa,null,'20',new.geom,now(),null,new.l_nom;
      INSERT INTO m_amenagement.an_amt_lot_stade SELECT v_idgeolf,
-                                                 CASE WHEN new.idsite IS NULL or new.idsite = '' THEN
-						 (
-							SELECT DISTINCT
-								idsite 
-							FROM 
-								r_objet.geo_objet_ope
-							WHERE
-								st_intersects(geo_objet_ope.geom,ST_PointOnSurface(new.geom)) = true AND idsite <> '60159ak'
-								
-						  )
-						  ELSE
-						  new.idsite
-						  END
-						  ,
 						  new.stade_amng,
 						  new.l_amng2,
 						  new.stade_comm,
@@ -1064,30 +1059,26 @@ BEGIN
     
 
 						INSERT INTO m_activite_eco.an_eco_lot SELECT v_idgeolf,
-						 CASE WHEN new.idsite IS NULL or new.idsite = '' THEN
-						 (
-							SELECT DISTINCT
-								idsite 
-							FROM 
-								r_objet.geo_objet_ope
-							WHERE
-								st_intersects(geo_objet_ope.geom,ST_PointOnSurface(new.geom)) = true AND idsite <> '60159ak'
-								
-						  ) 
-                                                  ELSE
-						  new.idsite
-						  END   
-						  , -- recherche idsite
-
-						  lot_surf,
-						
-								   CASE WHEN length(cast (lot_surf as character varying)) >= 1 and length(cast (lot_surf as character varying)) <= 3 THEN lot_surf || 'm²'
+						 
+						  CASE WHEN new.surf IS NOT NULL THEN new.surf ELSE lot_surf END,
+						  CASE WHEN new.surf IS NOT NULL THEN
+						  
+								   CASE WHEN length(cast (new.surf as character varying)) >= 1 and length(cast (new.surf as character varying)) <= 3 THEN new.surf || 'm²'
+								   WHEN length(cast (new.surf as character varying)) = 4 THEN replace(to_char(new.surf,'FM9G999'),',',' ') || 'm²'
+								   WHEN length(cast (new.surf as character varying)) = 5 THEN replace(to_char(new.surf,'FM99G999'),',',' ') || 'm²'
+								   WHEN length(cast (new.surf as character varying)) = 6 THEN replace(to_char(new.surf,'FM999G999'),',',' ') || 'm²'
+								   WHEN length(cast (new.surf as character varying)) = 7 THEN replace(to_char(new.surf,'FM9G999G999'),',',' ') || 'm²'
+								   WHEN length(cast (new.surf as character varying)) = 8 THEN replace(to_char(new.surf,'FM99G999G999'),',',' ') || 'm²'
+								   END
+						  ELSE	
+						  			CASE WHEN length(cast (lot_surf as character varying)) >= 1 and length(cast (lot_surf as character varying)) <= 3 THEN lot_surf || 'm²'
 								   WHEN length(cast (lot_surf as character varying)) = 4 THEN replace(to_char(lot_surf,'FM9G999'),',',' ') || 'm²'
 								   WHEN length(cast (lot_surf as character varying)) = 5 THEN replace(to_char(lot_surf,'FM99G999'),',',' ') || 'm²'
 								   WHEN length(cast (lot_surf as character varying)) = 6 THEN replace(to_char(lot_surf,'FM999G999'),',',' ') || 'm²'
 								   WHEN length(cast (lot_surf as character varying)) = 7 THEN replace(to_char(lot_surf,'FM9G999G999'),',',' ') || 'm²'
 								   WHEN length(cast (lot_surf as character varying)) = 8 THEN replace(to_char(lot_surf,'FM99G999G999'),',',' ') || 'm²'
-								   END,
+								   END
+						  END,
 						  null,
 						  new.op_sai_att,
 						  new.org_sai_att,
@@ -1095,11 +1086,11 @@ BEGIN
 						  new.tact_99,
 						  new.cnom,
 						  new.lnom,
-						  new.pvente_l,
-						  new.pcess_l,
+						  null,
+						  null,
 						  new.eff_dep,
 						  new.eff_n5,
-						  new.conv,
+						  CASE WHEN new.conv IS NULL THEN false ELSE new.conv END,
 						  new.datefin_conv,
 						  new.observ,
 						  now(),
@@ -1110,21 +1101,23 @@ BEGIN
 						  new.pc_tra,
 						  new.pc_fin,
 						  new.pvente_e,
-						  new.pcess,
 						  null,
-						  null,
-						  null,
-						  null,
+						  new.pc_num,
+						  new.pc_mo,
+						  new.pers_v,
+						  new.oripro,
 						  new.occupant,
-						  null,
+						  new.descrip,
 						  (select string_agg(insee, ', ') from r_osm.geo_osm_commune where st_intersects(st_buffer(new.geom,-1),geom)),
 						  (select string_agg(commune, ', ') from r_osm.geo_osm_commune where st_intersects(st_buffer(new.geom,-1),geom))
 						  ;
 						  
 						  
 						 			
-     
-     
+     -- ici contrôle si hors ARC ne passe pas
+     IF (select insee from r_osm.geo_osm_commune where st_intersects(st_pointonsurface(new.geom),geom)) 
+	 IN ('60023','60067','60068','60070','60151','60156','60159','60323','60325','60326','60337','60338','60382','60402','60447',
+		'60447','60578','60579','60597','60600','60665','60667','60674') THEN 
 
      -- calcul de l'identifiant du dossier de cession
      v_idces := (SELECT nextval('m_foncier.ces_seq'::regclass));
@@ -1180,21 +1173,16 @@ BEGIN
 						null,
 						null,
 						null,
-						CASE WHEN new.idsite IS NULL or new.idsite = '' THEN
-						(SELECT DISTINCT
-								idsite 
-							FROM 
-								r_objet.geo_objet_ope
-							WHERE
-								st_intersects(geo_objet_ope.geom,st_pointonsurface(new.geom)) = true AND idsite <> '60159ak'
-								
-							)
-						  ELSE
-						  new.idsite
-						  END
-						,
+						null,
 							null
 						);
+
+		END IF;
+		
+		-- association d'un lot à un ou plusieurs sites
+		INSERT INTO m_amenagement.lk_amt_lot_site (idsite,idgeolf)
+		SELECT idsite, v_idgeolf FROM m_activite_eco.geo_eco_site WHERE st_intersects(st_pointonsurface(new.geom),geom) IS TRUE;
+		
 
      return new ;
 
@@ -1220,7 +1208,7 @@ COMMENT ON FUNCTION m_activite_eco.ft_m_insert_lot_eco()
 
 -- DROP FUNCTION m_activite_eco.ft_m_modif_lot_eco();
 
-CREATE OR REPLACE FUNCTION m_activite_eco.ft_m_modif_lot_eco()
+CREATE FUNCTION m_activite_eco.ft_m_modif_lot_eco()
     RETURNS trigger
     LANGUAGE 'plpgsql'
     COST 100
@@ -1239,8 +1227,9 @@ lot_surf:=round(cast(st_area(new.geom) as numeric),0);
 		UPDATE m_amenagement.an_amt_lot_stade SET stade_amng = new.stade_amng, l_amng2 = new.l_amng2, stade_comm = new.stade_comm, l_comm2 = new.l_comm2, l_comm2_12 = new.l_comm2_12, etat_occup =  new.etat_occup WHERE idgeolf = new.idgeolf;
 
 		UPDATE m_activite_eco.an_eco_lot SET
+		   	                
 							surf = CASE WHEN (new.surf IS NULL OR St_equals(new.geom,old.geom) IS FALSE) THEN lot_surf ELSE new.surf END ,
-							l_surf_l = 
+							surf_l = 
 								   CASE WHEN length(cast ((CASE WHEN (new.surf IS NULL OR St_equals(new.geom,old.geom) IS FALSE) THEN lot_surf ELSE new.surf END) as character varying)) >= 1 and length(cast ((CASE WHEN (new.surf IS NULL OR St_equals(new.geom,old.geom) IS FALSE) THEN lot_surf ELSE new.surf END) as character varying)) <= 3 THEN (CASE WHEN (new.surf IS NULL OR St_equals(new.geom,old.geom) IS FALSE) THEN lot_surf ELSE new.surf END) || 'm²'
 								   WHEN length(cast ((CASE WHEN (new.surf IS NULL OR St_equals(new.geom,old.geom) IS FALSE) THEN lot_surf ELSE new.surf END) as character varying)) = 4 THEN replace(to_char((CASE WHEN (new.surf IS NULL OR St_equals(new.geom,old.geom) IS FALSE) THEN lot_surf ELSE new.surf END),'FM9G999'),',',' ') || 'm²'
 								   WHEN length(cast ((CASE WHEN (new.surf IS NULL OR St_equals(new.geom,old.geom) IS FALSE) THEN lot_surf ELSE new.surf END) as character varying)) = 5 THEN replace(to_char((CASE WHEN (new.surf IS NULL OR St_equals(new.geom,old.geom) IS FALSE) THEN lot_surf ELSE new.surf END),'FM99G999'),',',' ') || 'm²'
@@ -1256,9 +1245,6 @@ lot_surf:=round(cast(st_area(new.geom) as numeric),0);
 							cnom = new.cnom,
 							lnom = new.lnom,
 							pvente_e = new.pvente_e,
-							pvente_l = new.pvente_e || '€/m²',
-							pcess_e = new.pcess,
-							pcess_l = new.pcess || '€/m²',
 							eff_dep = new.eff_dep,
 							eff_n5 = new.eff_n5,
 							conv = new.conv,
@@ -1275,7 +1261,7 @@ lot_surf:=round(cast(st_area(new.geom) as numeric),0);
 							oripro = new.oripro,
 							occupant=new.occupant,
 							descrip=new.descrip
-		WHERE an_sa_lot.idgeolf=new.idgeolf;
+		WHERE an_eco_lot.idgeolf=new.idgeolf;
 
      return new;
 END
