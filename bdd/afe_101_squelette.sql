@@ -11838,6 +11838,7 @@ CREATE OR REPLACE VIEW m_amenagement.geo_v_lot_equ
     eu.l_nom,
     o.l_nom AS l_nom_lot,
     eu.l_phase,
+    o.sup_m2,
     o.geom
    FROM r_objet.geo_objet_fon_lot o,
     m_amenagement.an_amt_lot_equ eu,
@@ -11888,6 +11889,7 @@ CREATE OR REPLACE VIEW m_amenagement.geo_v_lot_hab
     o.op_sai,
     o.l_voca,
     o.l_nom,
+    o.sup_m2,
     s.stade_amng,
     s.l_amng2,
     s.stade_comm,
@@ -11968,6 +11970,7 @@ CREATE OR REPLACE VIEW m_amenagement.geo_v_lot_mixte
     o.op_sai,
     o.l_voca,
     o.l_nom,
+    o.sup_m2,
     s.stade_amng,
     s.l_amng2,
     s.stade_comm,
@@ -12061,6 +12064,7 @@ CREATE OR REPLACE VIEW m_amenagement.geo_v_lot_divers
     o.l_voca,
     d.l_nom,
     o.l_nom AS l_nom_lot,
+    o.sup_m2,
     d.l_phase,
     o.geom
    FROM r_objet.geo_objet_fon_lot o,
@@ -12117,6 +12121,7 @@ CREATE OR REPLACE VIEW m_amenagement.geo_v_lot_esppu
     o.src_geom AS ref_spa,
     o.op_sai,
     o.l_voca,
+    o.sup_m2,
     o.l_nom AS l_nom_lot,
     o.geom
    FROM r_objet.geo_objet_fon_lot o,
