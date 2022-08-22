@@ -108,6 +108,7 @@ DROP TABLE IF EXISTS m_foncier.lt_ces_tact;
 DROP TABLE IF EXISTS m_foncier.lt_ces_voca;
 DROP TABLE IF EXISTS m_foncier.lt_rel_lot;
 
+
 /* SEQUENCE */
 DROP SEQUENCE IF EXISTS m_activite_eco.an_eco_pole_seq;
 DROP SEQUENCE IF EXISTS m_activite_eco.geo_eco_site_seq;
@@ -5575,6 +5576,7 @@ INSERT INTO m_urbanisme_reg.lt_proc_typfon(
     ('20','Convention EPFLO'),
     ('30','Acquisitions amiables'),
     ('40','Opérateur privé');
+
 
 
 -- ####################################################################################################################################################
