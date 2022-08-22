@@ -11785,6 +11785,8 @@ CREATE OR REPLACE VIEW m_amenagement.geo_v_lot_divers
     o.l_nom AS l_nom_lot,
     d.l_phase,
     d.epci,
+    ep.date_sai,
+    ep.date_maj,
     o.geom
    FROM r_objet.geo_objet_fon_lot o,
     m_amenagement.an_amt_lot_divers d,
