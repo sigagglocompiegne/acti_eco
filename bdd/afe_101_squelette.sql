@@ -1110,7 +1110,8 @@ BEGIN
 						  new.occupant,
 						  new.descrip,
 						  (select string_agg(insee, ', ') from r_osm.geo_osm_commune where st_intersects(st_buffer(new.geom,-1),geom)),
-						  (select string_agg(commune, ', ') from r_osm.geo_osm_commune where st_intersects(st_buffer(new.geom,-1),geom))
+						  (select string_agg(commune, ', ') from r_osm.geo_osm_commune where st_intersects(st_buffer(new.geom,-1),geom)),
+						  new.epci
 						  ;
 						  
 						  
@@ -1261,7 +1262,8 @@ lot_surf:=round(cast(st_area(new.geom) as numeric),0);
 							pers_v=new.pers_v,
 							oripro = new.oripro,
 							occupant=new.occupant,
-							descrip=new.descrip
+							descrip=new.descrip,
+							epci = new.epci
 		WHERE an_eco_lot.idgeolf=new.idgeolf;
 
      return new;
@@ -4282,13 +4284,12 @@ COMMENT ON FUNCTION m_amenagement.ft_m_modif_lot_hab()
 
 -- DROP FUNCTION m_amenagement.ft_m_delete_lot_mixte();
 
-CREATE OR REPLACE FUNCTION m_amenagement.ft_m_delete_lot_mixte()
+CREATE FUNCTION m_amenagement.ft_m_delete_lot_mixte()
     RETURNS trigger
     LANGUAGE 'plpgsql'
     COST 100
     VOLATILE NOT LEAKPROOF
 AS $BODY$
-
 
 BEGIN
 
@@ -4297,6 +4298,7 @@ BEGIN
     DELETE FROM m_amenagement.an_amt_lot_mixte WHERE idgeolf=old.idgeolf;
     DELETE FROM m_amenagement.an_amt_lot_stade WHERE idgeolf=old.idgeolf;
     DELETE FROM r_objet.geo_objet_fon_lot WHERE idgeolf=old.idgeolf;
+	DELETE FROM m_amenagement.lk_amt_lot_site WHERE idgeolf=old.idgeolf;
     return new ;
 
 END;
@@ -4306,12 +4308,13 @@ $BODY$;
 ALTER FUNCTION m_amenagement.ft_m_delete_lot_mixte()
     OWNER TO create_sig;
 
-GRANT EXECUTE ON FUNCTION m_amenagement.ft_m_delete_lot_mixte() TO create_sig;
-
 GRANT EXECUTE ON FUNCTION m_amenagement.ft_m_delete_lot_mixte() TO PUBLIC;
+
+GRANT EXECUTE ON FUNCTION m_amenagement.ft_m_delete_lot_mixte() TO create_sig;
 
 COMMENT ON FUNCTION m_amenagement.ft_m_delete_lot_mixte()
     IS 'Fonction gérant la suppression des données liées aux lots à vocation mixte lors de la supression de l''objet';
+
 
 -- ############################################################ [ft_m_insert_lot_mixte] #######################################################################
 
@@ -4319,7 +4322,7 @@ COMMENT ON FUNCTION m_amenagement.ft_m_delete_lot_mixte()
 
 -- DROP FUNCTION m_amenagement.ft_m_insert_lot_mixte();
 
-CREATE OR REPLACE FUNCTION m_amenagement.ft_m_insert_lot_mixte()
+CREATE FUNCTION m_amenagement.ft_m_insert_lot_mixte()
     RETURNS trigger
     LANGUAGE 'plpgsql'
     COST 100
@@ -4332,20 +4335,11 @@ DECLARE lot_surf integer;
 
 BEGIN
 
-     v_idgeolf := (SELECT nextval('idgeo_seq'::regclass));
+     v_idgeolf := (SELECT nextval('r_objet.idgeo_seq'::regclass));
 
      INSERT INTO r_objet.geo_objet_fon_lot SELECT v_idgeolf,new.op_sai,new.ref_spa,null,'60',new.geom,null,null,new.l_nom;
 
      INSERT INTO m_amenagement.an_amt_lot_stade SELECT v_idgeolf,
-						 (
-							SELECT DISTINCT
-								idsite 
-							FROM 
-								r_objet.geo_objet_ope
-							WHERE
-								st_intersects(geo_objet_ope.geom,ST_PointOnSurface(new.geom)) = true
-								
-						  ),
 						  new.stade_amng,
 						  new.l_amng2,
 						  new.stade_comm,
@@ -4360,24 +4354,26 @@ BEGIN
     
 
 						INSERT INTO m_amenagement.an_amt_lot_mixte SELECT v_idgeolf,
-						 (
-							SELECT DISTINCT
-								idsite 
-							FROM 
-								r_objet.geo_objet_ope
-							WHERE
-								st_intersects(geo_objet_ope.geom,ST_PointOnSurface(new.geom)) = true
-								
-						  ), -- recherche idsite
-						  lot_surf,
-						
-								   CASE WHEN length(cast (lot_surf as character varying)) >= 1 and length(cast (lot_surf as character varying)) <= 3 THEN lot_surf || 'm²'
+						 
+						 CASE WHEN new.surf IS NOT NULL THEN new.surf ELSE lot_surf END,
+						  CASE WHEN new.surf IS NOT NULL THEN
+						  
+								   CASE WHEN length(cast (new.surf as character varying)) >= 1 and length(cast (new.surf as character varying)) <= 3 THEN new.surf || 'm²'
+								   WHEN length(cast (new.surf as character varying)) = 4 THEN replace(to_char(new.surf,'FM9G999'),',',' ') || 'm²'
+								   WHEN length(cast (new.surf as character varying)) = 5 THEN replace(to_char(new.surf,'FM99G999'),',',' ') || 'm²'
+								   WHEN length(cast (new.surf as character varying)) = 6 THEN replace(to_char(new.surf,'FM999G999'),',',' ') || 'm²'
+								   WHEN length(cast (new.surf as character varying)) = 7 THEN replace(to_char(new.surf,'FM9G999G999'),',',' ') || 'm²'
+								   WHEN length(cast (new.surf as character varying)) = 8 THEN replace(to_char(new.surf,'FM99G999G999'),',',' ') || 'm²'
+								   END
+						  ELSE	
+						  			CASE WHEN length(cast (lot_surf as character varying)) >= 1 and length(cast (lot_surf as character varying)) <= 3 THEN lot_surf || 'm²'
 								   WHEN length(cast (lot_surf as character varying)) = 4 THEN replace(to_char(lot_surf,'FM9G999'),',',' ') || 'm²'
 								   WHEN length(cast (lot_surf as character varying)) = 5 THEN replace(to_char(lot_surf,'FM99G999'),',',' ') || 'm²'
 								   WHEN length(cast (lot_surf as character varying)) = 6 THEN replace(to_char(lot_surf,'FM999G999'),',',' ') || 'm²'
 								   WHEN length(cast (lot_surf as character varying)) = 7 THEN replace(to_char(lot_surf,'FM9G999G999'),',',' ') || 'm²'
 								   WHEN length(cast (lot_surf as character varying)) = 8 THEN replace(to_char(lot_surf,'FM99G999G999'),',',' ') || 'm²'
-								   END,
+								   END
+						  END,
 						  new.op_sai_att,
 						  new.org_sai_att,
 						  new.l_pvente,
@@ -4400,21 +4396,27 @@ BEGIN
 						  new.l_tact,
 						  new.l_tact_99,
 						  new.l_nom_equ,
-                                                  new.nb_logaide_loc_r,
-                                                  new.nb_logaide_acc_r,
-                                                  new.l_lnom						  
+                          new.nb_logaide_loc_r,
+                          new.nb_logaide_acc_r,
+                          new.l_lnom,
+						  new.commune,
+						  new.epci
 						  ;
 						  
 					  			 			
      
      
 
+      -- ici contrôle si hors ARC ne passe pas
+     IF (select insee from r_osm.geo_osm_commune where st_intersects(st_pointonsurface(new.geom),geom)) 
+	 IN ('60023','60067','60068','60070','60151','60156','60159','60323','60325','60326','60337','60338','60382','60402','60447',
+		'60447','60578','60579','60597','60600','60665','60667','60674') THEN 
+
      -- calcul de l'identifiant du dossier de cession
      v_idces := (SELECT nextval('m_foncier.ces_seq'::regclass));
 
      -- insertion de tous lots fonciers dans la table métier foncier
      INSERT INTO m_foncier.lk_cession_lot SELECT v_idgeolf, v_idces;	
-
 
      -- insertion d'une ligne dans an_cession en créant un idces qui est lui même réinjecté dans lk_cession_lot
 
@@ -4432,7 +4434,7 @@ BEGIN
 						(SELECT insee FROM r_osm.geo_osm_commune WHERE st_intersects(st_pointonsurface(new.geom),geom)),
 						null,
 						'00',
-						null,
+						new.l_lnom,
 						null,
 						null,
 						null,
@@ -4464,16 +4466,16 @@ BEGIN
 						null,
 						null,
 						null,
-						(SELECT DISTINCT
-								idsite 
-							FROM 
-								r_objet.geo_objet_ope
-							WHERE
-								st_intersects(geo_objet_ope.geom,st_pointonsurface(new.geom)) = true
-								
-							),
+						null,
 							null
 						);
+
+		END IF;
+		
+		-- association d'un lot à un ou plusieurs sites
+		INSERT INTO m_amenagement.lk_amt_lot_site (idsite,idgeolf)
+		SELECT idsite, v_idgeolf FROM m_activite_eco.geo_eco_site WHERE st_intersects(st_pointonsurface(new.geom),geom) IS TRUE;
+		
 
      return new ;
 
@@ -4484,9 +4486,9 @@ $BODY$;
 ALTER FUNCTION m_amenagement.ft_m_insert_lot_mixte()
     OWNER TO create_sig;
 
-GRANT EXECUTE ON FUNCTION m_amenagement.ft_m_insert_lot_mixte() TO create_sig;
-
 GRANT EXECUTE ON FUNCTION m_amenagement.ft_m_insert_lot_mixte() TO PUBLIC;
+
+GRANT EXECUTE ON FUNCTION m_amenagement.ft_m_insert_lot_mixte() TO create_sig;
 
 COMMENT ON FUNCTION m_amenagement.ft_m_insert_lot_mixte()
     IS 'Fonction gérant l''insertion des données liées aux lots à vocation mixte lors de l''insertion de l''objet';
@@ -4498,7 +4500,7 @@ COMMENT ON FUNCTION m_amenagement.ft_m_insert_lot_mixte()
 
 -- DROP FUNCTION m_amenagement.ft_m_modif_lot_mixte();
 
-CREATE OR REPLACE FUNCTION m_amenagement.ft_m_modif_lot_mixte()
+CREATE FUNCTION m_amenagement.ft_m_modif_lot_mixte()
     RETURNS trigger
     LANGUAGE 'plpgsql'
     COST 100
@@ -4550,7 +4552,9 @@ lot_surf:=round(cast(st_area(new.geom) as numeric),0);
 							l_nom_equ = new.l_nom_equ,
 							nb_logaide_loc_r = new.nb_logaide_loc_r,
 							nb_logaide_acc_r = new.nb_logaide_acc_r,
-							l_lnom = new.l_lnom
+							l_lnom = new.l_lnom,
+							commune = new.commune,
+							epci = new.epci
 		WHERE an_amt_lot_mixte.idgeolf=new.idgeolf;
 
      return new;
@@ -4560,9 +4564,9 @@ $BODY$;
 ALTER FUNCTION m_amenagement.ft_m_modif_lot_mixte()
     OWNER TO create_sig;
 
-GRANT EXECUTE ON FUNCTION m_amenagement.ft_m_modif_lot_mixte() TO create_sig;
-
 GRANT EXECUTE ON FUNCTION m_amenagement.ft_m_modif_lot_mixte() TO PUBLIC;
+
+GRANT EXECUTE ON FUNCTION m_amenagement.ft_m_modif_lot_mixte() TO create_sig;
 
 COMMENT ON FUNCTION m_amenagement.ft_m_modif_lot_mixte()
     IS 'Fonction gérant la mise à jour des données liées aux lots à vocation mixte lors de la mise à jour de l''objet';
@@ -7128,6 +7132,7 @@ CREATE TABLE m_activite_eco.an_eco_lot
     descrip character varying(1000) COLLATE pg_catalog."default",
     insee character varying(30) COLLATE pg_catalog."default",
     commune character varying(250) COLLATE pg_catalog."default",
+    epci character varying(10) COLLATE pg_catalog."default",
     CONSTRAINT an_sa_lot_pkey PRIMARY KEY (idgeolf),
     CONSTRAINT an_sa_lot_tact_fkey FOREIGN KEY (tact)
         REFERENCES m_activite_eco.lt_eco_tact (code) MATCH SIMPLE
@@ -7257,6 +7262,9 @@ COMMENT ON COLUMN m_activite_eco.an_eco_lot.insee
 
 COMMENT ON COLUMN m_activite_eco.an_eco_lot.commune
     IS 'Libellé de la ou des communes contenant le lot';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_lot.epci
+    IS 'Autorité compétente';
 
 -- ############################################################## [geo_eco_bati_act] ####################################################################
 
