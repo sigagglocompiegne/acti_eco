@@ -4592,7 +4592,8 @@ BEGIN
     DELETE FROM m_foncier.lk_cession_lot WHERE idgeolf=old.idgeolf;
     DELETE FROM m_amenagement.an_amt_lot_divers WHERE idgeolf=old.idgeolf;
     DELETE FROM m_amenagement.an_amt_lot_stade WHERE idgeolf=old.idgeolf;
-    DELETE FROM r_objet.geo_objet_fon_lot WHERE idgeolf=old.idgeolf;
+    DELETE FROM r_objet.geo_objet_fon_lot WHERE idgeolf=old.idgeolf;+
+    DELETE FROM m_amenagement.lk_amt_lot_site WHERE idgeolf=old.idgeolf;
     return new ;
 
 END;
@@ -4616,7 +4617,7 @@ COMMENT ON FUNCTION m_amenagement.ft_m_delete_lot_divers()
 
 -- DROP FUNCTION m_amenagement.ft_m_insert_lot_divers();
 
-CREATE OR REPLACE FUNCTION m_amenagement.ft_m_insert_lot_divers()
+CREATE FUNCTION m_amenagement.ft_m_insert_lot_divers()
     RETURNS trigger
     LANGUAGE 'plpgsql'
     COST 100
@@ -4629,20 +4630,11 @@ DECLARE lot_surf integer;
 
 BEGIN
 
-     v_idgeolf := (SELECT nextval('idgeo_seq'::regclass));
+     v_idgeolf := (SELECT nextval('r_objet.idgeo_seq'::regclass));
 
      INSERT INTO r_objet.geo_objet_fon_lot SELECT v_idgeolf,new.op_sai,new.ref_spa,null,'40',new.geom,null,null,new.l_nom_lot;
 
      INSERT INTO m_amenagement.an_amt_lot_stade SELECT v_idgeolf,
-						 (
-							SELECT DISTINCT
-								idsite 
-							FROM 
-								r_objet.geo_objet_ope
-							WHERE
-								st_intersects(geo_objet_ope.geom,ST_PointOnSurface(new.geom)) = true
-								
-						  ),
 						  new.stade_amng,
 						  new.l_amng2,
 						  new.stade_comm,
@@ -4657,15 +4649,6 @@ BEGIN
     
 
 						INSERT INTO m_amenagement.an_amt_lot_divers SELECT v_idgeolf,
-							(
-							SELECT DISTINCT
-								idsite 
-							FROM 
-								r_objet.geo_objet_ope
-							WHERE
-								st_intersects(geo_objet_ope.geom,new.geom) = true
-								
-							),-- recherche auto de l'IDSITE
 							new.op_sai,
 							new.org_sai,
 							new.l_nom,
@@ -4679,18 +4662,23 @@ BEGIN
 								   WHEN length(cast (lot_surf as character varying)) = 6 THEN replace(to_char(lot_surf,'FM999G999'),',',' ') || 'm²'
 								   WHEN length(cast (lot_surf as character varying)) = 7 THEN replace(to_char(lot_surf,'FM9G999G999'),',',' ') || 'm²'
 								   WHEN length(cast (lot_surf as character varying)) = 8 THEN replace(to_char(lot_surf,'FM99G999G999'),',',' ') || 'm²'
-								   END
+								   END,
+						    new.epci
 							;
 					  			 			
      
      
+
+      -- ici contrôle si hors ARC ne passe pas
+     IF (select insee from r_osm.geo_osm_commune where st_intersects(st_pointonsurface(new.geom),geom)) 
+	 IN ('60023','60067','60068','60070','60151','60156','60159','60323','60325','60326','60337','60338','60382','60402','60447',
+		'60447','60578','60579','60597','60600','60665','60667','60674') THEN 
 
      -- calcul de l'identifiant du dossier de cession
      v_idces := (SELECT nextval('m_foncier.ces_seq'::regclass));
 
      -- insertion de tous lots fonciers dans la table métier foncier
      INSERT INTO m_foncier.lk_cession_lot SELECT v_idgeolf, v_idces;	
-
 
      -- insertion d'une ligne dans an_cession en créant un idces qui est lui même réinjecté dans lk_cession_lot
 
@@ -4708,7 +4696,7 @@ BEGIN
 						(SELECT insee FROM r_osm.geo_osm_commune WHERE st_intersects(st_pointonsurface(new.geom),geom)),
 						null,
 						'00',
-						null,
+						new.l_lnom,
 						null,
 						null,
 						null,
@@ -4740,16 +4728,16 @@ BEGIN
 						null,
 						null,
 						null,
-						(SELECT DISTINCT
-								idsite 
-							FROM 
-								r_objet.geo_objet_ope
-							WHERE
-								st_intersects(geo_objet_ope.geom,st_pointonsurface(new.geom)) = true
-								
-							),
+						null,
 							null
 						);
+
+		END IF;
+		
+		-- association d'un lot à un ou plusieurs sites
+		INSERT INTO m_amenagement.lk_amt_lot_site (idsite,idgeolf)
+		SELECT idsite, v_idgeolf FROM m_activite_eco.geo_eco_site WHERE st_intersects(st_pointonsurface(new.geom),geom) IS TRUE;
+		
 
      return new ;
 
@@ -4774,7 +4762,7 @@ COMMENT ON FUNCTION m_amenagement.ft_m_insert_lot_divers()
 
 -- DROP FUNCTION m_amenagement.ft_m_modif_lot_divers();
 
-CREATE OR REPLACE FUNCTION m_amenagement.ft_m_modif_lot_divers()
+CREATE FUNCTION m_amenagement.ft_m_modif_lot_divers()
     RETURNS trigger
     LANGUAGE 'plpgsql'
     COST 100
@@ -4807,7 +4795,8 @@ lot_surf:=round(cast(st_area(new.geom) as numeric),0);
 							org_sai = new.org_sai,
 							l_nom = new.l_nom,
 							date_maj = now(),
-							l_phase = new.l_phase
+							l_phase = new.l_phase,
+							epci = new.epci
 		WHERE an_amt_lot_divers.idgeolf=new.idgeolf;
 
      return new;
@@ -11795,7 +11784,7 @@ CREATE OR REPLACE VIEW m_amenagement.geo_v_lot_divers
     d.l_nom,
     o.l_nom AS l_nom_lot,
     d.l_phase,
-	d.epci,
+    d.epci,
     o.geom
    FROM r_objet.geo_objet_fon_lot o,
     m_amenagement.an_amt_lot_divers d,
@@ -11808,10 +11797,10 @@ COMMENT ON VIEW m_amenagement.geo_v_lot_divers
     IS 'Vue éditable géographique des lots à vocation divers';
 
 GRANT ALL ON TABLE m_amenagement.geo_v_lot_divers TO sig_create;
+GRANT SELECT ON TABLE m_amenagement.geo_v_lot_divers TO sig_read;
 GRANT ALL ON TABLE m_amenagement.geo_v_lot_divers TO create_sig;
 GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_amenagement.geo_v_lot_divers TO sig_edit;
 GRANT ALL ON TABLE m_amenagement.geo_v_lot_divers TO sig_stage WITH GRANT OPTION;
-GRANT SELECT ON TABLE m_amenagement.geo_v_lot_divers TO sig_read;
 
 CREATE TRIGGER t_t1_delete_lot_divers
     INSTEAD OF DELETE
@@ -11832,6 +11821,7 @@ CREATE TRIGGER t_t3_modif_lot_divers
     ON m_amenagement.geo_v_lot_divers
     FOR EACH ROW
     EXECUTE PROCEDURE m_amenagement.ft_m_modif_lot_divers();
+
 
 
 
