@@ -713,22 +713,6 @@ Particularité(s) à noter :
  
 ---
 
-`[m_activite_eco].[lk_eco_loc_site]` : table alphanumérique de relation entre les locaux d'activité et les sites
-   
-|Nom attribut | Définition | Type | Valeurs par défaut |
-|:---|:---|:---|:---|
-|id|Identifiant unique non signifiant de la relation|integer|nextval('m_activite_eco.lk_eco_loc_site_seq'::regclass)|
-|idloc|Identifiant unique non signifiant de l'objet local d'activité|character varying(5)| |
-|idsite|Identifiant unique non signifiant de l'objet site|character varying(5)| |
-
-
-Particularité(s) à noter :
-* Une clé primaire existe sur le champ `id` l'attribution automatique de la référence unique s'effectue via une séquence. 
-
-* x triggers : à venir
- 
- 
----
 
 
 `[m_activite_eco].[lk_eco_loc_etab]` : table alphanumérique de relation entre les locaux d'activité et les établissements
