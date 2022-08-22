@@ -53,13 +53,13 @@ DROP TABLE IF EXISTS m_foncier.an_cession;
 DROP TABLE IF EXISTS m_foncier.an_fon_doc_media;
 DROP TABLE IF EXISTS m_foncier.an_fon_cession_horsarc;
 DROP TABLE IF EXISTS m_foncier.an_fon_cession_horsarc_media;
-DROP TABLE IF EXISTS m_amenagement.an_amt_site_mixte;
-DROP TABLE IF EXISTS m_amenagement.an_amt_site_habitat;
+DROP TABLE IF EXISTS m_amenagement.an_amt_site_hab_mixte;
 DROP TABLE IF EXISTS m_amenagement.an_amt_site_equ;
 DROP TABLE IF EXISTS m_amenagement.an_amt_proc_media;
 DROP TABLE IF EXISTS s_sirene.an_etablissement_api;
 DROP TABLE IF EXISTS s_sirene.an_unitelegale_api;
 DROP TABLE IF EXISTS m_amenagement.an_amt_proc_media;
+DROP TABLE IF EXISTS m_amenagement.an_amt_lot_esppu;
 
 
 /* TABLE DE RELATION */
@@ -8869,6 +8869,7 @@ CREATE TABLE m_amenagement.an_amt_esppu
     vocaep character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
     date_sai timestamp without time zone,
     date_maj timestamp without time zone,
+    epci character varying(10) COLLATE pg_catalog."default",
     CONSTRAINT an_amt_esppu_pkey PRIMARY KEY (idgeopu),
     CONSTRAINT lt_amt_empesp_pu_fkey FOREIGN KEY (vocaep)
         REFERENCES m_amenagement.lt_amt_empesp_pu (code) MATCH SIMPLE
@@ -8918,6 +8919,80 @@ COMMENT ON COLUMN m_amenagement.an_amt_esppu.date_sai
 
 COMMENT ON COLUMN m_amenagement.an_amt_esppu.date_maj
     IS 'Date de mises à jour des données attributaires';
+    
+COMMENT ON COLUMN m_amenagement.an_amt_esppu.epci
+    IS 'Autorité compétente';
+
+-- ############################################################## [an_amt_lot_esppu] ##################################################################
+
+-- Table: m_amenagement.an_amt_lot_esppu
+
+-- DROP TABLE m_amenagement.an_amt_lot_esppu;
+
+CREATE TABLE m_amenagement.an_amt_lot_esppu
+(
+    idgeolf integer NOT NULL,
+    idsite character varying(10) COLLATE pg_catalog."default",
+    op_sai character varying(80) COLLATE pg_catalog."default",
+    org_sai character varying(80) COLLATE pg_catalog."default",
+    l_nom character varying(100) COLLATE pg_catalog."default",
+    surf double precision,
+    date_sai timestamp without time zone,
+    date_maj timestamp without time zone,
+    l_surf_l character varying(15) COLLATE pg_catalog."default",
+	epci character varying(10) COLLATE pg_catalog."default",
+    CONSTRAINT an_amt_lot_esppu_pkey PRIMARY KEY (idgeolf)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE m_amenagement.an_amt_lot_esppu
+    OWNER to create_sig;
+
+GRANT ALL ON TABLE m_amenagement.an_amt_lot_esppu TO sig_create;
+
+GRANT SELECT ON TABLE m_amenagement.an_amt_lot_esppu TO sig_read;
+
+GRANT ALL ON TABLE m_amenagement.an_amt_lot_esppu TO create_sig;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_amenagement.an_amt_lot_esppu TO sig_edit;
+
+COMMENT ON TABLE m_amenagement.an_amt_lot_esppu
+    IS 'Information alphanumérique sur les lots équipements';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_esppu.idgeolf
+    IS 'Identifiant unique géographique de référence de l''objet virtuel';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_esppu.idsite
+    IS 'Identifiant unique du site';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_esppu.op_sai
+    IS 'Libellé de la personne ayant saisie la mise à jour';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_esppu.org_sai
+    IS 'Organisme de saisie dont dépend l''opérateur de saisie';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_esppu.l_nom
+    IS 'Libellé de l''équipement';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_esppu.surf
+    IS 'Surface du lot équipement en m²';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_esppu.date_sai
+    IS 'Date de saisie des données attributaires';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_esppu.date_maj
+    IS 'Date de mise à jour des données attributaires';
+
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_esppu.l_surf_l
+    IS 'Surface littérale parcellaire occupée du lot';
+	
+	
+COMMENT ON COLUMN m_amenagement.an_amt_esppu.epci
+    IS 'Autorité compétente';
 
 -- ############################################################## [an_amt_lot_divers] ##################################################################
 
@@ -8936,6 +9011,7 @@ CREATE TABLE m_amenagement.an_amt_lot_divers
     date_maj timestamp without time zone,
     l_phase character varying(10) COLLATE pg_catalog."default",
     l_surf_l character varying(15) COLLATE pg_catalog."default",
+    epci character varying(10) COLLATE pg_catalog."default",
     CONSTRAINT an_amt_lot_divers_pkey PRIMARY KEY (idgeolf)
 )
 WITH (
@@ -8981,6 +9057,9 @@ COMMENT ON COLUMN m_amenagement.an_amt_lot_divers.date_maj
 COMMENT ON COLUMN m_amenagement.an_amt_lot_divers.l_phase
     IS 'Phase opérationnelle éventuelle';
 
+COMMENT ON COLUMN m_amenagement.an_amt_lot_divers.epci
+    IS 'Autorité compétente';
+
 -- ############################################################## [an_amt_lot_equ] ##################################################################
 
 -- Table: m_amenagement.an_amt_lot_equ
@@ -8998,6 +9077,7 @@ CREATE TABLE m_amenagement.an_amt_lot_equ
     date_maj timestamp without time zone,
     l_phase character varying(10) COLLATE pg_catalog."default",
     l_surf_l character varying(15) COLLATE pg_catalog."default",
+    epci character varying(10) COLLATE pg_catalog."default",
     CONSTRAINT an_amt_lot_equ_pkey PRIMARY KEY (idgeolf)
 )
 WITH (
@@ -9046,6 +9126,10 @@ COMMENT ON COLUMN m_amenagement.an_amt_lot_equ.l_phase
 COMMENT ON COLUMN m_amenagement.an_amt_lot_equ.l_surf_l
     IS 'Surface littérale parcellaire occupée du lot';
 
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_divers.epci
+    IS 'Autorité compétente';
+
 -- ############################################################## [an_amt_lot_hab] ##################################################################
 
 -- Table: m_amenagement.an_amt_lot_hab
@@ -9078,6 +9162,7 @@ CREATE TABLE m_amenagement.an_amt_lot_hab
     l_pvente_lot integer,
     nb_logaide_loc_r integer,
     nb_logaide_acc_r integer,
+    epci character varying(10) COLLATE pg_catalog."default",
     CONSTRAINT an_amt_lot_hab_pkey PRIMARY KEY (idgeolf)
 )
 WITH (
@@ -9171,6 +9256,10 @@ COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.nb_logaide_loc_r
 
 COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.nb_logaide_acc_r
     IS 'Nombre de logements aidés en accession réalisé';
+    
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_hab.epci
+    IS 'Autorité compétente';
 
 -- ############################################################## [an_amt_lot_mixte] ##################################################################
 
@@ -9208,6 +9297,7 @@ CREATE TABLE m_amenagement.an_amt_lot_mixte
     nb_logaide_loc_r integer,
     nb_logaide_acc_r integer,
     l_lnom character varying(250) COLLATE pg_catalog."default",
+    epci character varying(10) COLLATE pg_catalog."default",
     CONSTRAINT an_amt_lot_mixte_pkey PRIMARY KEY (idgeolf)
 )
 WITH (
@@ -9312,7 +9402,10 @@ COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.nb_logaide_acc_r
 
 COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.l_lnom
     IS 'Nom(s) du ou des acquéreurs du lot ou d''une partie des bâtiments';
+    
 
+COMMENT ON COLUMN m_amenagement.an_amt_lot_mixte.epci
+    IS 'Autorité compétente';
 
 -- ############################################################## [an_amt_site_equ] ####################################################################
 
@@ -9337,6 +9430,7 @@ CREATE TABLE m_amenagement.an_amt_site_equ
     contact character varying(80) COLLATE pg_catalog."default",
     date_sai timestamp without time zone,
     date_maj timestamp without time zone,
+    epci character varying(10) COLLATE pg_catalog."default",
     CONSTRAINT an_amt_site_equ_pkey PRIMARY KEY (idgeopo),
     CONSTRAINT an_amt_site_equ_etat_fkey FOREIGN KEY (site_etat)
         REFERENCES m_activite_eco.lt_eco_etat (code) MATCH SIMPLE
@@ -9409,459 +9503,112 @@ COMMENT ON COLUMN m_amenagement.an_amt_site_equ.date_maj
 COMMENT ON CONSTRAINT an_amt_site_equ_pkey ON m_amenagement.an_amt_site_equ
     IS 'Clé primaire de la table an_amt_site_equ';
 
--- ############################################################## [an_amt_site_habitat] ####################################################################
 
--- Table: m_amenagement.an_amt_site_habitat
+COMMENT ON COLUMN m_amenagement.an_amt_site_equ.epci
+    IS 'Autorité compétente';
 
--- DROP TABLE m_amenagement.an_amt_site_habitat;
+-- ############################################################## [an_amt_site_hab_mixte] ####################################################################
 
-CREATE TABLE m_amenagement.an_amt_site_habitat
+-- Table: m_amenagement.an_amt_site_hab_mixte
+
+-- DROP TABLE m_amenagement.an_amt_site_hab_mixte;
+
+CREATE TABLE m_amenagement.an_amt_site_hab_mixte
 (
-    idgeopo integer NOT NULL,
-    idsite character varying(10) COLLATE pg_catalog."default",
-    site_nom character varying(80) COLLATE pg_catalog."default",
-    site_etat character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
-    op_sai character varying(80) COLLATE pg_catalog."default",
-    org_sai character varying(80) COLLATE pg_catalog."default",
-    nb_log integer,
-    z_mai_ouvr character varying(80) COLLATE pg_catalog."default",
-    z_compet character varying(80) COLLATE pg_catalog."default",
-    z_amng character varying(80) COLLATE pg_catalog."default",
-    z_gest character varying(80) COLLATE pg_catalog."default",
-    z_anim character varying(80) COLLATE pg_catalog."default",
-    z_comm character varying(80) COLLATE pg_catalog."default",
-    contact character varying(80) COLLATE pg_catalog."default",
-    date_sai timestamp without time zone,
-    date_maj timestamp without time zone,
-    CONSTRAINT an_amt_p_habitat_pkey PRIMARY KEY (idgeopo),
-    CONSTRAINT an_amt_site_habitat_etat_fkey FOREIGN KEY (site_etat)
-        REFERENCES m_activite_eco.lt_eco_etat (code) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION
-)
-WITH (
-    OIDS = FALSE
-)
-TABLESPACE pg_default;
-
-ALTER TABLE m_amenagement.an_amt_site_habitat
-    OWNER to create_sig;
-
-GRANT ALL ON TABLE m_amenagement.an_amt_site_habitat TO sig_create;
-
-GRANT SELECT ON TABLE m_amenagement.an_amt_site_habitat TO sig_read;
-
-GRANT ALL ON TABLE m_amenagement.an_amt_site_habitat TO create_sig;
-
-GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_amenagement.an_amt_site_habitat TO sig_edit;
-
-COMMENT ON TABLE m_amenagement.an_amt_site_habitat
-    IS 'Information alphanumérique sur les Sites à vocation habitat. Les objets virtuels de référence sont gérés dans le schéma r_objet';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_habitat.idgeopo
-    IS 'Identifiant unique géographique de référence de l''objet virtuel';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_habitat.idsite
-    IS 'Identifiant du site habitat';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_habitat.site_nom
-    IS 'Libellé du site';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_habitat.site_etat
-    IS 'Code de l''état du site';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_habitat.op_sai
-    IS 'Libellé de la personne ayant saisie la mise à jour';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_habitat.org_sai
-    IS 'Organisme de saisie dont dépend l''opérateur de saisie';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_habitat.nb_log
-    IS 'Nombre de logements prévue sur le site';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_habitat.z_mai_ouvr
-    IS 'Nom du maître d''ouvrage';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_habitat.z_compet
-    IS 'Nom de la collectivité ayant dans ses compétences le développement de la zone';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_habitat.z_amng
-    IS 'Nom de l''aménageur de la zone';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_habitat.z_gest
-    IS 'Nom du gestionnaire de la zone';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_habitat.z_anim
-    IS 'Nom de l''animateur de la zone';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_habitat.z_comm
-    IS 'Structure de contact pour la commercialisation';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_habitat.contact
-    IS 'Libellé de la personne contact pour la commercialisation';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_habitat.date_sai
-    IS 'Date de saisie des données attributaires';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_habitat.date_maj
-    IS 'Date de mise à jour des données attributaires';
-COMMENT ON CONSTRAINT an_amt_p_habitat_pkey ON m_amenagement.an_amt_site_habitat
-    IS 'Clé primaire de la table an_amt_site_habitat';
-
--- ############################################################## [an_amt_site_mixte] ####################################################################
-
--- Table: m_amenagement.an_amt_site_mixte
-
--- DROP TABLE m_amenagement.an_amt_site_mixte;
-
-CREATE TABLE m_amenagement.an_amt_site_mixte
-(
-    idgeopo integer NOT NULL,
-    idsite character varying(10) COLLATE pg_catalog."default",
-    idpole character varying(7) COLLATE pg_catalog."default",
-    site_voca character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
-    site_nom character varying(80) COLLATE pg_catalog."default",
-    site_etat character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
-    date_int date,
-    op_sai character varying(80) COLLATE pg_catalog."default",
-    org_sai character varying(80) COLLATE pg_catalog."default",
-    typo character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
-    dest character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
-    p_implant character varying(10) COLLATE pg_catalog."default",
-    z_mai_ouvr character varying(80) COLLATE pg_catalog."default",
-    z_compet character varying(80) COLLATE pg_catalog."default",
-    z_amng character varying(80) COLLATE pg_catalog."default",
-    z_gest character varying(80) COLLATE pg_catalog."default",
-    z_anim character varying(80) COLLATE pg_catalog."default",
-    z_comm character varying(80) COLLATE pg_catalog."default",
-    contact character varying(80) COLLATE pg_catalog."default",
-    z_cession_eco double precision,
-    z_cession_hab double precision,
-    z_env character varying(80) COLLATE pg_catalog."default",
-    z_paysage character varying(80) COLLATE pg_catalog."default",
-    z_rehab character varying(80) COLLATE pg_catalog."default",
-    z_epu character varying(3) COLLATE pg_catalog."default",
-    z_dechet character varying(80) COLLATE pg_catalog."default",
-    z_tr_slect character varying(3) COLLATE pg_catalog."default",
-    res_ass double precision,
-    res_pluvia double precision,
-    res_eau double precision,
-    res_gaz double precision,
-    res_elect double precision,
-    res_net character varying(80) COLLATE pg_catalog."default",
-    res_db_net double precision,
-    z_auto character varying(10) COLLATE pg_catalog."default",
-    z_dst_auto double precision,
-    z_tps_auto double precision,
-    z_ar_f character varying(80) COLLATE pg_catalog."default",
-    z_dst_ar_f double precision,
-    z_ar_v character varying(80) COLLATE pg_catalog."default",
-    z_dst_ar_v double precision,
-    z_fr_f character varying(80) COLLATE pg_catalog."default",
-    z_dst_fr_f double precision,
-    z_fr_v character varying(80) COLLATE pg_catalog."default",
-    z_dst_fr_v double precision,
-    z_pmm character varying(3) COLLATE pg_catalog."default",
-    z_dst_pmm double precision,
-    serv_tc integer,
-    circ_douce character varying(3) COLLATE pg_catalog."default",
-    serv_rest integer,
-    serv_crech integer,
-    serv_autre character varying(80) COLLATE pg_catalog."default",
-    serv_collt character varying(80) COLLATE pg_catalog."default",
-    z_aide_pb character varying(2) COLLATE pg_catalog."default",
-    l_dated_aide_pb date,
-    l_datef_aide_pb date,
-    date_sai timestamp without time zone,
-    date_maj timestamp without time zone,
-    d_paris integer,
-    t_paris integer,
-    d_lille integer,
-    t_lille integer,
-    l_dauto character varying(200) COLLATE pg_catalog."default",
-    l_dtgvhp integer,
-    l_ttgvhp integer,
-    l_dtgvcdg integer,
-    l_ttgvcdg integer,
-    l_tgcomp integer,
-    l_dtille integer,
-    l_ttille integer,
-    l_dcdg integer,
-    l_tcdg integer,
-    l_dlesquin integer,
-    l_tlesquin integer,
+    idproc character varying(5) COLLATE pg_catalog."default" NOT NULL,
     nb_log integer DEFAULT 0,
-    zae boolean,
-    serv_tc_g boolean,
-    serv_tc_lig character varying(50) COLLATE pg_catalog."default",
-    serv_tc_pas integer,
-    commune character varying(255) COLLATE pg_catalog."default",
-    CONSTRAINT an_amt_site_mixte_pkey PRIMARY KEY (idgeopo),
-    CONSTRAINT an_amt_site_mixte_etat_fkey FOREIGN KEY (site_etat)
-        REFERENCES m_activite_eco.lt_eco_etat (code) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION
+    nb_logind integer DEFAULT 0,
+    nb_logindgr integer DEFAULT 0,
+    nb_logcol integer DEFAULT 0,
+    nb_logaide integer DEFAULT 0,
+    nb_logaide_loc integer DEFAULT 0,
+    nb_logaide_acc integer DEFAULT 0,
+    nb_log_r integer DEFAULT 0,
+    nb_logind_r integer DEFAULT 0,
+    nb_logindgr_r integer DEFAULT 0,
+    nb_logcol_r integer DEFAULT 0,
+    nb_logaide_r integer DEFAULT 0,
+    nb_logaide_loc_r integer DEFAULT 0,
+    nb_logaide_acc_r integer DEFAULT 0,
+    date_sai timestamp without time zone,
+    date_maj timestamp without time zone,
+    observ character varying(1000) COLLATE pg_catalog."default",
+    CONSTRAINT an_amt_site_hab_mixte_pkey PRIMARY KEY (idproc)
 )
 WITH (
     OIDS = FALSE
 )
 TABLESPACE pg_default;
 
-ALTER TABLE m_amenagement.an_amt_site_mixte
+ALTER TABLE m_amenagement.an_amt_site_hab_mixte
     OWNER to create_sig;
 
-GRANT ALL ON TABLE m_amenagement.an_amt_site_mixte TO sig_create;
+GRANT ALL ON TABLE m_amenagement.an_amt_site_hab_mixte TO sig_create;
 
-GRANT SELECT ON TABLE m_amenagement.an_amt_site_mixte TO sig_read;
+GRANT SELECT ON TABLE m_amenagement.an_amt_site_hab_mixte TO sig_read;
 
-GRANT ALL ON TABLE m_amenagement.an_amt_site_mixte TO create_sig;
+GRANT ALL ON TABLE m_amenagement.an_amt_site_hab_mixte TO create_sig;
 
-GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_amenagement.an_amt_site_mixte TO sig_edit;
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_amenagement.an_amt_site_hab_mixte TO sig_edit;
 
-COMMENT ON TABLE m_amenagement.an_amt_site_mixte
-    IS 'Information alphanumérique sur les Sites d''activités mixte (habitat/Activité). Les objets virtuels de référence sont gérés dans le schéma r_objet';
+GRANT ALL ON TABLE m_amenagement.an_amt_site_hab_mixte TO sig_stage WITH GRANT OPTION;
 
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.idgeopo
-    IS 'Identifiant unique géographique de référence de l''objet virtuel';
+COMMENT ON TABLE m_amenagement.an_amt_site_hab_mixte
+    IS 'Information alphanumérique sur les Sites à vocation habitat et mixte concernant le programme de logements';
 
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.idsite
-    IS 'Identifiant du site mixte';
+COMMENT ON COLUMN m_amenagement.an_amt_site_hab_mixte.idproc
+    IS 'Identifiant unique de la procédure';
 
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.idpole
-    IS 'Identifiant du pôle d''appartenance (si existe)';
+COMMENT ON COLUMN m_amenagement.an_amt_site_hab_mixte.nb_log
+    IS 'Nombre total de logements';
 
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.site_voca
-    IS 'Code de la vocation simplifiée de la zone';
+COMMENT ON COLUMN m_amenagement.an_amt_site_hab_mixte.nb_logind
+    IS 'Nombre de logements individuels';
 
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.site_nom
-    IS 'Libellé du site';
+COMMENT ON COLUMN m_amenagement.an_amt_site_hab_mixte.nb_logindgr
+    IS 'Nombre de logements individuels groupés';
 
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.site_etat
-    IS 'Code de l''état du site';
+COMMENT ON COLUMN m_amenagement.an_amt_site_hab_mixte.nb_logcol
+    IS 'Nombre de logements collectifs';
 
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.date_int
-    IS 'Date d''intégration par GéoPicardie dans la base (permet de connaître la dernière donnée intégrée)';
+COMMENT ON COLUMN m_amenagement.an_amt_site_hab_mixte.nb_logaide
+    IS 'Dont nombre de logements aidés';
 
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.op_sai
-    IS 'Libellé de la personne ayant saisie la mise à jour';
+COMMENT ON COLUMN m_amenagement.an_amt_site_hab_mixte.nb_logaide_loc
+    IS 'Nombre de logements aidés en location programmé';
 
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.org_sai
-    IS 'Organisme de saisie dont dépend l''opérateur de saisie';
+COMMENT ON COLUMN m_amenagement.an_amt_site_hab_mixte.nb_logaide_acc
+    IS 'Nombre de logements aidés en accession programmé';
 
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.typo
-    IS 'Typologie du site';
+COMMENT ON COLUMN m_amenagement.an_amt_site_hab_mixte.nb_log_r
+    IS 'Nombre de logements total réalisé';
 
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.dest
-    IS 'Destination initiale du site (défini dans les documents d''urbanisme)';
+COMMENT ON COLUMN m_amenagement.an_amt_site_hab_mixte.nb_logind_r
+    IS 'Nombre de logements individuels réalisé';
 
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.p_implant
-    IS 'Première implantation des entreprises sur le site (année ou date)';
+COMMENT ON COLUMN m_amenagement.an_amt_site_hab_mixte.nb_logindgr_r
+    IS 'Nombre de logements individuels groupés réalisé';
 
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_mai_ouvr
-    IS 'Nom du maître d''ouvrage';
+COMMENT ON COLUMN m_amenagement.an_amt_site_hab_mixte.nb_logcol_r
+    IS 'Nombre de logements collectifs réalisé';
 
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_compet
-    IS 'Nom de la collectivité ayant dans ses compétences le développement de la zone';
+COMMENT ON COLUMN m_amenagement.an_amt_site_hab_mixte.nb_logaide_r
+    IS 'Nombre de logements aidés réalisé';
 
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_amng
-    IS 'Nom de l''aménageur de la zone';
+COMMENT ON COLUMN m_amenagement.an_amt_site_hab_mixte.nb_logaide_loc_r
+    IS 'Nombre de logements aidés en location réalisé';
 
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_gest
-    IS 'Nom du gestionnaire de la zone';
+COMMENT ON COLUMN m_amenagement.an_amt_site_hab_mixte.nb_logaide_acc_r
+    IS 'Nombre de logements aidés en accession réalisé';
 
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_anim
-    IS 'Nom de l''animateur de la zone';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_comm
-    IS 'Structure de contact pour la commercialisation';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.contact
-    IS 'Libellé de la personne contact pour la commercialisation';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_cession_eco
-    IS 'Conditions de cession en HT (euro/m²) pour les lots à vocation économique';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_cession_hab
-    IS 'Conditions de cession en HT (euro/m²) pour les lots à vocation habitat';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_env
-    IS 'Démarche environnementale';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_paysage
-    IS 'Démarche paysagère';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_rehab
-    IS 'Procédure de réhabilitaion du site';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_epu
-    IS 'Traitement de l''eau d''épuration';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_dechet
-    IS 'Libellé du gestionnaire des déchets';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_tr_slect
-    IS 'Présence d''un tri sélectif sur le site';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.res_ass
-    IS 'Linéaire de réseau d''assainissement';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.res_pluvia
-    IS 'Linéaire de réseau d''eau pluviale';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.res_eau
-    IS 'Débit du réseau d''eau potable';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.res_gaz
-    IS 'Débit du réseau de gaz';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.res_elect
-    IS 'Débit du réseau électrique';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.res_net
-    IS 'Type de réseau internet';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.res_db_net
-    IS 'Débit internet';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_auto
-    IS 'Libellé de l''autoroute la plus proche';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_dst_auto
-    IS 'Distance en km du diffuseur autoroutier par la route';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_tps_auto
-    IS 'Temps d''accès en minutes du diffuseur autoroutier par la route';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_ar_f
-    IS 'Nom de l''aéroport fret le plus proche';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_dst_ar_f
-    IS 'Distance en km de l''aéroport de fret par la route';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_ar_v
-    IS 'Nom de l''aéroport de voyageurs le plus proche';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_dst_ar_v
-    IS 'Distance en km de l''aéroport de voyageurs par la route';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_fr_f
-    IS 'Gare de fret la plus proche';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_dst_fr_f
-    IS 'Distance en km de la gare de fret la plus proche par la route';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_fr_v
-    IS 'Gare de voyageurs la plus proche';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_dst_fr_v
-    IS 'Distance en km de la gare de voyageurs la plus proche par la route';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_pmm
-    IS 'Présence d''une plate-forme multimodale';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_dst_pmm
-    IS 'Distance en km de la plate-forme multimodale la plus proche par la route';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.serv_tc
-    IS 'Nombre de ligne de transport en commun desservant le site';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.circ_douce
-    IS 'Accès aux sites par un mode doux (pistes cyclables)';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.serv_rest
-    IS 'Nombre de restaurants ou à proximité immédiate';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.serv_crech
-    IS 'Nombre de crèches ou à proximité immédiate';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.serv_autre
-    IS 'Libellé des autres services disponibles sur le site';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.serv_collt
-    IS 'Services collectifs présent sur le site (mutualisation, partage de services)';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.z_aide_pb
-    IS 'Code de valeurs des aides publiques appliquées sur le site (AFR, ZFU, ZRR, aucun)';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.l_dated_aide_pb
-    IS 'Date de début de la période des aides publiques';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.l_datef_aide_pb
-    IS 'Date de fin de la période des aides publiques';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.date_sai
+COMMENT ON COLUMN m_amenagement.an_amt_site_hab_mixte.date_sai
     IS 'Date de saisie des données attributaires';
 
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.date_maj
+COMMENT ON COLUMN m_amenagement.an_amt_site_hab_mixte.date_maj
     IS 'Date de mise à jour des données attributaires';
 
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.d_paris
-    IS 'Distance en km de Paris';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.t_paris
-    IS 'Temps d''accès en minutes à Paris';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.d_lille
-    IS 'Distance en km à Lille';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.t_lille
-    IS 'Temps d''accès en minutes à Lille';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.l_dauto
-    IS 'Libellé de ou des diffuseurs autoroutiers le ou les plus proches';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.l_dtgvhp
-    IS 'Distance à la gare TGV Haute-Picardie';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.l_ttgvhp
-    IS 'Temps d''accès en minutes à la gare TGV Haute Picardie';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.l_dtgvcdg
-    IS 'Distancr en km de la gare TGV Roissy-CDG';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.l_ttgvcdg
-    IS 'Temps d''accès en minutes à la gare TGV Roissy-CDG';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.l_tgcomp
-    IS 'Temps d''accès en minutes à la gare de Compiègne';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.l_dtille
-    IS 'Distance en km de l''aéroport de Beauvais-Tillé';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.l_ttille
-    IS 'Temps d''accès en minutes à l''aéroport de Beauvais-Tillé';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.l_dcdg
-    IS 'Distance en km à l''aéroport de Roissy-Charles de Gaulle';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.l_tcdg
-    IS 'Temps d''accès à l''aéroport en minutes à l''aéroport Roissy Charles de Gaulle';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.l_dlesquin
-    IS 'Distance en km de l''aéroport Lille-Lesquin';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.l_tlesquin
-    IS 'Temps d''accès en minutes à l''aéroport Lille-Lesquin';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.nb_log
-    IS 'Nombre de logements prévisionnel';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.zae
-    IS 'Information sur le fait que le site soit une ZAE (sauf celle indiquée dans la table m_amenagement.geo_amt_zae)  ou non (compétence ARC selon la délibération du CA du 21 décembre 2017). Cette donnée permet de créer une vue matérialisée des ZAE complètes (geo_vmr_zae) avec les informations de la table m_amenagement.geo_amt_zae';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.serv_tc_g
-    IS 'Service de transport en commun gratuit';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.serv_tc_lig
-    IS 'Lignes de transport en commun desservant le site';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.serv_tc_pas
-    IS 'Nombre de passage quotidien cumulé des lignes de transport en commun';
-
-COMMENT ON COLUMN m_amenagement.an_amt_site_mixte.commune
-    IS 'Libellé des communes d''asises des sites';
-COMMENT ON CONSTRAINT an_amt_site_mixte_pkey ON m_amenagement.an_amt_site_mixte
-    IS 'Clé primaire de la table an_amt_site_mixte';
+COMMENT ON COLUMN m_amenagement.an_amt_site_hab_mixte.observ
+    IS 'Observations diverses';
 
 -- ############################################################## [an_amt_proc_media] ##################################################################
 
@@ -11612,7 +11359,6 @@ COMMENT ON COLUMN s_sirene.lk_sirene_succession.datedtrait
 CREATE OR REPLACE VIEW m_activite_eco.geo_v_eco_lot
  AS
  SELECT o.idgeolf,
-    f.lidgeolf,
     o.op_sai,
     o.src_geom AS ref_spa,
     o.sup_m2,
@@ -11640,9 +11386,8 @@ CREATE OR REPLACE VIEW m_activite_eco.geo_v_eco_lot
     f.lnom,
     f.occupant,
     f.pvente_e,
-    f.pvente_e AS l_pvente,
     f.pvente_l,
-    f.pcess_e AS l_pcess,
+    f.pcess_e,
     f.pcess_l,
     f.eff_dep,
     f.eff_n5,
@@ -11660,6 +11405,7 @@ CREATE OR REPLACE VIEW m_activite_eco.geo_v_eco_lot
     f.descrip,
     f.insee,
     f.commune,
+    f.epci,
     o.geom,
     false AS maj_plan
    FROM m_activite_eco.an_eco_lot f,
@@ -11673,9 +11419,10 @@ COMMENT ON VIEW m_activite_eco.geo_v_eco_lot
     IS 'Vue éditable des lots à vocation économique';
 
 GRANT ALL ON TABLE m_activite_eco.geo_v_eco_lot TO sig_create;
-GRANT SELECT ON TABLE m_activite_eco.geo_v_eco_lot TO sig_read;
 GRANT ALL ON TABLE m_activite_eco.geo_v_eco_lot TO create_sig;
 GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_activite_eco.geo_v_eco_lot TO sig_edit;
+GRANT ALL ON TABLE m_activite_eco.geo_v_eco_lot TO sig_stage WITH GRANT OPTION;
+GRANT SELECT ON TABLE m_activite_eco.geo_v_eco_lot TO sig_read;
 
 CREATE TRIGGER t_t1_delete_lot_eco
     INSTEAD OF DELETE
@@ -11696,6 +11443,7 @@ CREATE TRIGGER t_t3_modif_lot_eco
     ON m_activite_eco.geo_v_eco_lot
     FOR EACH ROW
     EXECUTE PROCEDURE m_activite_eco.ft_m_modif_lot_eco();
+
 
 
 -- ############################################################### [geo_v_lot] #######################################################################
@@ -11978,8 +11726,10 @@ CREATE OR REPLACE VIEW m_amenagement.geo_v_lot_mixte
     f.l_tact,
     f.l_tact_99,
     f.l_nom_equ,
+    f.commune,
     f.nb_logaide_loc_r,
     f.nb_logaide_acc_r,
+    f.epci,
     o.geom
    FROM m_amenagement.an_amt_lot_mixte f,
     r_objet.geo_objet_fon_lot o,
@@ -11992,9 +11742,10 @@ COMMENT ON VIEW m_amenagement.geo_v_lot_mixte
     IS 'Vue éditable des lots à vocation mixte';
 
 GRANT ALL ON TABLE m_amenagement.geo_v_lot_mixte TO sig_create;
-GRANT ALL ON TABLE m_amenagement.geo_v_lot_mixte TO create_sig;
 GRANT SELECT ON TABLE m_amenagement.geo_v_lot_mixte TO sig_read;
-GRANT DELETE, UPDATE, SELECT, INSERT ON TABLE m_amenagement.geo_v_lot_mixte TO sig_edit;
+GRANT ALL ON TABLE m_amenagement.geo_v_lot_mixte TO create_sig;
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_amenagement.geo_v_lot_mixte TO sig_edit;
+GRANT ALL ON TABLE m_amenagement.geo_v_lot_mixte TO sig_stage WITH GRANT OPTION;
 
 CREATE TRIGGER t_t1_delete_lot_mixte
     INSTEAD OF DELETE
@@ -12015,6 +11766,8 @@ CREATE TRIGGER t_t3_modif_lot_mixte
     ON m_amenagement.geo_v_lot_mixte
     FOR EACH ROW
     EXECUTE PROCEDURE m_amenagement.ft_m_modif_lot_mixte();
+
+
 
 -- ############################################################### [geo_v_lot_divers] ######################################################################
 
@@ -12041,8 +11794,8 @@ CREATE OR REPLACE VIEW m_amenagement.geo_v_lot_divers
     o.l_voca,
     d.l_nom,
     o.l_nom AS l_nom_lot,
-    o.sup_m2,
     d.l_phase,
+	d.epci,
     o.geom
    FROM r_objet.geo_objet_fon_lot o,
     m_amenagement.an_amt_lot_divers d,
@@ -12055,9 +11808,10 @@ COMMENT ON VIEW m_amenagement.geo_v_lot_divers
     IS 'Vue éditable géographique des lots à vocation divers';
 
 GRANT ALL ON TABLE m_amenagement.geo_v_lot_divers TO sig_create;
-GRANT SELECT ON TABLE m_amenagement.geo_v_lot_divers TO sig_read;
 GRANT ALL ON TABLE m_amenagement.geo_v_lot_divers TO create_sig;
 GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_amenagement.geo_v_lot_divers TO sig_edit;
+GRANT ALL ON TABLE m_amenagement.geo_v_lot_divers TO sig_stage WITH GRANT OPTION;
+GRANT SELECT ON TABLE m_amenagement.geo_v_lot_divers TO sig_read;
 
 CREATE TRIGGER t_t1_delete_lot_divers
     INSTEAD OF DELETE
@@ -12079,12 +11833,14 @@ CREATE TRIGGER t_t3_modif_lot_divers
     FOR EACH ROW
     EXECUTE PROCEDURE m_amenagement.ft_m_modif_lot_divers();
 
+
+
 -- ############################################################### [geo_v_lot_esppu] ######################################################################
 
 
 -- View: m_amenagement.geo_v_lot_esppu
 
--- DROP VIEW m_amenagement.geo_v_lot_esppu;
+DROP VIEW m_amenagement.geo_v_lot_esppu;
 
 CREATE OR REPLACE VIEW m_amenagement.geo_v_lot_esppu
  AS
@@ -12098,12 +11854,18 @@ CREATE OR REPLACE VIEW m_amenagement.geo_v_lot_esppu
     o.src_geom AS ref_spa,
     o.op_sai,
     o.l_voca,
-    o.sup_m2,
     o.l_nom AS l_nom_lot,
+	ep.op_sai as op_sai_lot,
+	ep.org_sai as org_sai_lot,
+	ep.l_nom,
+	ep.surf,
+	ep.l_surf_l,
+	ep.epci,
     o.geom
    FROM r_objet.geo_objet_fon_lot o,
-    m_amenagement.an_amt_lot_stade s
-  WHERE o.idgeolf = s.idgeolf AND o.l_voca::text = '50'::text;
+    m_amenagement.an_amt_lot_stade s,
+	m_amenagement.an_amt_lot_esppu ep
+  WHERE o.idgeolf = s.idgeolf AND ep.idgeolf = o.idgeolf AND o.l_voca::text = '50'::text;
 
 ALTER TABLE m_amenagement.geo_v_lot_esppu
     OWNER TO create_sig;
@@ -12111,9 +11873,10 @@ COMMENT ON VIEW m_amenagement.geo_v_lot_esppu
     IS 'Vue éditable géographique des lots dont la vocation est un espace public';
 
 GRANT ALL ON TABLE m_amenagement.geo_v_lot_esppu TO sig_create;
-GRANT SELECT ON TABLE m_amenagement.geo_v_lot_esppu TO sig_read;
 GRANT ALL ON TABLE m_amenagement.geo_v_lot_esppu TO create_sig;
 GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_amenagement.geo_v_lot_esppu TO sig_edit;
+GRANT ALL ON TABLE m_amenagement.geo_v_lot_esppu TO sig_stage WITH GRANT OPTION;
+GRANT SELECT ON TABLE m_amenagement.geo_v_lot_esppu TO sig_read;
 
 CREATE TRIGGER t_t1_delete_lot_esppu
     INSTEAD OF DELETE
@@ -12134,7 +11897,6 @@ CREATE TRIGGER t_t3_modif_lot_esppu
     ON m_amenagement.geo_v_lot_esppu
     FOR EACH ROW
     EXECUTE PROCEDURE m_amenagement.ft_m_modif_lot_esppu();
-
 
 
 
