@@ -125,7 +125,6 @@ DROP SEQUENCE IF EXISTS m_activite_eco.geo_eco_loc_act_seq;
 DROP SEQUENCE IF EXISTS m_activite_eco.geo_eco_loc_patri_seq;
 DROP SEQUENCE IF EXISTS m_activite_eco.geo_eco_bati_act_seq;
 DROP SEQUENCE IF EXISTS m_activite_eco.lk_eco_bati_site_seq;
-DROP SEQUENCE IF EXISTS m_activite_eco.lk_eco_loc_site_seq;
 DROP SEQUENCE IF EXISTS m_activite_eco.lk_eco_bati_loc_seq;
 DROP SEQUENCE IF EXISTS m_activite_eco.lk_eco_loc_etab_seq;
 DROP SEQUENCE IF EXISTS m_activite_eco.an_eco_evenmt_media_seq;
@@ -409,24 +408,6 @@ ALTER SEQUENCE m_activite_eco.lk_eco_bati_site_seq
 GRANT ALL ON SEQUENCE m_activite_eco.lk_eco_bati_site_seq TO PUBLIC;
 GRANT ALL ON SEQUENCE m_activite_eco.lk_eco_bati_site_seq TO create_sig;
 
--- ############################################################## [lk_eco_loc_site_seq] ##################################################################
-
--- SEQUENCE: m_activite_eco.lk_eco_loc_site_seq
-
--- DROP SEQUENCE m_activite_eco.lk_eco_loc_site_seq;
-
-CREATE SEQUENCE m_activite_eco.lk_eco_loc_site_seq
-    INCREMENT 1
-    START 1
-    MINVALUE 1
-    MAXVALUE 9223372036854775807
-    CACHE 1;
-
-ALTER SEQUENCE m_activite_eco.lk_eco_loc_site_seq
-    OWNER TO create_sig;
-
-GRANT ALL ON SEQUENCE m_activite_eco.lk_eco_loc_site_seq TO PUBLIC;
-GRANT ALL ON SEQUENCE m_activite_eco.lk_eco_loc_site_seq TO create_sig;
 
 -- ############################################################## [geo_eco_bati_act_seq] ##################################################################
 
