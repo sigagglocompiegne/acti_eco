@@ -1779,6 +1779,80 @@ GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_lk_adresseetablissement() TO creat
 GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_lk_adresseetablissement() TO PUBLIC;
 
 
+
+-- ################################################## [ft_m_insert_bati_site] ######################################################
+
+-- FUNCTION: m_activite_eco.ft_m_insert_bati_site()
+
+-- DROP FUNCTION m_activite_eco.ft_m_insert_bati_site();
+
+CREATE FUNCTION m_activite_eco.ft_m_insert_bati_site()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$
+
+BEGIN
+
+     	-- association d'un bâti à un ou plusieurs sites
+		INSERT INTO m_activite_eco.lk_eco_bati_site (idsite,idbati)
+		SELECT idsite, new.idbati FROM m_activite_eco.geo_eco_site WHERE st_intersects(st_pointonsurface(new.geom),geom) IS TRUE;
+		
+
+     return new ;
+
+END;
+
+$BODY$;
+
+ALTER FUNCTION m_activite_eco.ft_m_insert_bati_site()
+    OWNER TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_insert_bati_site() TO PUBLIC;
+
+GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_insert_bati_site() TO create_sig;
+
+COMMENT ON FUNCTION m_activite_eco.ft_m_insert_bati_site()
+    IS 'Fonction gérant l''affectation des bâtiments d''activité à un ou plusieurs sites à la saisie';
+
+
+-- ################################################## [ft_m_lk_adresseetablissement] ######################################################
+
+-- FUNCTION: m_activite_eco.ft_m_delete_bati_site()
+
+-- DROP FUNCTION m_activite_eco.ft_m_delete_bati_site();
+
+CREATE FUNCTION m_activite_eco.ft_m_delete_bati_site()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$
+
+BEGIN
+
+     	DELETE FROM m_activite_eco.lk_eco_bati_site WHERE idbati = old.idbati;
+		
+
+     return new ;
+
+END;
+
+$BODY$;
+
+ALTER FUNCTION m_activite_eco.ft_m_delete_bati_site()
+    OWNER TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_delete_bati_site() TO PUBLIC;
+
+GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_delete_bati_site() TO create_sig;
+
+COMMENT ON FUNCTION m_activite_eco.ft_m_delete_bati_site()
+    IS 'Fonction gérant la suppression des relations à un ou plusieurs sites si suppression du bâtiment';
+
+
+
 -- ####################################################################################################################################################
 -- ###                                                            FONCTION R_OBJET                                                                  ###
 -- ####################################################################################################################################################
@@ -7259,7 +7333,7 @@ COMMENT ON COLUMN m_activite_eco.an_eco_lot.epci
 
 CREATE TABLE m_activite_eco.geo_eco_bati_act
 (
-    idbati character varying(10) NOT NULL DEFAULT 'B' || nextval('m_activite_eco.geo_eco_bati_act_seq'::regclass),
+    idbati character varying(10) COLLATE pg_catalog."default" NOT NULL DEFAULT ('B'::text || nextval('m_activite_eco.geo_eco_bati_act_seq'::regclass)),
     libelle character varying(100) COLLATE pg_catalog."default",
     surf_p integer,
     op_sai character varying(80) COLLATE pg_catalog."default",
@@ -7284,19 +7358,27 @@ TABLESPACE pg_default;
 ALTER TABLE m_activite_eco.geo_eco_bati_act
     OWNER to create_sig;
 
-GRANT SELECT ON TABLE m_activite_eco.geo_eco_bati_act TO sig_read;
-
 GRANT ALL ON TABLE m_activite_eco.geo_eco_bati_act TO sig_create;
 
 GRANT ALL ON TABLE m_activite_eco.geo_eco_bati_act TO create_sig;
 
 GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_activite_eco.geo_eco_bati_act TO sig_edit;
 
+GRANT ALL ON TABLE m_activite_eco.geo_eco_bati_act TO sig_stage WITH GRANT OPTION;
+
+GRANT SELECT ON TABLE m_activite_eco.geo_eco_bati_act TO sig_read;
+
 COMMENT ON TABLE m_activite_eco.geo_eco_bati_act
     IS 'Données géographiques contenant les bâtiments d''activités identifiés';
 
 COMMENT ON COLUMN m_activite_eco.geo_eco_bati_act.idbati
     IS 'Identifiant unique de l''objet';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_bati_act.libelle
+    IS 'Nom usuel du bâtiment';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_bati_act.surf_p
+    IS 'Surface de plancher';
 
 COMMENT ON COLUMN m_activite_eco.geo_eco_bati_act.op_sai
     IS 'Opérateur de saisir d''objet à l''ARC';
@@ -7307,24 +7389,37 @@ COMMENT ON COLUMN m_activite_eco.geo_eco_bati_act.src_geom
 COMMENT ON COLUMN m_activite_eco.geo_eco_bati_act.sup_m2
     IS 'Surface totale de l''objet en m²';
 
-COMMENT ON COLUMN m_activite_eco.geo_eco_bati_act.geom
-    IS 'Champ contenant la géométrie';
-
 COMMENT ON COLUMN m_activite_eco.geo_eco_bati_act.date_sai
     IS 'Date de saisie de l''objet';
 
 COMMENT ON COLUMN m_activite_eco.geo_eco_bati_act.date_maj
     IS 'Date de mise à jour';
 
-
-COMMENT ON COLUMN m_activite_eco.geo_eco_bati_act.libelle
-    IS 'Nom usuel du bâtiment';
-    
-COMMENT ON COLUMN m_activite_eco.geo_eco_bati_act.surf_p
-    IS 'Surface de plancher';
-    
 COMMENT ON COLUMN m_activite_eco.geo_eco_bati_act.epci
     IS 'Autorité compétente';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_bati_act.geom
+    IS 'Champ contenant la géométrie';
+
+-- Trigger: t_t1_geo_eco_bati_act_bati_site_delete
+
+-- DROP TRIGGER t_t1_geo_eco_bati_act_bati_site_delete ON m_activite_eco.geo_eco_bati_act;
+
+CREATE TRIGGER t_t1_geo_eco_bati_act_bati_site_delete
+    AFTER DELETE
+    ON m_activite_eco.geo_eco_bati_act
+    FOR EACH ROW
+    EXECUTE PROCEDURE m_activite_eco.ft_m_delete_bati_site();
+
+-- Trigger: t_t1_geo_eco_bati_act_bati_site_insert
+
+-- DROP TRIGGER t_t1_geo_eco_bati_act_bati_site_insert ON m_activite_eco.geo_eco_bati_act;
+
+CREATE TRIGGER t_t1_geo_eco_bati_act_bati_site_insert
+    BEFORE INSERT
+    ON m_activite_eco.geo_eco_bati_act
+    FOR EACH ROW
+    EXECUTE PROCEDURE m_activite_eco.ft_m_insert_bati_site();
 
 -- ############################################################## [geo_eco_loc_act] ####################################################################
 
@@ -10757,7 +10852,7 @@ CREATE TABLE m_activite_eco.lk_eco_contact
 (
     id integer NOT NULL DEFAULT nextval('m_activite_eco.lk_eco_contact_seq'::regclass),
     idcontact integer NOT NULL,
-    idobjet integer NOT NULL,
+    idobjet character varying(15) NOT NULL COLLATE pg_catalog."default",
     CONSTRAINT lk_eco_contact_pkey PRIMARY KEY (id),
     CONSTRAINT lk_eco_contact_fkey FOREIGN KEY (idcontact)
         REFERENCES m_activite_eco.an_eco_contact (idcontact) MATCH SIMPLE
@@ -10844,7 +10939,7 @@ COMMENT ON COLUMN m_activite_eco.lk_eco_proc.idsite
 CREATE TABLE m_activite_eco.lk_eco_bati_site
 (
     id integer NOT NULL DEFAULT nextval('m_activite_eco.lk_eco_bati_site_seq'::regclass),
-    idbati character varying(5) NOT NULL,
+    idbati character varying(15) NOT NULL,
     idsite character varying(5) NOT NULL,
     CONSTRAINT lk_eco_bati_site_pkey PRIMARY KEY (id)
 )
@@ -10877,6 +10972,9 @@ COMMENT ON COLUMN m_activite_eco.lk_eco_bati_site.idbati
 
 COMMENT ON COLUMN m_activite_eco.lk_eco_bati_site.idsite
     IS 'Identifiant unique non signifiant de l''objet site';
+    
+
+
     
 -- ############################################################## [lk_eco_loc_site] ####################################################################
 
