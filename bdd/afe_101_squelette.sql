@@ -1817,7 +1817,7 @@ COMMENT ON FUNCTION m_activite_eco.ft_m_insert_bati_site()
     IS 'Fonction gérant l''affectation des bâtiments d''activité à un ou plusieurs sites à la saisie';
 
 
--- ################################################## [ft_m_lk_adresseetablissement] ######################################################
+-- ################################################## [ft_m_delete_bati_site] ######################################################
 
 -- FUNCTION: m_activite_eco.ft_m_delete_bati_site()
 
@@ -1850,6 +1850,41 @@ GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_delete_bati_site() TO create_sig;
 
 COMMENT ON FUNCTION m_activite_eco.ft_m_delete_bati_site()
     IS 'Fonction gérant la suppression des relations à un ou plusieurs sites si suppression du bâtiment';
+
+-- ################################################## [ft_m_insert_lot_eco] ######################################################
+
+-- FUNCTION: m_activite_eco.ft_m_insert_lot_eco()
+
+-- DROP FUNCTION m_activite_eco.ft_m_insert_lot_eco();
+
+CREATE OR REPLACE FUNCTION m_activite_eco.ft_m_delete_an_eco_contact()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$
+
+BEGIN
+
+     	DELETE FROM m_activite_eco.lk_eco_contact WHERE idcontact = old.idcontact;
+		
+
+     return new ;
+
+END;
+
+$BODY$;
+
+ALTER FUNCTION m_activite_eco.ft_m_delete_an_eco_contact()
+    OWNER TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_delete_an_eco_contact() TO PUBLIC;
+
+GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_delete_an_eco_contact() TO create_sig;
+
+COMMENT ON FUNCTION m_activite_eco.ft_m_delete_an_eco_contact()
+    IS 'Fonction gérant la suppression des contacts dans les tables de relation avec les objets';
+
 
 
 
@@ -7069,6 +7104,17 @@ COMMENT ON COLUMN m_activite_eco.an_eco_contact.observ
     COMMENT ON COLUMN m_activite_eco.an_eco_contact.idobjet
     IS 'Clé temporaire pour la relation direct dans GEO en attendant la correction sur les relations N..M';
     
+
+-- Trigger: t_t1_an_eco_contact_delete
+
+-- DROP TRIGGER t_t1_an_eco_contact_delete ON m_activite_eco.an_eco_contact;
+
+CREATE TRIGGER t_t1_an_eco_contact_delete
+    AFTER DELETE
+    ON m_activite_eco.an_eco_contact
+    FOR EACH ROW
+    EXECUTE PROCEDURE m_activite_eco.ft_m_delete_an_eco_contact();
+    
 -- ############################################################## [an_eco_evenmt] ##################################################################
 
 -- Table: m_activite_eco.an_eco_evenmt
@@ -7411,15 +7457,25 @@ CREATE TRIGGER t_t1_geo_eco_bati_act_bati_site_delete
     FOR EACH ROW
     EXECUTE PROCEDURE m_activite_eco.ft_m_delete_bati_site();
 
--- Trigger: t_t1_geo_eco_bati_act_bati_site_insert
+-- Trigger: t_t1_geo_eco_bati_site_insert
 
--- DROP TRIGGER t_t1_geo_eco_bati_act_bati_site_insert ON m_activite_eco.geo_eco_bati_act;
+-- DROP TRIGGER t_t1_geo_eco_bati_site_insert ON m_activite_eco.geo_eco_bati_act;
 
-CREATE TRIGGER t_t1_geo_eco_bati_act_bati_site_insert
+CREATE TRIGGER t_t1_geo_eco_bati_site_insert
     BEFORE INSERT
     ON m_activite_eco.geo_eco_bati_act
     FOR EACH ROW
     EXECUTE PROCEDURE m_activite_eco.ft_m_insert_bati_site();
+    
+-- Trigger: t_t2_geo_eco_bati_site_delete
+
+-- DROP TRIGGER t_t2_geo_eco_bati_site_delete ON m_activite_eco.geo_eco_bati_act;
+
+CREATE TRIGGER t_t2_geo_eco_bati_site_delete
+    AFTER DELETE
+    ON m_activite_eco.geo_eco_bati_act
+    FOR EACH ROW
+    EXECUTE PROCEDURE m_activite_eco.ft_m_delete_bati_site();
 
 -- ############################################################## [geo_eco_loc_act] ####################################################################
 
