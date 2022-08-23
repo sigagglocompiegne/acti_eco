@@ -4780,13 +4780,13 @@ CREATE OR REPLACE FUNCTION m_amenagement.ft_m_delete_lot_esppu()
     VOLATILE NOT LEAKPROOF
 AS $BODY$
 
-
 BEGIN
 
     DELETE FROM m_foncier.an_cession WHERE idces=(SELECT lf.idces FROM m_foncier.an_cession f, m_foncier.lk_cession_lot lf WHERE f.idces=lf.idces AND lf.idgeolf=old.idgeolf);
     DELETE FROM m_foncier.lk_cession_lot WHERE idgeolf=old.idgeolf;
     DELETE FROM m_amenagement.an_amt_lot_stade WHERE idgeolf=old.idgeolf;
     DELETE FROM r_objet.geo_objet_fon_lot WHERE idgeolf=old.idgeolf;
+	DELETE FROM m_amenagement.lk_amt_lot_site WHERE idgeolf=old.idgeolf;
     return new ;
 
 END;
@@ -4802,6 +4802,7 @@ GRANT EXECUTE ON FUNCTION m_amenagement.ft_m_delete_lot_esppu() TO create_sig;
 
 COMMENT ON FUNCTION m_amenagement.ft_m_delete_lot_esppu()
     IS 'Fonction gérant la suppression des données liées aux lots à vocation espace public lors de la suppression de l''objet';
+
 
 -- ############################################################ [ft_m_insert_lot_esppu] ######################################################################
 
@@ -4822,20 +4823,12 @@ DECLARE lot_surf integer;
 
 BEGIN
 
-     v_idgeolf := (SELECT nextval('idgeo_seq'::regclass));
+     v_idgeolf := (SELECT nextval('r_objet.idgeo_seq'::regclass));
 
      INSERT INTO r_objet.geo_objet_fon_lot SELECT v_idgeolf,new.op_sai,new.ref_spa,null,'50',new.geom,null,null,new.l_nom_lot;
 
      INSERT INTO m_amenagement.an_amt_lot_stade SELECT v_idgeolf,
-						 (
-							SELECT DISTINCT
-								idsite 
-							FROM 
-								r_objet.geo_objet_ope
-							WHERE
-								st_intersects(geo_objet_ope.geom,ST_PointOnSurface(new.geom)) = true
-								
-						  ),
+						 
 						  new.stade_amng,
 						  new.l_amng2,
 						  new.stade_comm,
@@ -4843,13 +4836,43 @@ BEGIN
 						  new.l_comm2_12,
 						  new.etat_occup;
 
-     
+     lot_surf:=round(cast(st_area(new.geom) as numeric),0);
+
+    -- insertion des lots uniquements mixte 
+    -- recherche si le lot dessiner est dans un site : si oui copie une ligne dans le métier site et foncier, si non copie uniquement dans le métier foncier
+    
+
+						INSERT INTO m_amenagement.an_amt_lot_esppu SELECT v_idgeolf,
+							
+							new.op_sai,
+							new.org_sai_lot,
+							new.l_nom,
+							lot_surf,
+							now(),
+							null,
+				
+							CASE WHEN length(cast (lot_surf as character varying)) >= 1 and length(cast (lot_surf as character varying)) <= 3 THEN lot_surf || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 4 THEN replace(to_char(lot_surf,'FM9G999'),',',' ') || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 5 THEN replace(to_char(lot_surf,'FM99G999'),',',' ') || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 6 THEN replace(to_char(lot_surf,'FM999G999'),',',' ') || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 7 THEN replace(to_char(lot_surf,'FM9G999G999'),',',' ') || 'm²'
+								   WHEN length(cast (lot_surf as character varying)) = 8 THEN replace(to_char(lot_surf,'FM99G999G999'),',',' ') || 'm²'
+								   END,
+						    new.epci,
+							new.l_observ
+						;
+	 
+	 
+     -- ici contrôle si hors ARC ne passe pas
+     IF (select insee from r_osm.geo_osm_commune where st_intersects(st_pointonsurface(new.geom),geom)) 
+	 IN ('60023','60067','60068','60070','60151','60156','60159','60323','60325','60326','60337','60338','60382','60402','60447',
+		'60447','60578','60579','60597','60600','60665','60667','60674') THEN 
+
      -- calcul de l'identifiant du dossier de cession
      v_idces := (SELECT nextval('m_foncier.ces_seq'::regclass));
 
      -- insertion de tous lots fonciers dans la table métier foncier
      INSERT INTO m_foncier.lk_cession_lot SELECT v_idgeolf, v_idces;	
-
 
      -- insertion d'une ligne dans an_cession en créant un idces qui est lui même réinjecté dans lk_cession_lot
 
@@ -4867,7 +4890,7 @@ BEGIN
 						(SELECT insee FROM r_osm.geo_osm_commune WHERE st_intersects(st_pointonsurface(new.geom),geom)),
 						null,
 						'00',
-						null,
+						new.l_lnom,
 						null,
 						null,
 						null,
@@ -4899,16 +4922,16 @@ BEGIN
 						null,
 						null,
 						null,
-						(SELECT DISTINCT
-								idsite 
-							FROM 
-								r_objet.geo_objet_ope
-							WHERE
-								st_intersects(geo_objet_ope.geom,st_pointonsurface(new.geom)) = true
-								
-							),
+						null,
 							null
 						);
+
+		END IF;
+		
+		-- association d'un lot à un ou plusieurs sites
+		INSERT INTO m_amenagement.lk_amt_lot_site (idsite,idgeolf)
+		SELECT idsite, v_idgeolf FROM m_activite_eco.geo_eco_site WHERE st_intersects(st_pointonsurface(new.geom),geom) IS TRUE;
+		
 
      return new ;
 
@@ -4925,6 +4948,7 @@ GRANT EXECUTE ON FUNCTION m_amenagement.ft_m_insert_lot_esppu() TO create_sig;
 
 COMMENT ON FUNCTION m_amenagement.ft_m_insert_lot_esppu()
     IS 'Fonction gérant l''insertion des données liées aux lots à vocation espace public lors de l''insertion de l''objet';
+
 
 -- ############################################################ [ft_m_modif_lot_esppu] ######################################################################
 
@@ -4943,8 +4967,26 @@ BEGIN
 
 		UPDATE r_objet.geo_objet_fon_lot SET geom = new.geom, date_maj = now(), src_geom = new.ref_spa, op_sai=new.op_sai,l_nom=new.l_nom_lot WHERE idgeolf = new.idgeolf;
 
-	        UPDATE m_amenagement.an_amt_lot_stade SET stade_amng = new.stade_amng, l_amng2 = new.l_amng2, stade_comm = new.stade_comm, l_comm2 = new.l_comm2, l_comm2_12 = new.l_comm2_12, etat_occup =  new.etat_occup WHERE idgeolf = new.idgeolf;
+	    UPDATE m_amenagement.an_amt_lot_stade SET stade_amng = new.stade_amng, l_amng2 = new.l_amng2, stade_comm = new.stade_comm, l_comm2 = new.l_comm2, l_comm2_12 = new.l_comm2_12, etat_occup =  new.etat_occup WHERE idgeolf = new.idgeolf;
+		UPDATE m_amenagement.an_amt_lot_esppu SET
 
+							surf = new.surf,
+							l_surf_l = 
+								   CASE WHEN length(cast (new.surf as character varying)) >= 1 and length(cast (new.surf as character varying)) <= 3 THEN new.surf || 'm²'
+								   WHEN length(cast (new.surf as character varying)) = 4 THEN replace(to_char(new.surf,'FM9G999'),',',' ') || 'm²'
+								   WHEN length(cast (new.surf as character varying)) = 5 THEN replace(to_char(new.surf,'FM99G999'),',',' ') || 'm²'
+								   WHEN length(cast (new.surf as character varying)) = 6 THEN replace(to_char(new.surf,'FM999G999'),',',' ') || 'm²'
+								   WHEN length(cast (new.surf as character varying)) = 7 THEN replace(to_char(new.surf,'FM9G999G999'),',',' ') || 'm²'
+								   WHEN length(cast (new.surf as character varying)) = 8 THEN replace(to_char(new.surf,'FM99G999G999'),',',' ') || 'm²'
+								   END,
+							op_sai = new.op_sai,
+							org_sai = new.org_sai_lot,
+							l_nom = new.l_nom,
+							date_maj = now(),
+					
+							epci = new.epci,
+							l_observ = new.l_observ
+		WHERE an_amt_lot_esppu.idgeolf=new.idgeolf;
 		
 
      return new;
@@ -4960,6 +5002,7 @@ GRANT EXECUTE ON FUNCTION m_amenagement.ft_m_modif_lot_esppu() TO create_sig;
 
 COMMENT ON FUNCTION m_amenagement.ft_m_modif_lot_esppu()
     IS 'Fonction gérant la mise à jour des données liées aux lots à vocation espace public lors de la mise à jour de l''objet';
+
 
 
 -- ####################################################################################################################################################
@@ -11813,6 +11856,7 @@ CREATE OR REPLACE VIEW m_amenagement.geo_v_lot_esppu
 	ep.surf,
 	ep.l_surf_l,
 	ep.epci,
+	ep.l_observ,
     o.geom
    FROM r_objet.geo_objet_fon_lot o,
     m_amenagement.an_amt_lot_stade s,
