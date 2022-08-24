@@ -1786,7 +1786,7 @@ GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_lk_adresseetablissement() TO PUBLI
 
 -- DROP FUNCTION m_activite_eco.ft_m_insert_bati_site();
 
-CREATE FUNCTION m_activite_eco.ft_m_insert_bati_site()
+CREATE OR REPLACE FUNCTION m_activite_eco.ft_m_insert_bati_site()
     RETURNS trigger
     LANGUAGE 'plpgsql'
     COST 100
@@ -1798,7 +1798,10 @@ BEGIN
      	-- association d'un bâti à un ou plusieurs sites
 		INSERT INTO m_activite_eco.lk_eco_bati_site (idsite,idbati)
 		SELECT idsite, new.idbati FROM m_activite_eco.geo_eco_site WHERE st_intersects(st_pointonsurface(new.geom),geom) IS TRUE;
-		
+	
+	-- association d'un local à un bâtiment
+		INSERT INTO m_activite_eco.lk_eco_bati_loc (idbati,idloc)
+		SELECT new.idbati, idloc FROM m_activite_eco.geo_eco_loc_act WHERE st_intersects(new.geom,geom) IS TRUE;
 
      return new ;
 
@@ -1823,7 +1826,7 @@ COMMENT ON FUNCTION m_activite_eco.ft_m_insert_bati_site()
 
 -- DROP FUNCTION m_activite_eco.ft_m_delete_bati_site();
 
-CREATE FUNCTION m_activite_eco.ft_m_delete_bati_site()
+CREATE OR REPLACE FUNCTION m_activite_eco.ft_m_delete_bati_site()
     RETURNS trigger
     LANGUAGE 'plpgsql'
     COST 100
@@ -1833,6 +1836,7 @@ AS $BODY$
 BEGIN
 
      	DELETE FROM m_activite_eco.lk_eco_bati_site WHERE idbati = old.idbati;
+	DELETE FROM m_activite_eco.lk_eco_bati_loc WHERE idbati = old.idbati;
 		
 
      return new ;
@@ -1849,13 +1853,13 @@ GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_delete_bati_site() TO PUBLIC;
 GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_delete_bati_site() TO create_sig;
 
 COMMENT ON FUNCTION m_activite_eco.ft_m_delete_bati_site()
-    IS 'Fonction gérant la suppression des relations à un ou plusieurs sites si suppression du bâtiment';
+    IS 'Fonction gérant la suppression des relations à un ou plusieurs sites si suppression du bâtiment et suppression des relations avec les lots';
 
--- ################################################## [ft_m_insert_lot_eco] ######################################################
+-- ################################################## [ft_m_delete_an_eco_contact] ######################################################
 
--- FUNCTION: m_activite_eco.ft_m_insert_lot_eco()
+-- FUNCTION: m_activite_eco.ft_m_delete_an_eco_contact()
 
--- DROP FUNCTION m_activite_eco.ft_m_insert_lot_eco();
+-- DROP FUNCTION m_activite_eco.ft_m_delete_an_eco_contact();
 
 CREATE OR REPLACE FUNCTION m_activite_eco.ft_m_delete_an_eco_contact()
     RETURNS trigger
@@ -1885,8 +1889,80 @@ GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_delete_an_eco_contact() TO create_
 COMMENT ON FUNCTION m_activite_eco.ft_m_delete_an_eco_contact()
     IS 'Fonction gérant la suppression des contacts dans les tables de relation avec les objets';
 
+-- ################################################## [ft_m_insert_loc_rel] ######################################################
 
+-- FUNCTION: m_activite_eco.ft_m_insert_loc_rel()
 
+-- DROP FUNCTION m_activite_eco.ft_m_insert_loc_rel();
+
+CREATE FUNCTION m_activite_eco.ft_m_insert_loc_rel()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$
+
+BEGIN
+
+     	-- association d'un local à un ou plusieurs sites
+		INSERT INTO m_activite_eco.lk_eco_loc_site (idsite,idloc)
+		SELECT idsite, new.idloc FROM m_activite_eco.geo_eco_site WHERE st_intersects(st_pointonsurface(new.geom),geom) IS TRUE;
+		
+        -- association d'un local à un bâtiment
+		INSERT INTO m_activite_eco.lk_eco_bati_loc (idbati,idloc)
+		SELECT idbati, new.idloc FROM m_activite_eco.geo_eco_bati_act WHERE st_intersects(st_pointonsurface(new.geom),geom) IS TRUE;
+		
+
+     return new ;
+
+END;
+
+$BODY$;
+
+ALTER FUNCTION m_activite_eco.ft_m_insert_loc_rel()
+    OWNER TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_insert_loc_rel() TO PUBLIC;
+
+GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_insert_loc_rel() TO create_sig;
+
+COMMENT ON FUNCTION m_activite_eco.ft_m_insert_loc_rel()
+    IS 'Fonction gérant l''affectation des locaux aux différentes échelles de relations (site, bâtiment)';
+
+-- ################################################## [ft_m_delete_loc_rel] ######################################################
+
+-- FUNCTION: m_activite_eco.ft_m_delete_loc_rel()
+
+-- DROP FUNCTION m_activite_eco.ft_m_delete_loc_rel();
+
+CREATE OR REPLACE FUNCTION m_activite_eco.ft_m_delete_loc_rel()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$
+
+BEGIN
+
+     	DELETE FROM m_activite_eco.lk_eco_loc_site WHERE idloc = old.idloc;
+	DELETE FROM m_activite_eco.lk_eco_bati_loc WHERE idloc = old.idloc;
+		
+
+     return new ;
+
+END;
+
+$BODY$;
+
+ALTER FUNCTION m_activite_eco.ft_m_delete_loc_rel()
+    OWNER TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_delete_loc_rel() TO PUBLIC;
+
+GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_delete_loc_rel() TO create_sig;
+
+COMMENT ON FUNCTION m_activite_eco.ft_m_delete_loc_rel()
+    IS 'Fonction gérant la suppression des relations dans les tables de relation avec les sites et les bâtiments';
 
 -- ####################################################################################################################################################
 -- ###                                                            FONCTION R_OBJET                                                                  ###
@@ -7450,10 +7526,10 @@ COMMENT ON COLUMN m_activite_eco.geo_eco_bati_act.geom
     IS 'Champ contenant la géométrie';
 
 COMMENT ON COLUMN m_activite_eco.geo_eco_bati_act.insee
-    IS 'Code Insee de la commune d'assise du bâtiment';
+    IS 'Code Insee de la commune d''assise du bâtiment';
 
 COMMENT ON COLUMN m_activite_eco.geo_eco_bati_act.commune
-    IS 'Libellé de la commune d'assise du bâtiment';
+    IS 'Libellé de la commune d''assise du bâtiment';
 
 -- Trigger: t_t1_geo_eco_bati_act_bati_site_delete
 
@@ -7520,12 +7596,13 @@ CREATE TABLE m_activite_eco.geo_eco_loc_act
     sourceloc character varying(254) COLLATE pg_catalog."default",
     op_sai character varying(80) COLLATE pg_catalog."default",
     src_geom character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
-    sup_m2 double precision,
     date_sai timestamp without time zone,
     date_maj timestamp without time zone,
     observ character varying(1000) COLLATE pg_catalog."default",
+    insee character varying(5) COLLATE pg_catalog."default",
+    commune character varying(100) COLLATE pg_catalog."default",
     epci character varying(10) COLLATE pg_catalog."default",
-    geom geometry(MultiPolygon,2154) NOT NULL,
+    geom geometry(Point,2154) NOT NULL,
     CONSTRAINT geo_eco_loc_act_pkey PRIMARY KEY (idloc),
        CONSTRAINT geo_eco_loc_act_typ_fkey FOREIGN KEY (typ)
         REFERENCES m_activite_eco.lt_eco_typloc (code) MATCH SIMPLE
@@ -7559,7 +7636,7 @@ COMMENT ON COLUMN m_activite_eco.geo_eco_loc_act.idloc
     IS 'Identifiant unique de l''objet';
 
 COMMENT ON COLUMN m_activite_eco.geo_eco_loc_act.op_sai
-    IS 'Opérateur de saisir d''objet à l''ARC';
+    IS 'Opérateur de saisie d''objet à l''ARC';
 
 COMMENT ON COLUMN m_activite_eco.geo_eco_loc_act.src_geom
     IS 'Référentiel spatial de saisie';
@@ -7620,6 +7697,42 @@ COMMENT ON COLUMN m_activite_eco.geo_eco_loc_act.surf_p
     
 COMMENT ON COLUMN m_activite_eco.geo_eco_loc_act.epci
     IS 'Autorité compétente';
+    
+    COMMENT ON COLUMN m_activite_eco.geo_eco_loc_act.insee
+    IS 'Code Insee de la commune d''assise du local';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_loc_act.commune
+    IS 'Libellé de la commune d''assise du local';
+    
+-- Trigger: t_t1_geo_eco_loc_act_insert
+
+-- DROP TRIGGER t_t1_geo_eco_loc_act_insert ON m_activite_eco.geo_eco_loc_act;
+
+CREATE TRIGGER t_t1_geo_eco_loc_act_insert
+    BEFORE INSERT
+    ON m_activite_eco.geo_eco_loc_act
+    FOR EACH ROW
+    EXECUTE PROCEDURE m_activite_eco.ft_m_insert_loc_rel();
+    
+-- Trigger: t_t2_geo_eco_loc_act_delete
+
+-- DROP TRIGGER t_t2_geo_eco_loc_act_delete ON m_activite_eco.geo_eco_loc_act;
+
+CREATE TRIGGER t_t2_geo_eco_loc_act_delete
+    AFTER DELETE
+    ON m_activite_eco.geo_eco_loc_act
+    FOR EACH ROW
+    EXECUTE PROCEDURE m_activite_eco.ft_m_delete_loc_rel();
+    
+-- Trigger: t_t3_geo_eco_bati_site_insee_commune
+
+-- DROP TRIGGER t_t3_geo_eco_bati_site_insee_commune ON m_activite_eco.geo_eco_bati_act;
+
+CREATE TRIGGER t_t3_geo_eco_loc_act_insee_commune
+    BEFORE INSERT OR UPDATE
+    ON m_activite_eco.geo_eco_loc_act
+    FOR EACH ROW
+    EXECUTE PROCEDURE public.ft_r_commune_c();
     
 -- ############################################################## [geo_eco_loc_patri] ####################################################################
 
