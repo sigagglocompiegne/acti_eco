@@ -7388,6 +7388,8 @@ CREATE TABLE m_activite_eco.geo_eco_bati_act
     date_sai timestamp without time zone,
     date_maj timestamp without time zone,
     observ character varying(1000) COLLATE pg_catalog."default",
+    insee character varying(5) COLLATE pg_catalog."default",
+    commune character varying(100) COLLATE pg_catalog."default",
     epci character varying(10) COLLATE pg_catalog."default",
     geom geometry(MultiPolygon,2154) NOT NULL,
     CONSTRAINT geo_eco_bati_act_pkey PRIMARY KEY (idbati),
@@ -7447,6 +7449,12 @@ COMMENT ON COLUMN m_activite_eco.geo_eco_bati_act.epci
 COMMENT ON COLUMN m_activite_eco.geo_eco_bati_act.geom
     IS 'Champ contenant la géométrie';
 
+COMMENT ON COLUMN m_activite_eco.geo_eco_bati_act.insee
+    IS 'Code Insee de la commune d'assise du bâtiment';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_bati_act.commune
+    IS 'Libellé de la commune d'assise du bâtiment';
+
 -- Trigger: t_t1_geo_eco_bati_act_bati_site_delete
 
 -- DROP TRIGGER t_t1_geo_eco_bati_act_bati_site_delete ON m_activite_eco.geo_eco_bati_act;
@@ -7476,6 +7484,16 @@ CREATE TRIGGER t_t2_geo_eco_bati_site_delete
     ON m_activite_eco.geo_eco_bati_act
     FOR EACH ROW
     EXECUTE PROCEDURE m_activite_eco.ft_m_delete_bati_site();
+    
+-- Trigger: t_t3_geo_eco_bati_site_insee_commune
+
+-- DROP TRIGGER t_t3_geo_eco_bati_site_insee_commune ON m_activite_eco.geo_eco_bati_act;
+
+CREATE TRIGGER t_t3_geo_eco_bati_site_insee_commune
+    BEFORE INSERT OR UPDATE
+    ON m_activite_eco.geo_eco_bati_act
+    FOR EACH ROW
+    EXECUTE PROCEDURE public.ft_r_commune_c();
 
 -- ############################################################## [geo_eco_loc_act] ####################################################################
 
