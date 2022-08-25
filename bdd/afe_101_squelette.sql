@@ -7755,7 +7755,7 @@ CREATE TABLE m_activite_eco.geo_eco_loc_patri
     date_maj timestamp without time zone,
     observ character varying(1000) COLLATE pg_catalog."default",
     epci character varying(10) COLLATE pg_catalog."default",
-    geom geometry(MultiPolygon,2154) NOT NULL,
+    geom geometry(Point,2154) NOT NULL,
     CONSTRAINT geo_eco_loc_patri_pkey PRIMARY KEY (idpatri)
 
 )
