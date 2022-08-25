@@ -1837,7 +1837,7 @@ BEGIN
 
      	DELETE FROM m_activite_eco.lk_eco_bati_site WHERE idbati = old.idbati;
 	DELETE FROM m_activite_eco.lk_eco_bati_loc WHERE idbati = old.idbati;
-		
+	DELETE FROM m_activite_eco.lk_eco_contact WHERE idobjet = old.idbati;	
 
      return new ;
 
@@ -1854,6 +1854,8 @@ GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_delete_bati_site() TO create_sig;
 
 COMMENT ON FUNCTION m_activite_eco.ft_m_delete_bati_site()
     IS 'Fonction gérant la suppression des relations à un ou plusieurs sites si suppression du bâtiment et suppression des relations avec les lots';
+
+
 
 -- ################################################## [ft_m_delete_an_eco_contact] ######################################################
 
@@ -1895,7 +1897,7 @@ COMMENT ON FUNCTION m_activite_eco.ft_m_delete_an_eco_contact()
 
 -- DROP FUNCTION m_activite_eco.ft_m_insert_loc_rel();
 
-CREATE FUNCTION m_activite_eco.ft_m_insert_loc_rel()
+CREATE OR REPLACE FUNCTION m_activite_eco.ft_m_insert_loc_rel()
     RETURNS trigger
     LANGUAGE 'plpgsql'
     COST 100
@@ -1946,7 +1948,7 @@ BEGIN
 
      	DELETE FROM m_activite_eco.lk_eco_loc_site WHERE idloc = old.idloc;
 	DELETE FROM m_activite_eco.lk_eco_bati_loc WHERE idloc = old.idloc;
-		
+	DELETE FROM m_activite_eco.lk_eco_contact WHERE idobjet = old.idloc;	
 
      return new ;
 
