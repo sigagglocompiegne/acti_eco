@@ -6664,23 +6664,23 @@ CREATE TABLE m_activite_eco.geo_eco_site
         REFERENCES m_activite_eco.lt_eco_etat (code) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION,
-    CONSTRAINT lt_eco_dest_fkey FOREIGN KEY (dest)
+    CONSTRAINT geo_eco_site_dest_fkey FOREIGN KEY (dest)
         REFERENCES m_activite_eco.lt_eco_dest (code) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION,
-    CONSTRAINT lt_eco_typo_fkey FOREIGN KEY (typo)
+    CONSTRAINT geo_eco_site_typo_fkey FOREIGN KEY (typo)
         REFERENCES m_activite_eco.lt_eco_typo (code) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION,
-    CONSTRAINT lt_eco_voca_fkey FOREIGN KEY (site_voca)
+    CONSTRAINT geo_eco_site_voca_fkey FOREIGN KEY (site_voca)
         REFERENCES m_activite_eco.lt_eco_voca (code) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION,
-    CONSTRAINT lt_eco_typsite_fkey FOREIGN KEY (typsite)
+    CONSTRAINT geo_eco_site_typsite_fkey FOREIGN KEY (typsite)
         REFERENCES m_activite_eco.lt_eco_typsite (code) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION,
-    CONSTRAINT lt_src_geom_fkey FOREIGN KEY (src_geom)
+    CONSTRAINT geo_eco_site_geom_fkey FOREIGN KEY (src_geom)
         REFERENCES r_objet.lt_src_geom (code) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
@@ -7613,7 +7613,11 @@ CREATE TABLE m_activite_eco.geo_eco_loc_act
         CONSTRAINT geo_eco_loc_act_occup_fkey FOREIGN KEY (occup)
         REFERENCES m_activite_eco.lt_eco_occuploc (code) MATCH SIMPLE
         ON UPDATE NO ACTION
-        ON DELETE NO ACTION
+        ON DELETE NO ACTION,
+     CONSTRAINT  geo_eco_loc_act_geom_fkey FOREIGN KEY (src_geom)
+    REFERENCES r_objet.lt_src_geom (code) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION;
 )
 WITH (
     OIDS = FALSE
@@ -7752,13 +7756,16 @@ CREATE TABLE m_activite_eco.geo_eco_loc_patri
     l_url character varying(254) COLLATE pg_catalog."default",
     op_sai character varying(80) COLLATE pg_catalog."default",
     src_geom character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
-    sup_m2 double precision,
     date_sai timestamp without time zone,
     date_maj timestamp without time zone,
     observ character varying(1000) COLLATE pg_catalog."default",
     epci character varying(10) COLLATE pg_catalog."default",
     geom geometry(Point,2154) NOT NULL,
-    CONSTRAINT geo_eco_loc_patri_pkey PRIMARY KEY (idpatri)
+    CONSTRAINT geo_eco_loc_patri_pkey PRIMARY KEY (idpatri),
+    CONSTRAINT geo_eco_loc_patri_geom_fkey FOREIGN KEY (src_geom)
+    REFERENCES r_objet.lt_src_geom (code) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION;
 
 )
 WITH (
@@ -7784,13 +7791,10 @@ COMMENT ON COLUMN m_activite_eco.geo_eco_loc_patri.idpatri
     IS 'Identifiant unique de l''objet';
 
 COMMENT ON COLUMN m_activite_eco.geo_eco_loc_patri.op_sai
-    IS 'Opérateur de saisir d''objet à l''ARC';
+    IS 'Opérateur de saisie d''objet à l''ARC';
 
 COMMENT ON COLUMN m_activite_eco.geo_eco_loc_patri.src_geom
     IS 'Référentiel spatial de saisie';
-
-COMMENT ON COLUMN m_activite_eco.geo_eco_loc_patri.sup_m2
-    IS 'Surface totale de l''objet en m²';
 
 COMMENT ON COLUMN m_activite_eco.geo_eco_loc_patri.geom
     IS 'Champ contenant la géométrie';
