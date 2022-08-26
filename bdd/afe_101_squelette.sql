@@ -12194,5 +12194,79 @@ CREATE TRIGGER t_t3_modif_lot_esppu
 -- ###                                                                                                                                              ###
 -- ####################################################################################################################################################
 
+-- ############################################################### [xapps_geo_vmr_etab_api] ######################################################################
 
+-- View: x_apps.xapps_geo_vmr_etab_api
 
+-- DROP MATERIALIZED VIEW x_apps.xapps_geo_vmr_etab_api;
+
+CREATE MATERIALIZED VIEW x_apps.xapps_geo_vmr_etab_api
+TABLESPACE pg_default
+AS
+ WITH req_t AS (
+         SELECT DISTINCT row_number() OVER () AS gid,
+            a_1.id_adresse,
+            count(*) AS nb_etab_t
+           FROM m_activite_eco.an_eco_etab e,
+            x_apps.xapps_geo_vmr_adresse a_1,
+            m_activite_eco.lk_adresseetablissement l
+          WHERE l.idadresse = a_1.id_adresse AND l.siret::text = e.idsiret::text AND e.etatadministratifetablissement::text = 'A'::text AND e.l_compte IS TRUE
+          GROUP BY a_1.id_adresse
+        ), req_f AS (
+         SELECT DISTINCT row_number() OVER () AS gid,
+            a_1.id_adresse,
+            count(*) AS nb_etab_f
+           FROM m_activite_eco.an_eco_etab e,
+            x_apps.xapps_geo_vmr_adresse a_1,
+            m_activite_eco.lk_adresseetablissement l
+          WHERE l.idadresse = a_1.id_adresse AND l.siret::text = e.idsiret::text AND e.etatadministratifetablissement::text = 'A'::text AND e.l_compte IS FALSE
+          GROUP BY a_1.id_adresse
+        ), req_a AS (
+         SELECT DISTINCT a_1.id_adresse,
+            count(*) AS nb_etab
+           FROM m_activite_eco.an_eco_etab e,
+            x_apps.xapps_geo_vmr_adresse a_1,
+            m_activite_eco.lk_adresseetablissement l
+          WHERE l.idadresse = a_1.id_adresse AND l.siret::text = e.idsiret::text AND e.etatadministratifetablissement::text = 'A'::text
+          GROUP BY a_1.id_adresse
+        )
+ SELECT row_number() OVER () AS gid,
+    a.id_adresse,
+    (((((
+        CASE
+            WHEN a.etiquette::text IS NULL OR a.etiquette::text = ''::text THEN a.numero::text
+            ELSE a.etiquette::text
+        END || ' '::text) || btrim(a.libvoie_c::text)) || ' '::text) || a.codepostal::text) || ' '::text) || upper(unaccent_string(a.commune::text)) AS lib_adresse,
+    req_a.nb_etab,
+        CASE
+            WHEN req_t.nb_etab_t > 0 THEN req_t.nb_etab_t
+            ELSE 0::bigint
+        END AS nb_etab_t,
+        CASE
+            WHEN req_f.nb_etab_f > 0 THEN req_f.nb_etab_f
+            ELSE 0::bigint
+        END AS nb_etab_f,
+    a.etiquette,
+    a.angle,
+    a.geom
+   FROM x_apps.xapps_geo_vmr_adresse a
+     LEFT JOIN req_a ON req_a.id_adresse = a.id_adresse
+     LEFT JOIN req_t ON req_t.id_adresse = req_a.id_adresse
+     LEFT JOIN req_f ON req_f.id_adresse = req_a.id_adresse
+WITH DATA;
+
+ALTER TABLE x_apps.xapps_geo_vmr_etab_api
+    OWNER TO create_sig;
+
+COMMENT ON MATERIALIZED VIEW x_apps.xapps_geo_vmr_etab_api
+    IS 'Vue matérialisé rafraichit à chaque intégration ou mise à jour de la table lk_adresseetablissement et dénombrant le nombre d''établissement par adresse (lien dans GEO pour avoir la liste des établissements et les modifier) (en cours de refonte suite migration API Sirene)';
+
+GRANT ALL ON TABLE x_apps.xapps_geo_vmr_etab_api TO sig_stage WITH GRANT OPTION;
+GRANT SELECT ON TABLE x_apps.xapps_geo_vmr_etab_api TO sig_create;
+GRANT SELECT ON TABLE x_apps.xapps_geo_vmr_etab_api TO sig_read;
+GRANT ALL ON TABLE x_apps.xapps_geo_vmr_etab_api TO create_sig;
+
+CREATE INDEX idx_xapps_geo_vmr_etab_api_id_
+    ON x_apps.xapps_geo_vmr_etab_api USING btree
+    (id_adresse)
+    TABLESPACE pg_default;
