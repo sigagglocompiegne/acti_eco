@@ -1988,13 +1988,13 @@ COMMENT ON FUNCTION m_activite_eco.ft_m_delete_loc_rel()
     IS 'Fonction gérant la suppression des relations dans les tables de relation avec les sites et les bâtiments';
 
 
--- ################################################## [ft_m_insert_lot_eco] ######################################################
+-- ################################################## [ft_m_etab_site] ######################################################
 
--- FUNCTION: m_activite_eco.ft_m_insert_lot_eco()
+-- FUNCTION: m_activite_eco.ft_m_etab_site()
 
--- DROP FUNCTION m_activite_eco.ft_m_insert_lot_eco();
+-- DROP FUNCTION m_activite_eco.ft_m_etab_site();
 
-CREATE OR REPLACE FUNCTION m_activite_eco.ft_m_insert_etab_site()
+CREATE OR REPLACE FUNCTION m_activite_eco.ft_m_etab_site()
     RETURNS trigger
     LANGUAGE 'plpgsql'
     COST 100
@@ -2037,15 +2037,15 @@ END;
 
 $BODY$;
 
-ALTER FUNCTION m_activite_eco.ft_m_insert_etab_site()
+ALTER FUNCTION m_activite_eco.ft_m_etab_site()
     OWNER TO create_sig;
 
-GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_insert_etab_site() TO PUBLIC;
+GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_etab_site() TO PUBLIC;
 
-GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_insert_etab_site() TO create_sig;
+GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_etab_site() TO create_sig;
 
 COMMENT ON FUNCTION m_activite_eco.ft_m_insert_etab_site()
-    IS 'Fonction gérant l''insertion d''appartenance d''un établissement à un ou plusieurs sites d''activité';
+    IS 'Fonction gérant l''insertio, la mise à jour et la suppression d''appartenance d''un établissement à un ou plusieurs sites d''activité';
 	
 
 
@@ -11545,11 +11545,11 @@ CREATE TRIGGER t_t3_lk_adresseetablissement_idsite_delete
 
 -- DROP TRIGGER t_t4_etab_site_insert ON m_activite_eco.lk_adresseetablissement;
 
-CREATE TRIGGER t_t4_etab_site_insert
+CREATE TRIGGER t_t4_etab_site
     BEFORE INSERT OR UPDATE OR DELETE
     ON m_activite_eco.lk_adresseetablissement
     FOR EACH ROW
-    EXECUTE PROCEDURE m_activite_eco.ft_m_insert_etab_site();
+    EXECUTE PROCEDURE m_activite_eco.ft_m_etab_site();
 
 -- Trigger: t_t9_lk_etablissementlocal
 
