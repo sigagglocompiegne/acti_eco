@@ -75,6 +75,7 @@ DROP TABLE IF EXISTS m_activite_eco.lk_eco_bati_adr;
 DROP TABLE IF EXISTS m_activite_eco.lk_eco_loc_adr;
 DROP TABLE IF EXISTS m_foncier.lk_cession_lot;
 DROP TABLE IF EXISTS s_sirene.lk_sirene_succession;
+DROP TABLE IF EXISTS s_sirene.lk_eco_etab_site;
 
 /* LISTE DE VALEUR */
 DROP TABLE IF EXISTS m_activite_eco.lt_eco_dest;
@@ -147,6 +148,7 @@ DROP SEQUENCE IF EXISTS s_sirene.lk_sirene_succession_seq;
 DROP SEQUENCE IF EXISTS s_sirene.an_etablissement_api_gid_seq;
 DROP SEQUENCE IF EXISTS s_sirene.an_unitelegale_api_gid_seq;
 DROP SEQUENCE IF EXISTS r_objet.idgeo_seq;
+DROP SEQUENCE IF EXISTS m_ectivite_eco.lk_eco_etab_site_seq;
 
 
 /* TRIGGERS */
@@ -716,6 +718,25 @@ ALTER SEQUENCE m_activite_eco.lk_eco_loc_adr_seq
 
 GRANT ALL ON SEQUENCE m_activite_eco.lk_eco_loc_adr_seq TO PUBLIC;
 GRANT ALL ON SEQUENCE m_activite_eco.lk_eco_loc_adr_seq TO create_sig;
+
+-- ############################################################## [lk_eco_etab_site_seq] ##################################################################
+
+-- SEQUENCE: m_activite_eco.lk_eco_etab_site_seq
+
+-- DROP SEQUENCE m_activite_eco.lk_eco_etab_site_seq;
+
+CREATE SEQUENCE m_activite_eco.lk_eco_etab_site_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+
+ALTER SEQUENCE m_activite_eco.lk_eco_etab_site_seq
+    OWNER TO create_sig;
+
+GRANT ALL ON SEQUENCE m_activite_eco.lk_eco_etab_site_seq TO PUBLIC;
+GRANT ALL ON SEQUENCE m_activite_eco.lk_eco_etab_site_seq TO create_sig;
 
 -- ####################################################################################################################################################
 -- ###                                                            SEQUENCE M_AMENAGEMENT                                                            ###
@@ -1965,6 +1986,68 @@ GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_delete_loc_rel() TO create_sig;
 
 COMMENT ON FUNCTION m_activite_eco.ft_m_delete_loc_rel()
     IS 'Fonction gérant la suppression des relations dans les tables de relation avec les sites et les bâtiments';
+
+
+-- ################################################## [ft_m_insert_lot_eco] ######################################################
+
+-- FUNCTION: m_activite_eco.ft_m_insert_lot_eco()
+
+-- DROP FUNCTION m_activite_eco.ft_m_insert_lot_eco();
+
+CREATE OR REPLACE FUNCTION m_activite_eco.ft_m_insert_etab_site()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$
+
+BEGIN
+
+IF (TG_OP = 'INSERT') THEN
+		-- association d'un lot à un ou plusieurs sites
+		INSERT INTO m_activite_eco.lk_eco_etab_site (idsite,siret)
+		SELECT s.idsite, new.idsiret 
+			FROM m_activite_eco.geo_eco_site s, x_apps.xapps_geo_vmr_adresse a, m_activite_eco.lk_adresseetablissement ae
+		WHERE ae.siret = new.idsiret AND ae.idadresse = a.id_adresse AND
+		
+		st_intersects(a.geom,s.geom) IS TRUE;
+
+ELSIF (TG_OP = 'UPDATE') THEN
+
+       DELETE FROM m_activite_eco.lk_eco_etab_site WHERE siret = old.siret;
+	   
+	   	-- association d'un lot à un ou plusieurs sites
+		INSERT INTO m_activite_eco.lk_eco_etab_site (idsite,siret)
+		SELECT s.idsite, new.idsiret 
+			FROM m_activite_eco.geo_eco_site s, x_apps.xapps_geo_vmr_adresse a, m_activite_eco.lk_adresseetablissement ae
+		WHERE ae.siret = new.idsiret AND ae.idadresse = a.id_adresse AND
+		
+		st_intersects(a.geom,s.geom) IS TRUE;
+
+ELSIF (TG_OP = 'DELETE') THEN
+
+	DELETE FROM m_activite_eco.lk_eco_etab_site WHERE siret = old.siret;
+
+END IF;
+
+
+return new ;
+
+END;
+
+$BODY$;
+
+ALTER FUNCTION m_activite_eco.ft_m_insert_etab_site()
+    OWNER TO create_sig;
+
+GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_insert_etab_site() TO PUBLIC;
+
+GRANT EXECUTE ON FUNCTION m_activite_eco.ft_m_insert_etab_site() TO create_sig;
+
+COMMENT ON FUNCTION m_activite_eco.ft_m_insert_etab_site()
+    IS 'Fonction gérant l''insertion d''appartenance d''un établissement à un ou plusieurs sites d''activité';
+	
+
 
 -- ####################################################################################################################################################
 -- ###                                                            FONCTION R_OBJET                                                                  ###
@@ -11458,15 +11541,68 @@ CREATE TRIGGER t_t3_lk_adresseetablissement_idsite_delete
     FOR EACH ROW
     EXECUTE PROCEDURE m_activite_eco.ft_m_lk_adresseetablissement_idsite_delete();
 
--- Trigger: t_t4_lk_etablissementlocal
+-- Trigger: t_t4_etab_site_insert
 
--- DROP TRIGGER t_t4_lk_etablissementlocal ON m_economie.lk_adresseetablissement;
+-- DROP TRIGGER t_t4_etab_site_insert ON m_activite_eco.lk_adresseetablissement;
 
-CREATE TRIGGER t_t4_lk_etablissementlocal
+CREATE TRIGGER t_t4_etab_site_insert
+    BEFORE INSERT OR UPDATE OR DELETE
+    ON m_activite_eco.lk_adresseetablissement
+    FOR EACH ROW
+    EXECUTE PROCEDURE m_activite_eco.ft_m_insert_etab_site();
+
+-- Trigger: t_t9_lk_etablissementlocal
+
+-- DROP TRIGGER t_t9_lk_etablissementlocal ON m_economie.lk_adresseetablissement;
+
+CREATE TRIGGER t_t9_lk_etablissementlocal
     AFTER INSERT OR DELETE OR UPDATE 
     ON m_activite_eco.lk_adresseetablissement
     FOR EACH ROW
     EXECUTE PROCEDURE m_activite_eco.ft_m_lk_adresseetablissement();
+
+-- ############################################################## [lk_eco_etab_site] ####################################################################
+
+-- Table: m_activite_eco.lk_eco_etab_site
+
+-- DROP TABLE m_activite_eco.lk_eco_etab_site;
+
+CREATE TABLE m_activite_eco.lk_eco_etab_site
+(
+    idsite character varying(5) NOT NULL COLLATE pg_catalog."default",
+    siret character varying(14) NOT NULL COLLATE pg_catalog."default",
+    id integer NOT NULL DEFAULT nextval('m_activite_eco.lk_eco_etab_site_seq'::regclass)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE m_activite_eco.lk_eco_etab_site
+    OWNER to create_sig;
+
+GRANT ALL ON TABLE m_activite_eco.lk_eco_etab_site TO sig_create;
+
+GRANT ALL ON TABLE m_activite_eco.lk_eco_etab_site TO create_sig;
+
+GRANT SELECT ON TABLE m_activite_eco.lk_eco_etab_site TO baussant;
+
+GRANT SELECT ON TABLE m_activite_eco.lk_eco_etab_site TO sig_read;
+
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE m_activite_eco.lk_eco_etab_site TO sig_edit;
+
+COMMENT ON TABLE m_activite_eco.lk_eco_etab_site
+    IS 'Table de lien permettant d''affecter les établissements à un ou plusieurs sites';
+
+
+COMMENT ON COLUMN m_activite_eco.lk_eco_etab_site.id
+    IS 'Identifiant unique non signifiant';
+    
+COMMENT ON COLUMN m_activite_eco.lk_eco_etab_site.idsite
+    IS 'Identifiant unique du site d''activité';
+
+COMMENT ON COLUMN m_activite_eco.lk_eco_etab_site.siret
+    IS 'N° SIRET de l''établissement';
 
 -- ####################################################################################################################################################
 -- ###                                                       TABLE DE RELATION M_AMENAGEMENT                                                        ###
