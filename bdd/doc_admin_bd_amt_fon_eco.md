@@ -375,6 +375,7 @@ Particularité(s) à noter :
 |Nom attribut | Définition | Type | Valeurs par défaut |
 |:---|:---|:---|:---|
 |idevenmt|Identifiant unique non signifiant du contact|integer|nextval('m_activite_eco.an_eco_evenmt_seq'::regclass)|
+|idobjet|Identifiant de l'objet lié|character varying(10)| |
 |libelle|Libellé de l'éveènement|character varying(254)| |
 |typevenmt|Type d'évènement|character varying(2)| |
 |date_evenmt|Date de l'évènement|timestamp without time zone| |
@@ -384,6 +385,7 @@ Particularité(s) à noter :
 |op_sai|Libellé de la personne ayant saisie l'objet initialisament|character varying(80)| |
 |epci|Autorité compétente|character varying(10)| |
 |observ|Observations diverses|character varying(1000)| |
+|date_rel|Date d'une relance éventuelle à prévoir|timestamp without time zone| |
 
 
 Particularité(s) à noter :
