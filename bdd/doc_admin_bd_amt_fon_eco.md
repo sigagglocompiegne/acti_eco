@@ -181,12 +181,6 @@ L'ensemble des classes d'objets de gestion sont stockés dans le schéma `m_acti
 |commune|Libellé des communes d'assises du site d'activités|character varying(255)| |
 |z_proced|Le site est-il issu d'une procédure d'aménagement|boolean|false|
 |surf_brt|Surface totale du site|double precision| |
-|surf_occ|Surface totale du foncier occupé par des opérateurs économiques|double precision| |
-|surf_equ|Surface totale du site allouée aux espaces et équipements publics et voiries|double precision| |
-|surf_net|Surface totale du foncier disponible sur le site à vocation économique|double precision| |
-|surf_res|Surface totale du foncier réservé sur le site à vocation économique|double precision| |
-|nbetab|Nombre d'établissements présent sur le site|integer| |
-|nbemploi|Nombre d'emplois présent sur le site|integer| |
 |z_mai_ouvr|Nom du maître d'ouvrage|character varying(80)| |
 |z_compet|Nom de la collectivité ayant dans ses compétences le développement de la zone|character varying(80)| |
 |z_amng|Nom de l'aménageur de la zone|character varying(80)| |
@@ -224,8 +218,8 @@ L'ensemble des classes d'objets de gestion sont stockés dans le schéma `m_acti
 |serv_tc|Présence de transport en commun desservant le site|boolean|false|
 |serv_tc_g|Gratuité des transports en commun|boolean|false|
 |circ_douce|Présence de circulation douce accédant au site (pistes cyclables)|boolean|false|
-|serv_rest|Présence de restaurants ou à proximité immédiate|integer| |
-|serv_crech|Présence de crèches ou à proximité immédiate|integer| |
+|serv_rest|Présence de restaurants ou à proximité immédiate|boolean|false|
+|serv_crech|Présence de crèches ou à proximité immédiate|boolean|false|
 |serv_autre|Libellé des autres services disponibles sur le site|character varying(1000)| |
 |z_aide_pb|Aides publiques bénéficiaires au site|boolean|false|
 |src_geom|Code du référentiel de saisie des objets sites|character varying(2)|'00'::character varying|
@@ -233,10 +227,9 @@ L'ensemble des classes d'objets de gestion sont stockés dans le schéma `m_acti
 |date_sai|Date de saisie des données attributaires|timestamp without time zone| |
 |date_maj|Date de mise à jour des données attributaires|timestamp without time zone| |
 |op_sai|Libellé de la personne ayant saisie l'objet initialisament|character varying(80)| |
-|org_sai|Organisme de saisie dont dépend l'opérateur de saisie initial|character varying(80)| |
 |epci|Autorité compétente|character varying(10)| |
 |observ|Observations diverses|character varying(1000)| |
-|geom|Géométrie des objets sites|MultiPolygon,2154| |
+|geom|Géométrie des objets sites|geometry(MultiPolygon,2154)| |
 
 
 Particularité(s) à noter :
