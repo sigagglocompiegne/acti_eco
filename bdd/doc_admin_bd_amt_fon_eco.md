@@ -47,15 +47,20 @@ L'ensemble des classes d'objets de gestion sont stockés dans le schéma `r_obje
    
 |Nom attribut | Définition | Type | Valeurs par défaut |
 |:---|:---|:---|:---|
-|idgeolf|Identifiant unique de l'objet|integer| |
+|idgeolf|Identifiant unique de l'objet|integer|nextval('r_objet.idgeo_seq'::regclass)|
 |op_sai|Opérateur de saisir d'objet à l'ARC|character varying(80)| |
 |src_geom|Référentiel spatial de saisie|character varying(2)|'00'::character varying|
 |sup_m2|Surface totale de l'objet en m²|double precision| |
 |l_voca|Vocation du foncier|character varying(2)|'00'::character varying|
-|geom|Champ contenant la géométrie|MultiPolygon,2154| |
+|geom|Champ contenant la géométrie|USER-DEFINED| |
 |date_sai|Date de saisie de l'objet|timestamp without time zone| |
 |date_maj|Date de mise à jour|timestamp without time zone| |
 |l_nom|Nom de lot donné au moment du plan d'aménagement (ex : lot 1)|character varying(80)| |
+|insee|Code insee de la commune|character varying(5)| |
+|commune|Libellé de la commune|character varying(80)| |
+|epci|Autorité compétente|character varying(10)| |
+|surf|Surface parcellaire occupée du lot en m²|integer| |
+|surf_l|Surface littérale parcellaire occupée du lot|character varying(15)| |
 
 Particularité(s) à noter :
 * Une clé primaire existe sur le champ `idgeolf` l'attribution automatique de la référence unique s'effectue via les vues de gestion. 
