@@ -283,6 +283,8 @@ Particularité(s) à noter :
 |op_sai|Libellé de la personne ayant saisie l'objet initialisament|character varying(80)| |
 |epci|Autorité compétente|character varying(10)| |
 |observ|Observations diverses|character varying(1000)| |
+|idobjet|Clé temporaire pour la relation direct dans GEO en attendant la correction sur les relations N..M|character varying(15)| |
+|idevenmt|Identifiant unique non signifiant de l''évènement (en attente résolution pb relation N..M dans Geo|integer| |
 
 
 Particularité(s) à noter :
