@@ -570,27 +570,18 @@ Particularité(s) à noter :
 |Nom attribut | Définition | Type | Valeurs par défaut |
 |:---|:---|:---|:---|
 |idloc|Identifiant unique de l'objet|character varying(10)|('L'::text || nextval('m_activite_eco.geo_eco_loc_act_seq'::regclass))|
-|libelle|Nom usuel du local|character varying(100)| |
-|typ|Type de local|character varying(2)| |
-|adresse_b|Adresse commune entre bâtiment et local|boolean|false|
+|lib_bati|Libellé du bâtiment|character varying(150)| |
+|typ1|Typologie de local|character varying(2)| |
 |adresse_a|Adresse libre si inexistante dans la BAL (adresse non conforme, lieux-dit, ...)|character varying(100)| |
-|surf_p|Surface de plancher|integer| |
-|descript|Elément descriptif du local|character varying(5000)| |
-|occup|Type d'occupation du local|character varying(2)|'00'::character varying|
-|pvente|Prix de vente en € du local|integer| |
-|pventem2|Prix de vente au m² en € du local|double precision| |
-|loyer|Loyer mensuel en € du local|integer| |
-|loyerm2|Loyer mensuel au m² en € du local|double precision| |
-|occupant|Libellé de l'occupant si établissement non lié|character varying(80)| |
-|l_url|Lien URL vers une référen ce externe|character varying(254)| |
-|sourceloc|Source des informations du local|character varying(254)| |
-|op_sai|Opérateur de saisir d'objet à l'ARC|character varying(80)| |
+|op_sai|Opérateur de saisie d'objet à l'ARC|character varying(80)| |
 |src_geom|Référentiel spatial de saisie|character varying(2)|'00'::character varying|
-|sup_m2|Surface totale de l'objet en m²|double precision| |
 |date_sai|Date de saisie de l'objet|timestamp without time zone| |
 |date_maj|Date de mise à jour|timestamp without time zone| |
+|observ|Observations diverses|character varying(1000)| |
+|insee|Code Insee de la commune d'assise du local|character varying(5)| |
+|commune|Libellé de la commune d'assise du local|character varying(100)| |
 |epci|Autorité compétente|character varying(10)| |
-|geom|Champ contenant la géométrie|MultiPolygon,2154| |
+|geom|Champ contenant la géométrie|USER-DEFINED| |
 
 
 Particularité(s) à noter :
