@@ -764,8 +764,8 @@ Particularité(s) à noter :
 
 * x triggers : à venir
  
- 
----
+ ---
+
 
 ### classes d'objets applicatives métiers sont classés dans le schéma x_apps :
 
