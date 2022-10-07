@@ -376,7 +376,7 @@ Particularité(s) à noter :
 |:---|:---|:---|:---|
 |idevenmt|Identifiant unique non signifiant du contact|integer|nextval('m_activite_eco.an_eco_evenmt_seq'::regclass)|
 |idobjet|Identifiant de l'objet lié|character varying(10)| |
-|libelle|Libellé de l'éveènement|character varying(254)| |
+|libelle|Libellé de l'évènement|character varying(254)| |
 |typevenmt|Type d'évènement|character varying(2)| |
 |date_evenmt|Date de l'évènement|timestamp without time zone| |
 |nom_contact|Nom du contact|character varying(100)| |
