@@ -423,39 +423,26 @@ Particularité(s) à noter :
 |Nom attribut | Définition | Type | Valeurs par défaut |
 |:---|:---|:---|:---|
 |idgeolf|Identifiant unique de l'entité géographique lot|integer| |
-|surf|Surface parcellaire occupée du lot|integer| |
-|surf_l|Surface littérale parcellaire occupée du lot|character varying(15)| |
-|date_int|Date renseignée par GéoPicardie lors de l'intégration (correspond aux dernières données reçues)|date| |
-|op_sai|Libellé de l'opérateur de saisie|character varying(80)| |
-|org_sai|Libellé de l'organisme de saisie|character varying(80)| |
 |tact|Type d'activité présent sur le lot|character varying(2)|'00'::character varying|
-|tact_99|Précision de l'activité du lot (si Autre sélectionné dans l_tact)|character varying(80)| |
 |cnom|Nom de code de l'acquéreur|character varying(20)| |
 |lnom|Nom de l'acquéreur|character varying(80)| |
-|pvente_l|Prix littéral de vente du lot en HT (ex:50€/m²)|character varying(15)| |
-|pcess_l|Prix littéral de cession du lot en HT (ex:30€/m²)|character varying(15)| |
 |eff_dep|Effectif de départ prévu par l'implantation de l'établissement lors de l'octroi de la convention de subvention|integer| |
 |eff_n5|Effectif prévu de l'établissement à n+5 par la convention d'octroi de subvention|integer| |
 |conv|Accord ou non d'une convention d'octroi de subvention|boolean| |
 |datefin_conv|Date de fin de la convention d'octroi de subvention, liée à l'effectif n+5|date| |
 |observ|Observations diverses|character varying(255)| |
-|date_sai|Date de saisie des données attributaires|timestamp without time zone| |
-|date_maj|Date de mise à jour des données attributaires|timestamp without time zone| |
 |bati|Surface de bâtiments projetée en m²|integer| |
 |pc_depot|Date de dépôt du permis de construire|timestamp without time zone| |
 |pc_accord|Date d'obtention du permis de construire|timestamp without time zone| |
 |pc_tra|Date de commencement des travaux du permis de construire|timestamp without time zone| |
 |pc_fin|Date de fin des travaux du permis de construire|timestamp without time zone| |
 |pvente_e|Prix de vente (ou cession) envisagé du lot en HT (€/m²) par le service économique|numeric| |
-|pcess_e|Prix de cession du lot en HT(€/m²) - plus utilisé (cf prix de cession du foncier)|numeric| |
 |pc_num|N° du permis de construire|character varying(50)| |
 |pc_mo|Nom du mapitre d'oeuvre (architecte) du PC|character varying(100)| |
 |pers_v|Année de la perspective de vente ou de cession|character varying(10)| |
 |oripro|Information sur l'origine du projet. 3 valeurs possibles ENDOGENE ou EXOGENE ou non renseignée (pas de listes de valeurs créées, cette liste est paramétrée dans GEO)|character varying(15)| |
 |occupant|Libellé de l'occupant du terrain après cession|character varying(100)| |
 |descrip|Descriptif du bâtiment construit sur le lot|character varying(1000)| |
-|insee|Code Insee du ou des communes|character varying(30)| |
-|commune|Libellé de la ou des communes contenant le lot|character varying(250)| |
 
 
 Particularité(s) à noter :
