@@ -504,27 +504,6 @@ Particularité(s) à noter :
 * Une clé primaire existe sur le champ `gid` l'attribution automatique de la référence unique s'effectue via une séquence. 
 * Une clé étrangère existe sur la table de valeur `t_doc` (lien vers la liste de valeurs du type de médias `lt_eco_tdocmedia`)
 
----
-
-`[m_activite_eco].[geo_eco_bati_act]` : table géographique contenant l'ensemble des objets des bâtiments d'activité
-   
-|Nom attribut | Définition | Type | Valeurs par défaut |
-|:---|:---|:---|:---|
-|idbati|Identifiant unique de l'objet|character varying(10)|('B'::text || nextval('m_activite_eco.geo_eco_bati_act_seq'::regclass))|
-|libelle|Nom usuel du bâtiment|character varying(100)| |
-|surf_p|Surface de plancher|integer| |
-|op_sai|Opérateur de saisir d'objet à l'ARC|character varying(80)| |
-|src_geom|Référentiel spatial de saisie|character varying(2)|'00'::character varying|
-|sup_m2|Surface totale de l'objet en m²|double precision| |
-|date_sai|Date de saisie de l'objet|timestamp without time zone| |
-|date_maj|Date de mise à jour|timestamp without time zone| |
-|epci|Autorité compétente|character varying(10)| |
-|geom|Champ contenant la géométrie|MultiPolygon,2154| |
-
-
-Particularité(s) à noter :
-* Une clé primaire existe sur le champ `idbati` l'attribution automatique de la référence unique s'effectue via une séquence. 
-* Une clé étrangère existe sur la table de valeur `src_geom` (lien vers la liste de valeurs des référentiels de saisies `lt_src_geom`)
  
 ---
 
@@ -589,6 +568,31 @@ Particularité(s) à noter :
 * Une clé étrangère existe sur la table de valeur `src_geom` (lien vers la liste de valeurs des référentiels de saisies `lt_src_geom`)
 * Une clé étrangère existe sur la table de valeur `typ` (lien vers la liste de valeurs du type de local `lt_eco_typloc`)
 * Une clé étrangère existe sur la table de valeur `occup` (lien vers la liste de valeurs du type d'occupation `lt_eco_occuploc`)
+
+---
+
+
+`[m_activite_eco].[an_eco_loc_act]` : table alphanumérique contenant les données descriptive du local
+   
+|Nom attribut | Définition | Type | Valeurs par défaut |
+|:---|:---|:---|:---|
+|id|Identifiant non signifiant interne du local|integer|nextval('m_activite_eco.an_eco_loc_act_seq'::regclass)|
+|idloc|Identifiant unique du local|character varying(10)| |
+|libelle|Nom usuel du local|character varying(150)| |
+|typ2|Typologie d'occupation du local|character varying(2)| |
+|surf_p|Surface de plancher|integer| |
+|descript|Elément descriptif du local|character varying(5000)| |
+|occup|Type d'occupation du local|character varying(2)|'00'::character varying|
+|pvente|Prix de vente en € du local|integer| |
+|pventem2|Prix de vente au m² en € du local|double precision| |
+|loyer|Loyer mensuel en € du local|integer| |
+|loyerm2|Loyer mensuel au m² en € du local|double precision| |
+|occupant|Libellé de l'occupant si établissement non lié|character varying(80)| |
+|l_url|Lien URL vers une référence externe|character varying(254)| |
+|sourceloc|Source des informations du local|character varying(254)| |
+|observ|Observations diverses|character varying(1000)| |
+|date_sai|Date de saisie du local|timestamp without time zone| |
+|date_maj|Date de mise à jour du local|timestamp without time zone| |
 
 ---
 
