@@ -324,8 +324,6 @@ Particularité(s) à noter :
 |n_adres|Libellé de la nouvelle adresse si l'établissement a déménagé|character varying(255)| |
 |eff_ent|Effectif total du groupe|integer| |
 |eff_etab|Effectif total de l'établissement|integer| |
-|eff_ent_etp|Effectif total du groupe en etp|double precision| |
-|eff_etab_etp|Effectif de l'établissement en etp|double precision| |
 |eff_etab_d|Précision (en détail) du nombre de CDD, CDI, intérim, ....|character varying(200)| |
 |source_eff|Source de l'effectif de l'établissement|character varying(50)| |
 |annee_eff|Année de l'effectif (issu de SIRENE)|integer| |
@@ -346,6 +344,7 @@ Par défaut TRUE et laisse le choix à l'administrateur de la donnée de modifie
 |op_sai|Libellé de l'opérateur de Saisie|character varying(80)| |
 |date_sai|Date de saisie des données attributaires|timestamp without time zone| |
 |date_maj|Date de mise à jour des données attributaires|timestamp without time zone| |
+|insee|Code Insee de la commune (provenance SIRENE, mise à jour après intégration par trimestre dans le FME d'intégration API))|character varying(10)| |
 
 
 Particularité(s) à noter :
