@@ -1440,19 +1440,13 @@ Particularité(s) à noter :
 |ref_compta|Référence comptable du projet|character varying(5)| |
 |surf_cess_ha|Surface cessible programmée en ha|numeric| |
 |date_clo|Date de cloture de l'opération|timestamp without time zone| |
-|nb_log|Nombre total de logements programmés|integer| |
-|nb_logind|Nombre de logements individuels programmés|integer| |
-|nb_logindgr|Nombre de logements individuels groupés programmés|integer| |
-|nb_logcol|Nombre de logements collectifs programmés|integer| |
-|nb_logaide|Nombre total de logements aidés programmés|integer| |
-|nb_logaide_loc|Nombre total de logements aidés en location programmés|integer| |
-|nb_logaide_acc|Nombre total de logements en accession en location programmés|integer| |
 |nom_cp|Nom du chef de projet suivant la procédure|character varying(80)| |
 |op_sai|Libellé de la personne ayant saisie l'objet|character varying(80)| |
 |date_sai|Date de saisie des données attributaires|timestamp without time zone| |
 |date_maj|Date de mise à jour des données attributaires|timestamp without time zone| |
 |epci|Autorité compétente|character varying(10)| |
 |observ|Observations diverses|character varying(1000)| |
+|geom|Géométrie des objets|USER-DEFINED| |
 
 
 Particularité(s) à noter :
