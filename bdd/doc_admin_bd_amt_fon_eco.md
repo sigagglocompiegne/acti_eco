@@ -309,6 +309,8 @@ Particularité(s) à noter :
 |prix_v|Prix de vente en euros|double precision| |
 |nom_v|Nom du vendeur|character varying(80)| |
 |nom_a|Nom de l'acquéreur (seconde main)|character varying(80)| |
+|date_maj|Date de mise à jour des données attributaires|timestamp without time zone| |
+|op_sai|Libellé de la personne ayant saisie l'objet initialisament|character varying(80)| |
 
 ---
 
