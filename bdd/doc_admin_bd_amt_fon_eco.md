@@ -478,6 +478,31 @@ Particularité(s) à noter :
 
 ---
 
+`[m_activite_eco].[an_eco_lot_media]` : table alphanumérique contenant l'ensemble des médias des objets lots fonciers
+   
+|Nom attribut | Définition | Type | Valeurs par défaut |
+|:---|:---|:---|:---|
+|gid|Compteur (identifiant interne)|integer|nextval('m_activite_eco.an_eco_media_seq'::regclass)|
+|id|Identifiant interne non signifiant de l'objet saisi|integer| |
+|media|Champ Média de GEO|text| |
+|miniature|Champ miniature de GEO|bytea| |
+|n_fichier|Nom du fichier|text| |
+|t_fichier|Type de média dans GEO|text| |
+|op_sai|Opérateur de saisie (par défaut login de connexion à GEO)|character varying(20)| |
+|date_sai|Date de la saisie du document|timestamp without time zone| |
+|l_doc|Titre du document ou légère description|character varying(100)| |
+|t_doc|Type de documents|character varying(2)|'00'::character varying|
+|d_photo|Date de la prise de vue|timestamp without time zone| |
+|alaune|Média poussé à la une de l'annonce immobilière|boolean|false|
+|alaunesite|Média poussé à la une de la fiche de présentation du site|boolean|false|
+
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ `gid` l'attribution automatique de la référence unique s'effectue via uine séquence. 
+* Une clé étrangère existe sur la table de valeur `t_doc` (lien vers la liste de valeurs du type de médias `lt_eco_tdocmedia`)
+
+---
+
 `[m_activite_eco].[an_eco_patri_media]` : table alphanumérique contenant l'ensemble des médias des objets exclusivement lié aux patrimoines
    
 |Nom attribut | Définition | Type | Valeurs par défaut |
