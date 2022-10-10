@@ -466,7 +466,7 @@ Particularité(s) à noter :
 |op_sai|Opérateur de saisie (par défaut login de connexion à GEO)|character varying(20)| |
 |date_sai|Date de la saisie du document|timestamp without time zone| |
 |l_doc|Titre du document ou légère description|character varying(100)| |
-|t_doc|Titre du document ou légère description|character varying(100)| |
+|t_doc|Type de document |character varying(2)| |
 |d_photo|Date de la prise de vue|timestamp without time zone| |
 |alaune|Média poussé à la une de l'annonce immobilière|boolean|false|
 |alaunesite|Média poussé à la une de la fiche de présentation du site|boolean|false|
