@@ -503,6 +503,28 @@ Particularité(s) à noter :
 
 ---
 
+`[m_activite_eco].[an_fon_cession_horsarc_media]` : table alphanumérique contenant l'ensemble des médias des cessions liés aux objets lots fonciers (hors ARC)
+   
+|Nom attribut | Définition | Type | Valeurs par défaut |
+|:---|:---|:---|:---|
+|gid|Identifiant unique non signifiant|integer|nextval('m_foncier.an_fon_cession_horsarc_media_seq'::regclass)|
+|id|Identifiant de cession ou d'acquisition|integer| |
+|media|Champ Média de GEO|text| |
+|miniature|Champ miniature de GEO|bytea| |
+|n_fichier|Nom du fichier|text| |
+|t_fichier|Type de média dans GEO|text| |
+|op_sai|Libellé de l'opérateur ayant intégrer le document|character varying(100)| |
+|date_sai|Date d'intégration du document|timestamp without time zone| |
+|l_type|Code du type de document de cessions ou d'acquisitions|character varying(2)| |
+|l_prec|Précision sur le document|character varying(254)| |
+
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ `gid` l'attribution automatique de la référence unique s'effectue via uine séquence. 
+* Une clé étrangère existe sur la table de valeur `l_type` (lien vers la liste de valeurs du type de médias `lt_ces_doc`)
+
+---
+
 `[m_activite_eco].[an_eco_patri_media]` : table alphanumérique contenant l'ensemble des médias des objets exclusivement lié aux patrimoines
    
 |Nom attribut | Définition | Type | Valeurs par défaut |
