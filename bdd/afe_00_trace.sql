@@ -23,4 +23,5 @@
 -- 2021-12-03 : GB / modification des attributs exportés des établissements
 -- 2022-01-19 : GB / modification trigger de gestion des lots à la mise à jour sur (geo_v_lot_eco), correctif sur gestion des surfaces des lots
 -- 2022-08-09 : GB / réflexion sur un nouvel modèle de données autour de l'activité économique (modèle en cours de refonte)
+-- 2022-10-21 : GB / initialisation du nouveau modèle de données
 */
