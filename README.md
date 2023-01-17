@@ -1,10 +1,10 @@
 ![picto](https://github.com/sigagglocompiegne/orga_gest_igeo/blob/master/doc/img/geocompiegnois_2020_reduit_v2.png)
 
-# Urbanisation des données aménagements / foncières (cessions/acquisitions) / activités économiques
+# Prescriptions spécifiques (locales) pour le suivi et la gestion de l'activité économique infra-communale et plus particulièrement dans les zones d'activités
 
 [ ] à rédiger [x] en cours de rédaction [ ] finaliser
 
-Ensemble des éléments constituant la mise en oeuvre de la base de données urbanisées sur les thématiques d'aménagement, de foncier et d'activités économiques ainsi que l'exploitation de ces données dans les différentes applications :
+Ensemble des éléments constituant la mise en oeuvre de la base de données sur l'activité économique infra-communale, le suivi de la commercialisation des lots à destination économique et la connaissance des bâtiments d'activité ainsi que leurs disponibilités (vente, location) :
 
 - [ChangeLog](gabarit/livrables.md)
 - Script d'initialisation de la base de données
