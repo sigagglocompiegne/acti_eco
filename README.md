@@ -4,7 +4,7 @@
 
 [ ] à rédiger [x] en cours de rédaction [ ] finaliser
 
-Ensemble des éléments constituant la mise en oeuvre de la base de données sur l'activité économique infra-communale, le suivi de la commercialisation des lots à destination économique et la connaissance des bâtiments d'activité ainsi que leurs disponibilités (vente, location) :
+Ensemble des éléments constituant la mise en oeuvre de la base de données sur l'activité économique infra-communale, le suivi de la commercialisation des lots à destination économique, la connaissance des bâtiments d'activité ainsi que leurs disponibilités (vente, location) et la localisation des établissements :
 
 - [ChangeLog](gabarit/livrables.md)
 - Script d'initialisation de la base de données
