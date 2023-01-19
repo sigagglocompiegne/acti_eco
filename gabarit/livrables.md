@@ -58,6 +58,9 @@ Le demande de connaissance des bâtiments d'activités ou de toutes activités, 
 
 Le choix a été fait de représentés par des objets ponctuels et inventories un état de connaissances des bâtiments d'activité par les services métiers et non de localiser chaque local identifié. Les locaux sont donc associés aux bâtiments.
 
+A ce stade, les données des entreprises issues de Sirene (localisées à l'adresse) ne sont pas croisées avec les bâtiments d'activité car cet inventaire n'existe pas ou est non exhaustif. De plus, la localisation des établissements aux bâtiments d'activité ou au local, relève d'une complexité supérieure à une localisation à l'adresse.
+
+Le logigramme ci-dessous montre l'imbrication des objets dans un site d'activité, sachant qu'en dehors d'un site les éléments peuvent être isolés.
 
 
 ![picto](.png)
