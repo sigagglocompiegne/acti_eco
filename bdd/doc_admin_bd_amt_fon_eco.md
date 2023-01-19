@@ -41,6 +41,18 @@ Cette base de donnnées est interdépendante du fait d'une partie urbanisée. Le
 
 ## Sources et spécifications des données intégrées
 
+#### Les sites d'activité
+
+
+
+#### Les procédures d'amnénagement
+
+#### Les lots à commercialiser
+
+#### Les établissements
+
+#### Les bâtiments d'activité
+
 ## Classes d'objets urbanisé ou partagé
 
 L'ensemble des classes d'objets de gestion sont stockés dans le schéma `r_objet` ,et celles applicatives dans les schémas x_apps (pour les applications pro) ou x_apps_public (pour les applications grands publiques).
