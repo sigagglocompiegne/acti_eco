@@ -1,6 +1,6 @@
 ![picto](https://github.com/sigagglocompiegne/orga_gest_igeo/blob/master/doc/img/geocompiegnois_2020_reduit_v2.png)
 
-# Documentation d'administration de la base de données urbanisées Aménagement/Foncier/Economie #
+# Documentation d'administration de la base de données "Activité Economque" #
 
 ## Principes
   * **généralité** :
@@ -14,7 +14,7 @@ problématiques de plusieurs métiers,
 
 De ce fait un objet géographique est partagé par plusieurs services et les attributs métiers propres à chacun sont gérés dans une classe indépendante. Des vues métiers sont ainsi réalisées reprenant la géométrie de l'objet partagé. Cette organisation permet de modifier un seul objet pour tout le monde et évite ainsi les doublons d'informations.
 
-En 2022, un nouveau cadre de mutualisation a réorienté les choix initiaux en terme d'urbanisation. Certaines données resteront dans le domaine de l'urbanisation et le partage entre services, mais des choix fonctionnels impactants certaines informations ont remis en cause de mode de gestion pour certaines d'entre elles (les sites et le procédures d'aménagement). 
+En 2022, un nouveau cadre de mutualisation a réorienté les choix initiaux en terme d'urbanisation. Certaines données resteront dans le domaine de l'urbanisation et le partage entre services, mais des choix fonctionnels impactants certaines informations ont remis en cause de mode de gestion pour certaines d'entre elles (les sites et les procédures d'aménagements). 
 
  
  * **résumé fonctionnel** :
@@ -25,7 +25,7 @@ Pour rappel des grands principes :
 * les services des collectivités assure la mise à jour des informations métiers liées aux procédures et à la programmation des secteurs d'aménagement,
 * les services des collectivités peuvent créer, modifier ou supprimer les lots à vocation économique dans ces métiers de commercialisation de terrains pour les entreprises. Ils assurent la mise à jour de ces propres attributs de lots mais ils maintiennent également à jour les informations liées aux entreprises,
 * le service foncier (uniquement de l'ARC) assure quant à lui la mise à jour des données d'acquisitions et de cessions de terrains. A cet effet il peut saisir les objets correspondant à ces activités.
-* les services des collectivités gèrent les locaux d'activités et de leur patrimoine selon leurs besoins propres.
+* les services des collectivités gèrent les bâtiments d'activités selon leurs besoins propres.
 
 ## Schéma fonctionnel
 
@@ -33,11 +33,13 @@ Pour rappel des grands principes :
 
 ## Modèle relationel simplifié
 
-![schema_relationnel](m_rela_simplifie_1v.png)
+(en refonte)
 
 ## Dépendances
 
 Cette base de donnnées est interdépendante du fait d'une partie urbanisée. Les données de l'activité économique sont liées en partie à des données d'aménagements opérationnels, de foncier, ou de ressources externes comme les données de la base SIRENE de l'Insee.
+
+## Sources et spécifications des données intégrées
 
 ## Classes d'objets urbanisé ou partagé
 
