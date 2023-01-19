@@ -17,7 +17,7 @@ Ensemble des éléments constituant la mise en oeuvre de la base de données sur
   * [ancienne vues open data](bdd/afe_23_vues_xopendate.sql)
   * [ancien privilèges](bdd/afe_99_grant.sql)  
 - [Documentation d'administration de la base de données](bdd/doc_admin_bd_amt_fon_eco.md)
-- [Documentation utilisateurs](app/doc_user_eco.md)
+- [Documentation utilisateurs de l'application](app/doc_user_eco.md)
 
 
 
