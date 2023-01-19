@@ -4,8 +4,8 @@
 
 |Objet|Droits|Fiche|
 |:---|:---|:---|
-|TOUS|Tous les utilisateurs avec droits|Fonctionnement du menu "Carte"|
-|TOUS|Tous les utilisateurs avec droits|Fonctionnement du "Tableau de Bord"|
+|TOUS|Tous les utilisateurs avec droits|[Fonctionnement du menu "Carte"](app/doc_user_eco_menu_carte.md)|
+|TOUS|Tous les utilisateurs avec droits|[Fonctionnement du "Tableau de Bord"](app/doc_user_eco_tab.md)|
 |SITE|Utilisateurs avec un role d'administration des données|[Ajouter ou modifier un site d'activité ?](app/doc_user_eco_site_modif.md)|
 |SITE|Utilisateurs autorisés en consultation|[Exporter les données des sites d'activité ?](app/doc_user_eco_export_site.md)|
 |PROCEDURE|Utilisateurs avec un role d'administration des données|[Ajouter ou modifier une procédure d'aménagement ?](app/doc_user_eco_proc_modif.md)|
