@@ -6,7 +6,7 @@
 
 Ensemble des éléments constituant la mise en oeuvre de la base de données sur l'activité économique infra-communale, le suivi de la commercialisation des lots à destination économique, la connaissance des bâtiments d'activité ainsi que leurs disponibilités (vente, location) et la localisation des établissements :
 
-- [ChangeLog](gabarit/livrables.md)
+- [Lire la documentation du standard](gabarit/livrables.md)
 - Script d'initialisation de la base de données
   * [Suivi des modifications](bdd/afe_00_trace.sql)
   * [Nouvelle structure des données](bdd/afe_101_squelette.sql)
