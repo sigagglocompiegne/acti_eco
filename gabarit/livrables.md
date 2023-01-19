@@ -46,9 +46,19 @@ La cartographie de l'application montre cette différenciation (cf ci-dessous).
 
 ![picto](../app/loca_etab_prise_en_compte.png)
 
+#### Les bâtiments d'activité ou assimilés
+
+Le demande de connaissance des bâtiments d'activités ou de toutes activités, est issu d'une première réflexion sur la disponibilité des locaux d'activité afin de constituer une bourse aux locaux. Cette évolution nous a contraint à mettre en oeuvre une modélisation considérant qu'un bâtiment d'activité peut contenir ou non des locaux différenciers. Il a fallu également considéré qu'un terrain pouvait accueillir une activité non bâtie.
+
+4 types de compositions ont été recensés :
+- Bâtiment composé de cellules d'activités
+- Bâtiment composé de cellules commerciales
+- Bâtiment composé de plateaux tertiaires
+- Pas de local (terrain, ...)
+
+Le choix a été fait de représentés par des objets ponctuels et inventories un état de connaissances des bâtiments d'activité par les services métiers et non de localiser chaque local identifié. Les locaux sont donc associés aux bâtiments.
 
 
-#### Les bâtiments d'activité
 
 ![picto](.png)
 
