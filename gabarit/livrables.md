@@ -42,9 +42,9 @@ Néanmoins certains établissements ne sont pas intégrés à certaines recherch
 - les établissements avec un code NAF (68.20A et 68.20B, Location d'appartements et de maisons, de terrains, ...),
 - les établissements radiés au tribunal de commerce.
 
-La cartographie de l'application montre cette différenciation :
+La cartographie de l'application montre cette différenciation (cf ci-dessous).
 
-
+![picto](app/loca_etab_prise_en_compte.png)
 
 
 
