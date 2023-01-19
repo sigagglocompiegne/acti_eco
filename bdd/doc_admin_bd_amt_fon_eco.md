@@ -39,19 +39,7 @@ Pour rappel des grands principes :
 
 Cette base de donnnées est interdépendante du fait d'une partie urbanisée. Les données de l'activité économique sont liées en partie à des données d'aménagements opérationnels, de foncier, ou de ressources externes comme les données de la base SIRENE de l'Insee.
 
-## Sources et spécifications des données intégrées
 
-#### Les sites d'activité
-
-
-
-#### Les procédures d'amnénagement
-
-#### Les lots à commercialiser
-
-#### Les établissements
-
-#### Les bâtiments d'activité
 
 ## Classes d'objets urbanisé ou partagé
 
