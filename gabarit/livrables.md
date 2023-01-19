@@ -69,6 +69,19 @@ Le logigramme ci-dessous montre l'imbrication des objets dans un site d'activit�
 
 #### Règles générales
 
+La saisie des objets doit permettre une restitution des objets à l'échelle d'un site d'activité, autour du 2 000ème.
+
+Le caractère spécifique de chaque donnée oblige à respecter des supports géographiques donnés :
+- site d'activités, procédure, lot : plan approuvée à saisir sur un référentiel cadastral ou orthophographique
+- établissement : Base Adresse Locale
+- bâtiment d'activité : support orthophographique ou cadastral
+
+Des rôles ont été établis entre le service IG de l'Agglomération de la Région de Compiègne et les services métiers du développement économique en ce qui concerne la saisie des informations. Le tableau ci-dessous indique le rôle de chacun pour chaque objet.
+
+||||
+|:---|:---|:---|
+||||
+
 #### La modélisation géométrique
 
 #### Topologie
