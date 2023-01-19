@@ -78,10 +78,26 @@ Le caractère spécifique de chaque donnée oblige à respecter des supports gé
 
 Des rôles ont été établis entre le service IG de l'Agglomération de la Région de Compiègne et les services métiers du développement économique en ce qui concerne la saisie des informations. Le tableau ci-dessous indique le rôle de chacun pour chaque objet.
 
-||||
-|:---|:---|:---|
-||||
+||Site|Procédure|Lot|Etablissement|Bâtiment|
+|:---|:---|:---|:---|:---|:---|
+|Service IG|initialisation|initialisation|initialisation|intégration et mise à jour||
+|ARC|||intégration et mise à jour|mise à jour|initialisation et mise à jour|
+|CCLO|intégration et mise à jour|intégration et mise à jour|intégration et mise à jour|mise à jour|initialisation et mise à jour|
+|CCPE|intégration et mise à jour|intégration et mise à jour|intégration et mise à jour|mise à jour|initialisation et mise à jour|
+|CC2V|intégration et mise à jour|intégration et mise à jour|intégration et mise à jour|mise à jour|initialisation et mise à jour|
 
 #### La modélisation géométrique
+
+Les règles de modélisation consistent à présenter la façon dont les objets doivent être saisis et restitués.
+
+Les objets constituant la base de données sont organisés autour des 2 primitives géographiques de base : polygones et points. **La saisie des objets de type multi est autorisée.**
+
+|Classe d'objets|Point|Polygone|
+|:---|:---|:---|
+|Site d'activité||x|
+|Procédure d'aménagement||x|
+|Lot||x|
+|Etablissement|x (hérité de la BAL)||
+|Bâtiment|x||
 
 #### Topologie
