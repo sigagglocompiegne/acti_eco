@@ -18,7 +18,7 @@ Le terme de "sites d'activité" est ici employé au sens large. Il regroupe à l
 - les sites d'activités (hors ZAE) : tout espace concentrant plusieurs ou une activité économique en périphérie des centres-urbains (petite zone d'activité, site industriel, ...)
 - les autres secteurs : autres sites (notamment en centre-ville) permettant de délmiter un secteur mixte ou de projets, pour en extraire des statistiques ou permettre une observation
 
-#### Les procédures d'amnénagement
+#### Les procédures d'aménagement
 
 Elles sont délimitées à partir des documents approuvés par la collectivité et relèvant d'une opération d'aménagement (ZAC, lotissement, ...). Les procédures et certains sites d'activité peuvent partager le même périmètre.
 
