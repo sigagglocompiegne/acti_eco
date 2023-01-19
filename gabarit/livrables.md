@@ -1,6 +1,6 @@
 ![picto](https://github.com/sigagglocompiegne/orga_gest_igeo/blob/master/doc/img/geocompiegnois_2020_reduit_v2.png)
 
-# Prescriptions locales pour les données "Activité économique"
+# Dcumentation sur les prescriptions locales pour les données "Activité économique"
 
 ## Changelog
 
@@ -24,9 +24,29 @@ Elles sont délimitées à partir des documents approuvés par la collectivité 
 
 #### Les lots à commercialiser
 
-Les lots à commercialiser sont issus des plans d'aménagements constitués à l'approbation 
+Les lots à commercialiser sont issus des plans d'aménagements constitués à l'approbation des procédures (pour les sites concernés). Ceux-ci sont ensuite gérer par le service concerné.
 
 #### Les établissements
+
+Ils sont issus de la base de données Sirene de l'Insee. Cette base de données est mise à jour tous les trimestres par le service IG de l'Agglomération de la Région de Compiègne à partir de l'API développée par l'Insee. 
+Ils sont géolocalisés sur la Base Adresse Locale. Certains sont localisés manuellement en cas de non correspondance.
+
+Des attributs complémentaires ont été intégrés pour les besoins des services, notamment la saisie des effectifs, ...
+
+Les données présentées dans l'application correspondent :
+- aux établissements actifs au sens de l'Insee (non fermés administrativement)
+- aux établissements employeurs ou non employeurs
+
+Néanmoins certains établissements ne sont pas intégrés à certaines recherches, exports ou statistiques. On les considère comme non pris en compte, il s'agit :
+- des établissements que les EPCI considèrent ne pas être comptabilisés,
+- les établissements avec un code NAF (68.20A et 68.20B, Location d'appartements et de maisons, de terrains, ...),
+- les établissements radiés au tribunal de commerce.
+
+La cartographie de l'application montre cette différenciation :
+
+
+
+
 
 #### Les bâtiments d'activité
 
