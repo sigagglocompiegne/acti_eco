@@ -101,3 +101,11 @@ Les objets constituant la base de données sont organisés autour des 2 primitiv
 |Bâtiment|x||
 
 #### Topologie
+
+Il n'est pas demandé un stricte respect de la topologie. Mais si celle-ci s'impose (notamment pour la délimitation des sites, procédures ou lots), la cohérence topologique impose le partage de géométrie et donc l’utilisation des outils « d’accroches ». Par conséquent les objets peuvent partager la géométrie du référentiel cadastral lorsque cela est rendu nécessaire.
+
+
+
+
+
+
