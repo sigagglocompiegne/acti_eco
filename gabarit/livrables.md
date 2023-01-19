@@ -44,7 +44,7 @@ Néanmoins certains établissements ne sont pas intégrés à certaines recherch
 
 La cartographie de l'application montre cette différenciation (cf ci-dessous).
 
-![picto](app/loca_etab_prise_en_compte.png)
+![picto](../app/loca_etab_prise_en_compte.png)
 
 
 
