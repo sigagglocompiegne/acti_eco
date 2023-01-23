@@ -6,6 +6,7 @@
 |:---|:---|:---|
 |TOUS|Tous les utilisateurs avec droits|[Fonctionnement du menu "Carte"]|
 |TOUS|Tous les utilisateurs avec droits|[Fonctionnement du "Tableau de Bord"]|
+|TOUS|Utilisateurs avec un role d'administration des données|[Associer un document]([app/doc_user_eco_contact_rech.md](https://geo.compiegnois.fr/portail/index.php/2020/06/09/comment-gerer-les-documents-lies/))|
 |SITE|Utilisateurs avec un role d'administration des données|[Ajouter ou modifier un site d'activité]|
 |SITE|Utilisateurs autorisés en consultation|[Exporter les données des sites d'activité]|
 |PROCEDURE|Utilisateurs avec un role d'administration des données|[Ajouter ou modifier une procédure d'aménagement ]|
@@ -22,7 +23,7 @@
 |CONTACTS|Utilisateurs autorisés en consultation|[Rehcerche un contact]|
 |EVENEMENTS|Utilisateurs avec un role d'administration des données|[Ajouter, modifier ou associer un évènement]|
 |EVENEMENTS|Utilisateurs autorisés en consultation|[Rechercher un évènement]|
-|DOCUMENTS|Utilisateurs avec un role d'administration des données|[Associer un document]([app/doc_user_eco_contact_rech.md](https://geo.compiegnois.fr/portail/index.php/2020/06/09/comment-gerer-les-documents-lies/))|
+
 
 
 
