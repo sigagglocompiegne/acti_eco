@@ -10,6 +10,12 @@ Ensemble des éléments constituant la mise en oeuvre de la base de données sur
 - Script d'initialisation de la base de données
   * [Suivi des modifications](bdd/afe_00_trace.sql)
   * [Nouvelle structure des données](bdd/afe_101_squelette.sql)
+  * [ancienne  structure initiale](bdd/afe_10_squelette.sql)
+  * [ancienne  vues de gestion](bdd/afe_20_vues_gestion.sql)
+  * [ancienne vues applicatives](bdd/afe_21_vues_xapps.sql)
+  * [ancienne vues applicatives gd public](bdd/afe_22_vues_xapps_pub.sql)
+  * [ancienne vues open data](bdd/afe_23_vues_xopendate.sql)
+  * [ancien privilèges](bdd/afe_99_grant.sql)  
 - [Documentation d'administration de la base de données](bdd/doc_admin_bd_amt_fon_eco.md)
 - [Documentation utilisateurs de l'application](app/doc_user_eco.md)
 
