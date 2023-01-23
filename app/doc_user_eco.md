@@ -23,6 +23,7 @@
 |CONTACTS|Utilisateurs autorisés en consultation|[Rehcerche un contact](app/doc_user_eco_contact_rech.md)|
 |EVENEMENTS|Utilisateurs avec un role d'administration des données|[Ajouter, modifier ou associer un évènement](app/doc_user_eco_eve_modif.md)|
 |EVENEMENTS|Utilisateurs autorisés en consultation|[Rechercher un évènement](app/doc_user_eco_contact_rech.md)|
+|DOCUMENTS|Utilisateurs avec un role d'administration des données|[Associer un document]([app/doc_user_eco_contact_rech.md](https://geo.compiegnois.fr/portail/index.php/2020/06/09/comment-gerer-les-documents-lies/))|
 
 
 
