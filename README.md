@@ -24,19 +24,15 @@ L’ARC est engagée dans un plan de modernisation numérique pour l’exercice 
 
 L’ARC privilégie donc une organisation dans laquelle l’Interface Homme Machine (IHM) du métier assure l’alimentation d’un entrepôt de données territoriales. Cette stratégie « agile » permet de répondre au plus près des besoins des services dans une trajectoire soutenable assurant à la fois une bonne maitrise des flux d’information et un temps d’acculturation au sein de l’organisation.
 
+De plus cette thématique est partagée dans le cadre de la mutualisation avec les EPCI du Grand Compiégnois.
+
 ## Voir aussi
 
 - [Standard régional d'échange des données sur l'activité économique (V2 2015)](https://geo.compiegnois.fr/documents/metiers/eco/modele_groupe_activite_economique_version2_2015.pdf)
 
 
-## Jeu de données consolidé (ancienne structure toujours en production)
+## Jeu de données consolidé
 
 Vous pouvez retrouver plusieurs jeux de données à l'échelle de l'Agglomération de la Région de Compiègne :
- * [Les pôles d'activités](https://geo.compiegnois.fr/geonetwork/srv/fre/catalog.search#/metadata/8db8e6ee-0f87-4926-a559-4769c01ddb28)
- * [Les sites d'activités](https://geo.compiegnois.fr/geonetwork/srv/fre/catalog.search#/metadata/8653f903-ccf8-42a9-a298-90f24d7ee0e0)
- * [Les lots à vocation économique](https://geo.compiegnois.fr/geonetwork/srv/fre/catalog.search#/metadata/b62edffb-14bb-4460-8f4e-3c1dc2bcd368)
- * [Les lots à vocation habitat](https://geo.compiegnois.fr/geonetwork/srv/fre/catalog.search#/metadata/289f9a02-fd1e-4df1-9710-188e17758082)
- * [Les lots à vocation mixte](https://geo.compiegnois.fr/geonetwork/srv/fre/catalog.search#/metadata/f2336765-c302-49ae-9c82-ad02227fd52d)
- * [Les lots à vocation d'équipement](https://geo.compiegnois.fr/geonetwork/srv/fre/catalog.search#/metadata/b54beae3-822d-4bc7-867c-84b8c26c596e)
- * [Les cessions foncières](https://geo.compiegnois.fr/geonetwork/srv/fre/catalog.search#/metadata/e35607f5-ff9b-4d34-a4f5-7d1d87671f41)
- * [Les établissements](https://geo.compiegnois.fr/geonetwork/srv/fre/catalog.search#/metadata/b1344995-4703-41ac-8867-ac2a398666b1)
+  * [Les sites d'activités](https://geo.compiegnois.fr/geonetwork/srv/fre/catalog.search#/metadata/5c437f50-f898-4734-8a78-bcbcd74ba6c1)
+  * [Les établissements](https://geo.compiegnois.fr/geonetwork/srv/fre/catalog.search#/metadata/22f0c413-dd60-4d2a-b6dc-b91d21d0d01a)
