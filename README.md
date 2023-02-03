@@ -9,10 +9,10 @@ Ensemble des éléments constituant la mise en oeuvre de la base de données sur
 - [Lire la documentation du standard](gabarit/livrables.md)
 - Script d'initialisation de la base de données
   * [Suivi des modifications](bdd/afe_00_trace.sql)
-  * [Structure des données](bdd/afe_101_squelette.sql)
-  * [Vues de gestion](bdd/afe_20_vues_gestion.sql)
-  * [Vues applicatives](bdd/afe_21_vues_xapps.sql)
-  * [Privilèges](bdd/afe_99_grant.sql)  
+  * [Création de la structure des données](bdd/afe_101_squelette.sql)
+  * [Création des vues de gestion](bdd/afe_20_vues_gestion.sql)
+  * [Création des vues applicatives](bdd/afe_21_vues_xapps.sql)
+  * [Création des privilèges](bdd/afe_99_grant.sql)  
 - [Documentation d'administration de la base de données](bdd/doc_admin_bd_amt_fon_eco.md)
 - [Documentation utilisateurs de l'application](app/doc_user_eco.md)
 
