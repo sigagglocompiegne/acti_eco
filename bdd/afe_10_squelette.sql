@@ -14,13 +14,54 @@
 
 -- sont intégrer également ici les schémas dépendant. Il ne faut les supprimer si d'autress informatiosn y sont aossicées.
 
+-- DROP SCHEMA IF EXISTS m_activite_eco;
+-- DROP SCHEMA IF EXIST m_amenagement;
+-- DROP SCHEMA IF EXIST m_foncier;
+-- DROP SCHEMA IF EXIST m_urbanisme_reg;
+-- DROP SCHEMA IF EXIST r_objet;
 
+/*
+CREATE SCHEMA m_activite_eco
+    AUTHORIZATION create_sig;
+
+COMMENT ON SCHEMA m_activite_eco
+    IS 'Données géographiques métiers sur le thème de l''environnement';
+
+CREATE SCHEMA m_amenagement
+    AUTHORIZATION create_sig;
+
+COMMENT ON SCHEMA m_amenagement
+    IS 'Données métiers sur le thème de l''urbanisme de projets et l''aménagement des sites gérés par l''ARC';
+  
+CREATE SCHEMA m_foncier
+    AUTHORIZATION create_sig;
+
+COMMENT ON SCHEMA m_foncier
+    IS 'Données géographiques métiers sur le thème du foncier';  
+
+CREATE SCHEMA m_urbanisme_reg
+    AUTHORIZATION create_sig;
+
+COMMENT ON SCHEMA m_urbanisme_reg
+    IS 'Données géographiques métiers sur l''urbanisme réglementaire';
+
+CREATE SCHEMA r_objet
+    AUTHORIZATION create_sig;
+
+COMMENT ON SCHEMA r_objet
+    IS 'Schéma contenant les objets géographiques virtuels métiers (zonages, lots, entités administratives, ...). Les données métiers (alphanumériques) sont stockées dans le schéma correspondant, et le lien s''effectue via la référence géographique. Une donnée géographique spécifique à un seul métier, reste dans le schéma du métier.
+Y est stocké également la liste des contrats spécifiques aux réseaux permettant de filtrer l''accès aux objets.';
+
+
+*/    
 -- ####################################################################################################################################################
 -- ###                                                                                                                                              ###
 -- ###                                                                SEQUENCE                                                           ###
 -- ###                                                                                                                                              ###
 -- ####################################################################################################################################################
 
+
+-- ################################################# TABLE ##################################
 -- ################################################# Séquence des n° de cessions ##################################
 
 
