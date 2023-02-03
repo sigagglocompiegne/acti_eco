@@ -60,10 +60,6 @@ Le choix a été fait de représentés par des objets ponctuels et inventories u
 
 A ce stade, les données des entreprises issues de Sirene (localisées à l'adresse) ne sont pas croisées avec les bâtiments d'activité car cet inventaire n'existe pas ou est non exhaustif. De plus, la localisation des établissements aux bâtiments d'activité ou au local, relève d'une complexité supérieure à une localisation à l'adresse.
 
-Le logigramme ci-dessous montre l'imbrication des objets dans un site d'activité, sachant qu'en dehors d'un site les éléments peuvent être isolés.
-
-
-![picto](.png)
 
 ## Règles de modélisation
 
