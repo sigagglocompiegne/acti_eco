@@ -45,6 +45,10 @@ Pour rappel des grands principes :
 
 ![act_eco_rel](diagram_m_urbanisme_reg.png)
 
+##### Objets lots
+
+![act_eco_rel](diagram_r_objets_lot.png)
+
 ## Dépendances
 
 Cette base de donnnées est interdépendante du fait d'une partie urbanisée. Les données de l'activité économique sont liées en partie à des données d'aménagements opérationnels, de foncier, ou de ressources externes comme les données de la base SIRENE de l'Insee.
