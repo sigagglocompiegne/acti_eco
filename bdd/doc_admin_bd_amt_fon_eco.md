@@ -33,7 +33,9 @@ Pour rappel des grands principes :
 
 ## Modèle relationel simplifié
 
-(en refonte)
+##### Activité Economique
+
+[!act_eco_rel][bdd/diagram_m_activite_eco.png]
 
 ## Dépendances
 
