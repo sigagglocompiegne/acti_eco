@@ -33,7 +33,6 @@ Pour rappel des grands principes :
 
 ## Modèle relationel simplifié
 
-##### Activité Economique
 
 ![act_eco_rel](diagram_m_activite_eco_v3.png)
 
