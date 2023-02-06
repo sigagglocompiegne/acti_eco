@@ -296,7 +296,7 @@ Particularité(s) à noter :
 
 ---
 
-`[m_activite_eco].[geo_eco_loc_act]` : table géographique contenant l'ensemble des locaux d'acticité
+`[m_activite_eco].[geo_eco_loc_act]` : table géographique contenant l'ensemble des bâtiments d'activité
    
 |Nom attribut | Définition | Type | Valeurs par défaut |
 |:---|:---|:---|:---|
@@ -339,6 +339,9 @@ Particularité(s) à noter :
 
 
 ---
+
+### Liste de valeurs
+
 
 ### Classes d'objets attributaire :
 
@@ -605,30 +608,6 @@ Particularité(s) à noter :
 
 ---
 
-`[m_activite_eco].[an_eco_patri_media]` : table alphanumérique contenant l'ensemble des médias des objets exclusivement lié aux patrimoines
-   
-|Nom attribut | Définition | Type | Valeurs par défaut |
-|:---|:---|:---|:---|
-|gid|Compteur (identifiant interne)|integer|nextval('m_activite_eco.an_eco_patri_media_seq'::regclass)|
-|id|Identifiant interne non signifiant de l'objet saisi|text| |
-|media|Champ Média de GEO|text| |
-|miniature|Champ miniature de GEO|bytea| |
-|n_fichier|Nom du fichier|text| |
-|t_fichier|Type de média dans GEO|text| |
-|op_sai|Opérateur de saisie (par défaut login de connexion à GEO)|character varying(20)| |
-|date_sai|Date de la saisie du document|timestamp without time zone| |
-|l_doc|Titre du document ou légère description|character varying(100)| |
-|t_doc|Type de document|character varying(2)|'00'::character varying|
-
-
-Particularité(s) à noter :
-* Une clé primaire existe sur le champ `gid` l'attribution automatique de la référence unique s'effectue via une séquence. 
-* Une clé étrangère existe sur la table de valeur `t_doc` (lien vers la liste de valeurs du type de médias `lt_eco_tdocmedia`)
-
- 
-
- 
-
 
 
 `[m_activite_eco].[an_eco_loc_act]` : table alphanumérique contenant les données descriptive du local
@@ -655,29 +634,6 @@ Particularité(s) à noter :
 
 ---
 
-`[m_activite_eco].[geo_eco_loc_patri]` : table géographique contenant l'ensemble des locaux du patrimoine public
-   
-|Nom attribut | Définition | Type | Valeurs par défaut |
-|:---|:---|:---|:---|
-|idpatri|Identifiant unique de l'objet|character varying(10)|('P'::text || nextval('m_activite_eco.geo_eco_loc_patri_seq'::regclass))|
-|libelle|Nom usuel du local|character varying(100)| |
-|a_const|Année de construction|integer| |
-|loyer|Loyer mensuel|double precision| |
-|descript|Elément descriptif du local|character varying(5000)| |
-|l_url|Lien URL vers une référen ce externe|character varying(254)| |
-|op_sai|Opérateur de saisir d'objet à l'ARC|character varying(80)| |
-|src_geom|Référentiel spatial de saisie|character varying(2)|'00'::character varying|
-|sup_m2|Surface totale de l'objet en m²|double precision| |
-|date_sai|Date de saisie de l'objet|timestamp without time zone| |
-|date_maj|Date de mise à jour|timestamp without time zone| |
-|epci|Autorité compétente|character varying(10)| |
-|geom|Champ contenant la géométrie|MultiPolygon,2154| |
-
-
-Particularité(s) à noter :
-* Une clé primaire existe sur le champ `idpatri` l'attribution automatique de la référence unique s'effectue via une séquence. 
- 
----
 
 `[m_activite_eco].[h_an_eco_etab]` : table géographique contenant l'historique (ou état) des établissements par an
 
