@@ -60,12 +60,281 @@ Y est stocké également la liste des contrats spécifiques aux réseaux permett
 -- ###                                                                                                                                              ###
 -- ####################################################################################################################################################
 
+-- DROP SEQUENCE IF EXISTS m_activite_eco.an_eco_bati_loc_media_seq;
+-- DROP SEQUENCE IF EXISTS m_activite_eco.an_eco_contact_seq;
+-- DROP SEQUENCE IF EXISTS m_activite_eco.an_eco_dia_seq;
+-- DROP SEQUENCE IF EXISTS m_activite_eco.an_eco_etab_rad_seq;
+-- DROP SEQUENCE IF EXISTS m_activite_eco.an_eco_etab_seq;
+-- DROP SEQUENCE IF EXISTS m_activite_eco.an_eco_evenmt_media_seq;
+-- DROP SEQUENCE IF EXISTS m_activite_eco.an_eco_evenmt_seq;
+-- DROP SEQUENCE IF EXISTS m_activite_eco.an_eco_loc_act_seq;
+-- DROP SEQUENCE IF EXISTS m_activite_eco.an_eco_loc_media_seq;
+-- DROP SEQUENCE IF EXISTS m_activite_eco.an_eco_log_seq;
+-- DROP SEQUENCE IF EXISTS m_activite_eco.an_eco_media_seq;
+-- DROP SEQUENCE IF EXISTS m_activite_eco.an_eco_pole_seq;
+-- DROP SEQUENCE IF EXISTS m_activite_eco.geo_eco_loc_act_seq;
+-- DROP SEQUENCE IF EXISTS m_activite_eco.geo_eco_site_seq;
+-- DROP SEQUENCE IF EXISTS m_activite_eco.h_an_eco_etab_seq;
+-- DROP SEQUENCE IF EXISTS m_activite_eco.h_an_eco_site_seq;
+-- DROP SEQUENCE IF EXISTS m_activite_eco.lk_adresseetablissement_seq;
+-- DROP SEQUENCE IF EXISTS m_activite_eco.lk_eco_contact_seq;
+-- DROP SEQUENCE IF EXISTS m_activite_eco.lk_eco_etab_site_seq;
+-- DROP SEQUENCE IF EXISTS m_activite_eco.lk_eco_loc_adr_seq;
+-- DROP SEQUENCE IF EXISTS m_activite_eco.lk_eco_loc_etab_seq;
+-- DROP SEQUENCE IF EXISTS m_activite_eco.lk_eco_loc_evenmt_contact_seq;
+-- DROP SEQUENCE IF EXISTS m_activite_eco.lk_eco_loc_site_seq;
+-- DROP SEQUENCE IF EXISTS m_activite_eco.lk_eco_proc_seq;
 
--- ################################################# TABLE ##################################
--- ################################################# Séquence des n° de cessions ##################################
 
+-- ##########################################################################################################
+-- ################################################# SCHEMA M_ACTIVITE_ECO ##################################
+-- ##########################################################################################################
 
+-- ################################################# an_eco_bati_loc_media_seq ##################################
+-- ################################################# Séquence des identifiants internes des médias associés aux bâtiments d'activité ##################################
 
+CREATE SEQUENCE m_activite_eco.an_eco_bati_loc_media_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+
+-- ################################################# an_eco_contact_seq ##################################
+-- ################################################# Séquence des identifiants internes de contact ##################################
+
+CREATE SEQUENCE m_activite_eco.an_eco_contact_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+    
+-- ################################################# an_eco_dia_seq ##################################
+-- ################################################# Séquence des identifiants internes de DIA ##################################
+
+CREATE SEQUENCE m_activite_eco.an_eco_dia_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+
+-- ################################################# an_eco_etab_rad_seq ##################################
+-- ################################################# Séquence des identifiants internes de établissements radiés ##################################
+
+CREATE SEQUENCE m_activite_eco.an_eco_etab_rad_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+
+-- ################################################# an_eco_etab_seq ##################################
+-- ################################################# Séquence des identifiants internes des établissements (classe métier) ##################################
+
+CREATE SEQUENCE m_activite_eco.an_eco_etab_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+
+-- ################################################# an_eco_evenmt_media_seq ##################################
+-- ################################################# Séquence des identifiants internes des médias liés aux évènements ##################################
+
+CREATE SEQUENCE m_activite_eco.an_eco_evenmt_media_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+
+-- ################################################# an_eco_evenmt_seq ##################################
+-- ################################################# Séquence des identifiants internes des évènements ##################################
+
+CREATE SEQUENCE m_activite_eco.an_eco_evenmt_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+
+-- ################################################# an_eco_loc_act_seq ##################################
+-- ################################################# Séquence des identifiants internes des locaux d'activités ##################################
+
+CREATE SEQUENCE m_activite_eco.an_eco_loc_act_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+
+-- ################################################# an_eco_loc_media_seq ##################################
+-- ################################################# Séquence des identifiants internes des médias liés aux locaux d'activités ##################################
+
+CREATE SEQUENCE m_activite_eco.an_eco_loc_media_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+
+-- ################################################# an_eco_log_seq ##################################
+-- ################################################# Séquence des identifiants internes des logs ##################################
+
+CREATE SEQUENCE m_activite_eco.an_eco_log_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+    
+
+-- ################################################# an_eco_media_seq ##################################
+-- ################################################# Séquence des identifiants internes des médias (lots et sites) ##################################
+
+CREATE SEQUENCE m_activite_eco.an_eco_media_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+    
+
+-- ################################################# an_eco_pole_seq ##################################
+-- ################################################# Séquence des identifiants internes des pôles d'activité ##################################
+
+CREATE SEQUENCE m_activite_eco.an_eco_pole_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+
+-- ################################################# geo_eco_loc_act_seq ##################################
+-- ################################################# Séquence des identifiants internes des bâtiments d'activité ##################################
+
+CREATE SEQUENCE m_activite_eco.geo_eco_loc_act_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+
+-- ################################################# geo_eco_site_seq ##################################
+-- ################################################# Séquence des identifiants internes des sites d'activité ##################################
+
+CREATE SEQUENCE m_activite_eco.geo_eco_site_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+    
+-- ################################################# h_an_eco_etab_seq ##################################
+-- ################################################# Séquence des identifiants internes de l'historique des établissements ##################################
+
+CREATE SEQUENCE m_activite_eco.h_an_eco_etab_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+
+-- ################################################# h_an_eco_site_seq ##################################
+-- ################################################# Séquence des identifiants internes de l'historique des sites ##################################
+
+CREATE SEQUENCE m_activite_eco.h_an_eco_site_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+
+-- ################################################# lk_adresseetablissement_seq ##################################
+-- ################################################# Séquence des identifiants internes des liens adresses-établissement ##################################
+
+CREATE SEQUENCE m_activite_eco.lk_adresseetablissement_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+    
+-- ################################################# lk_eco_contact_seq ##################################
+-- ################################################# Séquence des identifiants internes des liens d'appartenance contacts-objets ##################################
+
+CREATE SEQUENCE m_activite_eco.lk_eco_contact_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+    
+-- ################################################# lk_eco_etab_site_seq ##################################
+-- ################################################# Séquence des identifiants internes des liens d'appartenance établissements-sites ##################################
+
+CREATE SEQUENCE m_activite_eco.lk_eco_etab_site_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+
+-- ################################################# lk_eco_loc_adr_seq ##################################
+-- ################################################# Séquence des identifiants internes des liens d'appartenance établissements-sites ##################################
+
+CREATE SEQUENCE m_activite_eco.lk_eco_loc_adr_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+
+-- ################################################# lk_eco_loc_etab_seq ##################################
+-- ################################################# Séquence des identifiants internes des liens d'appartenance locaux d'activité - établissement ##################################
+
+-- séquence non utilisée pour le moment
+
+/*
+CREATE SEQUENCE m_activite_eco.lk_eco_loc_etab_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+*/
+
+-- ################################################# lk_eco_loc_evenmt_contact_seq ##################################
+-- ################################################# Séquence des identifiants internes des liens d'appartenance des contacts à un évènement ##################################
+
+CREATE SEQUENCE m_activite_eco.lk_eco_loc_evenmt_contact_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE
+
+-- ################################################# lk_eco_loc_site_seq ##################################
+-- ################################################# Séquence des identifiants internes des liens d'appartenance des lots à un site d'activité ##################################
+
+CREATE SEQUENCE m_activite_eco.lk_eco_loc_site_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+
+-- ################################################# lk_eco_proc_seq ##################################
+-- ################################################# Séquence des identifiants internes des liens d'appartenance d'une procédure à un site d'aéctivité ##################################
+
+CREATE SEQUENCE m_activite_eco.lk_eco_proc_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
 
 
 -- ####################################################################################################################################################
