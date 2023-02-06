@@ -35,7 +35,7 @@ Pour rappel des grands principes :
 
 ##### Activité Economique
 
-![act_eco_rel][bdd/diagram_m_activite_eco.png]
+![act_eco_rel](bdd/diagram_m_activite_eco.png)
 
 ## Dépendances
 
