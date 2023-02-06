@@ -53,13 +53,9 @@ COMMENT ON SCHEMA r_objet
 Y est stocké également la liste des contrats spécifiques aux réseaux permettant de filtrer l''accès aux objets.';
 
 
-*/    
--- ####################################################################################################################################################
--- ###                                                                                                                                              ###
--- ###                                                                SEQUENCE                                                           ###
--- ###                                                                                                                                              ###
--- ####################################################################################################################################################
+*/   
 
+-- séquences :
 -- DROP SEQUENCE IF EXISTS m_activite_eco.an_eco_bati_loc_media_seq;
 -- DROP SEQUENCE IF EXISTS m_activite_eco.an_eco_contact_seq;
 -- DROP SEQUENCE IF EXISTS m_activite_eco.an_eco_dia_seq;
@@ -88,6 +84,38 @@ Y est stocké également la liste des contrats spécifiques aux réseaux permett
 -- DROP SEQUENCE IF EXISTS m_urbanisme_reg.an_proc_media_seq;
 -- DROP SEQUENCE IF EXISTS m_urbanisme_reg.geo_proc_seq;
 -- DROP SEQUENCE IF EXISTS m_urbanisme_reg.an_proced_log_seq;
+
+-- liste de valeurs :
+-- DROP TABLE IF EXISTS m_activite_eco.lt_eco_dest;
+-- DROP TABLE IF EXISTS m_activite_eco.lt_eco_etat;
+-- DROP TABLE IF EXISTS m_activite_eco.lt_eco_occuploc;
+-- DROP TABLE IF EXISTS m_activite_eco.lt_eco_tact;
+-- DROP TABLE IF EXISTS m_activite_eco.lt_eco_tdocmedia;
+-- DROP TABLE IF EXISTS m_activite_eco.lt_eco_typcontact;
+-- DROP TABLE IF EXISTS m_activite_eco.lt_eco_typevenmt;
+-- DROP TABLE IF EXISTS m_activite_eco.lt_eco_typloc;
+-- DROP TABLE IF EXISTS m_activite_eco.lt_eco_typo;
+-- DROP TABLE IF EXISTS m_activite_eco.lt_eco_typoccup;
+-- DROP TABLE IF EXISTS m_activite_eco.lt_eco_typsite;
+-- DROP TABLE IF EXISTS m_activite_eco.lt_eco_voca;
+-- DROP TABLE IF EXISTS m_amenagement.lt_amt_etat_occup;
+-- DROP TABLE IF EXISTS m_amenagement.lt_amt_stadeamng;
+-- DROP TABLE IF EXISTS m_amenagement.lt_amt_stadeamng2;
+-- DROP TABLE IF EXISTS m_amenagement.lt_amt_stadecomm;
+-- DROP TABLE IF EXISTS m_amenagement.lt_amt_stadecomm2;
+-- DROP TABLE IF EXISTS m_urbanisme_reg.lt_proc_phase;
+-- DROP TABLE IF EXISTS m_urbanisme_reg.lt_proc_typ;
+-- DROP TABLE IF EXISTS m_urbanisme_reg.lt_proc_typconso;
+-- DROP TABLE IF EXISTS m_urbanisme_reg.lt_proc_typfon;
+-- DROP TABLE IF EXISTS r_objet.lt_objet_vocafon;
+
+-- ####################################################################################################################################################
+-- ###                                                                                                                                              ###
+-- ###                                                                SEQUENCE                                                           ###
+-- ###                                                                                                                                              ###
+-- ####################################################################################################################################################
+
+
 
 -- ##########################################################################################################
 -- ################################################# SCHEMA M_ACTIVITE_ECO ##################################
@@ -412,6 +440,43 @@ CREATE SEQUENCE r_objet.idgeo_seq
 -- ################################################# SCHEMA M_ACTIVITE_ECO ##################################
 -- ##########################################################################################################
 
+-- ################################################################# Domaine valeur - lt_eco_dest  ###############################################
+
+-- Table: m_activite_eco.lt_eco_dest
+
+-- DROP TABLE m_activite_eco.lt_eco_dest;
+
+CREATE TABLE m_activite_eco.lt_eco_dest
+(
+    code character varying(2) COLLATE pg_catalog."default" NOT NULL,
+    valeur character varying(30) COLLATE pg_catalog."default",
+    CONSTRAINT lt_eco_dest_pkkey PRIMARY KEY (code)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+
+-- Index: lt_eco_dest_code_idx
+-- DROP INDEX m_activite_eco.lt_eco_dest_code_idx;
+
+CREATE INDEX lt_eco_dest_code_idx
+    ON m_activite_eco.lt_eco_dest USING btree
+    (code COLLATE pg_catalog."default" ASC NULLS LAST)
+    TABLESPACE pg_default;
+
+-- Index: lt_eco_titre_idx
+-- DROP INDEX m_activite_eco.lt_eco_titre_idx;
+
+CREATE INDEX lt_eco_titre_idx
+    ON m_activite_eco.lt_eco_dest USING btree
+    (code COLLATE pg_catalog."default" ASC NULLS LAST)
+    TABLESPACE pg_default;
+
+INSERT INTO m_activite_eco.lt_eco_dest(
+            code, valeur)
+    VALUES
 
 
 -- ##########################################################################################################
