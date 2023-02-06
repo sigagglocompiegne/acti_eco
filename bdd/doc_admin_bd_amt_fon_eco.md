@@ -45,8 +45,6 @@ Cette base de donnnées est interdépendante du fait d'une partie urbanisée. Le
 
 ## Classes d'objets urbanisé ou partagé
 
-L'ensemble des classes d'objets de gestion sont stockés dans le schéma `r_objet` ,et celles applicatives dans les schémas x_apps (pour les applications pro) ou x_apps_public (pour les applications grands publiques).
-
 `[r_objet].[geo_objet_fon_lot]` : table géographique partagé des lots commercialisés
    
 |Nom attribut | Définition | Type | Valeurs par défaut |
@@ -60,41 +58,33 @@ L'ensemble des classes d'objets de gestion sont stockés dans le schéma `r_obje
 |date_sai|Date de saisie de l'objet|timestamp without time zone| |
 |date_maj|Date de mise à jour|timestamp without time zone| |
 |l_nom|Nom de lot donné au moment du plan d'aménagement (ex : lot 1)|character varying(80)| |
+|op_maj|Opérateur de mise à jour|character varying(80)| |
 |insee|Code insee de la commune|character varying(5)| |
 |commune|Libellé de la commune|character varying(80)| |
 |epci|Autorité compétente|character varying(10)| |
-|surf|Surface parcellaire occupée du lot en m²|integer| |
-|surf_l|Surface littérale parcellaire occupée du lot|character varying(15)| |
+|surf|Surface occupée du lot en m² (surface saisie par l'utilisateur si différente de la surface SIG)|integer| |
+|surf_l|Surface littérale occupée du lot en m² (surface saisie par l'utilisateur si différente de la surface SIG)|character varying(15)| |
 
 Particularité(s) à noter :
 * Une clé primaire existe sur le champ `idgeolf` l'attribution automatique de la référence unique s'effectue via les vues de gestion. 
 * Une clé étrangère existe sur la table de valeur `src_geom` (lien vers la liste de valeurs des référentiels de saisie `lt_src_geom`)
 * Une clé étrangère existe sur la table de valeur `l_voca` (lien vers la liste de valeurs de la vocation foncière du lot `lt_objet_vocafon`)
 
-* 2 triggers :
-  * `t_t1_foncier_insert_date_maj` : trigger permettant d'automatiser la date de mise à jour des données
-  * `t_t2_foncier_insert_surf` : trigger permettant d'automatiser l'insertion de la surface 
-  * `t_t3_foncier_l_nom` : trigger permettant de remplacer une valeur vide pour une valeur NULL (fonctionnel engendré par GEO)
-  
+* 12 triggers :
+  * `t_t0_secu_geom_epci` : trigger permettant de sécuriser la saisie des lots entre EPCI
+  * `t_t1_etab_insert_date_sai` : trigger permettant d'automatiser la date de mise de saisie des données
+  * `t_t2_foncier_insert_date_maj` : trigger permettant d'automatiser la date de mise à jour des données
+  * `t_t3_foncier_insert_surf` : trigger permettant d'intégrer la surface du lot à la modification de la géométrie à la saisie
+  * `t_t4_foncier_l_nom` : trigger permettant d'initilaiser le nom du lot en vrai null si rien saisie ou suppression du nom
+  * `t_t5_insee_commune` : trigger permettant d'intégrer le code insee et le nom de la commune
+  * `t_t6_insert_update_objet_fon_surf_l` : trigger permettant de modifier la surface du lot à la mise à jour sur la geom ou l'attribut surf
+  * `t_t7_insert_objet_fon` : trigger permettant d'intégrer l'objet dans la classe des cessions et d'associer le lot à un site
+  * `t_t9_autorite_competente` : trigger permettant de rechercher et d'intégrer l'autorité compétente à l'objet (permet de gérer la sécurité des données entre EPCI)
+  * `t_t11_delete_objet_fon` : trigger permettant de gérer la suppression d'un lot (si possible) dans les associations d'objets
+  * `t_t12_refresh_view` : trigger permettant de rafraichir les vues matérialisées intégrant les objets lots
+  * `t_t100_log` : trigger permettant de générer un log dans la classe d'objets correspondantes pour le suivie de toutes manipulations sur cette classe d'objets
+
 ---
-
-`[r_objet].[geo_objet_empesp_pu]` : table géographique des objets surfaciques composant de l'espace public
-   
-|Nom attribut | Définition | Type | Valeurs par défaut |
-|:---|:---|:---|:---|
-|idgeopu|Identifiant unique de l'objet|integer| |
-|op_sai|Opérateur de saisir d'objet à l'ARC|character varying(80)| |
-|src_geom|Référentiel spatial de saisie|character varying(2)|'00'::character varying|
-|sup_m2|Surface totale de l'objet en m²|double precision| |
-|geom|Champ contenant la géométrie|USER-DEFINED| |
-|date_sai|Date de saisie de l'objet|timestamp without time zone| |
-|date_maj|Date de mise à jour de l'objet|timestamp without time zone| |
-
-Particularité(s) à noter :
-* Une clé primaire existe sur le champ `idgeopu` l'attribution automatique de la référence unique s'effectue via les vues de gestion. 
-* Une clé étrangère existe sur la table de valeur `src_geom` (lien vers la liste de valeurs des référentiels de saisie `lt_src_geom`)
-
-Cette classe d'objets est peu utilisée, non mise à jour, et testé dans le cadre d'un besoin ponctuel non renouvelé.
 
 ### Liste de valeurs
 
