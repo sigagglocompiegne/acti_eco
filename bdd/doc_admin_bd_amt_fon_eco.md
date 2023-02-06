@@ -41,9 +41,9 @@ Pour rappel des grands principes :
 
 Cette base de donnnées est interdépendante du fait d'une partie urbanisée. Les données de l'activité économique sont liées en partie à des données d'aménagements opérationnels, de foncier, ou de ressources externes comme les données de la base SIRENE de l'Insee.
 
-
-
 ## Classes d'objets urbanisé ou partagé
+
+L'ensemble des classes d'objets de gestion sont stockés dans le schéma `r_objet`.
 
 `[r_objet].[geo_objet_fon_lot]` : table géographique partagé des lots commercialisés
    
@@ -157,9 +157,9 @@ Valeurs possibles :
 
 ## Classes d'objets de l'activité économique
 
-L'ensemble des classes d'objets de gestion sont stockés dans le schéma `m_activite_eco` ,et celles applicatives dans les schémas x_apps (pour les applications pro) ou x_apps_public (pour les applications grands publiques).
+L'ensemble des classes d'objets de gestion sont stockés dans le schéma `m_activite_eco`.
 
-### Classes d'objets de gestion :
+### Classes d'objets avec une primitive graphique :
   
 `[m_activite_eco].[geo_eco_site]` : table géographique contenant la délimitation des sites d'activités
    
@@ -167,14 +167,14 @@ L'ensemble des classes d'objets de gestion sont stockés dans le schéma `m_acti
 |:---|:---|:---|:---|
 |idsite|Identifiant interne non signifiant des site d'activités|character varying(5)|('S'::text || nextval('m_activite_eco.geo_eco_site_seq'::regclass))|
 |idsitereg|Identifiant régional des site d'activités|character varying(7)| |
-|idpole|Identifiant interne non signifiant du pôle d'appartenance|integer| |
+|idpole|Identifiant interne non signifiant du pôle d'appartenance|character varying(7)| |
 |site_nom|Libellé du site|character varying(80)| |
 |site_voca|Code de la vocation simplifiée de la zone (ZI, ZA, Zone commerciale, ...)|character varying(2)|'00'::character varying|
 |site_etat|Code de l'état du site (existant, création, déclassé, ...)|character varying(2)|'00'::character varying|
 |typsite|Code des différents type de sites (ZAE, autre site d'activités hors ZAE, autre site, ...)|character varying(2)|'00'::character varying|
 |typo|Code de la typologie du site (site mononfonctionnel, ...)|character varying(2)|'00'::character varying|
 |dest|Code de la destination initiale du site (défini dans les documents d'urbanisme)|character varying(2)|'00'::character varying|
-|dest_autre|Autres distantions ou précisions sur la destination|character varying(254)| |
+|dest_autre|Autres destinations ou précisions sur la destination|character varying(254)| |
 |date_crea|Année de création du site|integer| |
 |p_implant|Première implantation des entreprises sur le site (année ou date)|character varying(10)| |
 |commune|Libellé des communes d'assises du site d'activités|character varying(255)| |
@@ -215,10 +215,14 @@ L'ensemble des classes d'objets de gestion sont stockés dans le schéma `m_acti
 |z_pmm|Présence d'une plate-forme multimodale|boolean|false|
 |z_dst_pmm|Distance en km de la plate-forme multimodale la plus proche par la route|integer| |
 |serv_tc|Présence de transport en commun desservant le site|boolean|false|
+|serv_tc_nb|Nombre de lignes desservant le site|integer| |
+|serv_tc_fr|Fréquence moyenne des lignes desservant le site|character varying(80)| |
 |serv_tc_g|Gratuité des transports en commun|boolean|false|
 |circ_douce|Présence de circulation douce accédant au site (pistes cyclables)|boolean|false|
 |serv_rest|Présence de restaurants ou à proximité immédiate|boolean|false|
+|serv_rest_nb|Nombre de points de restauration sur le site ou à proximité|integer| |
 |serv_crech|Présence de crèches ou à proximité immédiate|boolean|false|
+|serv_crech_nb|Nombre de crèche sur le site ou à proximité|integer| |
 |serv_autre|Libellé des autres services disponibles sur le site|character varying(1000)| |
 |z_aide_pb|Aides publiques bénéficiaires au site|boolean|false|
 |src_geom|Code du référentiel de saisie des objets sites|character varying(2)|'00'::character varying|
@@ -226,44 +230,126 @@ L'ensemble des classes d'objets de gestion sont stockés dans le schéma `m_acti
 |date_sai|Date de saisie des données attributaires|timestamp without time zone| |
 |date_maj|Date de mise à jour des données attributaires|timestamp without time zone| |
 |op_sai|Libellé de la personne ayant saisie l'objet initialisament|character varying(80)| |
+|op_maj|Opérateur de mise à jour|character varying(80)| |
 |epci|Autorité compétente|character varying(10)| |
 |observ|Observations diverses|character varying(1000)| |
-|geom|Géométrie des objets sites|geometry(MultiPolygon,2154)| |
+|geom|Géométrie des objets sites|USER-DEFINED| |
+|geom1|Géométrie des objets sites avec un buffer négatif de 0,5m|USER-DEFINED| |
 
 
 Particularité(s) à noter :
 * Une clé primaire existe sur le champ `idsite` l'attribution automatique de la référence unique s'effectue via une séquence. 
-* Une clé non primaire sur le champ `idsitereg` contient la référence du site pour les exports OpenData au standard Régional
 * Une clé étrangère existe sur la table de valeur `site_etat` (lien vers la liste de valeurs de l'état du site `lt_eco_etat`)
 * Une clé étrangère existe sur la table de valeur `dest` (lien vers la liste de valeurs de la destination du site `lt_eco_dest`)
 * Une clé étrangère existe sur la table de valeur `typo` (lien vers la liste de valeurs de la typologie du site `lt_eco_typo`)
 * Une clé étrangère existe sur la table de valeur `typsite` (lien vers la liste de valeurs du type de site `lt_eco_typsite`)
 * Une clé étrangère existe sur la table de valeur `site_voca` (lien vers la liste de valeurs de la vocation du site `lt_eco_voca`)
 * Une clé étrangère existe sur la table de valeur `src_geom` (lien vers la liste de valeurs des référentiels de saisie `lt_src_geom`)
-  
+
+---
+
+`[m_activite_eco].[geo_eco_etabp]` : table géographique contenant l'ensemble des établissements spécifiques saisis (hors SIRENE)
+   
+|Nom attribut | Définition | Type | Valeurs par défaut |
+|:---|:---|:---|:---|
+|idgeoet|Identifiant géographique unique|integer|nextval('r_objet.idgeo_seq'::regclass)|
+|idsiren|Numéro SIRENE de l'établissement (si connu)|character varying(9)| |
+|idsiret|Numéro SIRET de l'établissement (si connu)|character varying(14)| |
+|nom|Libellé du nom de l'établissement spécifique|character varying(255)| |
+|adresse|Adresse de l'établissement|character varying(255)| |
+|eff_etab|Effectif total de l'établissement|integer| |
+|eff_etab_d|Précision (en détail) du nombre de CDD, CDI, intérim, ....|character varying(200)| |
+|source_eff|Source de l'effectif de l'établissement|character varying(50)| |
+|date_eff|Date de l'effectif|date| |
+|ape|Code APE de l'établissement (Naf de niveau 1)|character varying(2)|'00'::character varying|
+|l_url|Lien du site internet de l'entreprise|character varying(500)| |
+|l_url_bil|Lien vers le bilan en ligne de l'entreprise|character varying(500)| |
+|l_compte|Prise en compte de l'établissement pour le calcul des statistiques (nombre d'établissements et effectifs) dans les informations de synthèse.
+Par défaut TRUE et laisse le choix à l'administrateur de la donnée de modifier cette valeur.|boolean|true|
+|observ|Commentaires|character varying(255)| |
+|date_sai|Date de saisie par le producteur|timestamp without time zone| |
+|date_maj|Date de mise à jour|timestamp without time zone| |
+|op_sai|Libellé de l'opérateur de Saisie|character varying(80)| |
+|op_maj|Opérateur de mise à  jour|character varying(80)| |
+|src_geom|Référentiel spatial utilisé pour la saisie|character varying(2)|'20'::character varying|
+|insee|Code Insee de la commune|character varying(5)| |
+|commune|Libellé de la commune|character varying(80)| |
+|geom|Champ contenant la géométrie des objets|USER-DEFINED| |
+|idobjet|Reconstruction de l'identifiant objet via un trigger pour l''association des contacts dans les relations n--m dans GEO|character varying(15)| |
+
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ `idgeoet` l'attribution automatique de la référence unique s'effectue via un trigger. 
+* Une clé étrangère existe sur la table de valeur `src_geom` (lien vers la liste de valeurs des référentiels de saisies `lt_src_geom`)
+* Une clé étrangère existe sur la table de valeur `ape` (lien vers la liste de valeurs des naf niveau 1 `s_sirene.naf_n1`)
+
+* 9 triggers :
+  * `t_t1_geo_eco_etabp_date_sai` : trigger permettant d'insérer la date de saisie
+  * `t_t2_geo_eco_etabp_date_maj` : trigger permettant d'insérer la date de mise à jour
+  * `t_t3_geo_eco_etabp_insee_commune` : trigger permettant de saisir le code insee et le nom de la commune
+  * `t_t4_secu_geom_sb_epci` : trigger permettant de sécuriser la saisie entre les EPCI
+  * `t_t5_geo_eco_etabp_idobjet` : trigger permettant de gérer l'écriture de l'identifianr idobjet spécifique à cette classe
+  * `t_t6_geo_eco_etabp_null` : trigger permettant de gérer la mise à jour de certaines attributs en vrai null
+  * `t_t7_geo_eco_etabp_site` : trigger permettant d'associer l'établissment spécifique à un ou plusieurs sites
+  * `t_t8_refresh_view`: trigger permettant de rafraichier les vues matérialisées faisant référence à cette classe d'objets
+  * `t_t100_log` : trigger permettant d'intégrer toutes les opérations dans la table des logs
+
+---
+
+`[m_activite_eco].[geo_eco_loc_act]` : table géographique contenant l'ensemble des locaux d'acticité
+   
+|Nom attribut | Définition | Type | Valeurs par défaut |
+|:---|:---|:---|:---|
+|idloc|Identifiant unique de l'objet|character varying(15)|('BA'::text || nextval('m_activite_eco.geo_eco_loc_act_seq'::regclass))|
+|lib_bati|Libellé du bâtiment|character varying(150)| |
+|typ1|Typologie de local|character varying(2)|'00'::character varying|
+|adresse_a|Adresse libre si inexistante dans la BAL (adresse non conforme, lieux-dit, ...)|character varying(100)| |
+|op_sai|Opérateur de saisie d'objet à l'ARC|character varying(80)| |
+|op_maj|Opérateur de mise à jour|character varying(80)| |
+|date_sai|Date de saisie de l'objet|timestamp without time zone| |
+|date_maj|Date de mise à jour|timestamp without time zone| |
+|observ|Observations diverses|character varying(1000)| |
+|insee|Code Insee de la commune d'assise du local|character varying(5)| |
+|commune|Libellé de la commune d'assise du local|character varying(100)| |
+|epci|Autorité compétente|character varying(10)| |
+|src_geom|Référentiel spatial de saisie|character varying(2)|'00'::character varying|
+|geom|Champ contenant la géométrie|USER-DEFINED| |
+|idgeolf|Identifiant du lot foncier si présent|integer| |
+|p_etiq|Priorisation de l'affichage du nom du bâtiment sur la carte Plan de situation dans GEO|boolean|true|
+
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ `idloc` l'attribution automatique de la référence unique s'effectue via une séquence. 
+* Une clé étrangère existe sur la table de valeur `src_geom` (lien vers la liste de valeurs des référentiels de saisies `lt_src_geom`)
+* Une clé étrangère existe sur la table de valeur `typ1` (lien vers la liste de valeurs du type de local `lt_eco_typloc`)
+
+* 12 triggers :
+  * `t_t1_date_sai` : trigger permettant d'insérer la date de saisie
+  * `t_t2_date_maj` : trigger permettant d'insérer la date de mise à jour
+  * `t_t3_geo_eco_loc_act_insert_update` : trigger permettant
+  * `t_t4_insert_update_idgeolf` : trigger permettant 
+  * `t_t5_secu_geom_sb_epci` : trigger permettant 
+  * `t_t6_geo_eco_loc_act_delete` : trigger permettant 
+  * `t_t7_geo_eco_loc_act_insee_commune` : trigger permettant 
+  * `t_t8_autorite_competente`: trigger permettant
+  * `t_t9_before_modif_loc`: trigger permettant
+  * `t_t10_after_insert_loc`: trigger permettant
+  * `t_t11_refresh_view`: trigger permettant
+  * `t_t100_log` : trigger permettant d'intégrer toutes les opérations dans la table des logs
+
+
+---
+
+### Classes d'objets attributaire :
+
 ---
 
 `[m_activite_eco].[an_eco_pole]` : table alphanumérique contenant la dénomination des pôles d'activités (unité géographique régionale)
    
 |Nom attribut | Définition | Type | Valeurs par défaut |
 |:---|:---|:---|:---|
-|idpole|Identifiant unique non signifiant du pôle d'activité|character varying(4)|('P'::text || nextval('m_activite_eco.an_eco_pole_seq'::regclass))|
-|idpolereg|Identifiant unique régional du pôle d'activité|character varying(7)| |
-|nom_pole|Libellé du pôle d'activités|character varying(100)| |
-|dest|Destination du pôle (issue de la destination des sites)|character varying(2)|'00'::character varying|
-|op_sai|Opérateur de saisie initial|character varying(80)| |
-|org_sai|Organisme de saisie initial|character varying(100)| |
-|epci|Autorité compétente|character varying(10)| |
-|date_sai|Date de saisie|timestamp without time zone|now()|
-|date_maj|Date de mise à jour|timestamp without time zone| |
 
-
-Particularité(s) à noter :
-* Une clé primaire existe sur le champ `idpole` l'attribution automatique de la référence unique s'effectue via une séquence. 
-* Une clé non primaire sur le champ `idpolereg` contient la référence du site pour les exports OpenData au standard Régional
-* Une clé étrangère existe sur la table de valeur `dest` (lien vers la liste de valeurs de la destination du pôle `lt_eco_dest`)
-* Une vue de gestion a été réalisée `geo_v_eco_pole` dans ce schéma pour reconstruire les pôles à partir de la table `geo_eco_site`
-* Une vue matérialisée a été réalisée `geo_vmr_eco_pole` dans ce schéma pour reconstruire les pôles à partir de la table `geo_eco_site` pour des usages cartographiques et d'export OpenData
+Table en cours de refonte
 
 ---
 
@@ -540,71 +626,9 @@ Particularité(s) à noter :
 * Une clé étrangère existe sur la table de valeur `t_doc` (lien vers la liste de valeurs du type de médias `lt_eco_tdocmedia`)
 
  
----
 
-`[m_activite_eco].[geo_eco_etabp]` : table géographique contenant l'ensemble des établissements spécifiques saisis (hors SIRENE)
-   
-|Nom attribut | Définition | Type | Valeurs par défaut |
-|:---|:---|:---|:---|
-|idgeoet|Identifiant géographique unique|integer| |
-|idsiren|Numéro SIRENE de l'établissement (si connu)|character varying(9)| |
-|idsiret|Numéro SIRET de l'établissement (si connu)|character varying(14)| |
-|idsite|Identifiant du site d'activité d'appartenance|character varying(10)| |
-|date_sai|Date de saisie par le producteur|timestamp without time zone|now()|
-|op_sai|Libellé de l'opérateur de Saisie|character varying(80)| |
-|org_sai|Libellé de l'organisme dont dépend l'opérateur de saisie|character varying(80)| |
-|l_nom|Libellé du nom de l'établissement spécifique|character varying(255)| |
-|eff_etab|Effectif total de l'établissement|integer| |
-|source_eff|Source de l'effectif de l'établissement|character varying(50)| |
-|date_eff|Date de l'effectif|date| |
-|l_ape|Code APE de l'établissement|character varying(5)| |
-|l_observ|Commentaires|character varying(255)| |
-|geom|Champ contenant la géométrie des objets|Point,2154| |
-|date_maj|Date de mise à jour|timestamp without time zone| |
-|l_compte|Prise en compte de l'établissement pour le calcul des statistiques (nombre d'établissements et effectifs) dans les informations de synthèse.
-Par défaut TRUE et laisse le choix à l'administrateur de la donnée de modifier cette valeur.|boolean|true|
-|src_geom|Référentiel spatial utilisé pour la saisie|character varying(2)|'20'::character varying|
-|eff_etab_d|Précision (en détail) du nombre de CDD, CDI, intérim, ....|character varying(200)| |
-
-
-Particularité(s) à noter :
-* Une clé primaire existe sur le champ `idgeoet` l'attribution automatique de la référence unique s'effectue via un trigger. 
-* Une clé étrangère existe sur la table de valeur `src_geom` (lien vers la liste de valeurs des référentiels de saisies `lt_src_geom`)
-
-* 4 triggers :
-  * `t_t1_etabp_insert` : trigger permettant d'automatiser l'insertion de la séquence + date de saisie + les informations d'appartenance à un site
-  * `t_t5_etabp_update` : trigger permettant d'automatiser la date de mise à jour + les informations d'appartenance à un site
-  * `t_t7_geo_sa_etabp_insee` : trigger permettant de récupérer la code INSEE d'assise
-  * `t_t91_etabp_null` : trigger permettant de mettre à NULL et non vide les attributs saisis depuis GEO
  
----
 
-`[m_activite_eco].[geo_eco_loc_act]` : table géographique contenant l'ensemble des locaux d'acticité
-   
-|Nom attribut | Définition | Type | Valeurs par défaut |
-|:---|:---|:---|:---|
-|idloc|Identifiant unique de l'objet|character varying(10)|('L'::text || nextval('m_activite_eco.geo_eco_loc_act_seq'::regclass))|
-|lib_bati|Libellé du bâtiment|character varying(150)| |
-|typ1|Typologie de local|character varying(2)| |
-|adresse_a|Adresse libre si inexistante dans la BAL (adresse non conforme, lieux-dit, ...)|character varying(100)| |
-|op_sai|Opérateur de saisie d'objet à l'ARC|character varying(80)| |
-|src_geom|Référentiel spatial de saisie|character varying(2)|'00'::character varying|
-|date_sai|Date de saisie de l'objet|timestamp without time zone| |
-|date_maj|Date de mise à jour|timestamp without time zone| |
-|observ|Observations diverses|character varying(1000)| |
-|insee|Code Insee de la commune d'assise du local|character varying(5)| |
-|commune|Libellé de la commune d'assise du local|character varying(100)| |
-|epci|Autorité compétente|character varying(10)| |
-|geom|Champ contenant la géométrie|USER-DEFINED| |
-
-
-Particularité(s) à noter :
-* Une clé primaire existe sur le champ `idloc` l'attribution automatique de la référence unique s'effectue via une séquence. 
-* Une clé étrangère existe sur la table de valeur `src_geom` (lien vers la liste de valeurs des référentiels de saisies `lt_src_geom`)
-* Une clé étrangère existe sur la table de valeur `typ` (lien vers la liste de valeurs du type de local `lt_eco_typloc`)
-* Une clé étrangère existe sur la table de valeur `occup` (lien vers la liste de valeurs du type d'occupation `lt_eco_occuploc`)
-
----
 
 
 `[m_activite_eco].[an_eco_loc_act]` : table alphanumérique contenant les données descriptive du local
