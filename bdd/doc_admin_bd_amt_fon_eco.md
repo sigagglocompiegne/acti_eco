@@ -37,6 +37,10 @@ Pour rappel des grands principes :
 
 ![act_eco_rel](diagram_m_activite_eco_v2.png)
 
+##### Procédure d'aménagement
+
+![act_eco_rel](diagram_m_amenagement.png)
+
 ## Dépendances
 
 Cette base de donnnées est interdépendante du fait d'une partie urbanisée. Les données de l'activité économique sont liées en partie à des données d'aménagements opérationnels, de foncier, ou de ressources externes comme les données de la base SIRENE de l'Insee.
