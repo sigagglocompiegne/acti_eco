@@ -84,7 +84,10 @@ Y est stocké également la liste des contrats spécifiques aux réseaux permett
 -- DROP SEQUENCE IF EXISTS m_activite_eco.lk_eco_loc_evenmt_contact_seq;
 -- DROP SEQUENCE IF EXISTS m_activite_eco.lk_eco_loc_site_seq;
 -- DROP SEQUENCE IF EXISTS m_activite_eco.lk_eco_proc_seq;
-
+-- DROP SEQUENCE IF EXISTS m_amenagement.lk_amt_lot_site_seq;
+-- DROP SEQUENCE IF EXISTS m_urbanisme_reg.an_proc_media_seq;
+-- DROP SEQUENCE IF EXISTS m_urbanisme_reg.geo_proc_seq;
+-- DROP SEQUENCE IF EXISTS m_urbanisme_reg.an_proced_log_seq;
 
 -- ##########################################################################################################
 -- ################################################# SCHEMA M_ACTIVITE_ECO ##################################
@@ -317,7 +320,7 @@ CREATE SEQUENCE m_activite_eco.lk_eco_loc_evenmt_contact_seq
     CACHE
 
 -- ################################################# lk_eco_loc_site_seq ##################################
--- ################################################# Séquence des identifiants internes des liens d'appartenance des lots à un site d'activité ##################################
+-- ################################################# Séquence des identifiants internes des liens d'appartenance des bâtiments d'activité à un site d'activité ##################################
 
 CREATE SEQUENCE m_activite_eco.lk_eco_loc_site_seq
     INCREMENT 1
@@ -337,13 +340,78 @@ CREATE SEQUENCE m_activite_eco.lk_eco_proc_seq
     CACHE 1;
 
 
+-- ##########################################################################################################
+-- ################################################# SCHEMA M_AMENAGEMENT ##################################
+-- ##########################################################################################################
+
+-- ################################################# lk_amt_lot_site_seq ##################################
+-- ################################################# Séquence des identifiants internes des liens d'appartenance d'un lot à un site ##################################
+
+CREATE SEQUENCE m_amenagement.lk_amt_lot_site_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+
+-- ##########################################################################################################
+-- ################################################# SCHEMA M_URBANISME_REG ##################################
+-- ##########################################################################################################
+
+-- ################################################# an_proc_media_seq ##################################
+-- ################################################# Séquence des identifiants internes des procédures d'aménagement ##################################
+
+CREATE SEQUENCE m_urbanisme_reg.an_proc_media_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+
+-- ################################################# an_proced_log_seq ##################################
+-- ################################################# Séquence des identifiants internes des logs de la table geo_amt_proc ##################################
+
+CREATE SEQUENCE m_urbanisme_reg.an_proced_log_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+
+-- ################################################# geo_proc_seq ##################################
+-- ################################################# Séquence des identifiants internes des procédures d'aménagement ##################################
+
+CREATE SEQUENCE m_urbanisme_reg.geo_proc_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+
+-- ##########################################################################################################
+-- ################################################# SCHEMA R_OBJET ##################################
+-- ##########################################################################################################
+
+-- ################################################# idgeo_seq ##################################
+-- ################################################# Séquence des globales des identifiants internes des objets activités économiques nécessaires ##################################
+
+CREATE SEQUENCE r_objet.idgeo_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 99999999999999999
+    CACHE 1;
+
 -- ####################################################################################################################################################
 -- ###                                                                                                                                              ###
 -- ###                                                                DOMAINES DE VALEURS                                                           ###
 -- ###                                                                                                                                              ###
 -- ####################################################################################################################################################
 
--- ################################################# du schéma objet Objet ##################################
+-- ##########################################################################################################
+-- ################################################# SCHEMA M_ACTIVITE_ECO ##################################
+-- ##########################################################################################################
+
 
 -- ################################################################# Domaine valeur - vocafon  ###############################################
 
