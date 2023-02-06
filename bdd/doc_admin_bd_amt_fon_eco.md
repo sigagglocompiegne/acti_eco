@@ -35,19 +35,8 @@ Pour rappel des grands principes :
 
 ##### Activité Economique
 
-![act_eco_rel](diagram_m_activite_eco_v2.png)
+![act_eco_rel](diagram_m_activite_eco_v3.png)
 
-##### Procédure d'aménagement
-
-![act_eco_rel](diagram_m_amenagement.png)
-
-##### Urbanisme réglementaire
-
-![act_eco_rel](diagram_m_urbanisme_reg.png)
-
-##### Objets lots
-
-![act_eco_rel](diagram_r_objets_lot.png)
 
 ## Dépendances
 
