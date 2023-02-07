@@ -86,7 +86,7 @@ Particularité(s) à noter :
 
 ---
 
-### Liste de valeurs
+#### Liste de valeurs
 
 `[r_objet].[lt_src_geom]` : Liste des valeurs permettant de décrire les référentiels utilisés pour la saisie des objets
 
@@ -338,9 +338,7 @@ Particularité(s) à noter :
   * `t_t100_log` : trigger permettant d'intégrer toutes les opérations dans la table des logs
 
 
----
-
-### Liste de valeurs
+#### Liste de valeurs
 
 `[m_activite_eco].[lt_eco_dest]` : Liste des valeurs permettant de décrire la destination des sites et des pôles
 
@@ -531,32 +529,72 @@ Table en cours de refonte sera sans doute remplacée par une table contenant une
 
 ---
 
+`[m_activite_eco].[an_eco_bati_loc_media]` : table alphanumérique contenant l'ensemble des médias des bâtiments d'activité
+   
+|Nom attribut | Définition | Type | Valeurs par défaut |
+|:---|:---|:---|:---|
+|gid|Compteur (identifiant interne)|integer|nextval('m_activite_eco.an_eco_bati_loc_media_seq'::regclass)|
+|id|Identifiant interne non signifiant de l'objet saisi|text| |
+|media|Champ Média de GEO|text| |
+|miniature|Champ miniature de GEO|bytea| |
+|n_fichier|Nom du fichier|text| |
+|t_fichier|Type de média dans GEO|text| |
+|date_sai|Date de la saisie du document|timestamp without time zone| |
+|date_maj|Date de mise à jour|timestamp without time zone| |
+|op_sai|Opérateur de saisie (par défaut login de connexion à GEO)|character varying(20)| |
+|op_maj|Opérateur de mise à jour|character varying(20)| |
+|l_doc|Titre du document ou légère description|character varying(100)| |
+|t_doc|Type de documents|character varying(2)|'00'::character varying|
+|d_photo|Date de la prise de vue|timestamp without time zone| |
+
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ `gid` l'attribution automatique de la référence unique s'effectue via une séquence. 
+* Une clé étrangère existe sur la table de valeur `t_doc` (lien vers la liste de valeurs du type de contact `lt_eco_tdocmedia`)
+
+* 1 triggers :
+  * `t_t1_date_maj` : trigger permettant d'insérer la date de mise à jour
+ 
+---
+
 `[m_activite_eco].[an_eco_contact]` : table alphanumérique contenant l'ensemble des contacts
    
 |Nom attribut | Définition | Type | Valeurs par défaut |
 |:---|:---|:---|:---|
 |idcontact|Identifiant unique non signifiant du contact|integer|nextval('m_activite_eco.an_eco_contact_seq'::regclass)|
-|nom|Libellé du contact (nom, prénom ou nom de l'entreprise)|character varying(100)| |
-|typcontact|Type de contact|character varying(2)| |
-|tel|Téléphone du contact|character varying(14)| |
-|telp|Téléphone portable dui contact|character varying(14)| |
+|nom|Libellé du contact (nom, prénom ou nom de l'entreprise)|character varying(254)| |
+|typcontact|Type de contact|character varying(2)|'00'::character varying|
+|tel|Téléphone du contact|character varying(10)| |
+|telp|Téléphone portable dui contact|character varying(10)| |
 |email|Email du contact|character varying(100)| |
 |date_sai|Date de saisie des données attributaires|timestamp without time zone| |
 |date_maj|Date de mise à jour des données attributaires|timestamp without time zone| |
 |op_sai|Libellé de la personne ayant saisie l'objet initialisament|character varying(80)| |
+|op_maj|Opérateur de mise à jour|character varying(80)| |
 |epci|Autorité compétente|character varying(10)| |
 |observ|Observations diverses|character varying(1000)| |
 |idobjet|Clé temporaire pour la relation direct dans GEO en attendant la correction sur les relations N..M|character varying(15)| |
 |idevenmt|Identifiant unique non signifiant de l''évènement (en attente résolution pb relation N..M dans Geo|integer| |
+|source|Source de la mise à jour du contact|character varying(100)| |
 
 
 Particularité(s) à noter :
 * Une clé primaire existe sur le champ `idcontact` l'attribution automatique de la référence unique s'effectue via une séquence. 
 * Une clé étrangère existe sur la table de valeur `typcontact` (lien vers la liste de valeurs du type de contact `lt_eco_typcontact`)
  
+* 6 triggers :
+  * `t_t1_date_sai` : trigger permettant d'insérer la date de saisie
+  * `t_t1_date_maj` : trigger permettant d'insérer la date de mise à jour 
+  * `t_t3_insert_update_epci` : trigger permettant d'insérer l'EPCI compétente de saisie
+  * `t_t4_controle_saisie_contact` : trigger permettant de contrôler la saisie utilisateur
+  * `t_t5_an_eco_contact_delete` : trigger permettant de gérer la suppression des assocaitions en cas de suppression d'un contact
+  * `t_t100_log` : trigger permettant d'intégrer toutes les opérations dans la table des logs
+ 
 ---
 
-`[m_activite_eco].[an_eco_dia]` : table alphanumérique contenant l'ensemble des informations des DIA liés à un lot économique
+`[m_activite_eco].[an_eco_dia]` : table alphanumérique contenant l'ensemble des DIA des lots saisies par l'utilisateur (uniquement pour l'ARC)
+
+Il ne s'agit pas ici d'une table de DIA gérée par le service Foncier de l'ARC mais d'une information ponctuelle gérée par le service du développement économique.
    
 |Nom attribut | Définition | Type | Valeurs par défaut |
 |:---|:---|:---|:---|
@@ -569,7 +607,16 @@ Particularité(s) à noter :
 |nom_a|Nom de l'acquéreur (seconde main)|character varying(80)| |
 |date_maj|Date de mise à jour des données attributaires|timestamp without time zone| |
 |op_sai|Libellé de la personne ayant saisie l'objet initialisament|character varying(80)| |
+|op_maj|Opérateur de mise à jour|character varying(80)| |
 
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ `gid` l'attribution automatique de la référence unique s'effectue via une séquence. 
+
+* 3 triggers :
+  * `t_t1_date_sai` : trigger permettant d'insérer la date de saisie
+  * `t_t1_date_maj` : trigger permettant d'insérer la date de mise à jour 
+  * `t_t100_log` : trigger permettant d'intégrer toutes les opérations dans la table des logs
+  
 ---
 
 `[m_activite_eco].[an_eco_etab]` : table alphanumérique contenant l'ensemble des informations métiers des établissements
@@ -577,12 +624,12 @@ Particularité(s) à noter :
 |Nom attribut | Définition | Type | Valeurs par défaut |
 |:---|:---|:---|:---|
 |id|Identifiant unique interne|integer|nextval('m_activite_eco.an_eco_etab_seq'::regclass)|
-|idgeoet|Identifiant unique géographique|integer| |
+|idgeoet|Identifiant unique géographique
+Ancien identifiant ne sert plus depuis la géolocalisation des étab à l'adresse|integer| |
 |idsiren|Numéro SIRENE de l'établissement|character varying(9)| |
 |idsiret|Numéro SIRET de l'établissement|character varying(14)| |
 |l_nom|Libellé du nom de l'établissement spécifique si différent du nom SIRENE (nom usuel du service économie)|character varying(255)| |
 |n_adres|Libellé de la nouvelle adresse si l'établissement a déménagé|character varying(255)| |
-|eff_ent|Effectif total du groupe|integer| |
 |eff_etab|Effectif total de l'établissement|integer| |
 |eff_etab_d|Précision (en détail) du nombre de CDD, CDI, intérim, ....|character varying(200)| |
 |source_eff|Source de l'effectif de l'établissement|character varying(50)| |
@@ -593,15 +640,15 @@ Par défaut TRUE et laisse le choix à l'administrateur de la donnée de modifie
 |apet700|Code d'activité de l'établissement (issu de SIRENE et mis à jour lors de la mise à jour de SIRENE)|character varying(255)| |
 |libapet|Libellé de l'activité de l'établissement (issu de SIRENE et mis à jour lors de la mise à jour de SIRENE)|character varying(255)| |
 |l_url|Lien du site internet de l'entreprise|character varying(500)| |
-|l_url_bil|Lien vers le bilan en ligne de l'entreprise|character varying(500)| |
-|dentree|Date d'entrée dans le fichier SIRENE|timestamp without time zone| |
-|dsortie|Date de sortie du fichier SIRENE|timestamp without time zone| |
+|dentree|Date d'entrée dans le fichier SIRENE déduite de l'insertion via l'API pour les nouveaux établissements apparus entre 2 mises à jour|timestamp without time zone| |
+|dsortie|Date de sortie du fichier SIRENE déduite de l'insertion via l'API pour les anciens établissements disparus entre 2 mises à jour|timestamp without time zone| |
 |etatadministratifetablissement|Etat administratif de l'établissement dans le fichier SIEREN (attribut déjà présent dans SIRENE mais dupliqué ici pour le filtrage dans GEO, améliore les performances sans passer par une vue)|character varying(1)| |
 |old_siret|Attribut de gestion servant uniquement temporairement à la récupération des contacts d'un ancien établissement qui aurait disparu pour les remettre dans le nouveau. Cet attribut est vidé parès mise à jour|character varying(14)| |
 |old_id|Attribut de gestion servant uniquement temporairement à la récupération des contacts d'un établissement spécifique non présent dans SIRENE mais apparu par la suite. Cet attribut est vidé parès mise à jour|integer| |
 |date_int|Date renseignée par GéoPicardie lors de l'intégration du fichier dans la base (correspond aux dernières données reçues)|date| |
 |observ|Commentaires|character varying(255)| |
 |op_sai|Libellé de l'opérateur de Saisie|character varying(80)| |
+|op_maj|Opérateur de mise à jour|character varying(80)| |
 |date_sai|Date de saisie des données attributaires|timestamp without time zone| |
 |date_maj|Date de mise à jour des données attributaires|timestamp without time zone| |
 |insee|Code Insee de la commune (provenance SIRENE, mise à jour après intégration par trimestre dans le FME d'intégration API))|character varying(10)| |
@@ -611,12 +658,13 @@ Particularité(s) à noter :
 * Une clé primaire existe sur le champ `id` l'attribution automatique de la référence unique s'effectue via une séquence. 
 * Cette classe d'objet est alimenté automatiquement à l'insertion d'un nouvel établissement SIRENE via un process FME
 
-* 2 triggers :
+* 5 triggers :
+  * `t_t1_an_eco_etab_date_sai` : trigger permettant d'automatiser la date de saisie
   * `t_t1_an_sa_etab_date_maj` : trigger permettant d'automatiser la date de mise à jour des données
   * `t_t1_l_nom_null` : trigger permettant de gérer les attributs à NULL et non vide issu de GEO
-  * `t_t4_an_sa_etab_oldsiret` : trigger permettant l'appariemment des données de la table des établissements spécifiques ou la récupération d'un ancien disparu
-  * `t_t5_an_sa_etab_lcompte_local` : trigger permettant de rafraichir des vues matérialisés
- 
+  * `t_t5_an_sa_etab_lcompte_local` : trigger permettant d'insérer les mouvements de cette classe dans la classe des logs
+  * `t_t100_log` : trigger permettant d'intégrer toutes les opérations dans la table des logs
+
 ---
 
 `[m_activite_eco].[an_eco_etab_rad]` : table alphanumérique contenant l'ensemble des établissements radiés
@@ -647,14 +695,25 @@ Particularité(s) à noter :
 |date_sai|Date de saisie des données attributaires|timestamp without time zone| |
 |date_maj|Date de mise à jour des données attributaires|timestamp without time zone| |
 |op_sai|Libellé de la personne ayant saisie l'objet initialisament|character varying(80)| |
-|epci|Autorité compétente|character varying(10)| |
+|op_maj|Opérateur de mise à jour|character varying(80)| |
+|epci|Autorité compétente|text| |
 |observ|Observations diverses|character varying(1000)| |
 |date_rel|Date d'une relance éventuelle à prévoir|timestamp without time zone| |
+|e_term|Evènement terminé|boolean|false|
 
 
 Particularité(s) à noter :
 * Une clé primaire existe sur le champ `idevenmt` l'attribution automatique de la référence unique s'effectue via une séquence. 
 * Une clé étrangère existe sur la table de valeur `typevenmt` (lien vers la liste de valeurs du type d'évènement `lt_eco_typevenmt`)
+
+* 5 triggers :
+  * `t_t1_date_sai` : trigger permettant d'automatiser la date de saisie
+  * `t_t2_date_maj` : trigger permettant d'automatiser la date de mise à jour des données
+  * `t_t3_an_eco_evenmt_delete` : trigger permettant de gérer la suppression des associations lors de la suppression d'un évènement
+  * `t_t4_an_eco_evenmt_insert_update` : trigger permettant d'insérer l'autorité compétente à la saisie
+  * `t_t100_log` : trigger permettant d'intégrer toutes les opérations dans la table des logs
+
+---
 
 `[m_activite_eco].[an_eco_evenmt_media]` : table alphanumérique contenant l'ensemble des médias rattachés aux évènements
    
@@ -676,6 +735,91 @@ Particularité(s) à noter :
 * Une clé primaire existe sur le champ `gid` l'attribution automatique de la référence unique s'effectue via une séquence. 
 * Une clé étrangère existe sur la table de valeur `t_doc` (lien vers la liste de valeurs du type de médias `lt_eco_tdocmedia`)
 
+* 2 triggers :
+  * `t_t1_date_maj` : trigger permettant d'automatiser la date de mise à jour des données
+  * `t_t100_log` : trigger permettant d'intégrer toutes les opérations dans la table des logs
+
+---
+
+`[m_activite_eco].[an_eco_loc_act]` : table alphanumérique contenant l'ensemble les locaux d''activités identifiés
+   
+|Nom attribut | Définition | Type | Valeurs par défaut |
+|:---|:---|:---|:---|
+|id|Identifiant unique de l'unité local|character varying(15)|('LOC'::text || nextval('m_activite_eco.an_eco_loc_act_seq'::regclass))|
+|idloc|Identifiant unique du bâtiment ou du local|character varying(10)| |
+|libelle|Nom usuel du local|character varying(150)| |
+|typ2|Typologie d'occupation du local|character varying(2)| |
+|surf_p|Surface de plancher|integer| |
+|descript|Elément descriptif du local|character varying(5000)| |
+|occup|Type d'occupation du local|character varying(2)|'00'::character varying|
+|pvente|Prix de vente en € du local|integer| |
+|pventem2|Prix de vente au m² en € du local|double precision| |
+|loyer|Loyer mensuel en € du local|integer| |
+|loyerm2|Loyer mensuel au m² en € du local|double precision| |
+|occupant|Libellé de l'occupant si établissement non lié|character varying(80)| |
+|l_url|Lien URL vers une référence externe|character varying(254)| |
+|sourceloc|Source des informations du local|character varying(254)| |
+|observ|Observations diverses|character varying(1000)| |
+|date_sai|Date de saisie du local|timestamp without time zone| |
+|date_maj|Date de mise à jour du local|timestamp without time zone| |
+|op_sai|Opérateur de saisie|character varying(20)| |
+|op_maj|Opérateur de mise à jour|character varying(20)| |
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ `id` l'attribution automatique de la référence unique s'effectue via une séquence. 
+* Une clé étrangère existe sur la table de valeur `occup` (lien vers la liste de valeurs du type de médias `lt_eco_occuploc`)
+* Une clé étrangère existe sur la table de valeur `typ2` (lien vers la liste de valeurs du type de médias `lt_eco_typoccup`)
+
+* 4 triggers :
+  * `t_t1_date_sai` : trigger permettant d'automatiser la date de saisie
+  * `t_t2_date_maj` : trigger permettant d'automatiser la date de mise à jour des données
+  * `t_t3_geo_eco_loc_act_delete` : trigger permettant de supprimer les associations des locaus en cas de suppression d'un local
+  * `t_t100_log` : trigger permettant d'intégrer toutes les opérations dans la table des logs
+ 
+---
+
+`[m_activite_eco].[an_eco_loc_media]` : table alphanumérique contenant l'ensemble des médias des locaux d''activités identifiés
+   
+|Nom attribut | Définition | Type | Valeurs par défaut |
+|:---|:---|:---|:---|
+|gid|Compteur (identifiant interne)|integer|nextval('m_activite_eco.an_eco_loc_media_seq'::regclass)|
+|id|Identifiant interne non signifiant de l'objet saisi|text| |
+|media|Champ Média de GEO|text| |
+|miniature|Champ miniature de GEO|bytea| |
+|n_fichier|Nom du fichier|text| |
+|t_fichier|Type de média dans GEO|text| |
+|date_sai|Date de la saisie du document|timestamp without time zone| |
+|date_maj|Date de mise à jour|timestamp without time zone| |
+|op_sai|Opérateur de saisie (par défaut login de connexion à GEO)|character varying(20)| |
+|op_maj|Opérateur de mise à jour|character varying(20)| |
+|l_doc|Titre du document ou légère description|character varying(100)| |
+|t_doc|Type de documents|character varying(2)|'00'::character varying|
+|d_photo|Date de la prise de vue|timestamp without time zone| |
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ `gid` l'attribution automatique de la référence unique s'effectue via une séquence. 
+* Une clé étrangère existe sur la table de valeur `t_doc` (lien vers la liste de valeurs du type de médias `lt_eco_tdocmedia`)
+
+* 4 triggers :
+  * `t_t1_date_maj` : trigger permettant d'automatiser la date de mise à jour des données
+  * `t_t100_log` : trigger permettant d'intégrer toutes les opérations dans la table des logs
+
+---
+
+`[m_activite_eco].[an_eco_log]` : table alphanumérique contenant l'ensemble des logs des tables du schéma `m_activite_eco`
+   
+|Nom attribut | Définition | Type | Valeurs par défaut |
+|:---|:---|:---|:---|
+|idlog|Identifiant unique|integer| |
+|tablename|Nom de la classe concernée par une opération|character varying(80)| |
+|type_ope|Type d'opération|text| |
+|dataold|Anciennes données|text| |
+|datanew|Nouvelles données|text| |
+|date_maj|Date d'exécution de l'opération|timestamp without time zone|now()|
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ `idlog` l'attribution automatique de la référence unique s'effectue via une séquence. 
+
 ---
 
 `[m_activite_eco].[an_eco_lot]` : table alphanumérique contenant l'ensemble des informations métiers des lots commercialisés
@@ -686,10 +830,6 @@ Particularité(s) à noter :
 |tact|Type d'activité présent sur le lot|character varying(2)|'00'::character varying|
 |cnom|Nom de code de l'acquéreur|character varying(20)| |
 |lnom|Nom de l'acquéreur|character varying(80)| |
-|eff_dep|Effectif de départ prévu par l'implantation de l'établissement lors de l'octroi de la convention de subvention|integer| |
-|eff_n5|Effectif prévu de l'établissement à n+5 par la convention d'octroi de subvention|integer| |
-|conv|Accord ou non d'une convention d'octroi de subvention|boolean| |
-|datefin_conv|Date de fin de la convention d'octroi de subvention, liée à l'effectif n+5|date| |
 |observ|Observations diverses|character varying(255)| |
 |bati|Surface de bâtiments projetée en m²|integer| |
 |pc_depot|Date de dépôt du permis de construire|timestamp without time zone| |
@@ -703,15 +843,55 @@ Particularité(s) à noter :
 |oripro|Information sur l'origine du projet. 3 valeurs possibles ENDOGENE ou EXOGENE ou non renseignée (pas de listes de valeurs créées, cette liste est paramétrée dans GEO)|character varying(15)| |
 |occupant|Libellé de l'occupant du terrain après cession|character varying(100)| |
 |descrip|Descriptif du bâtiment construit sur le lot|character varying(1000)| |
+|date_sai|Date de saisie|timestamp without time zone| |
+|date_maj|Date de mise à jour|timestamp without time zone| |
+|op_sai|Opérateur de saisie|character varying(20)| |
+|op_maj|Opérateur de mise à jour|character varying(20)| |
 
 
 Particularité(s) à noter :
 * Une clé primaire existe sur le champ `idgeolf` l'attribution automatique de la référence unique s'effectue via la vue de gestion. 
 * Une clé étrangère existe sur la table de valeur `tact` (lien vers la liste de valeurs du type d'activité `lt_eco_tact`)
 
+* 3 triggers :
+  * `t_t1_date_maj` : trigger permettant d'automatiser la date de mise à jour des données
+  * `t_t2_refresh_view` : trigger permettant de rafraichir la vue matérialisée dépendante
+  * `t_t100_log` : trigger permettant d'intégrer toutes les opérations dans la table des logs
+
 ---
 
-`[m_activite_eco].[an_eco_media]` : table alphanumérique contenant l'ensemble des médias des objets exclusivement économique
+`[m_activite_eco].[an_eco_lot_media]` : table alphanumérique contenant l'ensemble médias relatif aux lots
+   
+|Nom attribut | Définition | Type | Valeurs par défaut |
+|:---|:---|:---|:---|
+|gid|Compteur (identifiant interne)|integer|nextval('m_activite_eco.an_eco_media_seq'::regclass)|
+|id|Identifiant interne non signifiant de l'objet saisi|integer| |
+|media|Champ Média de GEO|text| |
+|miniature|Champ miniature de GEO|bytea| |
+|n_fichier|Nom du fichier|text| |
+|t_fichier|Type de média dans GEO|text| |
+|date_sai|Date de la saisie du document|timestamp without time zone| |
+|date_maj|Date de mise à jour|timestamp without time zone| |
+|op_sai|Opérateur de saisie (par défaut login de connexion à GEO)|character varying(20)| |
+|op_maj|Opérateur de mise à jour|character varying(20)| |
+|l_doc|Titre du document ou légère description|character varying(100)| |
+|t_doc|Type de documents|character varying(2)|'00'::character varying|
+|d_photo|Date de la prise de vue|timestamp without time zone| |
+|alaune|Média poussé à la une de l'annonce immobilière|boolean|false|
+|alaunesite|Média poussé à la une de la fiche de présentation du site|boolean|false|
+
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ `gid` l'attribution automatique de la référence unique s'effectue via la vue de gestion. 
+* Une clé étrangère existe sur la table de valeur `t_doc` (lien vers la liste de valeurs du type d'activité `lt_eco_tdocmedia`)
+
+* 2 triggers :
+  * `t_t1_date_maj` : trigger permettant d'automatiser la date de mise à jour des données
+  * `t_t100_log` : trigger permettant d'intégrer toutes les opérations dans la table des logs
+
+---
+
+`[m_activite_eco].[an_eco_media]` : table alphanumérique contenant l'ensemble des médias des sites d'activité
    
 |Nom attribut | Définition | Type | Valeurs par défaut |
 |:---|:---|:---|:---|
@@ -734,85 +914,16 @@ Particularité(s) à noter :
 * Une clé primaire existe sur le champ `gid` l'attribution automatique de la référence unique s'effectue via uine séquence. 
 * Une clé étrangère existe sur la table de valeur `t_doc` (lien vers la liste de valeurs du type de médias `lt_eco_tdocmedia`)
 
----
-
-`[m_activite_eco].[an_eco_lot_media]` : table alphanumérique contenant l'ensemble des médias des objets lots fonciers
-   
-|Nom attribut | Définition | Type | Valeurs par défaut |
-|:---|:---|:---|:---|
-|gid|Compteur (identifiant interne)|integer|nextval('m_activite_eco.an_eco_media_seq'::regclass)|
-|id|Identifiant interne non signifiant de l'objet saisi|integer| |
-|media|Champ Média de GEO|text| |
-|miniature|Champ miniature de GEO|bytea| |
-|n_fichier|Nom du fichier|text| |
-|t_fichier|Type de média dans GEO|text| |
-|op_sai|Opérateur de saisie (par défaut login de connexion à GEO)|character varying(20)| |
-|date_sai|Date de la saisie du document|timestamp without time zone| |
-|l_doc|Titre du document ou légère description|character varying(100)| |
-|t_doc|Type de documents|character varying(2)|'00'::character varying|
-|d_photo|Date de la prise de vue|timestamp without time zone| |
-|alaune|Média poussé à la une de l'annonce immobilière|boolean|false|
-|alaunesite|Média poussé à la une de la fiche de présentation du site|boolean|false|
-
-
-Particularité(s) à noter :
-* Une clé primaire existe sur le champ `gid` l'attribution automatique de la référence unique s'effectue via uine séquence. 
-* Une clé étrangère existe sur la table de valeur `t_doc` (lien vers la liste de valeurs du type de médias `lt_eco_tdocmedia`)
+* 2 triggers :
+  * `t_t1_date_maj` : trigger permettant d'automatiser la date de mise à jour des données
+  * `t_t100_log` : trigger permettant d'intégrer toutes les opérations dans la table des logs
 
 ---
-
-`[m_activite_eco].[an_fon_cession_horsarc_media]` : table alphanumérique contenant l'ensemble des médias des cessions liés aux objets lots fonciers (hors ARC)
-   
-|Nom attribut | Définition | Type | Valeurs par défaut |
-|:---|:---|:---|:---|
-|gid|Identifiant unique non signifiant|integer|nextval('m_foncier.an_fon_cession_horsarc_media_seq'::regclass)|
-|id|Identifiant de cession ou d'acquisition|integer| |
-|media|Champ Média de GEO|text| |
-|miniature|Champ miniature de GEO|bytea| |
-|n_fichier|Nom du fichier|text| |
-|t_fichier|Type de média dans GEO|text| |
-|op_sai|Libellé de l'opérateur ayant intégrer le document|character varying(100)| |
-|date_sai|Date d'intégration du document|timestamp without time zone| |
-|l_type|Code du type de document de cessions ou d'acquisitions|character varying(2)| |
-|l_prec|Précision sur le document|character varying(254)| |
-
-
-Particularité(s) à noter :
-* Une clé primaire existe sur le champ `gid` l'attribution automatique de la référence unique s'effectue via uine séquence. 
-* Une clé étrangère existe sur la table de valeur `l_type` (lien vers la liste de valeurs du type de médias `lt_ces_doc`)
-
----
-
-
-
-`[m_activite_eco].[an_eco_loc_act]` : table alphanumérique contenant les données descriptive du local
-   
-|Nom attribut | Définition | Type | Valeurs par défaut |
-|:---|:---|:---|:---|
-|id|Identifiant non signifiant interne du local|integer|nextval('m_activite_eco.an_eco_loc_act_seq'::regclass)|
-|idloc|Identifiant unique du local|character varying(10)| |
-|libelle|Nom usuel du local|character varying(150)| |
-|typ2|Typologie d'occupation du local|character varying(2)| |
-|surf_p|Surface de plancher|integer| |
-|descript|Elément descriptif du local|character varying(5000)| |
-|occup|Type d'occupation du local|character varying(2)|'00'::character varying|
-|pvente|Prix de vente en € du local|integer| |
-|pventem2|Prix de vente au m² en € du local|double precision| |
-|loyer|Loyer mensuel en € du local|integer| |
-|loyerm2|Loyer mensuel au m² en € du local|double precision| |
-|occupant|Libellé de l'occupant si établissement non lié|character varying(80)| |
-|l_url|Lien URL vers une référence externe|character varying(254)| |
-|sourceloc|Source des informations du local|character varying(254)| |
-|observ|Observations diverses|character varying(1000)| |
-|date_sai|Date de saisie du local|timestamp without time zone| |
-|date_maj|Date de mise à jour du local|timestamp without time zone| |
-
----
-
 
 `[m_activite_eco].[h_an_eco_etab]` : table géographique contenant l'historique (ou état) des établissements par an
 
 Particularité(s) à noter :
+* Une clé primaire existe sur le champ `gid` l'attribution automatique de la référence unique s'effectue via uine séquence. 
 * cette classe d'objet est alimenté 1 fois par an par un traitement FME 
  
 ---
@@ -820,214 +931,20 @@ Particularité(s) à noter :
 `[m_activite_eco].[h_an_eco_site]` : table géographique contenant l'historique (ou état) des sites par an
 
 Particularité(s) à noter :
+* Une clé primaire existe sur le champ `gid` l'attribution automatique de la référence unique s'effectue via uine séquence. 
 * cette classe d'objet est alimenté 1 fois par an par un traitement FME 
 
-### Classes d'objets attributaire gérant les associations (ou relation d'appartenance des objets entre eux) :
-
-`[m_activite_eco].[lk_adresseetablissement]` : table alphanumérique de relation entre les adresses et les établissements
-   
-|Nom attribut | Définition | Type | Valeurs par défaut |
-|:---|:---|:---|:---|
-|idadresse|Identifiant unique de l'adresse|bigint| |
-|siret|N° SIRET de l'établissement|character varying(14)| |
-|id|Identifiant unique non siggnifiant|integer|nextval('m_activite_eco.lk_adresseetablissement_seq'::regclass)|
-
-
-Particularité(s) à noter :
-* Une clé primaire existe sur le champ `id` l'attribution automatique de la référence unique s'effectue via une séquence. 
-
-* 4 triggers :
-  * `t_t1_lk_adresseetablissement_siret_update` : trigger permettant de modifier l'appariemment des adresses à la mise jour de celle-ci à l'établissement
-  * `t_t2_lk_adresseetablissement_idsite` : trigger à revoir
-  * `t_t3_lk_adresseetablissement_idsite_delete` : trigger permettant de supprimer un appariemment
-  * `t_t4_lk_etablissementlocal` : trigger permettant de rafraichir une vue matérialisée d'exploitation
- 
 ---
 
-`[m_activite_eco].[lk_eco_bati_loc]` : table alphanumérique de relation entre les bâtiments et les adresses
-   
-|Nom attribut | Définition | Type | Valeurs par défaut |
-|:---|:---|:---|:---|
-|id|Identifiant unique non signifiant de la relation|integer|nextval('m_activite_eco.lk_eco_bati_loc_seq'::regclass)|
-|idbati|Identifiant unique non signifiant de l'objet bâti d'activité|character varying(5)| |
-|idloc|Identifiant unique non signifiant de l'objet local d'activité|character varying(5)| |
-
+`[m_activite_eco].[h_an_eco_site_emploi]` : table géographique contenant la synthèse des emplois et du nombre d''entreprises historisés par année. Cette table est produite avec la classe h_an_eco_site
 
 Particularité(s) à noter :
-* Une clé primaire existe sur le champ `id` l'attribution automatique de la référence unique s'effectue via une séquence. 
+* Une clé primaire existe sur le champ `id`. 
+* cette classe d'objet est alimenté 1 fois par an par un traitement FME
 
-* x triggers : à venir
- 
- 
----
+#### Liste de valeurs
 
-`[m_activite_eco].[lk_eco_bati_site]` : table alphanumérique de relation entre les bâtiments et les sites
-   
-|Nom attribut | Définition | Type | Valeurs par défaut |
-|:---|:---|:---|:---|
-|id|Identifiant unique non signifiant de la relation|integer|nextval('m_activite_eco.lk_eco_bati_site_seq'::regclass)|
-|idbati|Identifiant unique non signifiant de l'objet bâti|character varying(5)| |
-|idsite|Identifiant unique non signifiant de l'objet site|character varying(5)| |
-
-
-Particularité(s) à noter :
-* Une clé primaire existe sur le champ `id` l'attribution automatique de la référence unique s'effectue via une séquence. 
-
-* x triggers : à venir
- 
- 
----
-
-`[m_activite_eco].[lk_eco_contact]` : table alphanumérique de relation entre les objets éconimoques et les contacts
-   
-|Nom attribut | Définition | Type | Valeurs par défaut |
-|:---|:---|:---|:---|
-|id|Identifiant unique non signifiant|integer|nextval('m_activite_eco.lk_eco_contact_seq'::regclass)|
-|idcontact|Identifiant unique non signifiant du contact|integer| |
-|idobjet|Identifiant unique non signifiant de l'objet en référence|integer| |
-
-
-Particularité(s) à noter :
-* Une clé primaire existe sur le champ `id` l'attribution automatique de la référence unique s'effectue via une séquence. 
-
-* x triggers : à venir
- 
- 
----
-
-
-
-`[m_activite_eco].[lk_eco_loc_etab]` : table alphanumérique de relation entre les locaux d'activité et les établissements
-   
-|Nom attribut | Définition | Type | Valeurs par défaut |
-|:---|:---|:---|:---|
-|id|Identifiant unique non signifiant de la relation|integer|nextval('m_activite_eco.lk_eco_loc_etab_seq'::regclass)|
-|idloc|Identifiant unique non signifiant de l'objet local|character varying(5)| |
-|siren|Identifiant unique non signifiant de l'établissement|character varying(5)| |
-
-
-Particularité(s) à noter :
-* Une clé primaire existe sur le champ `id` l'attribution automatique de la référence unique s'effectue via une séquence. 
-
-* x triggers : à venir
- 
- 
----
-
-`[m_activite_eco].[lk_eco_proc]` : table alphanumérique de relation entre les sites et les procédures d'aménagement
-   
-|Nom attribut | Définition | Type | Valeurs par défaut |
-|:---|:---|:---|:---|
-|id|Identifiant unique non signifiant|integer|nextval('m_activite_eco.lk_eco_proc_seq'::regclass)|
-|idproc|Identifiant unique non signifiant de l'objet procédure|character varying(5)| |
-|idsite|Identifiant unique non signifiant de l'objet site|character varying(5)| |
-
-
-Particularité(s) à noter :
-* Une clé primaire existe sur le champ `id` l'attribution automatique de la référence unique s'effectue via une séquence. 
-
-* x triggers : à venir
- 
- 
----
-
-`[m_activite_eco].[lk_eco_bati_adr]` : table alphanumérique de relation entre les bâtiments et les adresses   
-|Nom attribut | Définition | Type | Valeurs par défaut |
-|:---|:---|:---|:---|
-|id|Identifiant unique non signifiant de la relation|integer|nextval('m_activite_eco.lk_eco_bati_adr_seq'::regclass)|
-|idbati|Identifiant unique non signifiant de l'objet bâtiment|character varying(5)| |
-|idadresse|Identifiant unique de l'adresse|bigint| |
-
-
-Particularité(s) à noter :
-* Une clé primaire existe sur le champ `id` l'attribution automatique de la référence unique s'effectue via une séquence. 
-
-* x triggers : à venir
- 
- 
----
-
----
-
-`[m_activite_eco].[lk_eco_loc_adr]` : table alphanumérique de relation entre les locaux d'activités et les adresses   
-|Nom attribut | Définition | Type | Valeurs par défaut |
-|:---|:---|:---|:---|
-|id|Identifiant unique non signifiant de la relation|integer|nextval('m_activite_eco.lk_eco_loc_adr_seq'::regclass)|
-|idloc|Identifiant unique non signifiant de l'objet local|character varying(5)| |
-|idadresse|Identifiant unique de l'adresse|bigint| |
-
-
-Particularité(s) à noter :
-* Une clé primaire existe sur le champ `id` l'attribution automatique de la référence unique s'effectue via une séquence. 
-
-* x triggers : à venir
- 
- ---
-
-
-### classes d'objets applicatives métiers sont classés dans le schéma x_apps :
-
-(à venir)
-
-### classes d'objets applicatives grands publics sont classés dans le schéma x_apps_public :
-
-(à venir)
-
-### classes d'objets opendata sont classés dans le schéma x_opendata :
-
-(à venir)
-
-### Liste de valeurs
-
-`[m_activite_eco].[lt_eco_dest]` : Liste des valeurs permettant de décrire la valeur de destination des sites et poles d'activité
-
-|Nom attribut | Définition | Type  | Valeurs par défaut |
-|:---|:---|:---|:---|    
-|code|Code de la destination principale du site ou du Pôle|character varying(2)| |
-|valeur|Libellé de la destination principale du site ou du Pôle|character varying(30)| |
-
-Particularité(s) à noter :
-* Une clé primaire existe sur le champ code 
-
-Valeurs possibles :
-
-|Code|Valeur|
-|:---|:---|
-|00|Non renseigné|
-|10|Artisanat|
-|20|Industrie ou R&D|
-|30|Tertiaire|
-|40|Transport et logistique|
-|50|Commerce|
-|60|Agriculture|
-|70|Service/Négoce|
-
----
-
-`[m_activite_eco].[lt_eco_etat]` : Liste des valeurs permettant de décrire la valeur d'état du site d'activité
-
-|Nom attribut | Définition | Type  | Valeurs par défaut |
-|:---|:---|:---|:---|    
-|code|Code de la typologie de la situation du site au regard de l'aménagement|character varying(2)| |
-|valeur|Code de la typologie de la situation du site au regard de l'aménagement|character varying(25)| |
-
-Particularité(s) à noter :
-* Une clé primaire existe sur le champ code 
-
-Valeurs possibles :
-
-|Code|Valeur|
-|:---|:---|
-|00|Non renseigné|
-|10|Existant|
-|20|Extension|
-|30|Création|
-|40|Déclassé|
-|50|Projet de déclassement|
-
----
-
-`[m_activite_eco].[lt_eco_occuploc]` : Liste des valeurs permettant de décrire la valeur de l'état d'occupation d'un local
+`[m_activite_eco].[lt_eco_occuploc]` : Liste des valeurs permettant de décrire l'état d''occupation d'un local
 
 |Nom attribut | Définition | Type  | Valeurs par défaut |
 |:---|:---|:---|:---|    
@@ -1052,7 +969,7 @@ Valeurs possibles :
 
 ---
 
-`[m_activite_eco].[lt_eco_tact]` : Liste des valeurs permettant de décrire la valeur de l'activité du projet d'implantation sur les lots (spécifique à l'ARC)
+`[m_activite_eco].[lt_eco_tact]` : Liste des valeurs permettant de décrire l'activité du projet d'implantation sur les lots
 
 |Nom attribut | Définition | Type  | Valeurs par défaut |
 |:---|:---|:---|:---|    
@@ -1077,7 +994,7 @@ Valeurs possibles :
 
 ---
 
-`[m_activite_eco].[lt_eco_tdocmedia]` : Liste des valeurs permettant de décrire la valeur des types de médias
+`[m_activite_eco].[lt_eco_tdocmedia]` : Liste des valeurs permettant de décrire les types de médias
 
 |Nom attribut | Définition | Type  | Valeurs par défaut |
 |:---|:---|:---|:---|    
@@ -1105,7 +1022,7 @@ Valeurs possibles :
 
 ---
 
-`[m_activite_eco].[lt_eco_typcontact]` : Liste des valeurs permettant de décrire la valeur des types de contact
+`[m_activite_eco].[lt_eco_typcontact]` : Liste des valeurs permettant de décrire les types de contact
 
 |Nom attribut | Définition | Type  | Valeurs par défaut |
 |:---|:---|:---|:---|    
@@ -1129,7 +1046,7 @@ Valeurs possibles :
 
 ---
 
-`[m_activite_eco].[lt_eco_typevenmt]` : Liste des valeurs permettant de décrire la valeur des types d'évènement
+`[m_activite_eco].[lt_eco_typevenmt]` : Liste des valeurs permettant de décrire les types d'évènement
 
 |Nom attribut | Définition | Type  | Valeurs par défaut |
 |:---|:---|:---|:---|    
@@ -1153,12 +1070,12 @@ Valeurs possibles :
 
 ---
 
-`[m_activite_eco].[lt_eco_typloc]` : Liste des valeurs permettant de décrire la valeur des types de locaux d'activité
+`[m_activite_eco].[lt_eco_typloc]` : Liste des valeurs permettant de décrire les typologies d'occupation des bâtiments d'activité
 
 |Nom attribut | Définition | Type  | Valeurs par défaut |
 |:---|:---|:---|:---|    
-|code|Code du type de local|character varying(2)| |
-|valeur|Libellé du type de local|character varying(50)| |
+|code|Code du type de bâtiment|character varying(2)| |
+|valeur|Libellé du type de bâtiment|character varying(100)| |
 
 Particularité(s) à noter :
 * Une clé primaire existe sur le champ code 
@@ -1168,18 +1085,15 @@ Valeurs possibles :
 |Code|Valeur|
 |:---|:---|
 |00|Non renseigné|
-|10|Terrain vierge|
-|20|Terrain en activité (non bâti)|
-|21|Terrain avec bâtiment léger en activité|
-|22|Parking|
-|23|Surface de dépôt ou de stockage|
-|30|Bureau|
-|40|Commerce|
-|50|Activité|
+|40|Pas de local (terrain, ...)|
+|30|Bâtiment composé de plateaux tertiaires|
+|20|Bâtiment composé de cellules commerciales|
+|10|Bâtiment composé de cellules d'activités|
+|50|Bâtiment mixte|
 
 ---
 
-`[m_activite_eco].[lt_eco_typo]` : Liste des valeurs permettant de décrire la valeur des typologies des sites
+`[m_activite_eco].[lt_eco_typo]` : Liste des valeurs permettant de décrire les typologies de sites du standard Régional
 
 |Nom attribut | Définition | Type  | Valeurs par défaut |
 |:---|:---|:---|:---|    
@@ -1201,12 +1115,13 @@ Valeurs possibles :
 
 ---
 
-`[m_activite_eco].[lt_eco_typsite]` : Liste des valeurs permettant de décrire la valeur des types de sites
+`[m_activite_eco].[lt_eco_typoccup]` : Liste des valeurs permettant de décrire types de locaux d'activité
 
 |Nom attribut | Définition | Type  | Valeurs par défaut |
 |:---|:---|:---|:---|    
-|code|Code du type de site|character varying(2)| |
-|valeur|Libellé du type de site|character varying(100)| |
+|code|Code du type de local|character varying(2)| |
+|valeur|Libellé du type de local|character varying(50)| |
+|typ1|Typologie du local|character varying(10)| |
 
 Particularité(s) à noter :
 * Une clé primaire existe sur le champ code 
@@ -1216,41 +1131,170 @@ Valeurs possibles :
 |Code|Valeur|
 |:---|:---|
 |00|Non renseigné|
-|10|ZAE|
-|20|Autre site d'activité identifié (hors ZAE)|
-|30|Autre secteur (non exclusivement économique)|
+|10|Terrain vierge|
+|20|Terrain en activité (non bâti)|
+|30|Bureau|
+|40|Commerce|
+|50|Activité|
 
----
 
-`[m_activite_eco].[lt_eco_typsite]` : Liste des valeurs permettant de décrire la valeur de vocation simplifiée de la zone
+### Classes d'objets attributaire gérant les associations (ou relation d'appartenance des objets entre eux) :
 
-|Nom attribut | Définition | Type  | Valeurs par défaut |
-|:---|:---|:---|:---|    
-|code|Code de la vocation du site|character varying(2)| |
-|valeur|Libellé de la vocation du site|character varying(25)| |
+`[m_activite_eco].[lk_adresseetablissement]` : table alphanumérique de relation entre les adresses et les établissements
+   
+|Nom attribut | Définition | Type | Valeurs par défaut |
+|:---|:---|:---|:---|
+|idadresse|Identifiant unique de l'adresse|bigint| |
+|siret|N° SIRET de l'établissement|character varying(14)| |
+|id|Identifiant unique non siggnifiant|integer|nextval('m_activite_eco.lk_adresseetablissement_seq'::regclass)|
+
 
 Particularité(s) à noter :
-* Une clé primaire existe sur le champ code 
+* Une clé primaire existe sur le champ `id` l'attribution automatique de la référence unique s'effectue via une séquence. 
 
-Valeurs possibles :
+* 4 triggers :
+  * `t_t1_lk_adresseetablissement_update` : trigger permettant de supprimer un premier appariemment 
+  * `t_t2_lk_adresseetablissement_delete` : trigger permettant de supprimer une association d'adresse et d'appartenance à un site
+  * `t_t4_etab_site` : trigger permettant d'insérer ou de mettre à jour une association à un ou plusieurs sites d'activité
+  * `t_t9_lk_etablissement_compte_after` : trigger permettant de rafraichir les vues matérialisées dépendante
+  * `t_t100_log` : trigger permettant d'intégrer toutes les opérations dans la table des logs
+  
+---
 
-|Code|Valeur|
-|:---|:---|
-|00|Non renseigné|
-|10|ZI - zone industrielle|
-|20|ZA - zone artisanale|
-|30|ZC - zone commerciale|
-|40|ZM - zone mixte|
+`[m_activite_eco].[lk_eco_contact]` : table alphanumérique de relation entre les objets économiques et les contacts
+   
+|Nom attribut | Définition | Type | Valeurs par défaut |
+|:---|:---|:---|:---|
+|id|Identifiant unique non signifiant|integer|nextval('m_activite_eco.lk_eco_contact_seq'::regclass)|
+|idcontact|Identifiant unique non signifiant du contact|integer| |
+|idobjet|Identifiant unique non signifiant de l'objet en référence|integer| |
+
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ `id` l'attribution automatique de la référence unique s'effectue via une séquence. 
+
+* 1 triggers :
+  * `t_t100_log` : trigger permettant d'intégrer toutes les opérations dans la table des logs
 
 ---
+
+`[m_activite_eco].[lk_eco_etab_site]` : table alphanumérique de relation entre les établissements et les sites
+   
+|Nom attribut | Définition | Type | Valeurs par défaut |
+|:---|:---|:---|:---|
+|idsite|Identifiant unique du site d'activité|character varying(5)| |
+|siret|N° SIRET de l'établissement|character varying(14)| |
+|id|Identifiant unique non signifiant|integer|nextval('m_activite_eco.lk_eco_etab_site_seq'::regclass)|
+
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ `id` l'attribution automatique de la référence unique s'effectue via une séquence. 
+
+* 1 triggers :
+  * `t_t100_log` : trigger permettant d'intégrer toutes les opérations dans la table des logs
+
+---
+
+`[m_activite_eco].[lk_eco_loc_adr]` : table alphanumérique d'un à une adresse d'un bâtiment d'activité (fonction désactivée pour le moment en attente évolution entre établissement, bâtiment et locaux d'activité)';
+
+---
+ 
+`[m_activite_eco].[lk_eco_loc_etab]` : des établissements à un local (fonction désactivée pour le moment en attente évolution entre établissement, bâtiment et locaux d''activité)';
+   
+---
+
+`[m_activite_eco].[lk_eco_loc_evenmt_contact]` : table alphanumérique d'appartenance d''un contact à un évènement
+
+   
+|Nom attribut | Définition | Type | Valeurs par défaut |
+|:---|:---|:---|:---|
+|id|Identifiant unique non signifiant de la relation|integer|nextval('m_activite_eco.lk_eco_loc_evenmt_contact_seq'::regclass)|
+|idcontact|Identifiant unique non signifiant du contact|integer| |
+|idevenmt|Identifiant unique de l'évènement|integer| |
+
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ `id` l'attribution automatique de la référence unique s'effectue via une séquence. 
+
+* 1 triggers :
+  * `t_t100_log` : trigger permettant d'intégrer toutes les opérations dans la table des logs
+
+---
+
+`[m_activite_eco].[lk_eco_loc_site]` : table alphanumérique d'appartenance des bâtiments d''activité à un ou plusieurs sites'
+
+   
+|Nom attribut | Définition | Type | Valeurs par défaut |
+|:---|:---|:---|:---|
+|id|Identifiant unique non signifiant de la relation|integer|nextval('m_activite_eco.lk_eco_loc_evenmt_contact_seq'::regclass)|
+|idcontact|Identifiant unique non signifiant du contact|integer| |
+|idevenmt|Identifiant unique de l'évènement|integer| |
+
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ `id` l'attribution automatique de la référence unique s'effectue via une séquence. 
+
+* 1 triggers :
+  * `t_t100_log` : trigger permettant d'intégrer toutes les opérations dans la table des logs
+
+---
+
+`[m_activite_eco].[lk_eco_proc]` : table alphanumérique d'appartenance des sites d''activité à un ou plusieurs procédures'
+
+   
+|Nom attribut | Définition | Type | Valeurs par défaut |
+|:---|:---|:---|:---|
+|id|Identifiant unique non signifiant|integer|nextval('m_activite_eco.lk_eco_proc_seq'::regclass)|
+|idproc|Identifiant unique non signifiant de l'objet procédure|character varying(5)| |
+|idsite|Identifiant unique non signifiant de l'objet site|character varying(5)| |
+
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ `id` l'attribution automatique de la référence unique s'effectue via une séquence. 
+
+* 1 triggers :
+  * `t_t100_log` : trigger permettant d'intégrer toutes les opérations dans la table des logs
+ 
+
+
+### classes d'objets applicatives métiers :
+
+  * `xapps_an_v_etabloc_stat` : Vue alphanumérique permettant de calculer des statistiques de localisation des établissements (SIRENE) à l'adresse par commune
+  * `xapps_an_v_photo_site_alaune` : Vue alphanumérique remontant les médias un seul média à la une définti par l'utilisateur
+  * `xapps_an_v_prixloc_stat` : Vue alphanumérique calculant les prix moyens des bureaux, commerces et activités par site
+  * `xapps_an_v_repgdsecteur_site_act_api` : Vue alphanumérique présentant la répartition des établissements (SIRENE et hors SIRENE) par grands secteurs d'activité et par site d'activité.
+  * `xapps_an_v_synt_site_act_api` : Vue présentant les données de synthèses à l'échelle du site d'activité  (données sur l''environnement économique et statistiques foncières présentes sur le fiche d'information du site dans l'application métier GEO). Cette vue est rafraichie toutes les nuits par une tache CRON sur le serveur sig-sgbd.
+  * `xapps_geo_v_eco_epci_tab` : Vue alphanumérique ddes indicateurs EPCI pour tableau de bord synthétique n°1 dans GEO
+  * `xapps_geo_v_eco_loc_dispo` : Vue géographique recensant l'ensemble des locaux disponibles
+  * `xapps_geo_v_etab_compte_naf` : Vue géographique localisant les établissements SIRENE comptabilisés à l'adresse
+  * `xapps_geo_v_zae` : Vue géographique des ZAE uniquement (zone d'activités économiques de compétence intercommunale), permet d'exporter un shape pour l'open data et d'être utilisé dans les applications ou carte
+  * `xapps_an_vmr_evo_site_act_api` : Vue matérialisée présentant les données d'évolution des emplois et des établissements à l'échelle du site d'activité pour le graphique d'évolution dans GEO
+  * `xapps_an_vmr_site_act_10` : Extraction de la liste des 10 premières entreprises en terme d'emplois par site d'activité. Vue matérialisée rafraichie toutes les nuits.
+  * `xapps_geo_vmr_etab_api` : Vue matérialisé rafraichit à chaque intégration ou mise à jour de la table lk_adresseetablissement et dénombrant le nombre d'établissement par adresse (lien dans GEO pour avoir la liste des établissements et les modifier)
+  * `xapps_geo_vmr_etab_api_export_site` : Vue géographique matérialisée (rafraichie ttes les nuits) composée des éléments sur les établissements actifs (API Sirene) permettant de gérer des exports de listes par site dans GEO
+  * `xapps_geo_vmr_lot_plan_situation` : Vue géographique des lots fonciers avec les informations de stade d'aménagement et si informations immobilère présentes (pour la cartographie des plans de situation dans GEO de l''application)
+  * `xapps_geo_vmr_plan_situ_bati_act` : Vue matérialisée présentant les bâtiments d'activités avec le libellé du bâitment à afficher
+
+### classes d'objets applicatives grands publics sont classés dans le schéma x_apps_public :
+
+Sans objet
+
+### classes d'objets opendata sont classés dans le schéma x_opendata :
+
+Sans objet
+
 
 ## Classes d'objets des procédures d'aménagements
 
-L'ensemble des classes d'objets de gestion sont stockés dans le schéma `m_amenagement` ,et celles applicatives dans les schémas x_apps (pour les applications pro) ou x_apps_public (pour les applications grands publiques).
+L'ensemble des classes d'objets de gestion sont stockés dans le schéma `m_amenagement`
 
-### Classes d'objets de gestion :
+### Classes d'objets avec une primitive graphique :
+
+Sans objet
+
+### Classes d'objets attributaire :
   
-`[m_amenagement].[an_amt_esppu]` : table alphanumérique sur les emprises des espaces publiques contenus dans les sites opérationnels. Les objets virtuels de référence sont gérés dans le schéma `r_objet`. Cette classe d'objets n'est plus suivie.
+`[m_amenagement].[an_amt_esppublic]` : table alphanumérique sur les emprises des espaces publiques contenus dans les sites opérationnels. Les objets virtuels de référence sont gérés dans le schéma r_objet
    
 |Nom attribut | Définition | Type | Valeurs par défaut |
 |:---|:---|:---|:---|
@@ -1262,142 +1306,149 @@ L'ensemble des classes d'objets de gestion sont stockés dans le schéma `m_amen
 |vocaep|Code de valeurs des vocations des espaces publics|character varying(2)|'00'::character varying|
 |date_sai|Date de saisie des données attributaires|timestamp without time zone| |
 |date_maj|Date de mises à jour des données attributaires|timestamp without time zone| |
+|epci|Autorité compétente|character varying(10)| |
 
 
 Particularité(s) à noter :
 * Une clé primaire existe sur le champ `idgeopu` l'attribution automatique de la référence unique s'effectue via la vue de gestion avec l'identifiant de l'objet urbanisé. 
 * Une clé étrangère existe sur la table de valeur `vocaep` (lien vers la liste de valeurs de l'état du site `lt_amt_empesp_pu`)
 
+* 1 triggers :
+  * `t_t100_log` : trigger permettant d'intégrer toutes les opérations dans la table des logs
   
 ---
 
-`[m_amenagement].[an_amt_lot_divers]` : table alphanumérique sur les lots divers constituant le site d'activité ou la procédure d'aménagement.  Les objets virtuels de référence sont gérés dans le schéma `r_objet`. 
+`[m_amenagement].[an_amt_lot_divers]` : table alphanumérique sur les lots divers 
    
 |Nom attribut | Définition | Type | Valeurs par défaut |
 |:---|:---|:---|:---|
 |idgeolf|Identifiant unique géographique de référence de l'objet virtuel|integer| |
-|op_sai|Libellé de la personne ayant saisie la mise à jour|character varying(80)| |
-|org_sai|Organisme de saisie dont dépend l'opérateur de saisie|character varying(80)| |
-|l_nom|Libellé|character varying(100)| |
-|surf|Surface du lot divers en m²|double precision| |
-|date_sai|Date de saisie des données attributaires|timestamp without time zone| |
-|date_maj|Date de mise à jour des données attributaires|timestamp without time zone| |
-|l_phase|Phase opérationnelle éventuelle|character varying(10)| |
+|nom|Libellé|character varying(100)| |
+|observ|Observations|character varying(1000)| |
+|op_maj|Opérateur de mise à jour|character varying(80)| |
 
 
 Particularité(s) à noter :
 * Une clé primaire existe sur le champ `idgeolf` l'attribution automatique de la référence unique s'effectue via la vue de gestion avec l'identifiant de l'objet urbanisé. 
+
+* 1 triggers :
+  * `t_t100_log` : trigger permettant d'intégrer toutes les opérations dans la table des logs
   
 ---
 
-`[m_amenagement].[an_amt_lot_equ]` : table alphanumérique sur les emprises des lots à vocation équipement constituant le site d'activité ou la procédure d'aménagement. Les objets virtuels de référence sont gérés dans le schéma `r_objet`. 
+`[m_amenagement].[an_amt_lot_equip]` : table alphanumérique sur les emprises des lots à vocation équipement
    
 |Nom attribut | Définition | Type | Valeurs par défaut |
 |:---|:---|:---|:---|
 |idgeolf|Identifiant unique géographique de référence de l'objet virtuel|integer| |
-|op_sai|Libellé de la personne ayant saisie la mise à jour|character varying(80)| |
-|org_sai|Organisme de saisie dont dépend l'opérateur de saisie|character varying(80)| |
-|l_nom|Libellé de l'équipement|character varying(100)| |
-|surf|Surface du lot équipement en m²|double precision| |
-|date_sai|Date de saisie des données attributaires|timestamp without time zone| |
-|date_maj|Date de mise à jour des données attributaires|timestamp without time zone| |
-|l_phase|Phase opérationnelle éventuelle|character varying(10)| |
-|l_surf_l|Surface littérale parcellaire occupée du lot|character varying(15)| |
+|nom|Libellé de l'équipement|character varying(100)| |
+|observ|Observations diverses|character varying(255)| |
+|op_maj|Opérateur de mise à jour|character varying(80)| |
 
 
 Particularité(s) à noter :
 * Une clé primaire existe sur le champ `idgeolf` l'attribution automatique de la référence unique s'effectue via la vue de gestion avec l'identifiant de l'objet urbanisé. 
-  
+
+* 1 triggers :
+  * `t_t100_log` : trigger permettant d'intégrer toutes les opérations dans la table des logs
+
 ---
 
-`[m_amenagement].[an_amt_lot_hab]` : table alphanumérique sur les emprises des lots à vocation d'habitat contenus dans les sites opérationnels. Les objets virtuels de référence sont gérés dans le schéma `r_objet`. 
+`[m_amenagement].[an_amt_lot_esppublic]` : table alphanumérique sur les emprises des lots d'espacesw publics
+   
+|Nom attribut | Définition | Type | Valeurs par défaut |
+|:---|:---|:---|:---|
+|idgeolf|Identifiant unique géographique de référence de l'objet virtuel|integer| |
+|nom|Libellé de l'équipement|character varying(100)| |
+|observ|Observations diverses|character varying(255)| |
+|op_maj|Opérateur de mise à jour|character varying(80)| |
+
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ `idgeolf` l'attribution automatique de la référence unique s'effectue via la vue de gestion avec l'identifiant de l'objet urbanisé. 
+
+* 1 triggers :
+  * `t_t100_log` : trigger permettant d'intégrer toutes les opérations dans la table des logs
+
+---
+
+`[m_amenagement].[an_amt_lot_habitat]` : table alphanumérique sur les emprises des lots à vocation d'habitat 
    
 |Nom attribut | Définition | Type | Valeurs par défaut |
 |:---|:---|:---|:---|
 |idgeolf|Identifiant unique de l'entité géographique lot|integer| |
-|surf|Surface parcellaire occupée du lot|integer| |
-|l_surf_l|Surface littérale parcellaire occupée du lot|character varying(15)| |
-|op_sai|Libellé de l'opérateur de saisie|character varying(80)| |
-|org_sai|Libellé de l'organisme de saisie|character varying(80)| |
-|l_pvente|Prix de vente du lot en HT (€/m²)|double precision| |
-|l_pvente_l|Prix littéral de vente du lot en HT (ex:50€/m²)|character varying(15)| |
+|pvente_e|Prix littéral de vente du lot en HT et en m² (ex:50€/m²)|character varying(15)| |
 |nb_log|Nombre total de logements|integer| |
 |nb_logind|Nombre de logements individuels|integer| |
 |nb_logindgr|Nombre de logements individuels groupés|integer| |
 |nb_logcol|Nombre de logements collectifs|integer| |
 |nb_logaide|Dont nombre de logements aidés|integer| |
-|l_observ|Observations diverses|character varying(255)| |
-|date_sai|Date de saisie des données attributaires|timestamp without time zone| |
-|date_maj|Date de mise à jour des données attributaires|timestamp without time zone| |
-|l_phase|Information facultative sur l'appartenance du lot à un éventuel phasage de l'opération|character varying(20)| |
+|observ|Observations diverses|character varying(255)| |
 |nb_log_r|Nombre de logements total réalisé|integer|0|
 |nb_logind_r|Nombre de logements individuels réalisé|integer|0|
 |nb_logindgr_r|Nombre de logements individuels groupés réalisé|integer|0|
 |nb_logcol_r|Nombre de logements collectifs réalisé|integer|0|
 |nb_logaide_r|Nombre de logements aidés réalisé|integer|0|
-|l_pvente_lot|Prix de vente du lot (ht)|integer| |
 |nb_logaide_loc_r|Nombre de logements aidés en location réalisé|integer| |
 |nb_logaide_acc_r|Nombre de logements aidés en accession réalisé|integer| |
+|op_maj|Opérateur de mise à jour|character varying(80)| |
 
 
 Particularité(s) à noter :
 * Une clé primaire existe sur le champ `idgeolf` l'attribution automatique de la référence unique s'effectue via la vue de gestion avec l'identifiant de l'objet urbanisé. 
 
+* 1 triggers :
+  * `t_t100_log` : trigger permettant d'intégrer toutes les opérations dans la table des logs
   
 ---
 
-`[m_amenagement].[an_amt_lot_mixte]` : table alphanumérique sur les emprises des lots à vocation mixte contenus dans les sites opérationnels. Les objets virtuels de référence sont gérés dans le schéma `r_objet`. 
+`[m_amenagement].[an_amt_lot_mixt]` : table alphanumérique sur les emprises des lots à vocation mixte 
    
 |Nom attribut | Définition | Type | Valeurs par défaut |
 |:---|:---|:---|:---|
 |idgeolf|Identifiant unique de l'entité géographique lot|integer| |
-|surf|Surface parcellaire occupée du lot|integer| |
-|l_surf_l|Surface littérale parcellaire occupée du lot|character varying(15)| |
-|op_sai|Libellé de l'opérateur de saisie|character varying(80)| |
-|org_sai|Libellé de l'organisme de saisie|character varying(80)| |
-|l_pvente|Prix de vente du lot en HT (€/m²)|double precision| |
-|l_pvente_l|Prix littéral de vente du lot en HT (ex:50€/m²)|character varying(15)| |
+|pvente_e|Prix littéral de vente du lot en HT et m² (ex:50€/m²) estimé par le service|character varying(15)| |
 |nb_log|Nombre total de logements|integer|0|
 |nb_logind|Nombre de logements individuels|integer|0|
 |nb_logindgr|Nombre de logements individuels groupés|integer|0|
 |nb_logcol|Nombre de logements collectifs|integer|0|
 |nb_logaide|Dont nombre de logements aidés|integer|0|
-|l_observ|Observations diverses|character varying(255)| |
-|date_sai|Date de saisie des données attributaires|timestamp without time zone| |
-|date_maj|Date de mise à jour des données attributaires|timestamp without time zone| |
-|l_phase|Information facultative sur l'appartenance du lot à un éventuel phasage de l'opération|character varying(20)| |
+|observ|Observations diverses|character varying(255)| |
 |nb_log_r|Nombre de logements total réalisé|integer|0|
 |nb_logind_r|Nombre de logements individuels réalisé|integer|0|
 |nb_logindgr_r|Nombre de logements individuels groupés réalisé|integer|0|
 |nb_logcol_r|Nombre de logements collectifs réalisé|integer|0|
 |nb_logaide_r|Nombre de logements aidés réalisé|integer|0|
-|l_pvente_lot|Prix de vente du lot (ht)|integer| |
-|l_tact|Type d'activité présent sur le lot|character varying(2)|'00'::character varying|
-|l_tact_99|Précision de l'activité du lot (si Autre sélectionné dans l_tact)|character varying(80)| |
-|l_nom_equ|Libellé des équipements prévus sur le lot|character varying(100)| |
+|tact|Type d'activité présent sur le lot|character varying(2)|'00'::character varying|
+|nom_equ|Libellé des équipements prévus sur le lot|character varying(100)| |
 |nb_logaide_loc_r|Nombre de logements aidés en location réalisé|integer| |
 |nb_logaide_acc_r|Nombre de logements aidés en accession réalisé|integer| |
-|l_lnom|Nom(s) du ou des acquéreurs du lot ou d'une partie des bâtiments|character varying(250)| |
+|lnom|Nom(s) du ou des acquéreurs du lot ou d'une partie des bâtiments|character varying(250)| |
+|op_maj|Opérateur de mise à jour|character varying(80)| |
 
 
 Particularité(s) à noter :
 * Une clé primaire existe sur le champ `idgeolf` l'attribution automatique de la référence unique s'effectue via la vue de gestion avec l'identifiant de l'objet urbanisé. 
 
-
+* 1 triggers :
+  * `t_t100_log` : trigger permettant d'intégrer toutes les opérations dans la table des logs
   
 ---
 
-`[m_amenagement].[an_amt_lot_stade]` : table alphanumérique sur les données de la classe stade d''aménagement et de commercialisation. Les objets virtuels de référence sont gérés dans le schéma `r_objet`. 
+`[m_amenagement].[an_amt_lot_stade]` : table alphanumérique sur les données de la classe stade d''aménagement et de commercialisation.
    
 |Nom attribut | Définition | Type | Valeurs par défaut |
 |:---|:---|:---|:---|
 |idgeolf|Identifiant unique de l'entité géographique lot|integer| |
+|idsite|Identifiant du site d'activité d'appartenance|character varying(10)| |
 |stade_amng|Code du stade d'aménagement du foncier|character varying(2)|'00'::character varying|
 |l_amng2|Code du stade d'aménagement du foncier spécifique à l'ARC|character varying(2)|'00'::character varying|
 |stade_comm|Code du stade de commercialisation du foncier|character varying(2)|'00'::character varying|
 |l_comm2|Code du stade de commercialisation du foncier spécifique à l'ARC|character varying(2)|'00'::character varying|
 |l_comm2_12|Spécification de la contrainte du lot en vente (code 12 du champ l_comm2)|character varying(80)| |
-|etat_occup|Code de l'état d'occupation du foncier|character varying(2)|'00'::character varying|
+|etat_occup|Code de l'état d'occupation du foncier
+Attribut plus utilisé|character varying(2)|'00'::character varying|
+|op_maj|Opérateur de mise à jour|character varying(80)| |
 
 
 Particularité(s) à noter :
@@ -1408,65 +1459,11 @@ Particularité(s) à noter :
 * Une clé étrangère existe sur la table de valeur `l_comm2` (lien vers la liste de valeurs de l'état du site `lt_amt_stadecomm2`)
 * Une clé étrangère existe sur la table de valeur `lt_amt_stadeamng` (lien vers la liste de valeurs de l'état du site `stade_amng`)
 
-  
----
+* 2 triggers :
+  * `t_t1_foncier_modif_geopic` : trigger permettant de codé le standard régionale par rapport aux stades et commercialisations locales
+  * `t_t100_log` : trigger permettant d'intégrer toutes les opérations dans la table des logs
 
-`[m_amenagement].[lk_amt_lot_site]` : table alphanumérique sur les relations d'appartenance d'un lot à un site
-   
-|Nom attribut | Définition | Type | Valeurs par défaut |
-|:---|:---|:---|:---|
-|id|Identifiant unique non signifiant de la relation|integer|nextval('m_amenagement.lk_amt_lot_site_seq'::regclass)|
-|idsite|Identifiant unique non signifiant de l'objet site|character varying(5)| |
-|idgeolf|Identifiant unique non signifiant de l'objet lot|integer| |
-
-
-Particularité(s) à noter :
-* Une clé primaire existe sur le champ `id` l'attribution automatique de la référence unique s'effectue via une séquence. 
-  
-
----
-
-`[m_amenagement].[an_amt_site_equ]` : Information alphanumérique sur les Sites à vocation équipement. Les objets virtuels de référence sont gérés dans le schéma r_objet 
-   
-|Nom attribut | Définition | Type | Valeurs par défaut |
-|:---|:---|:---|:---|
-
-
-
-Particularité(s) à noter :
-* ...
-
----
-
-`[m_amenagement].[an_amt_site_habitat]` : Information alphanumérique sur les Sites à vocation habitat. Les objets virtuels de référence sont gérés dans le schéma r_objet
-   
-|Nom attribut | Définition | Type | Valeurs par défaut |
-|:---|:---|:---|:---|
-
----
-
-`[m_amenagement].[an_amt_site_mixte]` : Information alphanumérique sur les Sites d''activités mixte (habitat/Activité). Les objets virtuels de référence sont gérés dans le schéma r_objet';
-   
-|Nom attribut | Définition | Type | Valeurs par défaut |
-|:---|:---|:---|:---|
-
-
-Particularité(s) à noter :
-* ...
-
-### classes d'objets applicatives métiers sont classés dans le schéma x_apps :
-
-(à venir)
-
-### classes d'objets applicatives grands publics sont classés dans le schéma x_apps_public :
-
-(à venir)
-
-### classes d'objets opendata sont classés dans le schéma x_opendata :
-
-(à venir)
-
-### Liste de valeurs
+#### Liste de valeurs
 
 `[m_amenagement].[lt_amt_empesp_pu]` : Liste des valeurs permettant de décrire la valeur de la vocation des espaces publics
 
@@ -1587,41 +1584,52 @@ Valeurs possibles :
 |32|Réservé (option)|
 |99|Non commercialisé par un acteur public|
 
----
 
-## Classes d'objets de l'urbanisme réglementaire
+### Classes d'objets attributaire gérant les associations (ou relation d'appartenance des objets entre eux)
 
-L'ensemble des classes d'objets de gestion sont stockés dans le schéma `m_urbanisme_reg` ,et celles applicatives dans les schémas x_apps (pour les applications pro) ou x_apps_public (pour les applications grands publiques).
-
-### Classes d'objets de gestion :
-  
-`[m_urbanisme_reg].[an_proc_media]` : table alphanumérique gérant les documents intégrés pour la gestion des procédures d'aménagement
+`[m_amenagement].[lk_amt_lot_site]` : table alphanumérique sur les relations d'appartenance d'un lot à un site
    
 |Nom attribut | Définition | Type | Valeurs par défaut |
 |:---|:---|:---|:---|
-|gid|Compteur (identifiant interne)|integer|nextval('m_urbanisme_reg.an_proc_media_seq'::regclass)|
-|id|Identifiant interne non signifiant de l'objet saisi|text| |
-|media|Champ Média de GEO|text| |
-|miniature|Champ miniature de GEO|bytea| |
-|n_fichier|Nom du fichier|text| |
-|t_fichier|Type de média dans GEO|text| |
-|op_sai|Opérateur de saisie (par défaut login de connexion à GEO)|character varying(20)| |
-|date_sai|Date de la saisie du document|timestamp without time zone| |
-|l_doc|Titre du document ou légère description|character varying(100)| |
+|id|Identifiant unique non signifiant de la relation|integer|nextval('m_amenagement.lk_amt_lot_site_seq'::regclass)|
+|idsite|Identifiant unique non signifiant de l'objet site|character varying(5)| |
+|idgeolf|Identifiant unique non signifiant de l'objet lot|integer| |
 
 
 Particularité(s) à noter :
-* Une clé primaire existe sur le champ `gid` l'attribution automatique de la référence unique s'effectue via une séquence
-* Une clé étrangère existe sur la table de valeur `t_doc` (lien vers la liste de valeurs de l'état du site `lt_eco_tdocmedia`)
+* Une clé primaire existe sur le champ `id` l'attribution automatique de la référence unique s'effectue via une séquence. 
 
-  
----
+* 1 triggers :
+  * `t_t100_log` : trigger permettant d'intégrer toutes les opérations dans la table des logs
+
+
+### classes d'objets applicatives métiers sont classés dans le schéma x_apps :
+
+* `geo_v_empesp_pu` : Vue des emprises des espaces publics sur les sites d'activité (vue plus éditable, fonctionnel à revoir si besoin)
+* `geo_v_lot` : Vue éditable des lots fonciers (toutes vocations) uniquement pour l'administration SIG.
+ATTENTION : fonctionnel en cours de refonte suite désurbanisation des sites d'activité et de la refont de l'application à l'échelle du Grand Compiégnois
+
+### classes d'objets applicatives grands publics sont classés dans le schéma x_apps_public :
+
+Sans objet
+
+### classes d'objets opendata sont classés dans le schéma x_opendata :
+
+Sans objet
+
+
+## Classes d'objets de l'urbanisme réglementaire
+
+L'ensemble des classes d'objets de gestion sont stockés dans le schéma `m_urbanisme_reg` 
+
+### Classes d'objets avec une primitive graphique :
 
 `[m_urbanisme_reg].[geo_proced]` : table des objets contenant les données des procédures d''aménagement
    
 |Nom attribut | Définition | Type | Valeurs par défaut |
 |:---|:---|:---|:---|
 |idproc|Identifiant non signifiant de la procédure|character varying(5)|('PR'::text || nextval('m_urbanisme_reg.geo_proc_seq'::regclass))|
+|idsite|Attributs à supprimer après migration eco|character varying(10)| |
 |nom|Libellé de l'opération|character varying(255)| |
 |alias|Alias du nom de l'opération|character varying(255)| |
 |dest|Code de la destination du Site (issu de la liste des valeurs du modèle CNIG sur les PLU)|character varying(2)|'00'::character varying|
@@ -1640,12 +1648,26 @@ Particularité(s) à noter :
 |surf_cess_ha|Surface cessible programmée en ha|numeric| |
 |date_clo|Date de cloture de l'opération|timestamp without time zone| |
 |nom_cp|Nom du chef de projet suivant la procédure|character varying(80)| |
+|nb_log|Nombre total de logements programmés|integer| |
+|nb_logind|Nombre de logements individuels programmés|integer| |
+|nb_logindgr|Nombre de logements individuels groupés programmés|integer| |
+|nb_logcol|Nombre de logements collectifs programmés|integer| |
+|nb_logaide|Nombre total de logements aidés programmés|integer| |
+|nb_logaide_loc|Nombre total de logements aidés en location programmés|integer| |
+|nb_logaide_acc|Nombre total de logements en accession en location programmés|integer| |
 |op_sai|Libellé de la personne ayant saisie l'objet|character varying(80)| |
 |date_sai|Date de saisie des données attributaires|timestamp without time zone| |
 |date_maj|Date de mise à jour des données attributaires|timestamp without time zone| |
 |epci|Autorité compétente|character varying(10)| |
 |observ|Observations diverses|character varying(1000)| |
 |geom|Géométrie des objets|USER-DEFINED| |
+|nb_log_r|Nombre de logements réalisés|integer| |
+|nb_logind_r|Nombre de logements réalisés en individuel|integer| |
+|nb_logindgr_r|Nombre de logements réalisés en individuel groupé|integer| |
+|nb_logcol_r|Nombre de logements réalisé en collectif|integer| |
+|nb_logaide_r|Nombre de logements réalisé aidé|integer| |
+|nb_logaide_loc_r|Nombre de logements réalisé aidé en location|integer| |
+|nb_logaide_acc_r|Nombre de logements réalisés en accession|integer| |
 
 
 Particularité(s) à noter :
@@ -1654,23 +1676,59 @@ Particularité(s) à noter :
 * Une clé étrangère existe sur la table de valeur `phase` (lien vers la liste de valeurs de l'état du site `lt_proc_phase`)
 * Une clé étrangère existe sur la table de valeur `pr_fon_type` (lien vers la liste de valeurs de l'état du site `lt_proc_typfon`)
 * Une clé étrangère existe sur la table de valeur `z_proced` (lien vers la liste de valeurs de l'état du site `lt_proc_typ`)
+
+* 5 triggers :
+  * `t_t1_date_sai` : trigger permettant d'intégrer la date de saisie
+  * `t_t2_date_maj` : trigger permettant d'intégrer la date de mise à jour
+  * `t_t3_surf_epci` : trigger permettant d'intégrer la surface de l'objet saisi
+  * `t_t4_secu_geom_sb_epci` : trigger permettant de sécuriser la saisie entre EPCI
+  * `t_t100_log` : trigger permettant d'intégrer toutes les opérations dans la table des logs
+
+### Classes d'objets attributaire
   
+`[m_urbanisme_reg].[an_proc_media]` : table alphanumérique gérant les documents intégrés pour la gestion des procédures d'aménagement
+   
+|Nom attribut | Définition | Type | Valeurs par défaut |
+|:---|:---|:---|:---|
+|gid|Compteur (identifiant interne)|integer|nextval('m_urbanisme_reg.an_proc_media_seq'::regclass)|
+|id|Identifiant interne non signifiant de l'objet saisi|text| |
+|media|Champ Média de GEO|text| |
+|miniature|Champ miniature de GEO|bytea| |
+|n_fichier|Nom du fichier|text| |
+|t_fichier|Type de média dans GEO|text| |
+|op_sai|Opérateur de saisie (par défaut login de connexion à GEO)|character varying(20)| |
+|date_sai|Date de la saisie du document|timestamp without time zone| |
+|l_doc|Titre du document ou légère description|character varying(100)| |
+|date_maj|Date de mise à jour|timestamp without time zone| |
+|op_maj|Opérateur de mise à jour|character varying(20)| |
+
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ `gid` l'attribution automatique de la référence unique s'effectue via une séquence
+* Une clé étrangère existe sur la table de valeur `t_doc` (lien vers la liste de valeurs de l'état du site `lt_eco_tdocmedia`)
+
+* 2 triggers :
+  * `t_t1_date_maj` : trigger permettant d'intégrer la date de mise à jour
+  * `t_t100_log` : trigger permettant d'intégrer toutes les opérations dans la table des logs 
   
 ---
 
-### classes d'objets applicatives métiers sont classés dans le schéma x_apps :
+`[m_urbanisme_reg].[an_proced_log]` : table alphanumérique gérant les logs des données de l'urbanisme réglementaire associées à l'activité économique
+   
+|Nom attribut | Définition | Type | Valeurs par défaut |
+|:---|:---|:---|:---|
+|idlog|Identifiant unique|integer| |
+|tablename|Nom de la classe concernée par une opération|character varying(80)| |
+|type_ope|Type d'opération|text| |
+|dataold|Anciennes données|text| |
+|datanew|Nouvelles données|text| |
+|date_maj|Date d'exécution de l'opération|timestamp without time zone|now()|
 
-(à venir)
 
-### classes d'objets applicatives grands publics sont classés dans le schéma x_apps_public :
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ `idlog` l'attribution automatique de la référence unique s'effectue via une séquence
 
-(à venir)
-
-### classes d'objets opendata sont classés dans le schéma x_opendata :
-
-(à venir)
-
-### Liste de valeurs
+#### Liste de valeurs
 
 `[m_urbanisme_reg].[lt_proc_phase]` : Liste de valeurs des phases opérationnelles
 
@@ -1759,11 +1817,28 @@ Valeurs possibles :
 |40|Opérateur privé|
 
 
+### classes d'objets applicatives métiers sont classés dans le schéma x_apps :
+
+Sans objet
+
+### classes d'objets applicatives grands publics sont classés dans le schéma x_apps_public :
+
+Sans objet
+
+### classes d'objets opendata sont classés dans le schéma x_opendata :
+
+Sans objet
+
+
 ## Classes d'objets du foncier
 
-L'ensemble des classes d'objets de gestion sont stockés dans le schéma `m_foncier`, et celles applicatives dans les schémas x_apps (pour les applications pro) ou x_apps_public (pour les applications grands publiques).
+L'ensemble des classes d'objets de gestion sont stockés dans le schéma `m_foncier`
 
-### Classes d'objets de gestion :
+### Classes d'objets avec une primitive graphique :
+
+Sans objet
+
+### Classes d'objets attributaire :
   
 `[m_foncier].[an_cession]` : Table alphanumérique contenant les données des cessions de lots
    
@@ -1828,6 +1903,9 @@ Particularité(s) à noter :
 * Une clé étrangère existe sur la table de valeur `lt_ces_tact` (lien vers la liste de valeurs de l'état du site `l_type`)
 * Une clé étrangère existe sur la table de valeur `lt_ces_voca` (lien vers la liste de valeurs de l'état du site `l_voca`)
 
+* 2 triggers :
+  * `t_t1_an_cession_date_sai` : trigger permettant d'intégrer la date de saisie
+  * `t_t2_an_cession_date_maj` : trigger permettant d'intégrer la date de mise à jour
   
 ---
 
@@ -1851,31 +1929,17 @@ Particularité(s) à noter :
 * Une clé primaire existe sur le champ `gid` l'attribution automatique de la référence unique s'effectue via une séquence
 * Une clé étrangère existe sur la table de valeur `l_type` (lien vers la liste de valeurs de l'état du site `lt_ces_doc`)
 
-  
+* 1 triggers :
+  * `t_t1_an_fon_doc_media_insert_date_sai` : trigger permettant d'intégrer la date de saisie
   
 ---
 
-`[m_foncier].[an_fon_cession_horsarc]` : Table gérant les données de suivi des ventes de foncier des collectivités du Grand Compiégnois hors ARC. Table en cours de réfléxion (peut-être uniquement une table de documents suffira)
+`[m_foncier].[an_fon_cession_horsarc_media]` : Table gérant les données de suivi des ventes de foncier des collectivités du Grand Compiégnois hors ARC. 
    
 |Nom attribut | Définition | Type | Valeurs par défaut |
 |:---|:---|:---|:---|
-
-(à déterminer)
-
-
-Particularité(s) à noter :
-* Une clé primaire existe sur le champ `...` l'attribution automatique de la référence unique s'effectue via une ....
-
-
- 
----
-
-`[m_foncier].[an_fon_cession_horsarc_media]` : Table gérant la liste des documents de suivi d'une cession ou d'une acquisition (par les EPCI du Grand COmpiégnois hors ARC) et gérer avec le module média dans GEO (application Activités Economiques)
-   
-|Nom attribut | Définition | Type | Valeurs par défaut |
-|:---|:---|:---|:---|
-|gid|Identifiant unique non signifiant|integer| |
-|id|Identifiant de cession ou d'acquisition|character varying(10)| |
+|gid|Identifiant unique non signifiant|integer|nextval('m_foncier.an_fon_cession_horsarc_media_seq'::regclass)|
+|id|Identifiant de cession ou d'acquisition|integer| |
 |media|Champ Média de GEO|text| |
 |miniature|Champ miniature de GEO|bytea| |
 |n_fichier|Nom du fichier|text| |
@@ -1884,6 +1948,7 @@ Particularité(s) à noter :
 |date_sai|Date d'intégration du document|timestamp without time zone| |
 |l_type|Code du type de document de cessions ou d'acquisitions|character varying(2)| |
 |l_prec|Précision sur le document|character varying(254)| |
+|op_maj|Opérateur de mise à jour|character varying(80)| |
 
 
 Particularité(s) à noter :
@@ -1891,35 +1956,7 @@ Particularité(s) à noter :
 * Une clé étrangère existe sur la table de valeur `l_type` (lien vers la liste de valeurs de l'état du site `lt_ces_doc`)
 
 
----
-
-`[m_foncier].[lk_cession_lot]` : Table de lien entre les lots et les dossiers de cession
-   
-|Nom attribut | Définition | Type | Valeurs par défaut |
-|:---|:---|:---|:---|
-|idgeolf|Identifiant géographique du lot|integer| |
-|idces|Identifiant du dossier de cession|character varying(6)| |
-
-
-Particularité(s) à noter :
-* Une clé primaire existe sur le champ `idgeolf` l'attribution automatique de la référence unique s'effectue via la vue de gestion
-
-  
----
-
-### classes d'objets applicatives métiers sont classés dans le schéma x_apps :
-
-(à venir)
-
-### classes d'objets applicatives grands publics sont classés dans le schéma x_apps_public :
-
-(à venir)
-
-### classes d'objets opendata sont classés dans le schéma x_opendata :
-
-(à venir)
-
-### Liste de valeurs
+#### Liste de valeurs
 
 `[m_foncier].[lt_ces_cond]` : Liste de valeurs des conditions de cession
 
@@ -2161,12 +2198,42 @@ Valeurs possibles :
 |10|1 dossier = 1 lot|
 |20|1 dossier = n lot|
 
+### Classes d'objets attributaire gérant les associations (ou relation d'appartenance des objets entre eux) :
+
+`[m_foncier].[lk_cession_lot]` : Table de lien entre les lots et les dossiers de cession
+   
+|Nom attribut | Définition | Type | Valeurs par défaut |
+|:---|:---|:---|:---|
+|idgeolf|Identifiant géographique du lot|integer| |
+|idces|Identifiant du dossier de cession|character varying(6)| |
+
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ `idgeolf` l'attribution automatique de la référence unique s'effectue via la vue de gestion
+
+
+### classes d'objets applicatives métiers :
+
+ * `geo_v_cession` : Vue éditable des cessions de lots et possibilité d'ajout d''un lot par le service foncier
+
+### classes d'objets applicatives grands publics sont classés dans le schéma x_apps_public :
+
+Sans objet
+
+### classes d'objets opendata sont classés dans le schéma x_opendata :
+
+Sans objet
+
 
 ## Classes d'objets de la base SIRENE
 
-L'ensemble des classes d'objets de la référence externe Insee-SIRENE sont stockés dans le schéma `s_sirene`, et celles applicatives dans les schémas x_apps (pour les applications pro) ou x_apps_public (pour les applications grands publiques).
+L'ensemble des classes d'objets de la référence externe Insee-SIRENE sont stockés dans le schéma `s_sirene`
 
-### Classes d'objets de gestion :
+### Classes d'objets avec une primitive graphique :
+
+Sans objet
+
+### Classes d'objets attributaires:
   
 `[s_sirene].[an_etablissement_api]` : Liste des établissements de la base de données Sirene dans la nouvelle structure mise en production en avril 2019 et mise à jour via l''API Sirene
    
@@ -2238,10 +2305,12 @@ Particularité(s) à noter :
  * recherche_etab_geo
  * nom_etab_geo 
 
+* 1 triggers :
+  * `t_t1_date_maj` : trigger permettant d'intégrer la date de mise à jour
   
 ---
 
-`[s_sirene].[an_unitelegale_api]` : Liste des unités légales de la base de données Sirene dans la nouvelle structure mise en production en avril 2019 et mise à jour via l''API Sirene.
+`[s_sirene].[an_unitelegale_api]` : Liste des unités légales de la base de données Sirene dans la nouvelle structure mise en production en avril 2019 et mise à jour via l'API Sirene.
    
 |Nom attribut | Définition | Type | Valeurs par défaut |
 |:---|:---|:---|:---|
@@ -2291,6 +2360,9 @@ Particularité(s) à noter :
 * Une clé étrangère non liée existe sur la table de valeur `etatadministratifunitelegale` (lien vers la liste de valeurs de l'état du site `lt_etatadmin`)
 * Une clé étrangère non liée existe sur la table de valeur `trancheeffectifsunitelegale` (lien vers la liste de valeurs de l'état du site `lt_trancheeff`)
  
+* 1 triggers :
+  * `t_t1_date_maj` : trigger permettant d'intégrer la date de mise à jour
+   
 ---
 
 `[s_sirene].[lk_sirene_succession]` : Lien entre les SIRET des prédécesseurs et des successeurs présents dans le répertoire Sirene.Ce lien étant déclaratif, tous les liens ne sont pas connus de l''Insee
@@ -2307,21 +2379,9 @@ Particularité(s) à noter :
 Particularité(s) à noter :
 * Une clé primaire existe sur le champ `id` l'attribution automatique de la référence unique s'effectue via une séquence
 
+Classe d'objets non encore adminsitrée et gérée. Dans l'attente de la version 4 de l'API et temps d'intégration de cette information dans le fonctionnel "Aactivité Economique".
 
-
-### classes d'objets applicatives métiers sont classés dans le schéma x_apps :
-
-(à venir)
-
-### classes d'objets applicatives grands publics sont classés dans le schéma x_apps_public :
-
-(à venir)
-
-### classes d'objets opendata sont classés dans le schéma x_opendata :
-
-(à venir)
-
-### Liste de valeurs
+#### Liste de valeurs
 
 `[s_sirene].[lt_catejuri_n1]` : Liste de valeurs des conditions de cession
 
@@ -7186,17 +7246,30 @@ Valeurs possibles :
 |98.20|Activités indifférenciées des ménages en tant que producteurs de services pour usage propre|
 |99.00|Activités des organisations et organismes extraterritoriaux|
 
+### classes d'objets applicatives métiers sont classés dans le schéma x_apps :
+
+Sans objet
+
+### classes d'objets applicatives grands publics sont classés dans le schéma x_apps_public :
+
+Sans objet
+
+### classes d'objets opendata sont classés dans le schéma x_opendata :
+
+Sans objet
+
 ## Projet QGIS pour la gestion
 
-(à venir)
+ * `ECO_AMT_FON_3.4.qgs` : projet QGIS en cours de refonte pour la gestion des lots, acquisitions, sites, ...
 
 ## Traitement automatisé mis en place (Workflow de l'ETL FME)
 
-(à venir)
-
+ * `00_SIRENE_API_miseàjour_V2.fmw` : traitement FME permettant de préparer la mise à jour de SIRENE trimestriellement
+ * `bloc\10_SIRENE_API_miseàjour_V2.fmw` : traitement FME appelé depuis le précédent pour l'intégration des nouveaux établissements ou la mise à jour des existants
+  
 ## Export Open Data
 
-(à venir)
+ * `ACTIVITE_ECONOMIQUE_modele_geopicardie.fmw` : traitement FME permettant d'exporter les données de l'activité économique au modèle régional
 
 
 ---
