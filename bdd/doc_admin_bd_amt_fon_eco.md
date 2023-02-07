@@ -34,7 +34,7 @@ Pour rappel des grands principes :
 ## Modèle relationel simplifié
 
 
-![act_eco_rel](diagram_m_activite_eco_v3.png)
+![act_eco_rel](diagram_m_activite_eco_v4.png)
 
 
 ## Dépendances
@@ -326,15 +326,15 @@ Particularité(s) à noter :
 * 12 triggers :
   * `t_t1_date_sai` : trigger permettant d'insérer la date de saisie
   * `t_t2_date_maj` : trigger permettant d'insérer la date de mise à jour
-  * `t_t3_geo_eco_loc_act_insert_update` : trigger permettant
-  * `t_t4_insert_update_idgeolf` : trigger permettant 
-  * `t_t5_secu_geom_sb_epci` : trigger permettant 
-  * `t_t6_geo_eco_loc_act_delete` : trigger permettant 
-  * `t_t7_geo_eco_loc_act_insee_commune` : trigger permettant 
-  * `t_t8_autorite_competente`: trigger permettant
-  * `t_t9_before_modif_loc`: trigger permettant
-  * `t_t10_after_insert_loc`: trigger permettant
-  * `t_t11_refresh_view`: trigger permettant
+  * `t_t3_geo_eco_loc_act_insert_update` : trigger permettant de gérer à l'insertion ou la mise à jour l'association des bâtiments avec un ou plusieurs sites
+  * `t_t4_insert_update_idgeolf` : trigger permettant d'insérer ou de mettre à jour l'identifiant idgeolf du lot d'appartenance (pour optimiser le plan de situation)
+  * `t_t5_secu_geom_sb_epci` : trigger permettant de gérer la sécurité de saisie entre EPCI
+  * `t_t6_geo_eco_loc_act_delete` : trigger permettant de gérer la suppression des associations lors del a suppression d'un bâtiment
+  * `t_t7_geo_eco_loc_act_insee_commune` : trigger permettant de récupérer le code insee et le nom de la commune
+  * `t_t8_autorite_competente`: trigger permettant de récupérer l'aurotité compétente de saisie
+  * `t_t9_before_modif_loc`: trigger permettant de créer un local par défaut (si n'existe pas) affecté aux bâtiments à sa mise à jour uniquement
+  * `t_t10_after_insert_loc`: trigger permettant de créer un local par défaut affecté aux bâtiments à son insertion
+  * `t_t11_refresh_view`: trigger permettant de rafraichir les vues matérialisées dépendante des bâtiments d'activité
   * `t_t100_log` : trigger permettant d'intégrer toutes les opérations dans la table des logs
 
 
@@ -342,17 +342,192 @@ Particularité(s) à noter :
 
 ### Liste de valeurs
 
+`[m_activite_eco].[lt_eco_dest]` : Liste des valeurs permettant de décrire la destination des sites et des pôles
 
-### Classes d'objets attributaire :
+|Nom attribut | Définition | Type  | Valeurs par défaut |
+|:---|:---|:---|:---|    
+|code|Code de la destination principale du site ou du Pôle|character varying(2)| |
+|valeur|Libellé de la destination principale du site ou du Pôle|character varying(30)| |
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ code 
+
+Valeurs possibles :
+
+|Code|Valeur|
+|:---|:---|
+|00|Non renseigné|
+|10|Artisanat|
+|20|Industrie ou R&D|
+|30|Tertiaire|
+|40|Transport et logistique|
+|50|Commerce|
+|60|Agriculture|
+|70|Service/Négoce|
 
 ---
+
+`[m_amenagement].[lt_amt_etat_occup]` : Liste des valeurs permettant de décrire l'état d'occupation des lots (plus utilisés avec la version 2023)
+
+|Nom attribut | Définition | Type  | Valeurs par défaut |
+|:---|:---|:---|:---|    
+|code|Code de la typologie de la situation du site au regard de l'aménagement|character varying(2)| |
+|valeur|Code de la typologie de la situation du site au regard de l'aménagement|character varying(25)| |
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ code 
+
+Valeurs possibles :
+
+|Code|Valeur|
+|:---|:---|
+|10|Existant|
+|20|Extension|
+|30|Création|
+|40|Déclassé|
+|50|Projet de déclassement|
+|00|Non renseigné|
+
+---
+
+`[r_objet].[lt_src_geom]` : Liste des valeurs permettant de décrire le référentiel spatial de saisie
+
+Cette liste de valeurs est déjjà décrite dans le schéma [RVA](https://github.com/sigagglocompiegne/rva/blob/master/bdd/doc_admin_bd_voie.md)
+
+---
+
+`[m_activite_eco].[lt_eco_typo]` : Liste des valeurs permettant de décrire la typologie du site selon le standard régional
+
+|Nom attribut | Définition | Type  | Valeurs par défaut |
+|:---|:---|:---|:---|    
+|code|Code de la typologie GéoPicardie du site|character varying(2)| |
+|valeur|Libellé de la typologie GéoPicardie du site|character varying(40)| |
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ code 
+
+Valeurs possibles :
+
+|Code|Valeur|
+|:---|:---|
+|00|Non renseigné|
+|10|Site monofonctionnel|
+|20|Site plurifonctionnel en périphérie|
+|30|Site plurifonctionnel en centre-ville|
+|40|Etablissement isolé|
+
+---
+
+`[m_activite_eco].[lt_eco_typsite]` : Liste des valeurs permettant de décrire le type de site
+
+|Nom attribut | Définition | Type  | Valeurs par défaut |
+|:---|:---|:---|:---|    
+|code|Code du type de site|character varying(2)| |
+|valeur|Libellé du type de site|character varying(100)| |
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ code 
+
+Valeurs possibles :
+
+|Code|Valeur|
+|:---|:---|
+|00|Non renseigné|
+|10|ZAE|
+|20|Autre site d'activité identifié (hors ZAE)|
+|30|Autre secteur (non exclusivement économique)|
+
+---
+
+`[m_activite_eco].[lt_eco_voca]` : Liste des valeurs permettant de décrire la vocation du site selon le standard régional
+
+|Nom attribut | Définition | Type  | Valeurs par défaut |
+|:---|:---|:---|:---|    
+|code|Code de la vocation du site|character varying(2)| |
+|valeur|Libellé de la vocation du site|character varying(25)| |
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ code 
+
+Valeurs possibles :
+
+|Code|Valeur|
+|:---|:---|
+|00|Non renseigné|
+|10|ZI - zone industrielle|
+|20|ZA - zone artisanale|
+|30|ZC - zone commerciale|
+|40|ZM - zone mixte|
+
+---
+
+`[m_activite_eco].[lt_eco_typloc]` : Liste des valeurs permettant de décrire le type de bâtiments d'activité
+
+|Nom attribut | Définition | Type  | Valeurs par défaut |
+|:---|:---|:---|:---|    
+|code|Code du type de local|character varying(2)| |
+|valeur|Libellé du type de local|character varying(100)| |
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ code 
+
+Valeurs possibles :
+
+|Code|Valeur|
+|:---|:---|
+|00|Non renseigné|
+|40|Pas de local (terrain, ...)|
+|30|Bâtiment composé de plateaux tertiaires|
+|20|Bâtiment composé de cellules commerciales|
+|10|Bâtiment composé de cellules d'activités|
+|50|Bâtiment mixte|
+
+---
+
+`[s_sirene].[naf_n1]` : Liste des valeurs permettant de décrire le code de la Nomenclature d'Activité Française de niveau 1
+
+|Nom attribut | Définition | Type  | Valeurs par défaut |
+|:---|:---|:---|:---|    
+|code|Code de la nomenclature Niveau 1|character varying(2)| |
+|valeur|Valeur de la nomenclature Niveau 1|character varying(147)| |
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ code 
+
+Valeurs possibles :
+
+|Code|Valeur|
+|:---|:---|
+|A|Agriculture, sylviculture et pêche|
+|B|Industries extractives|
+|C|Industrie manufacturière|
+|D|Production et distribution d'électricité, de gaz, de vapeur et d'air conditionné|
+|E|Production et distribution d'eau ; assainissement, gestion des déchets et dépollution|
+|F|Construction|
+|G|Commerce ; réparation d'automobiles et de motocycles|
+|H|Transports et entreposage|
+|I|Hébergement et restauration|
+|J|Information et communication|
+|K|Activités financières et d'assurance|
+|L|Activités immobilières|
+|M|Activités spécialisées, scientifiques et techniques|
+|N|Activités de services administratifs et de soutien|
+|O|Administration publique|
+|P|Enseignement|
+|Q|Santé humaine et action sociale|
+|R|Arts, spectacles et activités récréatives|
+|S|Autres activités de services|
+|T|Activités des ménages en tant qu'employeurs ; activités indifférenciées des ménages en tant que producteurs de biens et services pour usage propre|
+|U|Activités extra-territoriales|
+
+### Classes d'objets attributaire :
 
 `[m_activite_eco].[an_eco_pole]` : table alphanumérique contenant la dénomination des pôles d'activités (unité géographique régionale)
    
 |Nom attribut | Définition | Type | Valeurs par défaut |
 |:---|:---|:---|:---|
 
-Table en cours de refonte
+Table en cours de refonte sera sans doute remplacée par une table contenant une primitive graphique.
 
 ---
 
@@ -647,7 +822,7 @@ Particularité(s) à noter :
 Particularité(s) à noter :
 * cette classe d'objet est alimenté 1 fois par an par un traitement FME 
 
----
+### Classes d'objets attributaire gérant les associations (ou relation d'appartenance des objets entre eux) :
 
 `[m_activite_eco].[lk_adresseetablissement]` : table alphanumérique de relation entre les adresses et les établissements
    
