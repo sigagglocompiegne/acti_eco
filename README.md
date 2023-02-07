@@ -14,7 +14,7 @@ Ensemble des éléments constituant la mise en oeuvre de la base de données sur
   * [Création des vues applicatives](bdd/afe_21_vues_xapps.sql)
   * [Création des privilèges](bdd/afe_99_grant.sql)  
 - [Documentation d'administration de la base de données](bdd/doc_admin_bd_amt_fon_eco.md)
-- [Documentation utilisateurs de l'application](app/doc_user_eco.md)
+- [Documentation utilisateurs de l'application](https://geo.compiegnois.fr/portail/index.php/2019/06/01/activite-economique/)
 
 
 
