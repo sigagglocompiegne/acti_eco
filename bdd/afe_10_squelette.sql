@@ -1077,7 +1077,7 @@ AS $BODY$
 BEGIN
 
 IF TG_OP = 'INSERT' THEN
-     	-- association d'un local à un ou plusieurs sites
+     	-- association d'un bâtiment à un ou plusieurs sites
 		INSERT INTO m_activite_eco.lk_eco_loc_site (idsite,idloc)
 		SELECT idsite, new.idloc FROM m_activite_eco.geo_eco_site WHERE st_intersects(new.geom,geom) IS TRUE;
 		
@@ -1092,7 +1092,7 @@ ELSEIF TG_OP = 'UPDATE' THEN
 		IF st_equals(old.geom, new.geom) IS FALSE THEN
 		    -- je supprime l'ancienne relation
 			DELETE FROM m_activite_eco.lk_eco_loc_site WHERE idloc = new.idloc;
-			-- association d'un local à un ou plusieurs sites
+			-- association d'un bâtiment à un ou plusieurs sites
 			INSERT INTO m_activite_eco.lk_eco_loc_site (idsite,idloc)
 			SELECT idsite, new.idloc FROM m_activite_eco.geo_eco_site WHERE st_intersects(new.geom,geom) IS TRUE;
 		END IF;
@@ -1106,7 +1106,7 @@ END;
 $BODY$;
 
 COMMENT ON FUNCTION m_activite_eco.ft_m_insert_update_loc_rel()
-    IS 'Fonction gérant l''affectation des locaux aux différentes échelles de relations (site, bâtiment)';
+    IS 'Fonction gérant l''affectation des bâtiments aux différentes échelles de relations (site, bâtiment)';
 
 -- #################################################################  ft_m_insert_update_site  ###############################################
 
