@@ -2,7 +2,8 @@
 
 # Documentation utilisateurs de l'application "Activité économique" #
 
- * [Associer un document]([app/doc_user_eco_contact_rech.md](https://geo.compiegnois.fr/portail/index.php/2020/06/09/comment-gerer-les-documents-lies/))|
+ * Associer un document :
+    [Accès au tutoriel](https://geo.compiegnois.fr/portail/index.php/2020/06/09/comment-gerer-les-documents-lies/)
 
 
 
