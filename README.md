@@ -35,4 +35,5 @@ De plus cette thématique est partagée dans le cadre de la mutualisation avec l
 
 Vous pouvez retrouver plusieurs jeux de données à l'échelle de l'Agglomération de la Région de Compiègne :
   * [Les sites d'activités](https://geo.compiegnois.fr/geonetwork/srv/fre/catalog.search#/metadata/5c437f50-f898-4734-8a78-bcbcd74ba6c1)
+  * [Les ZAE de l'Agglomération de la Région de Compiègne]https://geo.compiegnois.fr/geonetwork/srv/fre/catalog.search#/metadata/23207f39-0ca6-4f39-a526-51ec09418bc8)
   * [Les établissements](https://geo.compiegnois.fr/geonetwork/srv/fre/catalog.search#/metadata/22f0c413-dd60-4d2a-b6dc-b91d21d0d01a)
