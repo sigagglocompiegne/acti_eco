@@ -1407,15 +1407,13 @@ CREATE INDEX xapps_geo_vmr_etab_api_gid_idx
 -- ########################################################### SCHEMA m_activite_eco ################################################################
 
 -- ##################################################### xapps_geo_vmr_etab_api_export_site #####################################################################
--- View: m_activite_eco.xapps_geo_vmr_etab_api_export_site
-
--- DROP MATERIALIZED VIEW m_activite_eco.xapps_geo_vmr_etab_api_export_site;
-
+-- m_activite_eco.xapps_geo_vmr_etab_api_export_site source
+drop  MATERIALIZED VIEW if exists m_activite_eco.xapps_geo_vmr_etab_api_export_site;
 CREATE MATERIALIZED VIEW m_activite_eco.xapps_geo_vmr_etab_api_export_site
 TABLESPACE pg_default
-AS
- WITH req_tot AS (
-         WITH req_e AS (
+
+AS WITH req_tot AS (
+              WITH req_e AS (
                  SELECT DISTINCT e.idsiret,
                     e.l_nom,
                         CASE
@@ -1433,7 +1431,27 @@ AS
                      LEFT JOIN m_activite_eco.lk_adresseetablissement l ON e.idsiret::text = l.siret::text
                      LEFT JOIN m_activite_eco.lk_eco_etab_site lk ON lk.siret::text = e.idsiret::text
                      LEFT JOIN m_activite_eco.geo_eco_site se ON se.idsite::text = lk.idsite::text
-                ), req_si AS (
+                ), req_c as (
+                  with req_contact as (
+   						 			select e.idsiret,tc.valeur, c.nom, c.tel, c.telp, c.email from 
+			       					 m_activite_eco.an_eco_etab e, m_activite_eco.an_eco_contact c, m_activite_eco.lk_eco_contact lk, m_activite_eco.lt_eco_typcontact tc
+									where 
+   							 		e.idsiret = lk.idobjet and lk.idcontact = c.idcontact and tc.code = c.typcontact
+			     					), req_contact_agg as (
+								    select idsiret, array_agg(nom) as noms, array_agg(valeur) as typ_contact,  array_agg(tel) as tel, array_agg(telp) as telp, array_agg(email) as email
+								    from req_contact
+									group by idsiret
+					) select idsiret, 
+         				noms[1] as nom1, typ_contact[1] as typcontact1, tel[1] as tel1, telp[1] as portable1 , email[1] as email1, 
+				        noms[2] as nom2,  typ_contact[2] as typcontact2, tel[2] as tel2, telp[2] as portable2 , email[2] as email2,
+					    noms[3] as nom3,  typ_contact[3] as typcontact3, tel[3] as tel3, telp[3] as portable3 , email[3] as email3,
+			            noms[4] as nom4,  typ_contact[4] as typcontact4, tel[4] as tel4, telp[4] as portable4 , email[4] as email4,
+				        noms[5] as nom5,  typ_contact[5] as typcontact5, tel[5] as tel5, telp[5] as portable5 , email[5] as email5,
+                	    noms[6] as nom6,  typ_contact[6] as typcontact6, tel[6] as tel6, telp[6] as portable6 , email[6] as email6
+					from req_contact_agg
+					order by idsiret
+                ),
+                req_si AS (
                  SELECT DISTINCT s.siret,
                     s.numerovoieetablissement::text ||
                         CASE
@@ -1563,11 +1581,19 @@ AS
                        FROM r_osm.geo_osm_commune c
                       WHERE c.insee::text = si.codecommuneetablissement::text)
                 END AS y_l93,
-            a.geom
+            c.nom1, c.typcontact1, c.tel1, c.portable1 , c.email1, 
+			c.nom2,  c.typcontact2, c.tel2, c.portable2 , c.email2,
+			c.nom3,  c.typcontact3, c.tel3, c.portable3 , c.email3,
+			c.nom4,  c.typcontact4, c.tel4, c.portable4 , c.email4,
+			c.nom5,  c.typcontact5, c.tel5, c.portable5 , c.email5,
+			c.nom6,  c.typcontact6, c.tel6, c.portable6 , c.email6,
+			a.geom
            FROM req_si si
              JOIN req_e e ON e.idsiret::text = si.siret::text
              LEFT JOIN x_apps.xapps_geo_vmr_adresse a ON si.idadresse = a.id_adresse
              LEFT JOIN r_administratif.an_geo g ON g.insee::text = si.codecommuneetablissement::text
+             LEFT JOIN req_c c ON c.idsiret::text = si.siret::text
+          WHERE e.l_compte IS TRUE
         UNION ALL
          SELECT sp.idsiret,
             'non renseignée'::character varying AS denominationusuelleetablissement,
@@ -1607,13 +1633,21 @@ AS
                 END AS adresse_loc,
             st_x(sp.geom) AS x_l93,
             st_y(sp.geom) AS y_l93,
+            '' as nom1, '' as typcontact1, '' as tel1, '' as portable1, '' as email1, 
+			'' as nom2, '' as typcontact2, '' as tel2, '' as portable2, '' as email2, 
+			'' as nom3, '' as typcontact3, '' as tel3, '' as portable3, '' as email3, 
+			'' as nom4, '' as typcontact4, '' as tel4, '' as portable4, '' as email4, 
+			'' as nom5, '' as typcontact5, '' as tel5, '' as portable5, '' as email5, 
+			'' as nom6, '' as typcontact6, '' as tel6, '' as portable6, '' as email6, 
             sp.geom
            FROM m_activite_eco.geo_eco_etabp sp
              LEFT JOIN m_activite_eco.lk_eco_etab_site lk ON lk.siret::text = ('EHS'::text || sp.idgeoet)
              LEFT JOIN m_activite_eco.geo_eco_site se ON se.idsite::text = lk.idsite::text
              LEFT JOIN r_administratif.an_geo g ON g.insee::text = sp.insee::text
         )
- SELECT row_number() OVER () AS gid,
+
+ SELECT
+ row_number() OVER () AS gid,
     req_tot.idsiret,
     req_tot.denominationusuelleetablissement,
     req_tot.enseigne1etablissement,
@@ -1646,13 +1680,20 @@ AS
     req_tot.adresse_loc,
     req_tot.x_l93,
     req_tot.y_l93,
+	req_tot.nom1, req_tot.typcontact1, req_tot.tel1, req_tot.portable1, req_tot.email1, 
+    req_tot.nom2, req_tot.typcontact2, req_tot.tel2, req_tot.portable2, req_tot.email2,
+    req_tot.nom3, req_tot.typcontact3, req_tot.tel3, req_tot.portable3, req_tot.email3,
+    req_tot.nom4, req_tot.typcontact4, req_tot.tel4, req_tot.portable4, req_tot.email4,
+    req_tot.nom5, req_tot.typcontact5, req_tot.tel5, req_tot.portable5, req_tot.email5,
+    req_tot.nom6, req_tot.typcontact6, req_tot.tel6, req_tot.portable6, req_tot.email6,    
     req_tot.geom
    FROM req_tot
+   
 WITH DATA;
 
+COMMENT ON MATERIALIZED VIEW m_activite_eco.xapps_geo_vmr_etab_api_export_site IS 'Vue géographique matérialisée (rafraichie ttes les nuits) composée des éléments sur les établissements actifs (API Sirene) permettant de gérer des exports de listes par site dans GEO';
 
-COMMENT ON MATERIALIZED VIEW m_activite_eco.xapps_geo_vmr_etab_api_export_site
-    IS 'Vue géographique matérialisée (rafraichie ttes les nuits) composée des éléments sur les établissements actifs (API Sirene) permettant de gérer des exports de listes par site dans GEO';
+
 
 
 -- ########################################################### SCHEMA m_activite_eco ################################################################
