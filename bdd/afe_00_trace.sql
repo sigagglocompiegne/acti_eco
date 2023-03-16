@@ -26,4 +26,5 @@
 -- 2022-10-21 : GB / initialisation du nouveau modèle de données
 -- 2022-01-26 : GB / Mise en production de l'application Activité Economique
 -- 2022-04-02 : GB / rédaction de la documentation
+-- 2023-03-16 : GB / ajout des contacts dans l'export des établissements
 */
