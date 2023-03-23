@@ -1812,11 +1812,9 @@ COMMENT ON FUNCTION r_objet.ft_m_foncier_l_nom()
 -- ################################################################# ft_m_insert_update_objet_fon  ###############################################
 
 CREATE OR REPLACE FUNCTION r_objet.ft_m_insert_update_objet_fon()
-    RETURNS trigger
-    LANGUAGE 'plpgsql'
-    COST 100
-    VOLATILE NOT LEAKPROOF
-AS $BODY$
+ RETURNS trigger
+ LANGUAGE plpgsql
+AS $function$
 
 DECLARE v_idces integer; 
 DECLARE v_idgeolf integer;
@@ -1828,7 +1826,7 @@ BEGIN
      IF (select insee from r_osm.geo_osm_commune where st_intersects(st_pointonsurface(new.geom),geom)) 
 	 IN ('60023','60067','60068','60070','60151','60156','60159','60323','60325','60326','60337','60338','60382','60402','60447',
 		'60447','60578','60579','60597','60600','60665','60667','60674') THEN 
-
+	 if new.op_sai <> 'Service foncier' then
      -- calcul de l'identifiant du dossier de cession
      v_idces := (SELECT nextval('m_foncier.ces_seq'::regclass));
 	 --v_idgeolf := (SELECT nextval('r_objet.idgeo_seq'::regclass));
@@ -1894,15 +1892,17 @@ BEGIN
 		INSERT INTO m_amenagement.lk_amt_lot_site (idsite,idgeolf)
 		SELECT idsite, new.idgeolf FROM m_activite_eco.geo_eco_site WHERE st_intersects(st_pointonsurface(new.geom),geom) IS TRUE;
 		
-
+     end if;
      return new ;
 
 END;
 
-$BODY$;
+$function$
+;
 
-COMMENT ON FUNCTION r_objet.ft_m_insert_update_objet_fon()
-    IS 'Fonction gérant l''insertion et les mises à jour des données correspondant à la gestion des lots dans la classe cession et lien lot/cession';
+COMMENT ON FUNCTION r_objet.ft_m_insert_update_objet_fon() IS 'Fonction gérant l''insertion et les mises à jour des données correspondant à la gestion des lots dans la classe cession et lien lot/cession';
+
+
 
 -- ################################################################# ft_m_insert_update_surf_l  ###############################################
 
