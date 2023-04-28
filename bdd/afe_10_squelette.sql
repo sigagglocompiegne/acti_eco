@@ -1824,21 +1824,21 @@ BEGIN
 	 
 	 -- ici contrôle si hors ARC ne passe pas
      IF (select insee from r_osm.geo_osm_commune where st_intersects(st_pointonsurface(new.geom),geom)) 
-	 IN ('60023','60067','60068','60070','60151','60156','60159','60323','60325','60326','60337','60338','60382','60402','60447',
-		'60447','60578','60579','60597','60600','60665','60667','60674') THEN 
-	 if new.op_sai <> 'Service foncier' then
+	 	IN ('60023','60067','60068','60070','60151','60156','60159','60323','60325','60326','60337','60338','60382','60402','60447',
+			'60447','60578','60579','60597','60600','60665','60667','60674') THEN 
+	 	if new.op_sai <> 'Service foncier' then
      -- calcul de l'identifiant du dossier de cession
-     v_idces := (SELECT nextval('m_foncier.ces_seq'::regclass));
-	 --v_idgeolf := (SELECT nextval('r_objet.idgeo_seq'::regclass));
+     		v_idces := (SELECT nextval('m_foncier.ces_seq'::regclass));
+		 --v_idgeolf := (SELECT nextval('r_objet.idgeo_seq'::regclass));
 
-     -- insertion de tous lots fonciers dans la table métier foncier
-     INSERT INTO m_foncier.lk_cession_lot SELECT new.idgeolf, v_idces;	
+    	 -- insertion de tous lots fonciers dans la table métier foncier
+     	INSERT INTO m_foncier.lk_cession_lot SELECT new.idgeolf, v_idces;	
 
-     -- insertion d'une ligne dans an_cession en créant un idces qui est lui même réinjecté dans lk_cession_lot
+     	-- insertion d'une ligne dans an_cession en créant un idces qui est lui même réinjecté dans lk_cession_lot
 
-     /* ATTENTION : LEUR DE LA MISE EN PRODUCTION REMETTRE DANS L'ORDRE LES CHAMPS SUIVANTS IDCES, L_COMPO, L_OBSERV ==> cd table an_cession pour vérification */
+     	/* ATTENTION : LEUR DE LA MISE EN PRODUCTION REMETTRE DANS L'ORDRE LES CHAMPS SUIVANTS IDCES, L_COMPO, L_OBSERV ==> cd table an_cession pour vérification */
      
-     INSERT INTO m_foncier.an_cession VALUES 	(
+     	INSERT INTO m_foncier.an_cession VALUES 	(
 						v_idces, -- idces
 						'10',
 						false, -- relation
@@ -1886,13 +1886,19 @@ BEGIN
 						null
 						);
 
-		END IF;
-		
+			END IF;
+		end if;
+	
+	    if (SELECT count(*) FROM m_activite_eco.geo_eco_site WHERE st_intersects(st_pointonsurface(new.geom),geom) IS true) > 0 THEN
 		-- association d'un lot à un ou plusieurs sites
 		INSERT INTO m_amenagement.lk_amt_lot_site (idsite,idgeolf)
 		SELECT idsite, new.idgeolf FROM m_activite_eco.geo_eco_site WHERE st_intersects(st_pointonsurface(new.geom),geom) IS TRUE;
-		
-     end if;
+		end if;
+   
+	    if (SELECT count(*) FROM m_activite_eco.geo_eco_loc_act WHERE st_intersects(new.geom,geom) IS true) > 0 THEN
+	       	       update m_activite_eco.geo_eco_loc_act set idgeolf = new.idgeolf where st_intersects(new.geom,geom) is true;
+	       end if;
+	
      return new ;
 
 END;
@@ -1901,6 +1907,8 @@ $function$
 ;
 
 COMMENT ON FUNCTION r_objet.ft_m_insert_update_objet_fon() IS 'Fonction gérant l''insertion et les mises à jour des données correspondant à la gestion des lots dans la classe cession et lien lot/cession';
+
+
 
 
 
