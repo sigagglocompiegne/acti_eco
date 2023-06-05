@@ -312,8 +312,7 @@ COMMENT ON VIEW m_activite_eco.xapps_an_v_repgdsecteur_site_act_api
 -- DROP VIEW m_activite_eco.xapps_an_v_synt_site_act_api;
 
 CREATE OR REPLACE VIEW m_activite_eco.xapps_an_v_synt_site_act_api
- AS
- WITH req_a AS (
+AS WITH req_a AS (
          SELECT geo_eco_site.idsite,
             geo_eco_site.site_nom,
                 CASE
@@ -466,12 +465,12 @@ CREATE OR REPLACE VIEW m_activite_eco.xapps_an_v_synt_site_act_api
                     END
                     ELSE '0 m²'::text
                 END AS surf_dedie_equ
-           FROM m_amenagement.old_an_amt_lot_equ,
+           FROM m_amenagement.an_amt_lot_equip,
             m_activite_eco.geo_eco_site,
             r_objet.geo_objet_fon_lot,
             m_amenagement.an_amt_lot_stade,
             m_amenagement.lk_amt_lot_site
-          WHERE geo_eco_site.idsite::text = lk_amt_lot_site.idsite::text AND lk_amt_lot_site.idgeolf = geo_objet_fon_lot.idgeolf AND geo_objet_fon_lot.idgeolf = old_an_amt_lot_equ.idgeolf AND geo_objet_fon_lot.l_voca::text = '10'::text AND an_amt_lot_stade.idgeolf = geo_objet_fon_lot.idgeolf
+          WHERE geo_eco_site.idsite::text = lk_amt_lot_site.idsite::text AND lk_amt_lot_site.idgeolf = geo_objet_fon_lot.idgeolf AND geo_objet_fon_lot.idgeolf = an_amt_lot_equip.idgeolf AND geo_objet_fon_lot.l_voca::text = '10'::text AND an_amt_lot_stade.idgeolf = geo_objet_fon_lot.idgeolf
           GROUP BY geo_eco_site.idsite
         ), req_k3 AS (
          SELECT geo_eco_site.idsite,
@@ -488,12 +487,12 @@ CREATE OR REPLACE VIEW m_activite_eco.xapps_an_v_synt_site_act_api
                     END
                     ELSE '0 m²'::text
                 END AS surf_dedie_mixte
-           FROM m_amenagement.old_an_amt_lot_mixte,
+           FROM m_amenagement.an_amt_lot_mixt,
             m_activite_eco.geo_eco_site,
             r_objet.geo_objet_fon_lot,
             m_amenagement.an_amt_lot_stade,
             m_amenagement.lk_amt_lot_site
-          WHERE geo_eco_site.idsite::text = lk_amt_lot_site.idsite::text AND lk_amt_lot_site.idgeolf = geo_objet_fon_lot.idgeolf AND geo_objet_fon_lot.idgeolf = old_an_amt_lot_mixte.idgeolf AND geo_objet_fon_lot.l_voca::text = '60'::text AND an_amt_lot_stade.idgeolf = geo_objet_fon_lot.idgeolf
+          WHERE geo_eco_site.idsite::text = lk_amt_lot_site.idsite::text AND lk_amt_lot_site.idgeolf = geo_objet_fon_lot.idgeolf AND geo_objet_fon_lot.idgeolf = an_amt_lot_mixt.idgeolf AND geo_objet_fon_lot.l_voca::text = '60'::text AND an_amt_lot_stade.idgeolf = geo_objet_fon_lot.idgeolf
           GROUP BY geo_eco_site.idsite
         ), req_k4 AS (
          SELECT geo_eco_site.idsite,
@@ -510,12 +509,12 @@ CREATE OR REPLACE VIEW m_activite_eco.xapps_an_v_synt_site_act_api
                     END
                     ELSE '0 m²'::text
                 END AS surf_dedie_esppu
-           FROM m_amenagement.old_an_amt_lot_esppu,
+           FROM m_amenagement.an_amt_lot_esppublic,
             m_activite_eco.geo_eco_site,
             r_objet.geo_objet_fon_lot,
             m_amenagement.an_amt_lot_stade,
             m_amenagement.lk_amt_lot_site
-          WHERE geo_eco_site.idsite::text = lk_amt_lot_site.idsite::text AND lk_amt_lot_site.idgeolf = geo_objet_fon_lot.idgeolf AND geo_objet_fon_lot.idgeolf = old_an_amt_lot_esppu.idgeolf AND geo_objet_fon_lot.l_voca::text = '50'::text AND an_amt_lot_stade.idgeolf = geo_objet_fon_lot.idgeolf
+          WHERE geo_eco_site.idsite::text = lk_amt_lot_site.idsite::text AND lk_amt_lot_site.idgeolf = geo_objet_fon_lot.idgeolf AND geo_objet_fon_lot.idgeolf = an_amt_lot_esppublic.idgeolf AND geo_objet_fon_lot.l_voca::text = '50'::text AND an_amt_lot_stade.idgeolf = geo_objet_fon_lot.idgeolf
           GROUP BY geo_eco_site.idsite
         ), req_k5 AS (
          SELECT geo_eco_site.idsite,
@@ -554,12 +553,12 @@ CREATE OR REPLACE VIEW m_activite_eco.xapps_an_v_synt_site_act_api
                     END
                     ELSE '0 m²'::text
                 END AS surf_dedie_hab
-           FROM m_amenagement.old_an_amt_lot_hab,
+           FROM m_amenagement.an_amt_lot_habitat,
             m_activite_eco.geo_eco_site,
             r_objet.geo_objet_fon_lot,
             m_amenagement.an_amt_lot_stade,
             m_amenagement.lk_amt_lot_site
-          WHERE geo_eco_site.idsite::text = lk_amt_lot_site.idsite::text AND lk_amt_lot_site.idgeolf = geo_objet_fon_lot.idgeolf AND geo_objet_fon_lot.idgeolf = old_an_amt_lot_hab.idgeolf AND geo_objet_fon_lot.l_voca::text = '30'::text AND an_amt_lot_stade.idgeolf = geo_objet_fon_lot.idgeolf
+          WHERE geo_eco_site.idsite::text = lk_amt_lot_site.idsite::text AND lk_amt_lot_site.idgeolf = geo_objet_fon_lot.idgeolf AND geo_objet_fon_lot.idgeolf = an_amt_lot_habitat.idgeolf AND geo_objet_fon_lot.l_voca::text = '30'::text AND an_amt_lot_stade.idgeolf = geo_objet_fon_lot.idgeolf
           GROUP BY geo_eco_site.idsite
         ), req_m AS (
          SELECT e.idsite,
@@ -612,31 +611,31 @@ CREATE OR REPLACE VIEW m_activite_eco.xapps_an_v_synt_site_act_api
         END AS "Surface disponible à la vente",
         CASE
             WHEN k.surf_dedie_act IS NOT NULL THEN k.surf_dedie_act::character varying
-            ELSE 'Plus de disponibilités ou m² inconnu'::character varying
+            ELSE 'm² inconnu'::character varying
         END AS "Surface dédiée pour des activités",
         CASE
             WHEN k1.surf_reserve_projet IS NOT NULL THEN k1.surf_reserve_projet::character varying
-            ELSE 'Plus de disponibilités ou m² inconnu'::character varying
+            ELSE 'm² inconnu'::character varying
         END AS "Surface réservée pour des projets en cours",
         CASE
             WHEN k2.surf_dedie_equ IS NOT NULL THEN k2.surf_dedie_equ::character varying
-            ELSE 'Plus de disponibilités ou m² inconnu'::character varying
+            ELSE 'm² inconnu'::character varying
         END AS "Surface dédiée pour des équipements",
         CASE
             WHEN k3.surf_dedie_mixte IS NOT NULL THEN k3.surf_dedie_mixte::character varying
-            ELSE 'Plus de disponibilités ou m² inconnu'::character varying
+            ELSE 'm² inconnu'::character varying
         END AS "Surface dédiée en mixité (économie/habitat)",
         CASE
             WHEN k4.surf_dedie_esppu IS NOT NULL THEN k4.surf_dedie_esppu::character varying
-            ELSE 'Plus de disponibilités ou m² inconnu'::character varying
+            ELSE 'm² inconnu'::character varying
         END AS "Surface dédiée pour espace public",
         CASE
             WHEN k5.surf_dedie_divers IS NOT NULL THEN k5.surf_dedie_divers::character varying
-            ELSE 'Plus de disponibilités ou m² inconnu'::character varying
+            ELSE 'm² inconnu'::character varying
         END AS "Surface dédiée en divers",
         CASE
             WHEN k6.surf_dedie_hab IS NOT NULL THEN k6.surf_dedie_hab::character varying
-            ELSE 'Plus de disponibilités ou m² inconnu'::character varying
+            ELSE 'm² inconnu'::character varying
         END AS "Surface dédiée en habitat",
     a.epci
    FROM req_a a
@@ -655,8 +654,7 @@ CREATE OR REPLACE VIEW m_activite_eco.xapps_an_v_synt_site_act_api
      LEFT JOIN req_m m ON a.idsite::text = m.idsite::text
      LEFT JOIN req_p p ON a.idsite::text = p.idsite::text;
 
-COMMENT ON VIEW m_activite_eco.xapps_an_v_synt_site_act_api
-    IS 'Vue présentant les données de synthèses à l''échelle du site d''activité  (données sur l''environnement économique et statistiques foncières présentes sur le fiche d''information du site dans l''application métier GEO). Cette vue est rafraichie toutes les nuits par une tache CRON sur le serveur sig-sgbd.';
+COMMENT ON VIEW m_activite_eco.xapps_an_v_synt_site_act_api IS 'Vue présentant les données de synthèses à l''échelle du site d''activité  (données sur l''environnement économique et statistiques foncières présentes sur le fiche d''information du site dans l''application métier GEO). Cette vue est rafraichie toutes les nuits par une tache CRON sur le serveur sig-sgbd.';
 
 -- ########################################################### SCHEMA m_activite_eco ################################################################
 
