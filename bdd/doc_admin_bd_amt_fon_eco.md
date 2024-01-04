@@ -235,6 +235,8 @@ L'ensemble des classes d'objets de gestion sont stockés dans le schéma `m_acti
 |observ|Observations diverses|character varying(1000)| |
 |geom|Géométrie des objets sites|USER-DEFINED| |
 |geom1|Géométrie des objets sites avec un buffer négatif de 0,5m|USER-DEFINED| |
+|site_id|Identifiant spécifique du standard CNIG|| |
+|moa_type|Type de maîtrise d'ouvrage|| |
 
 
 Particularité(s) à noter :
@@ -243,8 +245,10 @@ Particularité(s) à noter :
 * Une clé étrangère existe sur la table de valeur `dest` (lien vers la liste de valeurs de la destination du site `lt_eco_dest`)
 * Une clé étrangère existe sur la table de valeur `typo` (lien vers la liste de valeurs de la typologie du site `lt_eco_typo`)
 * Une clé étrangère existe sur la table de valeur `typsite` (lien vers la liste de valeurs du type de site `lt_eco_typsite`)
+* Une clé étrangère existe sur la table de valeur `moa_type` (lien vers la liste de valeurs des référentiels de saisie `lt_eco_moatype`)
 * Une clé étrangère existe sur la table de valeur `site_voca` (lien vers la liste de valeurs de la vocation du site `lt_eco_voca`)
 * Une clé étrangère existe sur la table de valeur `src_geom` (lien vers la liste de valeurs des référentiels de saisie `lt_src_geom`)
+
 
 ---
 
@@ -379,12 +383,15 @@ Valeurs possibles :
 
 |Code|Valeur|
 |:---|:---|
+|00|Non renseigné|
 |10|Existant|
 |20|Extension|
+|21|En projet|
 |30|Création|
 |40|Déclassé|
 |50|Projet de déclassement|
-|00|Non renseigné|
+|60|Annulé|
+
 
 ---
 
@@ -1137,6 +1144,29 @@ Valeurs possibles :
 |40|Commerce|
 |50|Activité|
 
+---
+
+`[m_activite_eco].[lt_eco_moatype]` : Liste des valeurs permettant de décrire les types de maîtrise d'ouvrage (valeur issue du standard CNIG)
+
+|Nom attribut | Définition | Type  | Valeurs par défaut |
+|:---|:---|:---|:---|    
+|code|Code du type de la maitrise d'ouvrage|character varying(2)| |
+|valeur|Libellé de la maitrise d'ouvrage|character varying(40)| |
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ code 
+
+Valeurs possibles :
+
+|Code|Valeur|
+|:---|:---|
+|00|Non renseigné|
+|10|Commune|
+|20|EPCI|
+|30|Société d'économie mixte|
+|40|Chambre de commerce et industrie|
+|50|Etat|
+|60|Privé|
 
 ### Classes d'objets attributaire gérant les associations (ou relation d'appartenance des objets entre eux) :
 
@@ -1790,8 +1820,8 @@ Valeurs possibles :
 |Code|Valeur|
 |:---|:---|
 |00|Non renseigné|
-|10|Renouvellement|
-|20|Extension|
+|10|Renouvellement urbain|
+|20|Extension urbaine|
 |30|Mixte|
 
 ---
