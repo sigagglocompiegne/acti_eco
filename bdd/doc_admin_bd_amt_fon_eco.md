@@ -366,6 +366,9 @@ Valeurs possibles :
 |50|Commerce|
 |60|Agriculture|
 |70|Service/Négoce|
+|80|Touristique|
+|91|Portuaire|
+|92|Aéroportuaire|
 
 ---
 
