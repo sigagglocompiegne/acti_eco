@@ -335,7 +335,7 @@ AS WITH req_a AS (
                     ELSE NULL::text
                 END AS voca,
             now() AS date_extract,
-            round(geo_eco_site.surf_brt::numeric / 10000::numeric, 0) AS surf_site,
+            round(geo_eco_site.surf_brt::numeric / 10000::numeric, 2) AS surf_site,
             geo_eco_site.p_implant,
                 CASE
                     WHEN lt_eco_dest.valeur::text ~~ '%R&D%'::text THEN replace(lt_eco_dest.valeur::text, '&'::text, 'et'::text)::character varying
