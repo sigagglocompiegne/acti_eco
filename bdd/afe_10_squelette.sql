@@ -102,6 +102,7 @@ Y est stocké également la liste des contrats spécifiques aux réseaux permett
 -- DROP TABLE IF EXISTS m_activite_eco.lt_eco_typoccup;
 -- DROP TABLE IF EXISTS m_activite_eco.lt_eco_typsite;
 -- DROP TABLE IF EXISTS m_activite_eco.lt_eco_voca;
+-- DROP TABLE IF EXISTS m_activite_eco.lt_eco_moatype;
 -- DROP TABLE IF EXISTS m_amenagement.lt_amt_empesp_pu;
 -- DROP TABLE IF EXISTS m_amenagement.lt_amt_etat_occup;
 -- DROP TABLE IF EXISTS m_amenagement.lt_amt_stadeamng;
@@ -2460,6 +2461,46 @@ CREATE INDEX lt_eco_voca_code_idx
     ('30','ZC - zone commerciale'),
     ('40','ZM - zone mixte');
 
+-- ################################################################# Domaine valeur - lt_eco_moatype  ###############################################
+
+CREATE TABLE m_activite_eco.lt_eco_moatype
+(
+    code character varying(2) COLLATE pg_catalog."default" NOT NULL,
+    valeur character varying(40) COLLATE pg_catalog."default",
+    CONSTRAINT lt_eco_moatype_pkey PRIMARY KEY (code)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+COMMENT ON TABLE m_activite_eco.lt_eco_moatype
+    IS 'Liste de valeurs du type de maîtrise d''ouvrage';
+
+COMMENT ON COLUMN m_activite_eco.lt_eco_moatype.code
+    IS 'Code type de maîtrise d''ouvrage';
+
+COMMENT ON COLUMN m_activite_eco.lt_eco_moatype.valeur
+    IS 'Libellé de la maîtrise d''ouvrage';
+    
+-- Index: lt_eco_moatype_code_idx
+-- DROP INDEX m_activite_eco.lt_eco_moatype_code_idx;
+
+CREATE INDEX lt_eco_moatype_code_idx
+    ON m_activite_eco.lt_eco_moatype USING btree
+    (code COLLATE pg_catalog."default" ASC NULLS LAST)
+    TABLESPACE pg_default;   
+
+ INSERT INTO m_activite_eco.lt_eco_moatype(
+            code, valeur)
+    VALUES
+    ('00','Non renseigné'),
+    ('10','Commune'),
+    ('20','EPCI'),
+    ('30','Société d''économie mixte'),
+    ('40','Chambre de commerce et industrie'),
+    ('50','Etat'),
+    ('60','privé');
 
 -- ##########################################################################################################
 -- ################################################# SCHEMA M_AMENAGAMENT ##################################
@@ -2551,12 +2592,15 @@ CREATE INDEX lt_amt_etat_occup_idx
  INSERT INTO m_activite_eco.lt_amt_etat_occup(
             code, valeur)
     VALUES
-    ('10','Existant'),
+    ('00','Non renseigné'),	 
+    ('10','Existant et actif'),
     ('20','Extension'),
+    ('21','En projet'),	 
     ('30','Création'),
     ('40','Déclassé'),
     ('50','Projet de déclassement'),
-    ('00','Non renseigné');
+    ('60','Annulé')
+    ;
 
 -- ################################################################# Domaine valeur - lt_amt_stadeamng  ###############################################
 
@@ -2838,8 +2882,8 @@ CREATE INDEX lt_proc_typconso_code_idx
             code, valeur)
     VALUES
     ('00','Non renseigné'),
-    ('10','Renouvellement'),
-    ('20','Extension'),
+    ('10','Renouvellement urbain'),
+    ('20','Extension urbaine'),
     ('30','Mixte');
 
 -- ################################################################# Domaine valeur - lt_proc_typfon  ###############################################
@@ -4879,6 +4923,8 @@ CREATE TABLE m_activite_eco.geo_eco_site
     observ character varying(1000) COLLATE pg_catalog."default",
     geom geometry(MultiPolygon,2154),
     geom1 geometry(MultiPolygon,2154),
+    site_id varchar(20),	
+    moa_type varcahr(2),
     CONSTRAINT geo_eco_site_pkey PRIMARY KEY (idsite),
     CONSTRAINT geo_eco_site_dest_fkey FOREIGN KEY (dest)
         REFERENCES m_activite_eco.lt_eco_dest (code) MATCH SIMPLE
@@ -4904,6 +4950,10 @@ CREATE TABLE m_activite_eco.geo_eco_site
         REFERENCES m_activite_eco.lt_eco_voca (code) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
+    CONSTRAINT geo_eco_site_moatype_fkey FOREIGN KEY (moa_type)
+        REFERENCES m_activite_eco.lt_eco_moatype (code) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION	
 )
 WITH (
     OIDS = FALSE
@@ -5122,7 +5172,15 @@ COMMENT ON COLUMN m_activite_eco.geo_eco_site.geom
 
 COMMENT ON COLUMN m_activite_eco.geo_eco_site.geom1
     IS 'Géométrie des objets sites avec un buffer négatif de 0,5m';
-    
+
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.site_id
+    IS 'Identifiant spécifique au standard CNIG';
+
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.moa_type
+    IS 'Type de maitrise d''ouvrage';
+
 -- Index: geo_eco_site_geom_idx
 -- DROP INDEX m_activite_eco.geo_eco_site_geom_idx;
 
