@@ -2042,7 +2042,10 @@ INSERT INTO m_activite_eco.lt_eco_dest(
     ('40','Transport et logistique'),
     ('50','Commerce'),
     ('60','Agriculture'),
-    ('70','Service/Négoce');
+    ('70','Service/Négoce'),
+    ('80','Touristique'),
+    ('91','Portuaire'),
+    ('92','Aéroportuaire');
 
 -- ################################################################# Domaine valeur - lt_eco_occuploc  ###############################################
 
