@@ -440,6 +440,7 @@ Valeurs possibles :
 |00|Non renseigné|
 |10|ZAE|
 |20|Autre site d'activité identifié (hors ZAE)|
+|21|Etablissement économique isolé|
 |30|Autre secteur (non exclusivement économique)|
 
 ---
