@@ -236,7 +236,9 @@ L'ensemble des classes d'objets de gestion sont stockés dans le schéma `m_acti
 |geom|Géométrie des objets sites|USER-DEFINED| |
 |geom1|Géométrie des objets sites avec un buffer négatif de 0,5m|USER-DEFINED| |
 |site_id|Identifiant spécifique du standard CNIG|| |
-|moa_type|Type de maîtrise d'ouvrage|| |
+|moa_type|Type de maîtrise d'ouvrage|varchar(2)| |
+|l_url|Lien vers un média de présentation|varchar()| |
+|z_pmm_n|Nom de la plate-forme multimodale (au moins route-fluvial)|varchar(50)| |
 
 
 Particularité(s) à noter :
