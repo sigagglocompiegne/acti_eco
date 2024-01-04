@@ -4928,6 +4928,8 @@ CREATE TABLE m_activite_eco.geo_eco_site
     geom1 geometry(MultiPolygon,2154),
     site_id varchar(20),	
     moa_type varcahr(2),
+    l_url varchar,
+    z_pmm_n varchar(50),	
     CONSTRAINT geo_eco_site_pkey PRIMARY KEY (idsite),
     CONSTRAINT geo_eco_site_dest_fkey FOREIGN KEY (dest)
         REFERENCES m_activite_eco.lt_eco_dest (code) MATCH SIMPLE
@@ -5183,6 +5185,14 @@ COMMENT ON COLUMN m_activite_eco.geo_eco_site.site_id
 
 COMMENT ON COLUMN m_activite_eco.geo_eco_site.moa_type
     IS 'Type de maitrise d''ouvrage';
+
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.l_url
+    IS 'Lien URL vers un média de présentation';
+
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.z_pmm_n
+    IS 'Nom de la plate-forme multi modale (au moins route et fluvial)';
 
 -- Index: geo_eco_site_geom_idx
 -- DROP INDEX m_activite_eco.geo_eco_site_geom_idx;
