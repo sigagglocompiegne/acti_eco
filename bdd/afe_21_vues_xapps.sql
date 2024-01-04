@@ -311,6 +311,8 @@ COMMENT ON VIEW m_activite_eco.xapps_an_v_repgdsecteur_site_act_api
 
 -- DROP VIEW m_activite_eco.xapps_an_v_synt_site_act_api;
 
+-- m_activite_eco.xapps_an_v_synt_site_act_api source
+
 CREATE OR REPLACE VIEW m_activite_eco.xapps_an_v_synt_site_act_api
 AS WITH req_a AS (
          SELECT geo_eco_site.idsite,
@@ -401,7 +403,11 @@ AS WITH req_a AS (
                         ELSE NULL::text
                     END
                     ELSE '0 m²'::text
-                END AS surf_dispo_vente
+                END AS surf_dispo_vente,
+                CASE
+                    WHEN sum(geo_objet_fon_lot.surf) IS NOT NULL THEN sum(geo_objet_fon_lot.surf)
+                    ELSE 0::bigint
+                END AS surf_utile_vente
            FROM m_activite_eco.geo_eco_site,
             r_objet.geo_objet_fon_lot,
             m_amenagement.lk_amt_lot_site,
@@ -422,7 +428,11 @@ AS WITH req_a AS (
                         ELSE NULL::text
                     END
                     ELSE '0 m²'::text
-                END AS surf_dedie_act
+                END AS surf_dedie_act,
+                CASE
+                    WHEN sum(geo_objet_fon_lot.surf) IS NOT NULL THEN sum(geo_objet_fon_lot.surf)
+                    ELSE 0::bigint
+                END AS surf_utile_act
            FROM m_activite_eco.geo_eco_site,
             r_objet.geo_objet_fon_lot,
             m_amenagement.an_amt_lot_stade,
@@ -443,7 +453,11 @@ AS WITH req_a AS (
                         ELSE NULL::text
                     END
                     ELSE '0 m²'::text
-                END AS surf_reserve_projet
+                END AS surf_reserve_projet,
+                CASE
+                    WHEN sum(geo_objet_fon_lot.surf) IS NOT NULL THEN sum(geo_objet_fon_lot.surf)
+                    ELSE 0::bigint
+                END AS surf_utile_projet
            FROM m_activite_eco.geo_eco_site,
             r_objet.geo_objet_fon_lot,
             m_amenagement.an_amt_lot_stade,
@@ -618,6 +632,18 @@ AS WITH req_a AS (
             ELSE 'm² inconnu'::character varying
         END AS "Surface réservée pour des projets en cours",
         CASE
+            WHEN j.surf_utile_vente IS NOT NULL THEN j.surf_utile_vente
+            ELSE 0::bigint
+        END +
+        CASE
+            WHEN k.surf_utile_act IS NOT NULL THEN k.surf_utile_act
+            ELSE 0::bigint
+        END +
+        CASE
+            WHEN k1.surf_utile_projet IS NOT NULL THEN k1.surf_utile_projet
+            ELSE 0::bigint
+        END AS surf_utile,
+        CASE
             WHEN k2.surf_dedie_equ IS NOT NULL THEN k2.surf_dedie_equ::character varying
             ELSE 'm² inconnu'::character varying
         END AS "Surface dédiée pour des équipements",
@@ -655,6 +681,7 @@ AS WITH req_a AS (
      LEFT JOIN req_p p ON a.idsite::text = p.idsite::text;
 
 COMMENT ON VIEW m_activite_eco.xapps_an_v_synt_site_act_api IS 'Vue présentant les données de synthèses à l''échelle du site d''activité  (données sur l''environnement économique et statistiques foncières présentes sur le fiche d''information du site dans l''application métier GEO). Cette vue est rafraichie toutes les nuits par une tache CRON sur le serveur sig-sgbd.';
+
 
 -- ########################################################### SCHEMA m_activite_eco ################################################################
 
