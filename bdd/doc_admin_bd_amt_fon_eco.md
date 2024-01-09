@@ -64,6 +64,7 @@ L'ensemble des classes d'objets de gestion sont stockés dans le schéma `r_obje
 |epci|Autorité compétente|character varying(10)| |
 |surf|Surface occupée du lot en m² (surface saisie par l'utilisateur si différente de la surface SIG)|integer| |
 |surf_l|Surface littérale occupée du lot en m² (surface saisie par l'utilisateur si différente de la surface SIG)|character varying(15)| |
+|maifon|Maîtrise foncière du terrain|character varying(2)| |
 
 Particularité(s) à noter :
 * Une clé primaire existe sur le champ `idgeolf` l'attribution automatique de la référence unique s'effectue via les vues de gestion. 
@@ -133,6 +134,7 @@ Valeurs possibles :
 |54|Coordonnées X,Y|
 
 ---
+
 `[r_objet].[lt_objet_vocafon]` : Liste des valeurs permettant de décrire les vocations foncières des lots
 
 |Nom attribut | Définition | Type  | Valeurs par défaut |
@@ -154,6 +156,41 @@ Valeurs possibles :
 |40|Lot divers|
 |50|Lot espace public|
 |60|Lot Mixte|
+
+---
+
+`[r_objet].[lt_objet_maifon]` : Liste de valeurs de la maitrise foncière du site issu du standard des sites d'activités du CNIG 2023
+
+|Nom attribut | Définition | Type  | Valeurs par défaut |
+|:---|:---|:---|:---|    
+|code|Code de la valeur de la maîtrise foncière|character varying(2)| |
+|valeur|Code de la valeur de la maîtrise foncière|character varying(150)| |
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ code 
+
+Valeurs possibles :
+
+|Code|Valeur|
+|:---|:---|
+|00|Non renseignée|
+|01|personne physique|
+|02|Etat|
+|03|région|
+|04|département|
+|05|EPCI, structure intercommunale|
+|06|commune|
+|07|autre collectivité territoriale|
+|08|organisme de logement social|
+|09|établissement public foncier|
+|10|SEM ou SPLA|
+|11|aménageur|
+|12|investisseur professionnel|
+|13|établissement de santé et structure sociale|
+|14|établissement de tourisme et structure de loisir sportive ou culturelle|
+|15|établissemebt industriel et commercial|
+|16|organisation de gestion foncière et immobilière|
+|17|établissement d'enseignement d'étude et de recherche|
 
 ## Classes d'objets de l'activité économique
 
