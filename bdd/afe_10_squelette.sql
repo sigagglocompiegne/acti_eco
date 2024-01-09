@@ -114,6 +114,8 @@ Y est stocké également la liste des contrats spécifiques aux réseaux permett
 -- DROP TABLE IF EXISTS m_urbanisme_reg.lt_proc_typconso;
 -- DROP TABLE IF EXISTS m_urbanisme_reg.lt_proc_typfon;
 -- DROP TABLE IF EXISTS r_objet.lt_objet_vocafon;
+-- DROP TABLE IF EXISTS r_objet.lt_objet_maifon;
+-- DROP TABLE IF EXISTS r_objet.lt_objet_occup;
 
 -- tables :
 -----------
@@ -2984,7 +2986,7 @@ WITH (
 TABLESPACE pg_default;
 
 COMMENT ON TABLE r_objet.lt_objet_maifon
-    IS 'Liste de valeurs de la maitrise foncière du site issu du standard des sites d''activités du CNIG 2023';
+    IS 'Liste de valeurs de la maitrise foncière du terrain issu du standard des sites d''activités du CNIG 2023';
 
 COMMENT ON COLUMN r_objet.lt_objet_maifon.code IS 'Code de la valeur de la maîtrise foncière';
 COMMENT ON COLUMN r_objet.lt_objet_maifon.valeur IS 'Libellé de la valeur de la maîtrise foncière';
@@ -3015,6 +3017,41 @@ INSERT INTO r_objet.lt_objet_maifon(
     ('15','établissemebt industriel et commercial'),
     ('16','organisation de gestion foncière et immobilière'),
     ('17','établissement d'enseignement d'étude et de recherche'),	
+    ;
+
+-- ################################################################# Domaine valeur - lt_objet_etatoccup  ###############################################
+
+CREATE TABLE r_objet.lt_objet_etatoccup
+(
+    code character varying(2) COLLATE pg_catalog."default" NOT NULL,
+    valeur character varying(150) COLLATE pg_catalog."default",
+    CONSTRAINT lt_objet_etatoccup_pkey PRIMARY KEY (code)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+COMMENT ON TABLE r_objet.lt_objet_etatoccup
+    IS 'Liste de valeurs des états d''occupation du terrain issu du standard des sites d''activités du CNIG 2023';
+
+COMMENT ON COLUMN r_objet.lt_objet_etatoccup.code IS 'Code de la valeur de l''occupation du terrain';
+COMMENT ON COLUMN r_objet.lt_objet_etatoccup.valeur IS 'Libellé de la valeur de l''occupation du terrain';
+
+CREATE INDEX lt_objet_etatoccup_idx
+    ON r_objet.lt_objet_etatoccup USING btree
+    (code COLLATE pg_catalog."default" ASC NULLS LAST)
+    TABLESPACE pg_default;
+
+INSERT INTO r_objet.lt_objet_etatoccup(
+            code, valeur)
+    VALUES
+    ('00','Non renseignée'),
+    ('10','inoccupé'),
+    ('20','occupé'),
+    ('21','occupation transitoire'),
+    ('30','vacant'),
+    ('40','friche')
     ;
 
 -- ####################################################################################################################################################
@@ -6838,13 +6875,22 @@ CREATE TABLE r_objet.geo_objet_fon_lot
     surf integer,
     surf_l character varying(15) COLLATE pg_catalog."default",
     maifon character varying(2) NOT NULL DEFAULT '00',	
+    etatoccup character varying(2) NOT NULL DEFAULT '00',	
     CONSTRAINT geo_objet_fon_lot_pkey PRIMARY KEY (idgeolf),
     CONSTRAINT geo_objet_fon_lot_scrgeom_fkey FOREIGN KEY (src_geom)
         REFERENCES r_objet.lt_src_geom (code) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION,
+    CONSTRAINT lt_objet_maifon_fkey FOREIGN KEY (maifon)
+        REFERENCES r_objet.lt_objet_maifon (code) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT lt_objet_etatoccup_fkey FOREIGN KEY (etatoccup)
+        REFERENCES r_objet.lt_objet_etatoccup (code) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
     CONSTRAINT lt_objet_vocafon_fkey FOREIGN KEY (l_voca)
-        REFERENCES r_objet.old_lt_objet_vocafon (l_voca) MATCH SIMPLE
+        REFERENCES r_objet.lt_objet_vocafon (code) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
 )
@@ -6904,6 +6950,9 @@ COMMENT ON COLUMN r_objet.geo_objet_fon_lot.surf_l
 
 COMMENT ON COLUMN r_objet.geo_objet_fon_lot.maifon
     IS 'Maîtrise foncière du terrain';
+
+COMMENT ON COLUMN r_objet.geo_objet_fon_lot.etatoccup
+    IS 'Etat d''occupation du terrain';
 
 -- Index: geo_objet_fon_lot_idgeolf_idx
 -- DROP INDEX r_objet.geo_objet_fon_lot_idgeolf_idx;
@@ -7028,3 +7077,4 @@ CREATE TRIGGER t_t9_autorite_competente
     ON r_objet.geo_objet_fon_lot
     FOR EACH ROW
     EXECUTE PROCEDURE public.ft_r_autorite_competente();
+
