@@ -2316,9 +2316,10 @@ Particularité(s) à noter :
 
 Sans objet
 
-### classes d'objets opendata sont classés dans le schéma x_opendata :
+### classes d'objets opendata sont classés dans le schéma m_activite_eco :
 
-Sans objet
+ * `xopendata_geo_eco_site_cnig` : Vue de la couche site d'activité du standard CNIG 2023
+ * `xopendata_geo_eco_terrain_cnig` : Vue de la couche terrain d'activité du standard CNIG 2023
 
 
 ## Classes d'objets de la base SIRENE
