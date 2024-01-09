@@ -2986,6 +2986,9 @@ TABLESPACE pg_default;
 COMMENT ON TABLE r_objet.lt_objet_maifon
     IS 'Liste de valeurs de la maitrise foncière du site issu du standard des sites d''activités du CNIG 2023';
 
+COMMENT ON COLUMN r_objet.lt_objet_maifon.code IS 'Code de la valeur de la maîtrise foncière';
+COMMENT ON COLUMN r_objet.lt_objet_maifon.valeur IS 'Libellé de la valeur de la maîtrise foncière';
+
 CREATE INDEX lt_objet_maifon_idx
     ON r_objet.lt_objet_maifon USING btree
     (code COLLATE pg_catalog."default" ASC NULLS LAST)
