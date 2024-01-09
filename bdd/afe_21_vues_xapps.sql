@@ -405,8 +405,8 @@ AS WITH req_a AS (
                     ELSE '0 m²'::text
                 END AS surf_dispo_vente,
                 CASE
-                    WHEN sum(geo_objet_fon_lot.surf) IS NOT NULL then sum(geo_objet_fon_lot.surf)
-                    ELSE 0
+                    WHEN sum(geo_objet_fon_lot.surf) IS NOT NULL THEN sum(geo_objet_fon_lot.surf)
+                    ELSE 0::bigint
                 END AS surf_utile_vente
            FROM m_activite_eco.geo_eco_site,
             r_objet.geo_objet_fon_lot,
@@ -429,15 +429,19 @@ AS WITH req_a AS (
                     END
                     ELSE '0 m²'::text
                 END AS surf_dedie_act,
-                 CASE
-                    WHEN sum(geo_objet_fon_lot.surf) IS NOT NULL then sum(geo_objet_fon_lot.surf)
-                    ELSE 0
+                CASE
+                    WHEN sum(geo_objet_fon_lot.surf) IS NOT NULL THEN sum(geo_objet_fon_lot.surf)
+                    ELSE 0::bigint
                 END AS surf_utile_act
            FROM m_activite_eco.geo_eco_site,
             r_objet.geo_objet_fon_lot,
             m_amenagement.an_amt_lot_stade,
             m_amenagement.lk_amt_lot_site
-          WHERE geo_eco_site.idsite::text = lk_amt_lot_site.idsite::text AND lk_amt_lot_site.idgeolf = geo_objet_fon_lot.idgeolf AND (geo_objet_fon_lot.l_voca::text = '20'::text OR geo_objet_fon_lot.l_voca::text = '60'::text) AND an_amt_lot_stade.idgeolf = geo_objet_fon_lot.idgeolf
+          WHERE geo_eco_site.idsite::text = lk_amt_lot_site.idsite::text 
+          AND lk_amt_lot_site.idgeolf = geo_objet_fon_lot.idgeolf 
+          AND geo_objet_fon_lot.l_voca::text = '20'::text 
+          and an_amt_lot_stade.l_comm2 not in ('00','99')
+          AND an_amt_lot_stade.idgeolf = geo_objet_fon_lot.idgeolf
           GROUP BY geo_eco_site.idsite
         ), req_k1 AS (
          SELECT geo_eco_site.idsite,
@@ -455,14 +459,15 @@ AS WITH req_a AS (
                     ELSE '0 m²'::text
                 END AS surf_reserve_projet,
                 CASE
-                    WHEN sum(geo_objet_fon_lot.surf) IS NOT NULL then sum(geo_objet_fon_lot.surf)
-                    ELSE 0
+                    WHEN sum(geo_objet_fon_lot.surf) IS NOT NULL THEN sum(geo_objet_fon_lot.surf)
+                    ELSE 0::bigint
                 END AS surf_utile_projet
            FROM m_activite_eco.geo_eco_site,
             r_objet.geo_objet_fon_lot,
             m_amenagement.an_amt_lot_stade,
             m_amenagement.lk_amt_lot_site
-          WHERE (an_amt_lot_stade.l_comm2::text = '31'::text OR an_amt_lot_stade.l_comm2::text = '32'::text) AND (geo_objet_fon_lot.l_voca::text = '20'::text OR geo_objet_fon_lot.l_voca::text = '60'::text) AND an_amt_lot_stade.idgeolf = geo_objet_fon_lot.idgeolf AND geo_eco_site.idsite::text = lk_amt_lot_site.idsite::text AND lk_amt_lot_site.idgeolf = geo_objet_fon_lot.idgeolf
+          WHERE (an_amt_lot_stade.l_comm2::text = '31'::text OR an_amt_lot_stade.l_comm2::text = '32'::text) 
+          AND geo_objet_fon_lot.l_voca::text = '20'::text AND an_amt_lot_stade.idgeolf = geo_objet_fon_lot.idgeolf AND geo_eco_site.idsite::text = lk_amt_lot_site.idsite::text AND lk_amt_lot_site.idgeolf = geo_objet_fon_lot.idgeolf
           GROUP BY geo_eco_site.idsite
         ), req_k2 AS (
          SELECT geo_eco_site.idsite,
@@ -631,16 +636,26 @@ AS WITH req_a AS (
             WHEN k1.surf_reserve_projet IS NOT NULL THEN k1.surf_reserve_projet::character varying
             ELSE 'm² inconnu'::character varying
         END AS "Surface réservée pour des projets en cours",
-       	case when j.surf_utile_vente is not null then j.surf_utile_vente else 0 end 
-       	+ 
-       	case when k.surf_utile_act is not null then k.surf_utile_act else 0 end 
-       	+
-       	case when k1.surf_utile_projet is not null then k1.surf_utile_projet else 0 end 
-       	as surf_utile,
-	    case when j.surf_utile_vente is not null then j.surf_utile_vente else 0 end 
-	    as surf_vente,
-       	case when k1.surf_utile_projet is not null then k1.surf_utile_projet else 0 end 
-       	as surf_projet,
+        CASE
+            WHEN j.surf_utile_vente IS NOT NULL THEN j.surf_utile_vente
+            ELSE 0::bigint
+        END +
+        CASE
+            WHEN k.surf_utile_act IS NOT NULL THEN k.surf_utile_act
+            ELSE 0::bigint
+        END +
+        CASE
+            WHEN k1.surf_utile_projet IS NOT NULL THEN k1.surf_utile_projet
+            ELSE 0::bigint
+        END AS surf_utile,
+        CASE
+            WHEN j.surf_utile_vente IS NOT NULL THEN j.surf_utile_vente
+            ELSE 0::bigint
+        END AS surf_vente,
+        CASE
+            WHEN k1.surf_utile_projet IS NOT NULL THEN k1.surf_utile_projet
+            ELSE 0::bigint
+        END AS surf_projet,
         CASE
             WHEN k2.surf_dedie_equ IS NOT NULL THEN k2.surf_dedie_equ::character varying
             ELSE 'm² inconnu'::character varying
@@ -663,7 +678,7 @@ AS WITH req_a AS (
         END AS "Surface dédiée en habitat",
     a.epci
    FROM req_a a
-    LEFT JOIN req_f f ON a.idsite::text = f.idsite::text
+     LEFT JOIN req_f f ON a.idsite::text = f.idsite::text
      LEFT JOIN req_g g ON a.idsite::text = g.idsite::text
      LEFT JOIN req_h h ON a.idsite::text = h.idsite::text
      LEFT JOIN req_i i ON a.idsite::text = i.idsite::text
@@ -679,7 +694,6 @@ AS WITH req_a AS (
      LEFT JOIN req_p p ON a.idsite::text = p.idsite::text;
 
 COMMENT ON VIEW m_activite_eco.xapps_an_v_synt_site_act_api IS 'Vue présentant les données de synthèses à l''échelle du site d''activité  (données sur l''environnement économique et statistiques foncières présentes sur le fiche d''information du site dans l''application métier GEO). Cette vue est rafraichie toutes les nuits par une tache CRON sur le serveur sig-sgbd.';
-
 
 
 -- ########################################################### SCHEMA m_activite_eco ################################################################
