@@ -2970,6 +2970,49 @@ INSERT INTO r_objet.lt_objet_vocafon(
     ('10','Lot équipement public'),
     ('00','Non renseigné');
 
+-- ################################################################# Domaine valeur - lt_objet_maifon  ###############################################
+
+CREATE TABLE r_objet.lt_objet_maifon
+(
+    code character varying(2) COLLATE pg_catalog."default" NOT NULL,
+    valeur character varying(150) COLLATE pg_catalog."default",
+    CONSTRAINT lt_objet_maifon_pkey PRIMARY KEY (code)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+COMMENT ON TABLE r_objet.lt_objet_maifon
+    IS 'Liste de valeurs de la maitrise foncière du site issu du standard des sites d''activités du CNIG 2023';
+
+CREATE INDEX lt_objet_maifon_idx
+    ON r_objet.lt_objet_maifon USING btree
+    (code COLLATE pg_catalog."default" ASC NULLS LAST)
+    TABLESPACE pg_default;
+
+INSERT INTO r_objet.lt_objet_maifon(
+            code, valeur)
+    VALUES
+    ('00','Non renseignée'),
+    ('01','personne physique'),
+    ('02','Etat'),
+    ('03','région'),
+    ('04','département'),
+    ('05','EPCI, structure intercommunale'),
+    ('06','commune'),
+    ('07','autre collectivité territoriale'),
+    ('08','organisme de logement social'),
+    ('09','établissement public foncier'),
+    ('10','SEM ou SPLA'),
+    ('11','aménageur'),
+    ('12','investisseur professionnel'),
+    ('13','établissement de santé et structure sociale'),
+    ('14','établissement de tourisme et structure de loisir sportive ou culturelle'),
+    ('15','établissemebt industriel et commercial'),
+    ('16','organisation de gestion foncière et immobilière'),
+    ('17','établissement d'enseignement d'étude et de recherche'),	
+    ;
 
 -- ####################################################################################################################################################
 -- ###                                                                                                                                              ###
