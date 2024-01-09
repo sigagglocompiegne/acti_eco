@@ -2172,4 +2172,233 @@ COMMENT ON MATERIALIZED VIEW m_urbanisme_reg.xapps_geo_vmr_proc_zac
 
 -- ########################################################### SCHEMA m_activite_eco ################################################################
 
+
 -- ##################################################### xopendata_geo_eco_site_cnig #####################################################################
+
+-- m_activite_eco.xopendata_geo_eco_site_cnig
+drop view if exists m_activite_eco.xopendata_geo_eco_site_cnig;
+CREATE OR REPLACE VIEW m_activite_eco.xopendata_geo_eco_site_cnig
+AS
+with req_etab_indus as
+(
+select distinct
+    s.idsite,
+    'oui' as voca_indus
+from m_activite_eco.geo_eco_site s
+	left join m_activite_eco.lk_eco_etab_site lk on lk.idsite = s.idsite
+	left join m_activite_eco.an_eco_etab e on e.idsiret = lk.siret
+where left(e.apet700,2) in ('05','06','07','08','09') or left(e.apet700,1) in ('1','2','3') and e.l_compte is true
+), req_etab_comm as
+(
+select distinct
+    s.idsite,
+    'oui' as voca_comm
+from m_activite_eco.geo_eco_site s
+	left join m_activite_eco.lk_eco_etab_site lk on lk.idsite = s.idsite
+	left join m_activite_eco.an_eco_etab e on e.idsiret = lk.siret
+where left(e.apet700,2) in ('45','46','47') and e.l_compte is true
+), req_etab_arti as
+(
+select distinct
+    s.idsite,
+    'oui' as voca_arti
+from m_activite_eco.geo_eco_site s
+	left join m_activite_eco.lk_eco_etab_site lk on lk.idsite = s.idsite
+	left join m_activite_eco.an_eco_etab e on e.idsiret = lk.siret
+where left(e.apet700,2) in ('41','42','43') and e.l_compte is true
+), req_etab_touri as
+(
+select distinct
+    s.idsite,
+    'oui' as voca_touri
+from m_activite_eco.geo_eco_site s
+	left join m_activite_eco.lk_eco_etab_site lk on lk.idsite = s.idsite
+	left join m_activite_eco.an_eco_etab e on e.idsiret = lk.siret
+where left(e.apet700,2) in ('55','79','90','91') and e.l_compte is true
+), req_etab_tert as
+(
+select distinct
+    s.idsite,
+    'oui' as voca_tert
+from m_activite_eco.geo_eco_site s
+	left join m_activite_eco.lk_eco_etab_site lk on lk.idsite = s.idsite
+	left join m_activite_eco.an_eco_etab e on e.idsiret = lk.siret
+where left(e.apet700,2) in ('49','52','53','56','58','59','70','71','72','73','74','75','76','77','78','91','92','93','94','95','96','97','98','99')
+	  or left(e.apet700,1) in ('6','8') and e.l_compte is true
+), req_etab_port as
+(
+select distinct
+    s.idsite,
+    'oui' as voca_port
+from m_activite_eco.geo_eco_site s
+	left join m_activite_eco.lk_eco_etab_site lk on lk.idsite = s.idsite
+	left join m_activite_eco.an_eco_etab e on e.idsiret = lk.siret
+where left(e.apet700,2) in ('50') and e.l_compte is true
+), req_etab_aport as
+(
+select distinct
+    s.idsite,
+    'oui' as voca_aport
+from m_activite_eco.geo_eco_site s
+	left join m_activite_eco.lk_eco_etab_site lk on lk.idsite = s.idsite
+	left join m_activite_eco.an_eco_etab e on e.idsiret = lk.siret
+where left(e.apet700,2) in ('51') and e.l_compte is true
+)
+SELECT distinct
+  s.site_id::text as site_id,
+  null::text as pole_id,
+  s.site_nom::varchar as site_nom,
+  case 
+  	when s.typsite = '10' then 'zone d''activité économique'
+  	when s.typsite = '20' then 'site économique historique hors ZAE'
+  	when s.typsite = '21' then 'établissement économique isolé'
+  end::varchar as site_type,
+  case 
+  	when s.site_voca = '10' then 'industrielle'
+  	when s.site_voca = '20' then 'artisanale'
+  	when s.site_voca = '30' then 'commerciale'
+  	when s.site_voca = '40' then 'mixte'
+  	else 'artisanale'
+  end::varchar as site_vocadomi,
+  case 
+  	when s.site_etat = '10' then 'existant et actif'
+  	when s.site_etat = '20' or s.site_etat = '21' then 'en projet'
+  	when s.site_etat = '30' then 'création'
+  	when s.site_etat = '40' then 'déclassé'
+  	when s.site_etat = '50' then 'projet de déclassement'
+  	when s.site_etat = '60' then 'annulé'
+  end::varchar as site_etat,
+  ss."Surface du site"::double precision as site_surf_brute,
+  round(ss.surf_utile/10000::numeric,2) as site_surf_utile,
+  s.date_crea::text as site_creation_date,
+  to_char(s.date_sai,'YYYY-MM-DD')::varchar(10) as site_identif_date,
+  to_char(s.date_maj,'YYYY-MM-DD')::varchar(10) as site_actu_date,
+  null::varchar as site_description,
+  case 
+  	when s.epci = 'arc' then 'Agglomération de la Région de Compiègne et de la Basse Automne'
+  	when s.epci = 'ccpe' then 'Communauté de communes de la Plaine d''Estées'
+  	when s.epci = 'cclo' then 'Communauté de communes des Lisières de l''Oise'
+  	when s.epci = 'cc2v' then 'Communauté de communes des Deux Vallées'
+  	else ''
+  end::varchar as source_producteur,
+  null::varchar as site_quali_territoire,
+  case when tc.valeur <> 'Non renseigné' then lower(tc.valeur) else '' end::varchar as site_evol_urba,
+  s.l_url::text as site_url,
+  case when s.typsite = '10' then s.z_mai_ouvr else '' end::varchar as site_epci_nom,
+  case when s.typsite = '10' then 
+  	case when s.epci = 'arc' then '200067965'
+  		 when s.epci = 'ccpe' then '246000897'
+  		 when s.epci = 'cclo' then '246000749'
+  	 	 when s.epci = 'cc2v' then '246000772'
+  else '' end end::varchar(9) as site_epci_siren,
+  c.commune::varchar as site_comm_nom,
+  left(s.site_id,5)::varchar(5) as site_comm_insee,
+  mt.valeur::varchar as site_moa_type,
+  s.z_mai_ouvr::varchar as site_moa_nom,
+  s.z_amng::varchar as site_moa_amngt,
+  s.z_comm::varchar as site_moa_comm,
+  null::integer as site_uf_nbre,
+  null::integer as site_uf_vacant_nbre,
+  null::integer as site_taux_vacance,
+  null::integer as site_uf_bati_nbre,
+  ss.nb_etab::integer as site_nb_etab,
+  ss.eff_etab::integer as site_nb_emploi,
+  st_asGeojson(s.geom) as site_geomsurf,
+  st_asGeojson(st_pointonsurface(s.geom)) as site_geompoint,
+  null::varchar as site_media,
+  round(ss.surf_vente/10000::numeric,2)::double precision as site_surf_comm_dispo,
+  round(ss.surf_projet/10000::numeric,2)::double precision as site_surf_projet,
+  case when ei.voca_indus = 'oui' then 'oui' else 'non' end::varchar(3) as site_voca_industrielle,
+  case when ec.voca_comm = 'oui' then 'oui' else 'non' end::varchar(3) as site_voca_commerciale,
+  case when eter.voca_tert = 'oui' then 'oui' else 'non' end::varchar(3) as site_voca_tertiaire,
+  case when ea.voca_arti = 'oui' then 'oui' else 'non' end::varchar(3) as site_voca_artisanale,
+  case when eto.voca_touri = 'oui' then 'oui' else 'non' end::varchar(3) as site_voca_touristique,
+  case when epo.voca_port = 'oui' then 'oui' else 'non' end::varchar(3) as site_voca_portuaire,
+  case when eapo.voca_aport = 'oui' then 'oui' else 'non' end::varchar(3) as site_voca_aeroportuaire,
+  case when s.res_pluvia is true then 'oui' else 'non' end::varchar(3) as reseau_eau_pluviale,
+  case when s.res_eau is true then 'oui' else 'non' end::varchar(3) as reseau_eau_potable,
+  case when s.res_ass is true then 'oui' else 'non' end::varchar(3) as reseau_assainissement,
+  case when s.res_gaz is true then 'oui' else 'non' end::varchar(3) as reseau_gaz,
+  case when s.res_elect is true then 'oui' else 'non' end::varchar(3) as reseau_electrique,
+  case when s.res_fibre is true then 'oui' else 'non' end::varchar(3) as reseau_fibre_optique,
+  null::varchar(3) as reseau_fret_ferroviaire,
+  case when s.z_pmm is true then 'oui' else 'non' end::varchar(3) as reseau_fluvial,
+  case when s.serv_tc is true then 'oui' else 'non' end::varchar(3) as desserte_tc,
+  null::varchar as desserte_route_nom,
+  s.z_auto::varchar as autoroute_nom,
+  s.z_dst_auto::integer as autoroute_echang_dist,
+  s.z_fr_v::varchar as gare_nom,
+  s.z_dst_fr_v::integer as gare_dist,
+  s.z_fr_f::varchar as gare_fret_nom,
+  s.z_dst_fr_f::integer as gare_fret_dist,
+  s.z_ar_v::varchar as aeroport_nom,
+  s.z_dst_ar_v::integer as aeroport_dist,
+  s.z_pmm_n::varchar as port_nom,
+  s.z_dst_pmm::integer as port_dist,
+  s.geom
+   FROM m_activite_eco.geo_eco_site s 
+	   left join m_activite_eco.xapps_an_v_synt_site_act_api ss on ss."Identifiant du site"  = s.idsite
+	   left join m_activite_eco.lk_eco_proc lkp on lkp.idsite = s.idsite
+	   left join m_urbanisme_reg.geo_proced p on p.idproc = lkp.idproc 
+	   left join m_urbanisme_reg.lt_proc_typconso tc on tc.code = p.conso_type
+	   left join r_osm.geo_vm_osm_commune_grdc c on c.insee = left(s.site_id,5)
+	   left join m_activite_eco.lt_eco_moatype mt on mt.code = s.moa_type
+	   left join req_etab_indus ei on ei.idsite = s.idsite
+	   left join req_etab_comm ec on ec.idsite = s.idsite
+	   left join req_etab_arti ea on ea.idsite = s.idsite
+	   left join req_etab_touri eto on eto.idsite = s.idsite
+	   left join req_etab_tert eter on eter.idsite = s.idsite
+	   left join req_etab_port epo on epo.idsite = s.idsite
+	   left join req_etab_aport eapo on eapo.idsite = s.idsite
+     where s.idsite not in ('S25','S26','S78','S76') ;
+
+COMMENT ON VIEW m_activite_eco.xopendata_geo_eco_site_cnig IS 'Vue de la couche site d''activité du standard CNIG 2023';
+
+
+-- ##################################################### xopendata_geo_eco_terrain_cnig #####################################################################
+
+-- m_activite_eco.xopendata_geo_eco_site_cnig
+drop view if exists m_activite_eco.xopendata_geo_eco_terrain_cnig;
+CREATE OR REPLACE VIEW m_activite_eco.xopendata_geo_eco_terrain_cnig
+as
+
+select 
+    f.insee || '_' || 'TERRAIN-ECO' || '_' || f.idgeolf as terr_id,
+    s.site_id,
+    null::varchar as terr_refcad,
+    case when f.surf is null or f.surf = 0 then round(f.sup_m2::numeric/10000,2) else round(f.surf::numeric/10000,2) end as terr_surf_brute,
+    'oui'::varchar(3) as terr_utile,
+    f.date_sai::varchar(10) as terr_identif_date,
+    l.date_maj::varchar(10) as terr_actu_date,
+    null::varchar as terr_maitrise_fonc,
+    case 
+    	when sa.l_amng2 = '10' then 'viabilisé et aménagé'
+    	when sa.l_amng2 = '20' then 'non aménagé, non viabilisé'
+    	when sa.l_amng2 = '30' then 'non aménagé, non viabilisé'
+    	else ''
+    end::varchar as terr_stade_amngt,
+    case
+    	when sa.l_comm2 = '11' then 'en vente'
+    	when sa.l_comm2 = '12' then 'en vente avec contraintes'
+    	when sa.l_comm2 = '20' then 'vendu, commercialisation achevée'
+    	when sa.l_comm2 = '32' then 'réservé par option de réservation'
+    	when sa.l_comm2 = '99' then 'non commercialisé'
+    	when sa.l_comm2 = '31' then 'réservé par une délibération de l''EPCI'
+    end::varchar as terr_stade_comm,
+    null::varchar as terr_etat_occup,
+    null::varchar as terr_usage,
+    st_asGeojson(f.geom) as terr_geomsurf,
+    null::text as terr_cle_en_main,
+    null::varchar as terr_acquereur,
+    null::varchar(10) as terr_cession_date,
+    null::integer as terr_vente_montant,
+    null::integer as terr_m2_prix
+from
+	r_objet.geo_objet_fon_lot f 
+	join m_activite_eco.an_eco_lot l on f.idgeolf = l.idgeolf
+	join m_amenagement.lk_amt_lot_site a on a.idgeolf = l.idgeolf 
+	join m_activite_eco.geo_eco_site s on s.idsite = a.idsite
+	join m_amenagement.an_amt_lot_stade sa on sa.idgeolf = f.idgeolf ;
+
+
+COMMENT ON VIEW m_activite_eco.xopendata_geo_eco_terrain_cnig IS 'Vue de la couche terrain d''activité du standard CNIG 2023';
