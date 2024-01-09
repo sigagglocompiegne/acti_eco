@@ -159,7 +159,7 @@ Valeurs possibles :
 
 ---
 
-`[r_objet].[lt_objet_maifon]` : Liste de valeurs de la maitrise foncière du site issu du standard des sites d'activités du CNIG 2023
+`[r_objet].[lt_objet_maifon]` : Liste de valeurs de la maitrise foncière du terrain issu du standard des sites d'activités du CNIG 2023
 
 |Nom attribut | Définition | Type  | Valeurs par défaut |
 |:---|:---|:---|:---|    
@@ -191,6 +191,29 @@ Valeurs possibles :
 |15|établissemebt industriel et commercial|
 |16|organisation de gestion foncière et immobilière|
 |17|établissement d'enseignement d'étude et de recherche|
+
+---
+
+`[r_objet].[lt_objet_etatoccup]` : Liste de valeurs des états d'occupation du terrain issu du standard des sites d'activités du CNIG 2023
+
+|Nom attribut | Définition | Type  | Valeurs par défaut |
+|:---|:---|:---|:---|    
+|code|Code de la valeur de l'occupation du terrain|character varying(2)| |
+|valeur|Libellé de la valeur de l'occupation du terrain|character varying(150)| |
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ code 
+
+Valeurs possibles :
+
+|Code|Valeur|
+|:---|:---|
+|00|Non renseignée|
+|10|inoccupé|
+|20|occupé|
+|21|occupation transitoire|
+|30|vacant|
+|40|friche|
 
 ## Classes d'objets de l'activité économique
 
