@@ -6791,6 +6791,7 @@ CREATE TABLE r_objet.geo_objet_fon_lot
     epci character varying(10) COLLATE pg_catalog."default",
     surf integer,
     surf_l character varying(15) COLLATE pg_catalog."default",
+    maifon character varying(2) NOT NULL DEFAULT '00',	
     CONSTRAINT geo_objet_fon_lot_pkey PRIMARY KEY (idgeolf),
     CONSTRAINT geo_objet_fon_lot_scrgeom_fkey FOREIGN KEY (src_geom)
         REFERENCES r_objet.lt_src_geom (code) MATCH SIMPLE
@@ -6854,6 +6855,9 @@ COMMENT ON COLUMN r_objet.geo_objet_fon_lot.surf
 
 COMMENT ON COLUMN r_objet.geo_objet_fon_lot.surf_l
     IS 'Surface littérale occupée du lot en m² (surface saisie par l''utilisateur si différente de la surface SIG)';
+
+COMMENT ON COLUMN r_objet.geo_objet_fon_lot.maifon
+    IS 'Maîtrise foncière du terrain';
 
 -- Index: geo_objet_fon_lot_idgeolf_idx
 -- DROP INDEX r_objet.geo_objet_fon_lot_idgeolf_idx;
