@@ -114,8 +114,9 @@ Y est stocké également la liste des contrats spécifiques aux réseaux permett
 -- DROP TABLE IF EXISTS m_urbanisme_reg.lt_proc_typconso;
 -- DROP TABLE IF EXISTS m_urbanisme_reg.lt_proc_typfon;
 -- DROP TABLE IF EXISTS r_objet.lt_objet_vocafon;
--- DROP TABLE IF EXISTS r_objet.lt_objet_maifon;
--- DROP TABLE IF EXISTS r_objet.lt_objet_occup;
+-- DROP TABLE IF EXISTS m_amnagement.lt_amt_maifon;
+-- DROP TABLE IF EXISTS m_amenagement.lt_amt_etatoccup;
+-- DROP TABLE IF EXISTS m_amenagement.lt_amt_terrusage;
 
 -- tables :
 -----------
@@ -2778,7 +2779,7 @@ CREATE INDEX lt_amt_stadecomm2_code_idx
     (code COLLATE pg_catalog."default" ASC NULLS LAST)
     TABLESPACE pg_default;
 
- INSERT INTO m_activite_eco.lt_amt_stadecomm2(
+ INSERT INTO m_amenagement.lt_amt_stadecomm2(
             code, valeur)
     VALUES
     ('00','Non renseigné'),
@@ -2790,6 +2791,92 @@ CREATE INDEX lt_amt_stadecomm2_code_idx
     ('31','Réservé (par une délibération de l''EPCI)'),
     ('99','Autre'),
     ('ZZ','Non concerné');
+
+-- ################################################################# Domaine valeur - lt_amt_etatoccup  ###############################################
+
+CREATE TABLE m_amenagement.lt_amt_etatoccup
+(
+    code character varying(2) COLLATE pg_catalog."default" NOT NULL,
+    valeur character varying(150) COLLATE pg_catalog."default",
+    CONSTRAINT lt_amt_etatoccup_pkey PRIMARY KEY (code)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+COMMENT ON TABLE m_amenagement.lt_amt_etatoccup
+    IS 'Liste de valeurs des états d''occupation du terrain issu du standard des sites d''activités du CNIG 2023';
+
+COMMENT ON COLUMN m_amenagement.lt_amt_etatoccup.code IS 'Code de la valeur de l''occupation du terrain';
+COMMENT ON COLUMN m_amenagement.lt_amt_etatoccup.valeur IS 'Libellé de la valeur de l''occupation du terrain';
+
+CREATE INDEX lt_amt_etatoccup_idx
+    ON m_amenagement.lt_amt_etatoccup USING btree
+    (code COLLATE pg_catalog."default" ASC NULLS LAST)
+    TABLESPACE pg_default;
+
+INSERT INTO m_amenagement.lt_amt_etatoccup(
+            code, valeur)
+    VALUES
+    ('00','Non renseignée'),
+    ('10','inoccupé'),
+    ('20','occupé'),
+    ('21','occupation transitoire'),
+    ('30','vacant'),
+    ('40','friche'),
+    ('99','Autre'),
+    ('ZZ','Non concerné')
+    ;
+
+-- ################################################################# Domaine valeur - lt_amt_maifon  ###############################################
+
+CREATE TABLE m_amenagement.lt_amt_maifon
+(
+    code character varying(2) COLLATE pg_catalog."default" NOT NULL,
+    valeur character varying(150) COLLATE pg_catalog."default",
+    CONSTRAINT lt_amt_maifon_pkey PRIMARY KEY (code)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+COMMENT ON TABLE m_amenagement.lt_amt_maifon
+    IS 'Liste de valeurs de la maitrise foncière du terrain issu du standard des sites d''activités du CNIG 2023';
+
+COMMENT ON COLUMN m_amenagement.lt_amt_maifon.code IS 'Code de la valeur de la maîtrise foncière';
+COMMENT ON COLUMN m_amenagement.lt_amt_maifon.valeur IS 'Libellé de la valeur de la maîtrise foncière';
+
+CREATE INDEX lt_amt_maifon_idx
+    ON m_amenagement.lt_amt_maifon USING btree
+    (code COLLATE pg_catalog."default" ASC NULLS LAST)
+    TABLESPACE pg_default;
+
+INSERT INTO m_amenagement.lt_amt_maifon(
+            code, valeur)
+    VALUES
+    ('00','Non renseignée'),
+    ('01','personne physique'),
+    ('02','Etat'),
+    ('03','région'),
+    ('04','département'),
+    ('05','EPCI, structure intercommunale'),
+    ('06','commune'),
+    ('07','autre collectivité territoriale'),
+    ('08','organisme de logement social'),
+    ('09','établissement public foncier'),
+    ('10','SEM ou SPLA'),
+    ('11','aménageur'),
+    ('12','investisseur professionnel'),
+    ('13','établissement de santé et structure sociale'),
+    ('14','établissement de tourisme et structure de loisir sportive ou culturelle'),
+    ('15','établissemebt industriel et commercial'),
+    ('16','organisation de gestion foncière et immobilière'),
+    ('17','établissement d'enseignement d'étude et de recherche'),
+    ('99','Autre'),
+    ('ZZ','Non concerné');
+
 
 -- ##########################################################################################################
 -- ################################################# SCHEMA M_URBANISME_REG ##################################
@@ -2993,87 +3080,8 @@ INSERT INTO r_objet.lt_objet_vocafon(
     ('10','Lot équipement public'),
     ('00','Non renseigné');
 
--- ################################################################# Domaine valeur - lt_objet_maifon  ###############################################
 
-CREATE TABLE r_objet.lt_objet_maifon
-(
-    code character varying(2) COLLATE pg_catalog."default" NOT NULL,
-    valeur character varying(150) COLLATE pg_catalog."default",
-    CONSTRAINT lt_objet_maifon_pkey PRIMARY KEY (code)
-)
-WITH (
-    OIDS = FALSE
-)
-TABLESPACE pg_default;
 
-COMMENT ON TABLE r_objet.lt_objet_maifon
-    IS 'Liste de valeurs de la maitrise foncière du terrain issu du standard des sites d''activités du CNIG 2023';
-
-COMMENT ON COLUMN r_objet.lt_objet_maifon.code IS 'Code de la valeur de la maîtrise foncière';
-COMMENT ON COLUMN r_objet.lt_objet_maifon.valeur IS 'Libellé de la valeur de la maîtrise foncière';
-
-CREATE INDEX lt_objet_maifon_idx
-    ON r_objet.lt_objet_maifon USING btree
-    (code COLLATE pg_catalog."default" ASC NULLS LAST)
-    TABLESPACE pg_default;
-
-INSERT INTO r_objet.lt_objet_maifon(
-            code, valeur)
-    VALUES
-    ('00','Non renseignée'),
-    ('01','personne physique'),
-    ('02','Etat'),
-    ('03','région'),
-    ('04','département'),
-    ('05','EPCI, structure intercommunale'),
-    ('06','commune'),
-    ('07','autre collectivité territoriale'),
-    ('08','organisme de logement social'),
-    ('09','établissement public foncier'),
-    ('10','SEM ou SPLA'),
-    ('11','aménageur'),
-    ('12','investisseur professionnel'),
-    ('13','établissement de santé et structure sociale'),
-    ('14','établissement de tourisme et structure de loisir sportive ou culturelle'),
-    ('15','établissemebt industriel et commercial'),
-    ('16','organisation de gestion foncière et immobilière'),
-    ('17','établissement d'enseignement d'étude et de recherche'),	
-    ;
-
--- ################################################################# Domaine valeur - lt_objet_etatoccup  ###############################################
-
-CREATE TABLE r_objet.lt_objet_etatoccup
-(
-    code character varying(2) COLLATE pg_catalog."default" NOT NULL,
-    valeur character varying(150) COLLATE pg_catalog."default",
-    CONSTRAINT lt_objet_etatoccup_pkey PRIMARY KEY (code)
-)
-WITH (
-    OIDS = FALSE
-)
-TABLESPACE pg_default;
-
-COMMENT ON TABLE r_objet.lt_objet_etatoccup
-    IS 'Liste de valeurs des états d''occupation du terrain issu du standard des sites d''activités du CNIG 2023';
-
-COMMENT ON COLUMN r_objet.lt_objet_etatoccup.code IS 'Code de la valeur de l''occupation du terrain';
-COMMENT ON COLUMN r_objet.lt_objet_etatoccup.valeur IS 'Libellé de la valeur de l''occupation du terrain';
-
-CREATE INDEX lt_objet_etatoccup_idx
-    ON r_objet.lt_objet_etatoccup USING btree
-    (code COLLATE pg_catalog."default" ASC NULLS LAST)
-    TABLESPACE pg_default;
-
-INSERT INTO r_objet.lt_objet_etatoccup(
-            code, valeur)
-    VALUES
-    ('00','Non renseignée'),
-    ('10','inoccupé'),
-    ('20','occupé'),
-    ('21','occupation transitoire'),
-    ('30','vacant'),
-    ('40','friche')
-    ;
 
 -- ####################################################################################################################################################
 -- ###                                                                                                                                              ###
@@ -6359,23 +6367,37 @@ CREATE TABLE m_amenagement.an_amt_lot_stade
     l_comm2_12 character varying(80) COLLATE pg_catalog."default",
     etat_occup character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
     op_maj character varying(80) COLLATE pg_catalog."default",
+    maifon character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
+    usage character varying(2) COLLATE pg_catalog."default" DEFAULT '00'::character varying,
     CONSTRAINT an_amt_lot_stade_pkey PRIMARY KEY (idgeolf),
-    CONSTRAINT an_sa_lot_l_amng2_fkey FOREIGN KEY (l_amng2)
-        REFERENCES m_amenagement.old_lt_sa_stadeamng2 (code) MATCH SIMPLE
+    CONSTRAINT an_amt_lot_l_amng2_fkey FOREIGN KEY (l_amng2)
+        REFERENCES m_amenagement.lt_amt_stadeamng2 (code) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION,
-    CONSTRAINT an_sa_lot_l_comm2_fkey FOREIGN KEY (l_comm2)
-        REFERENCES m_amenagement.old_lt_sa_stadecomm2 (code) MATCH SIMPLE
+    CONSTRAINT an_amt_lot_l_comm2_fkey FOREIGN KEY (l_comm2)
+        REFERENCES m_amenagement.lt_amt_stadecomm2 (code) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION,
-    CONSTRAINT an_sa_lot_stade_comm_fkey FOREIGN KEY (stade_comm)
-        REFERENCES m_amenagement.old_lt_sa_stadecomm (code) MATCH SIMPLE
+    CONSTRAINT an_amt_lot_stade_comm_fkey FOREIGN KEY (stade_comm)
+        REFERENCES m_amenagement.lt_amt_stadecomm (code) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION,
-    CONSTRAINT an_sa_lot_stadeamng_fkey FOREIGN KEY (stade_amng)
-        REFERENCES m_amenagement.old_lt_sa_stadeamng (code) MATCH SIMPLE
+    CONSTRAINT an_amt_lot_stadeamng_fkey FOREIGN KEY (stade_amng)
+        REFERENCES m_amenagement.lt_amt_stadeamng (code) MATCH SIMPLE
         ON UPDATE NO ACTION
-        ON DELETE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT an_amt_lot_maifon_fkey FOREIGN KEY (maifon)
+        REFERENCES m_amenagement.lt_amt_maifon (code) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT an_amt_lot_etatoccup_fkey FOREIGN KEY (etat_occup)
+        REFERENCES m_amenagement.lt_amt_etatoccup (code) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT an_amt_lot_usage_fkey FOREIGN KEY (usage)
+        REFERENCES m_amenagement.lt_amt_terrusage (code) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION	
 )
 WITH (
     OIDS = FALSE
@@ -6406,12 +6428,14 @@ COMMENT ON COLUMN m_amenagement.an_amt_lot_stade.l_comm2
 COMMENT ON COLUMN m_amenagement.an_amt_lot_stade.l_comm2_12
     IS 'Spécification de la contrainte du lot en vente (code 12 du champ l_comm2)';
 
-COMMENT ON COLUMN m_amenagement.an_amt_lot_stade.etat_occup
-    IS 'Code de l''état d''occupation du foncier
-Attribut plus utilisé';
-
 COMMENT ON COLUMN m_amenagement.an_amt_lot_stade.op_maj
     IS 'Opérateur de mise à jour';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_stade.maifon
+    IS 'Maîtrise foncière du terrain';
+
+COMMENT ON COLUMN m_amenagement.an_amt_lot_stade.etatoccup
+    IS 'Etat d''occupation du terrain';
 
 -- Trigger: t_t100_log
 -- DROP TRIGGER t_t100_log ON m_amenagement.an_amt_lot_stade;
@@ -6895,19 +6919,9 @@ CREATE TABLE r_objet.geo_objet_fon_lot
     epci character varying(10) COLLATE pg_catalog."default",
     surf integer,
     surf_l character varying(15) COLLATE pg_catalog."default",
-    maifon character varying(2) NOT NULL DEFAULT '00',	
-    etatoccup character varying(2) NOT NULL DEFAULT '00',	
     CONSTRAINT geo_objet_fon_lot_pkey PRIMARY KEY (idgeolf),
     CONSTRAINT geo_objet_fon_lot_scrgeom_fkey FOREIGN KEY (src_geom)
         REFERENCES r_objet.lt_src_geom (code) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION,
-    CONSTRAINT lt_objet_maifon_fkey FOREIGN KEY (maifon)
-        REFERENCES r_objet.lt_objet_maifon (code) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION,
-    CONSTRAINT lt_objet_etatoccup_fkey FOREIGN KEY (etatoccup)
-        REFERENCES r_objet.lt_objet_etatoccup (code) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION,
     CONSTRAINT lt_objet_vocafon_fkey FOREIGN KEY (l_voca)
@@ -6969,11 +6983,6 @@ COMMENT ON COLUMN r_objet.geo_objet_fon_lot.surf
 COMMENT ON COLUMN r_objet.geo_objet_fon_lot.surf_l
     IS 'Surface littérale occupée du lot en m² (surface saisie par l''utilisateur si différente de la surface SIG)';
 
-COMMENT ON COLUMN r_objet.geo_objet_fon_lot.maifon
-    IS 'Maîtrise foncière du terrain';
-
-COMMENT ON COLUMN r_objet.geo_objet_fon_lot.etatoccup
-    IS 'Etat d''occupation du terrain';
 
 -- Index: geo_objet_fon_lot_idgeolf_idx
 -- DROP INDEX r_objet.geo_objet_fon_lot_idgeolf_idx;
