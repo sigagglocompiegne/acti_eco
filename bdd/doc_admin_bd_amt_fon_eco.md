@@ -157,67 +157,7 @@ Valeurs possibles :
 |50|Lot espace public|
 |60|Lot Mixte|
 
----
 
-`[r_objet].[lt_objet_maifon]` : Liste de valeurs de la maitrise foncière du terrain issu du standard des sites d'activités du CNIG 2023
-
-|Nom attribut | Définition | Type  | Valeurs par défaut |
-|:---|:---|:---|:---|    
-|code|Code de la valeur de la maîtrise foncière|character varying(2)| |
-|valeur|Code de la valeur de la maîtrise foncière|character varying(150)| |
-
-Particularité(s) à noter :
-* Une clé primaire existe sur le champ code 
-
-Valeurs possibles :
-
-|Code|Valeur|
-|:---|:---|
-|00|Non renseignée|
-|01|personne physique|
-|02|Etat|
-|03|région|
-|04|département|
-|05|EPCI, structure intercommunale|
-|06|commune|
-|07|autre collectivité territoriale|
-|08|organisme de logement social|
-|09|établissement public foncier|
-|10|SEM ou SPLA|
-|11|aménageur|
-|12|investisseur professionnel|
-|13|établissement de santé et structure sociale|
-|14|établissement de tourisme et structure de loisir sportive ou culturelle|
-|15|établissemebt industriel et commercial|
-|16|organisation de gestion foncière et immobilière|
-|17|établissement d'enseignement d'étude et de recherche|
-|99|Autre|
-|ZZ|Non concerné|
-
----
-
-`[r_objet].[lt_objet_etatoccup]` : Liste de valeurs des états d'occupation du terrain issu du standard des sites d'activités du CNIG 2023
-
-|Nom attribut | Définition | Type  | Valeurs par défaut |
-|:---|:---|:---|:---|    
-|code|Code de la valeur de l'occupation du terrain|character varying(2)| |
-|valeur|Libellé de la valeur de l'occupation du terrain|character varying(150)| |
-
-Particularité(s) à noter :
-* Une clé primaire existe sur le champ code 
-
-Valeurs possibles :
-
-|Code|Valeur|
-|:---|:---|
-|00|Non renseignée|
-|10|inoccupé|
-|20|occupé|
-|21|occupation transitoire|
-|30|vacant|
-|40|friche|
-|99|Autre|
-|ZZ|Non concerné|
 
 ## Classes d'objets de l'activité économique
 
@@ -1643,6 +1583,7 @@ Valeurs possibles :
 |30|Indisponible (terrain non aménagé)|
 |99|Autre|
 |ZZ|Non concerné|
+
 ---
 
 `[m_amenagement].[lt_amt_stadecomm]` : Liste des valeurs permettant de décrire la valeur du stade de commercialisation
@@ -1664,6 +1605,7 @@ Valeurs possibles :
 |20|Commercialisable|
 |99|Autre|
 |ZZ|Non concerné|
+
 ---
 
 `[m_amenagement].[lt_amt_stadecomm2]` : Liste des valeurs permettant de décrire la valeur du stade de commercialisation spécifique ARC
@@ -1688,6 +1630,102 @@ Valeurs possibles :
 |32|Réservé (option)|
 |99|Non commercialisé par un acteur public|
 |ZZ|Non concerné|
+
+---
+
+`[m_amenagement].[lt_amt_maifon]` : Liste de valeurs de la maitrise foncière du terrain issu du standard des sites d'activités du CNIG 2023
+
+|Nom attribut | Définition | Type  | Valeurs par défaut |
+|:---|:---|:---|:---|    
+|code|Code de la valeur de la maîtrise foncière|character varying(2)| |
+|valeur|Code de la valeur de la maîtrise foncière|character varying(150)| |
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ code 
+
+Valeurs possibles :
+
+|Code|Valeur|
+|:---|:---|
+|00|Non renseignée|
+|01|personne physique|
+|02|Etat|
+|03|région|
+|04|département|
+|05|EPCI, structure intercommunale|
+|06|commune|
+|07|autre collectivité territoriale|
+|08|organisme de logement social|
+|09|établissement public foncier|
+|10|SEM ou SPLA|
+|11|aménageur|
+|12|investisseur professionnel|
+|13|établissement de santé et structure sociale|
+|14|établissement de tourisme et structure de loisir sportive ou culturelle|
+|15|établissemebt industriel et commercial|
+|16|organisation de gestion foncière et immobilière|
+|17|établissement d'enseignement d'étude et de recherche|
+|99|Autre|
+|ZZ|Non concerné|
+
+---
+
+`[m_amenagement].[lt_amt_etatoccup]` : Liste de valeurs des états d'occupation du terrain issu du standard des sites d'activités du CNIG 2023
+
+|Nom attribut | Définition | Type  | Valeurs par défaut |
+|:---|:---|:---|:---|    
+|code|Code de la valeur de l'occupation du terrain|character varying(2)| |
+|valeur|Libellé de la valeur de l'occupation du terrain|character varying(150)| |
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ code 
+
+Valeurs possibles :
+
+|Code|Valeur|
+|:---|:---|
+|00|Non renseignée|
+|10|inoccupé|
+|20|occupé|
+|21|occupation transitoire|
+|30|vacant|
+|40|friche|
+|99|Autre|
+|ZZ|Non concerné|
+
+---
+
+`[m_amenagement].[lt_amt_terrusage]` : Liste de valeurs des usages des terrains économiques du standard CNIG 2023
+
+|Nom attribut | Définition | Type  | Valeurs par défaut |
+|:---|:---|:---|:---|    
+|code|Code des usages des terrains économiques du standard CNIG 2023|character varying(2)| |
+|valeur|Libellé des usages des terrains économiques du standard CNIG 2023|character varying(150)| |
+
+Particularité(s) à noter :
+* Une clé primaire existe sur le champ code 
+
+Valeurs possibles :
+
+|Code|Valeur|
+|:---|:---|
+|00|Non renseigné|
+|99|Autre|
+|ZZ|Non concerné|
+|10|voirie ou infrastructure|
+|11|parkings, stationnement|
+|12|zone de retournement poids-lourds|
+|20|autres équipements publics|
+|30|bâti productif|
+|31|bâti résidentiel|
+|40|bassin d'orage ou de rétention|
+|41|espace vert|
+|42|espace naturel ou forestier|
+|50|espace agricole|
+|60|zone de service partagée entre entreprises|
+|70|carrières, zones d'extraction|
+|71|dépôt, stockage|
+|80|production d'énergie renouvelable|
 
 ### Classes d'objets attributaire gérant les associations (ou relation d'appartenance des objets entre eux)
 
