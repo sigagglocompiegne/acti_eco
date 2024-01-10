@@ -437,8 +437,9 @@ AS WITH req_a AS (
             r_objet.geo_objet_fon_lot,
             m_amenagement.an_amt_lot_stade,
             m_amenagement.lk_amt_lot_site
-          WHERE geo_eco_site.idsite::text = lk_amt_lot_site.idsite::text AND lk_amt_lot_site.idgeolf = geo_objet_fon_lot.idgeolf 
-          AND geo_objet_fon_lot.l_voca::text = '20'::text 
+          WHERE geo_eco_site.idsite::text = lk_amt_lot_site.idsite::text 
+          AND lk_amt_lot_site.idgeolf = geo_objet_fon_lot.idgeolf 
+          AND geo_objet_fon_lot.l_voca IN ('20','60')
           AND an_amt_lot_stade.idgeolf = geo_objet_fon_lot.idgeolf
           GROUP BY geo_eco_site.idsite
         ), req_k1 AS (
@@ -486,7 +487,10 @@ AS WITH req_a AS (
             r_objet.geo_objet_fon_lot,
             m_amenagement.an_amt_lot_stade,
             m_amenagement.lk_amt_lot_site
-          WHERE geo_eco_site.idsite::text = lk_amt_lot_site.idsite::text AND lk_amt_lot_site.idgeolf = geo_objet_fon_lot.idgeolf AND geo_objet_fon_lot.idgeolf = an_amt_lot_equip.idgeolf AND geo_objet_fon_lot.l_voca::text = '10'::text AND an_amt_lot_stade.idgeolf = geo_objet_fon_lot.idgeolf
+          WHERE geo_eco_site.idsite::text = lk_amt_lot_site.idsite::text 
+          AND lk_amt_lot_site.idgeolf = geo_objet_fon_lot.idgeolf 
+          AND geo_objet_fon_lot.idgeolf = an_amt_lot_equip.idgeolf 
+          AND geo_objet_fon_lot.l_voca::text = '10'::text AND an_amt_lot_stade.idgeolf = geo_objet_fon_lot.idgeolf
           GROUP BY geo_eco_site.idsite
         ), req_k3 AS (
          SELECT geo_eco_site.idsite,
@@ -691,6 +695,7 @@ AS WITH req_a AS (
      LEFT JOIN req_p p ON a.idsite::text = p.idsite::text;
 
 COMMENT ON VIEW m_activite_eco.xapps_an_v_synt_site_act_api IS 'Vue présentant les données de synthèses à l''échelle du site d''activité  (données sur l''environnement économique et statistiques foncières présentes sur le fiche d''information du site dans l''application métier GEO). Cette vue est rafraichie toutes les nuits par une tache CRON sur le serveur sig-sgbd.';
+
 
 
 -- ########################################################### SCHEMA m_activite_eco ################################################################
