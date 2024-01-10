@@ -1482,16 +1482,19 @@ COMMENT ON FUNCTION m_activite_eco.ft_m_site_surf_epci()
 
 -- ################################################################# ft_m_foncier_modif_geopic  ###############################################
 
+-- DROP FUNCTION m_amenagement.ft_m_foncier_modif_geopic();
+
 CREATE OR REPLACE FUNCTION m_amenagement.ft_m_foncier_modif_geopic()
-    RETURNS trigger
-    LANGUAGE 'plpgsql'
-    COST 100
-    VOLATILE NOT LEAKPROOF
-AS $BODY$
+ RETURNS trigger
+ LANGUAGE plpgsql
+AS $function$
 
 BEGIN
 
     -- mise à jour des champs stade_amng et stade_comm en fonction des champs l_comm2, l_amng2 saisies 
+	if new.l_amng2 = '00' then
+       UPDATE m_amenagement.an_amt_lot_stade SET  stade_amng = '00' WHERE idgeolf=new.idgeolf;
+    end if;
     if new.l_amng2 = '10' then
        UPDATE m_amenagement.an_amt_lot_stade SET  stade_amng = '40' WHERE idgeolf=new.idgeolf;
     end if;
@@ -1501,18 +1504,27 @@ BEGIN
     if new.l_amng2 = '30' then
        UPDATE m_amenagement.an_amt_lot_stade SET  stade_amng = '30' WHERE idgeolf=new.idgeolf;
     end if;
+   	if new.l_amng2 = '99' then
+       UPDATE m_amenagement.an_amt_lot_stade SET  stade_amng = '99' WHERE idgeolf=new.idgeolf;
+    end if;
+   	if new.l_amng2 = 'ZZ' then
+       UPDATE m_amenagement.an_amt_lot_stade SET  stade_amng = 'ZZ' WHERE idgeolf=new.idgeolf;
+    end if;
 
+     if new.l_comm2 = '00' then
+       UPDATE m_amenagement.an_amt_lot_stade SET  stade_comm = '00' WHERE idgeolf=new.idgeolf;
+    end if;
     if new.l_comm2 = '11' or new.l_comm2 = '12' then
        UPDATE m_amenagement.an_amt_lot_stade SET  stade_comm = '20' WHERE idgeolf=new.idgeolf;
     end if;
     if new.l_comm2 = '20' or (new.l_comm2 = '31' or new.l_comm2 = '32') then
        UPDATE m_amenagement.an_amt_lot_stade SET  stade_comm = '10' WHERE idgeolf=new.idgeolf;
     end if;
-    if new.l_comm2 = '00' then
-       UPDATE m_amenagement.an_amt_lot_stade SET  stade_comm = '00' WHERE idgeolf=new.idgeolf;
+    if new.l_comm2 = '99' then
+       UPDATE m_amenagement.an_amt_lot_stade SET  stade_comm = '99' WHERE idgeolf=new.idgeolf;
     end if;
-    if new.l_amng2 = '00' then
-       UPDATE m_amenagement.an_amt_lot_stade SET  stade_amng = '00' WHERE idgeolf=new.idgeolf;
+    if new.l_comm2 = 'ZZ' then
+       UPDATE m_amenagement.an_amt_lot_stade SET  stade_comm = 'ZZ' WHERE idgeolf=new.idgeolf;
     end if;
 
 
@@ -1520,10 +1532,11 @@ BEGIN
 
 END;
 
-$BODY$;
+$function$
+;
 
-COMMENT ON FUNCTION m_amenagement.ft_m_foncier_modif_geopic()
-    IS 'Fonction gérant l''automatisation des attributs stade d''aménagement et de commercialisation en fonction des disponibilités et du stade de commercilaisation spécifique à l''ARC';
+COMMENT ON FUNCTION m_amenagement.ft_m_foncier_modif_geopic() IS 'Fonction gérant l''automatisation des attributs stade d''aménagement et de commercialisation en fonction des disponibilités et du stade de commercilaisation spécifique à l''ARC';
+
 
 -- ################################################################# ft_m_lot_insert  ###############################################
 
