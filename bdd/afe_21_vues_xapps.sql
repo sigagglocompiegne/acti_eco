@@ -2186,259 +2186,290 @@ COMMENT ON MATERIALIZED VIEW m_urbanisme_reg.xapps_geo_vmr_proc_zac
 
 -- ##################################################### xopendata_geo_eco_site_cnig #####################################################################
 
--- m_activite_eco.xopendata_geo_eco_site_cnig
-drop view if exists m_activite_eco.xopendata_geo_eco_site_cnig;
+-- m_activite_eco.xopendata_geo_eco_site_cnig source
+
 CREATE OR REPLACE VIEW m_activite_eco.xopendata_geo_eco_site_cnig
-AS
-with req_etab_indus as
-(
-select distinct
-    s.idsite,
-    'oui' as voca_indus
-from m_activite_eco.geo_eco_site s
-	left join m_activite_eco.lk_eco_etab_site lk on lk.idsite = s.idsite
-	left join m_activite_eco.an_eco_etab e on e.idsiret = lk.siret
-where left(e.apet700,2) in ('05','06','07','08','09') or left(e.apet700,1) in ('1','2','3') and e.l_compte is true
-), req_etab_comm as
-(
-select distinct
-    s.idsite,
-    'oui' as voca_comm
-from m_activite_eco.geo_eco_site s
-	left join m_activite_eco.lk_eco_etab_site lk on lk.idsite = s.idsite
-	left join m_activite_eco.an_eco_etab e on e.idsiret = lk.siret
-where left(e.apet700,2) in ('45','46','47') and e.l_compte is true
-), req_etab_arti as
-(
-select distinct
-    s.idsite,
-    'oui' as voca_arti
-from m_activite_eco.geo_eco_site s
-	left join m_activite_eco.lk_eco_etab_site lk on lk.idsite = s.idsite
-	left join m_activite_eco.an_eco_etab e on e.idsiret = lk.siret
-where left(e.apet700,2) in ('41','42','43') and e.l_compte is true
-), req_etab_touri as
-(
-select distinct
-    s.idsite,
-    'oui' as voca_touri
-from m_activite_eco.geo_eco_site s
-	left join m_activite_eco.lk_eco_etab_site lk on lk.idsite = s.idsite
-	left join m_activite_eco.an_eco_etab e on e.idsiret = lk.siret
-where left(e.apet700,2) in ('55','79','90','91') and e.l_compte is true
-), req_etab_tert as
-(
-select distinct
-    s.idsite,
-    'oui' as voca_tert
-from m_activite_eco.geo_eco_site s
-	left join m_activite_eco.lk_eco_etab_site lk on lk.idsite = s.idsite
-	left join m_activite_eco.an_eco_etab e on e.idsiret = lk.siret
-where left(e.apet700,2) in ('49','52','53','56','58','59','70','71','72','73','74','75','76','77','78','91','92','93','94','95','96','97','98','99')
-	  or left(e.apet700,1) in ('6','8') and e.l_compte is true
-), req_etab_port as
-(
-select distinct
-    s.idsite,
-    'oui' as voca_port
-from m_activite_eco.geo_eco_site s
-	left join m_activite_eco.lk_eco_etab_site lk on lk.idsite = s.idsite
-	left join m_activite_eco.an_eco_etab e on e.idsiret = lk.siret
-where left(e.apet700,2) in ('50') and e.l_compte is true
-), req_etab_aport as
-(
-select distinct
-    s.idsite,
-    'oui' as voca_aport
-from m_activite_eco.geo_eco_site s
-	left join m_activite_eco.lk_eco_etab_site lk on lk.idsite = s.idsite
-	left join m_activite_eco.an_eco_etab e on e.idsiret = lk.siret
-where left(e.apet700,2) in ('51') and e.l_compte is true
-)
-SELECT distinct
-  s.site_id::text as site_id,
-  null::text as pole_id,
-  s.site_nom::varchar as site_nom,
-  case 
-  	when s.typsite = '10' then 'zone d''activité économique'
-  	when s.typsite = '20' then 'site économique historique hors ZAE'
-  	when s.typsite = '21' then 'établissement économique isolé'
-  end::varchar as site_type,
-  case 
-  	when s.site_voca = '10' then 'industrielle'
-  	when s.site_voca = '20' then 'artisanale'
-  	when s.site_voca = '30' then 'commerciale'
-  	when s.site_voca = '40' then 'mixte'
-  	else 'artisanale'
-  end::varchar as site_vocadomi,
-  case 
-  	when s.site_etat = '10' then 'existant et actif'
-  	when s.site_etat = '20' or s.site_etat = '21' then 'en projet'
-  	when s.site_etat = '30' then 'création'
-  	when s.site_etat = '40' then 'déclassé'
-  	when s.site_etat = '50' then 'projet de déclassement'
-  	when s.site_etat = '60' then 'annulé'
-  end::varchar as site_etat,
-  ss."Surface du site"::double precision as site_surf_brute,
-  round(ss.surf_utile/10000::numeric,2) as site_surf_utile,
-  s.date_crea::text as site_creation_date,
-  to_char(s.date_sai,'YYYY-MM-DD')::varchar(10) as site_identif_date,
-  to_char(s.date_maj,'YYYY-MM-DD')::varchar(10) as site_actu_date,
-  null::varchar as site_description,
-  case 
-  	when s.epci = 'arc' then 'Agglomération de la Région de Compiègne et de la Basse Automne'
-  	when s.epci = 'ccpe' then 'Communauté de communes de la Plaine d''Estées'
-  	when s.epci = 'cclo' then 'Communauté de communes des Lisières de l''Oise'
-  	when s.epci = 'cc2v' then 'Communauté de communes des Deux Vallées'
-  	else ''
-  end::varchar as source_producteur,
-  null::varchar as site_quali_territoire,
-  case when tc.valeur <> 'Non renseigné' then lower(tc.valeur) else '' end::varchar as site_evol_urba,
-  s.l_url::text as site_url,
-  case when s.typsite = '10' then s.z_mai_ouvr else '' end::varchar as site_epci_nom,
-  case when s.typsite = '10' then 
-  	case when s.epci = 'arc' then '200067965'
-  		 when s.epci = 'ccpe' then '246000897'
-  		 when s.epci = 'cclo' then '246000749'
-  	 	 when s.epci = 'cc2v' then '246000772'
-  else '' end end::varchar(9) as site_epci_siren,
-  c.commune::varchar as site_comm_nom,
-  left(s.site_id,5)::varchar(5) as site_comm_insee,
-  mt.valeur::varchar as site_moa_type,
-  s.z_mai_ouvr::varchar as site_moa_nom,
-  s.z_amng::varchar as site_moa_amngt,
-  s.z_comm::varchar as site_moa_comm,
-  null::integer as site_uf_nbre,
-  null::integer as site_uf_vacant_nbre,
-  null::integer as site_taux_vacance,
-  null::integer as site_uf_bati_nbre,
-  ss.nb_etab::integer as site_nb_etab,
-  ss.eff_etab::integer as site_nb_emploi,
-  st_asGeojson(s.geom) as site_geomsurf,
-  st_asGeojson(st_pointonsurface(s.geom)) as site_geompoint,
-  null::varchar as site_media,
-  round(ss.surf_vente/10000::numeric,2)::double precision as site_surf_comm_dispo,
-  round(ss.surf_projet/10000::numeric,2)::double precision as site_surf_projet,
-  case when ei.voca_indus = 'oui' then 'oui' else 'non' end::varchar(3) as site_voca_industrielle,
-  case when ec.voca_comm = 'oui' then 'oui' else 'non' end::varchar(3) as site_voca_commerciale,
-  case when eter.voca_tert = 'oui' then 'oui' else 'non' end::varchar(3) as site_voca_tertiaire,
-  case when ea.voca_arti = 'oui' then 'oui' else 'non' end::varchar(3) as site_voca_artisanale,
-  case when eto.voca_touri = 'oui' then 'oui' else 'non' end::varchar(3) as site_voca_touristique,
-  case when epo.voca_port = 'oui' then 'oui' else 'non' end::varchar(3) as site_voca_portuaire,
-  case when eapo.voca_aport = 'oui' then 'oui' else 'non' end::varchar(3) as site_voca_aeroportuaire,
-  case when s.res_pluvia is true then 'oui' else 'non' end::varchar(3) as reseau_eau_pluviale,
-  case when s.res_eau is true then 'oui' else 'non' end::varchar(3) as reseau_eau_potable,
-  case when s.res_ass is true then 'oui' else 'non' end::varchar(3) as reseau_assainissement,
-  case when s.res_gaz is true then 'oui' else 'non' end::varchar(3) as reseau_gaz,
-  case when s.res_elect is true then 'oui' else 'non' end::varchar(3) as reseau_electrique,
-  case when s.res_fibre is true then 'oui' else 'non' end::varchar(3) as reseau_fibre_optique,
-  null::varchar(3) as reseau_fret_ferroviaire,
-  case when s.z_pmm is true then 'oui' else 'non' end::varchar(3) as reseau_fluvial,
-  case when s.serv_tc is true then 'oui' else 'non' end::varchar(3) as desserte_tc,
-  null::varchar as desserte_route_nom,
-  s.z_auto::varchar as autoroute_nom,
-  s.z_dst_auto::integer as autoroute_echang_dist,
-  s.z_fr_v::varchar as gare_nom,
-  s.z_dst_fr_v::integer as gare_dist,
-  s.z_fr_f::varchar as gare_fret_nom,
-  s.z_dst_fr_f::integer as gare_fret_dist,
-  s.z_ar_v::varchar as aeroport_nom,
-  s.z_dst_ar_v::integer as aeroport_dist,
-  s.z_pmm_n::varchar as port_nom,
-  s.z_dst_pmm::integer as port_dist,
-  s.geom
-   FROM m_activite_eco.geo_eco_site s 
-	   left join m_activite_eco.xapps_an_v_synt_site_act_api ss on ss."Identifiant du site"  = s.idsite
-	   left join m_activite_eco.lk_eco_proc lkp on lkp.idsite = s.idsite
-	   left join m_urbanisme_reg.geo_proced p on p.idproc = lkp.idproc 
-	   left join m_urbanisme_reg.lt_proc_typconso tc on tc.code = p.conso_type
-	   left join r_osm.geo_vm_osm_commune_grdc c on c.insee = left(s.site_id,5)
-	   left join m_activite_eco.lt_eco_moatype mt on mt.code = s.moa_type
-	   left join req_etab_indus ei on ei.idsite = s.idsite
-	   left join req_etab_comm ec on ec.idsite = s.idsite
-	   left join req_etab_arti ea on ea.idsite = s.idsite
-	   left join req_etab_touri eto on eto.idsite = s.idsite
-	   left join req_etab_tert eter on eter.idsite = s.idsite
-	   left join req_etab_port epo on epo.idsite = s.idsite
-	   left join req_etab_aport eapo on eapo.idsite = s.idsite
-     where s.idsite not in ('S25','S26','S78','S76') ;
+AS WITH req_etab_indus AS (
+         SELECT DISTINCT s_1.idsite,
+            'oui'::text AS voca_indus
+           FROM m_activite_eco.geo_eco_site s_1
+             LEFT JOIN m_activite_eco.lk_eco_etab_site lk ON lk.idsite::text = s_1.idsite::text
+             LEFT JOIN m_activite_eco.an_eco_etab e ON e.idsiret::text = lk.siret::text
+          WHERE ("left"(e.apet700::text, 2) = ANY (ARRAY['05'::text, '06'::text, '07'::text, '08'::text, '09'::text])) OR ("left"(e.apet700::text, 1) = ANY (ARRAY['1'::text, '2'::text, '3'::text])) AND e.l_compte IS TRUE
+        ), req_etab_comm AS (
+         SELECT DISTINCT s_1.idsite,
+            'oui'::text AS voca_comm
+           FROM m_activite_eco.geo_eco_site s_1
+             LEFT JOIN m_activite_eco.lk_eco_etab_site lk ON lk.idsite::text = s_1.idsite::text
+             LEFT JOIN m_activite_eco.an_eco_etab e ON e.idsiret::text = lk.siret::text
+          WHERE ("left"(e.apet700::text, 2) = ANY (ARRAY['45'::text, '46'::text, '47'::text])) AND e.l_compte IS TRUE
+        ), req_etab_arti AS (
+         SELECT DISTINCT s_1.idsite,
+            'oui'::text AS voca_arti
+           FROM m_activite_eco.geo_eco_site s_1
+             LEFT JOIN m_activite_eco.lk_eco_etab_site lk ON lk.idsite::text = s_1.idsite::text
+             LEFT JOIN m_activite_eco.an_eco_etab e ON e.idsiret::text = lk.siret::text
+          WHERE ("left"(e.apet700::text, 2) = ANY (ARRAY['41'::text, '42'::text, '43'::text])) AND e.l_compte IS TRUE
+        ), req_etab_touri AS (
+         SELECT DISTINCT s_1.idsite,
+            'oui'::text AS voca_touri
+           FROM m_activite_eco.geo_eco_site s_1
+             LEFT JOIN m_activite_eco.lk_eco_etab_site lk ON lk.idsite::text = s_1.idsite::text
+             LEFT JOIN m_activite_eco.an_eco_etab e ON e.idsiret::text = lk.siret::text
+          WHERE ("left"(e.apet700::text, 2) = ANY (ARRAY['55'::text, '79'::text, '90'::text, '91'::text])) AND e.l_compte IS TRUE
+        ), req_etab_tert AS (
+         SELECT DISTINCT s_1.idsite,
+            'oui'::text AS voca_tert
+           FROM m_activite_eco.geo_eco_site s_1
+             LEFT JOIN m_activite_eco.lk_eco_etab_site lk ON lk.idsite::text = s_1.idsite::text
+             LEFT JOIN m_activite_eco.an_eco_etab e ON e.idsiret::text = lk.siret::text
+          WHERE ("left"(e.apet700::text, 2) = ANY (ARRAY['49'::text, '52'::text, '53'::text, '56'::text, '58'::text, '59'::text, '70'::text, '71'::text, '72'::text, '73'::text, '74'::text, '75'::text, '76'::text, '77'::text, '78'::text, '91'::text, '92'::text, '93'::text, '94'::text, '95'::text, '96'::text, '97'::text, '98'::text, '99'::text])) OR ("left"(e.apet700::text, 1) = ANY (ARRAY['6'::text, '8'::text])) AND e.l_compte IS TRUE
+        ), req_etab_port AS (
+         SELECT DISTINCT s_1.idsite,
+            'oui'::text AS voca_port
+           FROM m_activite_eco.geo_eco_site s_1
+             LEFT JOIN m_activite_eco.lk_eco_etab_site lk ON lk.idsite::text = s_1.idsite::text
+             LEFT JOIN m_activite_eco.an_eco_etab e ON e.idsiret::text = lk.siret::text
+          WHERE "left"(e.apet700::text, 2) = '50'::text AND e.l_compte IS TRUE
+        ), req_etab_aport AS (
+         SELECT DISTINCT s_1.idsite,
+            'oui'::text AS voca_aport
+           FROM m_activite_eco.geo_eco_site s_1
+             LEFT JOIN m_activite_eco.lk_eco_etab_site lk ON lk.idsite::text = s_1.idsite::text
+             LEFT JOIN m_activite_eco.an_eco_etab e ON e.idsiret::text = lk.siret::text
+          WHERE "left"(e.apet700::text, 2) = '51'::text AND e.l_compte IS TRUE
+        )
+ SELECT DISTINCT s.site_id::text AS site_id,
+    NULL::text AS pole_id,
+    s.site_nom,
+        CASE
+            WHEN s.typsite::text = '10'::text THEN 'zone d''activité économique'::text
+            WHEN s.typsite::text = '20'::text THEN 'site économique historique hors ZAE'::text
+            WHEN s.typsite::text = '21'::text THEN 'établissement économique isolé'::text
+            ELSE NULL::text
+        END::character varying AS site_type,
+        CASE
+            WHEN s.site_voca::text = '10'::text THEN 'industrielle'::text
+            WHEN s.site_voca::text = '20'::text THEN 'artisanale'::text
+            WHEN s.site_voca::text = '30'::text THEN 'commerciale'::text
+            WHEN s.site_voca::text = '40'::text THEN 'mixte'::text
+            ELSE 'artisanale'::text
+        END::character varying AS site_vocadomi,
+        CASE
+            WHEN s.site_etat::text = '10'::text THEN 'existant et actif'::text
+            WHEN s.site_etat::text = '20'::text OR s.site_etat::text = '21'::text THEN 'en projet'::text
+            WHEN s.site_etat::text = '30'::text THEN 'création'::text
+            WHEN s.site_etat::text = '40'::text THEN 'déclassé'::text
+            WHEN s.site_etat::text = '50'::text THEN 'projet de déclassement'::text
+            WHEN s.site_etat::text = '60'::text THEN 'annulé'::text
+            ELSE NULL::text
+        END::character varying AS site_etat,
+    ss."Surface du site"::double precision AS site_surf_brute,
+    round(ss.surf_utile::numeric / 10000::numeric, 2) AS site_surf_utile,
+    s.date_crea::text AS site_creation_date,
+    to_char(s.date_sai, 'YYYY-MM-DD'::text)::character varying(10) AS site_identif_date,
+    to_char(s.date_maj, 'YYYY-MM-DD'::text)::character varying(10) AS site_actu_date,
+    NULL::character varying AS site_description,
+        CASE
+            WHEN s.epci::text = 'arc'::text THEN 'Agglomération de la Région de Compiègne et de la Basse Automne'::text
+            WHEN s.epci::text = 'ccpe'::text THEN 'Communauté de communes de la Plaine d''Estées'::text
+            WHEN s.epci::text = 'cclo'::text THEN 'Communauté de communes des Lisières de l''Oise'::text
+            WHEN s.epci::text = 'cc2v'::text THEN 'Communauté de communes des Deux Vallées'::text
+            ELSE ''::text
+        END::character varying AS source_producteur,
+    NULL::character varying AS site_quali_territoire,
+        CASE
+            WHEN tc.valeur::text <> 'Non renseigné'::text THEN lower(tc.valeur::text)
+            ELSE ''::text
+        END::character varying AS site_evol_urba,
+    s.l_url::text AS site_url,
+        CASE
+            WHEN s.typsite::text = '10'::text THEN s.z_mai_ouvr
+            ELSE ''::character varying
+        END AS site_epci_nom,
+        CASE
+            WHEN s.typsite::text = '10'::text THEN
+            CASE
+                WHEN s.epci::text = 'arc'::text THEN '200067965'::text
+                WHEN s.epci::text = 'ccpe'::text THEN '246000897'::text
+                WHEN s.epci::text = 'cclo'::text THEN '246000749'::text
+                WHEN s.epci::text = 'cc2v'::text THEN '246000772'::text
+                ELSE ''::text
+            END
+            ELSE NULL::text
+        END::character varying(9) AS site_epci_siren,
+    c.commune AS site_comm_nom,
+    "left"(s.site_id::text, 5)::character varying(5) AS site_comm_insee,
+    mt.valeur AS site_moa_type,
+    s.z_mai_ouvr AS site_moa_nom,
+    s.z_amng AS site_moa_amngt,
+    s.z_comm AS site_moa_comm,
+    NULL::integer AS site_uf_nbre,
+    NULL::integer AS site_uf_vacant_nbre,
+    NULL::integer AS site_taux_vacance,
+    NULL::integer AS site_uf_bati_nbre,
+    ss.nb_etab::integer AS site_nb_etab,
+    ss.eff_etab::integer AS site_nb_emploi,
+    st_asgeojson(s.geom) AS site_geomsurf,
+    st_asgeojson(st_pointonsurface(s.geom)) AS site_geompoint,
+    NULL::character varying AS site_media,
+    round(ss.surf_vente::numeric / 10000::numeric, 2)::double precision AS site_surf_comm_dispo,
+    round(ss.surf_projet::numeric / 10000::numeric, 2)::double precision AS site_surf_projet,
+        CASE
+            WHEN ei.voca_indus = 'oui'::text THEN 'oui'::text
+            ELSE 'non'::text
+        END::character varying(3) AS site_voca_industrielle,
+        CASE
+            WHEN ec.voca_comm = 'oui'::text THEN 'oui'::text
+            ELSE 'non'::text
+        END::character varying(3) AS site_voca_commerciale,
+        CASE
+            WHEN eter.voca_tert = 'oui'::text THEN 'oui'::text
+            ELSE 'non'::text
+        END::character varying(3) AS site_voca_tertiaire,
+        CASE
+            WHEN ea.voca_arti = 'oui'::text THEN 'oui'::text
+            ELSE 'non'::text
+        END::character varying(3) AS site_voca_artisanale,
+        CASE
+            WHEN eto.voca_touri = 'oui'::text THEN 'oui'::text
+            ELSE 'non'::text
+        END::character varying(3) AS site_voca_touristique,
+        CASE
+            WHEN epo.voca_port = 'oui'::text THEN 'oui'::text
+            ELSE 'non'::text
+        END::character varying(3) AS site_voca_portuaire,
+        CASE
+            WHEN eapo.voca_aport = 'oui'::text THEN 'oui'::text
+            ELSE 'non'::text
+        END::character varying(3) AS site_voca_aeroportuaire,
+        CASE
+            WHEN s.res_pluvia IS TRUE THEN 'oui'::text
+            ELSE 'non'::text
+        END::character varying(3) AS reseau_eau_pluviale,
+        CASE
+            WHEN s.res_eau IS TRUE THEN 'oui'::text
+            ELSE 'non'::text
+        END::character varying(3) AS reseau_eau_potable,
+        CASE
+            WHEN s.res_ass IS TRUE THEN 'oui'::text
+            ELSE 'non'::text
+        END::character varying(3) AS reseau_assainissement,
+        CASE
+            WHEN s.res_gaz IS TRUE THEN 'oui'::text
+            ELSE 'non'::text
+        END::character varying(3) AS reseau_gaz,
+        CASE
+            WHEN s.res_elect IS TRUE THEN 'oui'::text
+            ELSE 'non'::text
+        END::character varying(3) AS reseau_electrique,
+        CASE
+            WHEN s.res_fibre IS TRUE THEN 'oui'::text
+            ELSE 'non'::text
+        END::character varying(3) AS reseau_fibre_optique,
+    NULL::character varying(3) AS reseau_fret_ferroviaire,
+        CASE
+            WHEN s.z_pmm IS TRUE THEN 'oui'::text
+            ELSE 'non'::text
+        END::character varying(3) AS reseau_fluvial,
+        CASE
+            WHEN s.serv_tc IS TRUE THEN 'oui'::text
+            ELSE 'non'::text
+        END::character varying(3) AS desserte_tc,
+    NULL::character varying AS desserte_route_nom,
+    s.z_auto AS autoroute_nom,
+    s.z_dst_auto AS autoroute_echang_dist,
+    s.z_fr_v AS gare_nom,
+    s.z_dst_fr_v AS gare_dist,
+    s.z_fr_f AS gare_fret_nom,
+    s.z_dst_fr_f AS gare_fret_dist,
+    s.z_ar_v AS aeroport_nom,
+    s.z_dst_ar_v AS aeroport_dist,
+    s.z_pmm_n AS port_nom,
+    s.z_dst_pmm AS port_dist,
+    s.geom
+   FROM m_activite_eco.geo_eco_site s
+     LEFT JOIN m_activite_eco.xapps_an_v_synt_site_act_api ss ON ss."Identifiant du site"::text = s.idsite::text
+     LEFT JOIN m_activite_eco.lk_eco_proc lkp ON lkp.idsite::text = s.idsite::text
+     LEFT JOIN m_urbanisme_reg.geo_proced p ON p.idproc::text = lkp.idproc::text
+     LEFT JOIN m_urbanisme_reg.lt_proc_typconso tc ON tc.code::text = p.conso_type::text
+     LEFT JOIN r_osm.geo_vm_osm_commune_grdc c ON c.insee::text = "left"(s.site_id::text, 5)
+     LEFT JOIN m_activite_eco.lt_eco_moatype mt ON mt.code::text = s.moa_type::text
+     LEFT JOIN req_etab_indus ei ON ei.idsite::text = s.idsite::text
+     LEFT JOIN req_etab_comm ec ON ec.idsite::text = s.idsite::text
+     LEFT JOIN req_etab_arti ea ON ea.idsite::text = s.idsite::text
+     LEFT JOIN req_etab_touri eto ON eto.idsite::text = s.idsite::text
+     LEFT JOIN req_etab_tert eter ON eter.idsite::text = s.idsite::text
+     LEFT JOIN req_etab_port epo ON epo.idsite::text = s.idsite::text
+     LEFT JOIN req_etab_aport eapo ON eapo.idsite::text = s.idsite::text
+  WHERE s.typsite <> '30';
 
 COMMENT ON VIEW m_activite_eco.xopendata_geo_eco_site_cnig IS 'Vue de la couche site d''activité du standard CNIG 2023';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_id IS 'identifiant du site économique';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.pole_id IS 'identifiant du pôle où se situe le site économique';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_nom IS 'nom du site économique';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_type IS 'type de site économique';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_vocadomi IS 'vocation dominante constatée du site économique';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_etat IS 'état du site économique (en projet, création, etc.)';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_surf_brute IS 'superficie totale du site économique en hectare';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_surf_utile IS 'Surface (en hectare) destinée à accueillir les implantations d''activités, calculée comme la somme des valeurs « terr_surf_brute » des terrains économiques du site dont la valeur de l’attribut  terr_utile est « oui ».
+La différence entre surface brute et surface utile résulte de l''emprise des équipements publics (voirie, etc.) les délaissés et les éventuelles surfaces réservées à d''autres destinations (logements, loisirs, etc).';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_creation_date IS 'année de création du site économique. Exemple : 2015';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_identif_date IS 'date d''identification du site économique. Exemple : 2016-03-26';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_actu_date IS 'date de dernière actualisation des informations sur le site économique.';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_description IS 'commentaire libre contenant des infos descriptives du site économique';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.source_producteur IS 'identification du producteur de la donnée. Exemples : Région Occitanie ; DDT des Ardennes ; Agence d''urbanisme de ..., etc.';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_quali_territoire IS 'qualification ou labellisation territoriale ou régionale';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_evol_urba IS 'type d''urbanisation (extension, renouvellement urbain)';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_url IS 'URL de la page web descriptive du site économique';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_epci_nom IS 'nom de l''EPCI autorité compétente de la ZAE';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_epci_siren IS 'code SIREN de l''EPCI autorité compétente de la ZAE';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_comm_nom IS 'nom de la commune dont le site éco. occupe la plus grande superficie';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_comm_insee IS 'code INSEE de la commune principale dâ€™implantation du site Ã©conomique';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_moa_type IS 'type de maîtrise d''ouvrage';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_moa_nom IS 'nom de la maîtrise d''ouvrage et/ou gestionnaire du site économique';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_moa_amngt IS 'nom de la maîtrise d''ouvrage en charge de l''aménagement';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_moa_comm IS 'nom de la maîtrise d''ouvrage en charge la commercialisation';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_uf_nbre IS 'nombre d''unités foncières du site économique';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_uf_vacant_nbre IS 'nombre d''unités foncières vacantes du site économique';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_taux_vacance IS 'taux de vacance de la ZAE suivant article L318-8-2 CU (pourcentage)';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_uf_bati_nbre IS 'nombre d''unités foncières bâties';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_nb_etab IS 'nombre d''établissements économique (hors SCI) dans le site éco.';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_nb_emploi IS 'estimation du nombre d''emplois du site Ã©conomique';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_geomsurf IS 'multi géométries surfaciques du périmètre du site économique au format GeoJSON';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_geompoint IS 'coordonnées géo. du centroïde du site économique au format GeoJSON';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_media IS 'URL pointant vers un (des) média(s) : photo, vidéo, etc. du site éco.';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_surf_comm_dispo IS 'surface disponible à la commercialisation, en hectare';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_surf_projet IS 'surface réservée pour des projets en cours, en hectare';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_voca_industrielle IS 'le site comprend (oui / non) au moins une activité industrielle';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_voca_commerciale IS 'le site comprend (oui / non) au moins une activité commerciale';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_voca_tertiaire IS 'le site comprend (oui / non) au moins une activité tertiaire';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_voca_artisanale IS 'le site comprend (oui / non) au moins une activité artisanale';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_voca_touristique IS 'le site comprend (oui / non) au moins une activité touristique';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_voca_portuaire IS 'le site comprend (oui / non) au moins une activité portuaire';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_voca_aeroportuaire IS 'le site comprend (oui / non) au moins une activité aéroportuaire';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.reseau_eau_pluviale IS 'le site est équipé (oui / non) d''un réseau d''eau pluviale';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.reseau_eau_potable IS 'le site est équipé (oui / non) d''un réseau d''eau potable';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.reseau_assainissement IS 'le site est équipé (oui / non) d''un réseau d''assainissement';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.reseau_gaz IS 'le site est équipé (oui / non) d''un réseau de gaz';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.reseau_electrique IS 'le site est équipé (oui / non) d''un réseau électrique';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.reseau_fibre_optique IS 'le site est équipé (oui / non) d''un réseau de fibre optique';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.reseau_fret_ferroviaire IS 'présence (oui / non) d''une Installation Terminale Embranchée (ITE)';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.reseau_fluvial IS 'présence (oui / non) d''un quai fluvial';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.desserte_tc IS 'présence (oui / non) d''une desserte en transport en commun';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.desserte_route_nom IS 'libellé de la desserte routière principale';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.autoroute_nom IS 'libellé de l''autoroute la plus proche';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.autoroute_echang_dist IS 'distance de l''échangeur autoroutier le plus proche';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.gare_nom IS 'nom de la gare de voyageurs la plus proche';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.gare_dist IS 'distance (en km) de la gare de voyageurs la plus proche, par la route';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.gare_fret_nom IS 'nom de la gare de fret la plus proche';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.gare_fret_dist IS 'distance (en km) de la gare de fret la plus proche, par la route';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.aeroport_nom IS 'nom de l''aéroport le plus proche';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.aeroport_dist IS 'distance (en km) de l''aéroport le plus proche, par la route';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.port_nom IS 'nom du port maritime ou fluvial le plus proche';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.port_dist IS 'distance (en km) du port maritime ou fluvial le plus proche, par la route';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.geom IS 'géométrie de l''objet';
 
 
 -- ##################################################### xopendata_geo_eco_terrain_cnig #####################################################################
-
--- m_activite_eco.xopendata_geo_eco_terrain_cnig source
-
-CREATE OR REPLACE VIEW m_activite_eco.xopendata_geo_eco_terrain_cnig
-AS SELECT (((f.insee::text || '_'::text) || 'TERRAIN-ECO'::text) || '_'::text) || f.idgeolf AS terr_id,
-    s.site_id,
-    NULL::character varying AS terr_refcad,
-        CASE
-            WHEN f.surf IS NULL OR f.surf = 0 THEN round(f.sup_m2::numeric / 10000::numeric, 2)
-            ELSE round(f.surf::numeric / 10000::numeric, 2)
-        END AS terr_surf_brute,
-    'oui'::character varying(3) AS terr_utile,
-    f.date_sai::character varying(10) AS terr_identif_date,
-    l.date_maj::character varying(10) AS terr_actu_date,
-        CASE
-            WHEN mf.valeur::text = 'Non renseignée'::text THEN 'inconnu'::character varying
-            WHEN mf.valeur::text = 'Autre'::text THEN 'autre'::character varying
-            WHEN mf.valeur::text = 'Non concernée'::text THEN 'sans objet'::character varying
-            ELSE mf.valeur
-        END AS terr_maitrise_fonc,
-        CASE
-            WHEN sa.l_amng2::text = '10'::text THEN 'viabilisé et aménagé'::text
-            WHEN sa.l_amng2::text = '20'::text THEN 'non aménagé, non viabilisé'::text
-            WHEN sa.l_amng2::text = '30'::text THEN 'non aménagé, non viabilisé'::text
-            WHEN sa.l_amng2::text = 'ZZ'::text THEN 'sans objet'::text
-            WHEN sa.l_amng2::text = '00'::text THEN 'inconnu'::text
-            WHEN sa.l_amng2::text = '99'::text THEN 'autre'::text
-            ELSE ''::text
-        END::character varying AS terr_stade_amngt,
-        CASE
-            WHEN sa.l_comm2::text = '11'::text THEN 'en vente'::text
-            WHEN sa.l_comm2::text = '12'::text THEN 'en vente avec contraintes'::text
-            WHEN sa.l_comm2::text = '20'::text THEN 'vendu, commercialisation achevée'::text
-            WHEN sa.l_comm2::text = '32'::text THEN 'réservé par option de réservation'::text
-            WHEN sa.l_comm2::text = '31'::text THEN 'réservé par une délibération de l''EPCI'::text
-            WHEN sa.l_comm2::text = 'ZZ'::text THEN 'sans objet'::text
-            WHEN sa.l_comm2::text = '00'::text THEN 'inconnu'::text
-            WHEN sa.l_comm2::text = '99'::text THEN 'autre'::text
-            ELSE NULL::text
-        END::character varying AS terr_stade_comm,
-        CASE
-            WHEN eo.valeur::text = 'Non renseigné'::text THEN 'inconnu'::character varying
-            WHEN eo.valeur::text = 'Autre'::text THEN 'autre'::character varying
-            WHEN eo.valeur::text = 'Non concerné'::text THEN 'sans objet'::character varying
-            ELSE eo.valeur
-        END AS terr_etat_occup,
-        CASE
-            WHEN tu.valeur::text = 'Non renseigné'::text THEN 'inconnu'::character varying
-            WHEN tu.valeur::text = 'Autre'::text THEN 'autre'::character varying
-            WHEN tu.valeur::text = 'Non concerné'::text THEN 'sans objet'::character varying
-            ELSE tu.valeur END AS terr_usage,
-    st_asgeojson(f.geom) AS terr_geomsurf,
-    NULL::text AS terr_cle_en_main,
-    NULL::character varying AS terr_acquereur,
-    NULL::character varying(10) AS terr_cession_date,
-    NULL::integer AS terr_vente_montant,
-    NULL::integer AS terr_m2_prix
-   FROM r_objet.geo_objet_fon_lot f
-     JOIN m_activite_eco.an_eco_lot l ON f.idgeolf = l.idgeolf
-     JOIN m_amenagement.lk_amt_lot_site a ON a.idgeolf = l.idgeolf
-     JOIN m_activite_eco.geo_eco_site s ON s.idsite::text = a.idsite::text
-     JOIN m_amenagement.an_amt_lot_stade sa ON sa.idgeolf = f.idgeolf
-     JOIN m_amenagement.lt_amt_maifon mf ON mf.code::text = sa.maifon::text
-     JOIN m_amenagement.lt_amt_etatoccup eo ON eo.code::text = sa.etat_occup::text
-     JOIN m_amenagement.lt_amt_terrusage tu ON tu.code::text = sa.usage::text;
-
-COMMENT ON VIEW m_activite_eco.xopendata_geo_eco_terrain_cnig IS 'Vue de la couche terrain d''activité du standard CNIG 2023';
-
--- Permissions
-
-ALTER TABLE m_activite_eco.xopendata_geo_eco_terrain_cnig OWNER TO create_sig;
-GRANT ALL ON TABLE m_activite_eco.xopendata_geo_eco_terrain_cnig TO create_sig;
-GRANT SELECT ON TABLE m_activite_eco.xopendata_geo_eco_terrain_cnig TO sig_read;
-GRANT ALL ON TABLE m_activite_eco.xopendata_geo_eco_terrain_cnig TO sig_create;
-GRANT DELETE, INSERT, SELECT, UPDATE ON TABLE m_activite_eco.xopendata_geo_eco_terrain_cnig TO sig_edit;
+ en cours
