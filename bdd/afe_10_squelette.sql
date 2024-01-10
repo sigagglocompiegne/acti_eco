@@ -2659,7 +2659,9 @@ CREATE INDEX lt_amt_stadeamng_code_idx
     ('10','Aucun'),
     ('20','Non acquis'),
     ('30','Acquis'),
-    ('40','Viabilisé');
+    ('40','Viabilisé'),
+    ('99','Autre'),
+    ('ZZ','Non concerné');
     
 -- ################################################################# Domaine valeur - lt_amt_stadeamng2  ###############################################
 
@@ -2699,7 +2701,9 @@ CREATE INDEX lt_amt_stadeamng2_code_idx
     ('00','Non renseigné'),
     ('10','Disponible (aménagé ou aménageable rapidement)'),
     ('20','Indisponible (terrain non acheté)'),
-    ('30','Indisponible (terrain non aménagé)');
+    ('30','Indisponible (terrain non aménagé)'),
+    ('99','Autre'),
+    ('ZZ','Non concerné');
 
 -- ################################################################# Domaine valeur - lt_amt_stadecomm  ###############################################
 
@@ -2738,7 +2742,9 @@ CREATE INDEX lt_amt_stadecomm_code_idx
     VALUES
     ('00','Non renseigné'),
     ('10','Aucun'),
-    ('20','Commercialisable');
+    ('20','Commercialisable'),
+    ('99','Autre'),
+    ('ZZ','Non concerné');
 
 -- ################################################################# Domaine valeur - lt_amt_stadecomm2  ###############################################
 
@@ -2781,7 +2787,9 @@ CREATE INDEX lt_amt_stadecomm2_code_idx
     ('20','Vendu'),
     ('32','Réservé (option)'),
     ('99','Non commercialisé par un acteur public'),
-    ('31','Réservé (par une délibération de l''EPCI)');
+    ('31','Réservé (par une délibération de l''EPCI)'),
+    ('99','Autre'),
+    ('ZZ','Non concerné');
 
 -- ##########################################################################################################
 -- ################################################# SCHEMA M_URBANISME_REG ##################################
