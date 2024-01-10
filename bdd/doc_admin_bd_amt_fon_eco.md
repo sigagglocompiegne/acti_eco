@@ -16,6 +16,7 @@ De ce fait un objet géographique est partagé par plusieurs services et les att
 
 En 2022, un nouveau cadre de mutualisation a réorienté les choix initiaux en terme d'urbanisation. Certaines données resteront dans le domaine de l'urbanisation et le partage entre services. Mais des choix fonctionnels impactants certaines informations ont remis en cause ce mode de gestion pour certaines d'entre elles (les sites et les procédures d'aménagements). 
 
+En 2023, le standard CNIG sur les sties d'activités a permis de réajuster le modèle au marge pour intégrer des notions inexistantes dans le modèle d'origine.
  
  * **résumé fonctionnel** :
 
@@ -64,7 +65,6 @@ L'ensemble des classes d'objets de gestion sont stockés dans le schéma `r_obje
 |epci|Autorité compétente|character varying(10)| |
 |surf|Surface occupée du lot en m² (surface saisie par l'utilisateur si différente de la surface SIG)|integer| |
 |surf_l|Surface littérale occupée du lot en m² (surface saisie par l'utilisateur si différente de la surface SIG)|character varying(15)| |
-|maifon|Maîtrise foncière du terrain|character varying(2)| |
 
 Particularité(s) à noter :
 * Une clé primaire existe sur le champ `idgeolf` l'attribution automatique de la référence unique s'effectue via les vues de gestion. 
