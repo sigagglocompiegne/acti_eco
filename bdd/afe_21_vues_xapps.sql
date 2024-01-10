@@ -437,10 +437,8 @@ AS WITH req_a AS (
             r_objet.geo_objet_fon_lot,
             m_amenagement.an_amt_lot_stade,
             m_amenagement.lk_amt_lot_site
-          WHERE geo_eco_site.idsite::text = lk_amt_lot_site.idsite::text 
-          AND lk_amt_lot_site.idgeolf = geo_objet_fon_lot.idgeolf 
+          WHERE geo_eco_site.idsite::text = lk_amt_lot_site.idsite::text AND lk_amt_lot_site.idgeolf = geo_objet_fon_lot.idgeolf 
           AND geo_objet_fon_lot.l_voca::text = '20'::text 
-          and an_amt_lot_stade.l_comm2 not in ('00','99')
           AND an_amt_lot_stade.idgeolf = geo_objet_fon_lot.idgeolf
           GROUP BY geo_eco_site.idsite
         ), req_k1 AS (
@@ -466,8 +464,7 @@ AS WITH req_a AS (
             r_objet.geo_objet_fon_lot,
             m_amenagement.an_amt_lot_stade,
             m_amenagement.lk_amt_lot_site
-          WHERE (an_amt_lot_stade.l_comm2::text = '31'::text OR an_amt_lot_stade.l_comm2::text = '32'::text) 
-          AND geo_objet_fon_lot.l_voca::text = '20'::text AND an_amt_lot_stade.idgeolf = geo_objet_fon_lot.idgeolf AND geo_eco_site.idsite::text = lk_amt_lot_site.idsite::text AND lk_amt_lot_site.idgeolf = geo_objet_fon_lot.idgeolf
+          WHERE (an_amt_lot_stade.l_comm2::text = '31'::text OR an_amt_lot_stade.l_comm2::text = '32'::text) AND geo_objet_fon_lot.l_voca::text = '20'::text AND an_amt_lot_stade.idgeolf = geo_objet_fon_lot.idgeolf AND geo_eco_site.idsite::text = lk_amt_lot_site.idsite::text AND lk_amt_lot_site.idgeolf = geo_objet_fon_lot.idgeolf
           GROUP BY geo_eco_site.idsite
         ), req_k2 AS (
          SELECT geo_eco_site.idsite,
