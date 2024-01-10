@@ -191,6 +191,8 @@ Valeurs possibles :
 |15|établissemebt industriel et commercial|
 |16|organisation de gestion foncière et immobilière|
 |17|établissement d'enseignement d'étude et de recherche|
+|99|Autre|
+|ZZ|Non concerné|
 
 ---
 
@@ -214,6 +216,8 @@ Valeurs possibles :
 |21|occupation transitoire|
 |30|vacant|
 |40|friche|
+|99|Autre|
+|ZZ|Non concerné|
 
 ## Classes d'objets de l'activité économique
 
@@ -1614,6 +1618,8 @@ Valeurs possibles :
 |20|Non acquis|
 |30|Acquis|
 |40|Viabilisé|
+|99|Autre|
+|ZZ|Non concerné|
 
 ---
 
@@ -1635,7 +1641,8 @@ Valeurs possibles :
 |10|Disponible (aménagé ou aménageable rapidement)|
 |20|Indisponible (terrain non acheté)|
 |30|Indisponible (terrain non aménagé)|
-
+|99|Autre|
+|ZZ|Non concerné|
 ---
 
 `[m_amenagement].[lt_amt_stadecomm]` : Liste des valeurs permettant de décrire la valeur du stade de commercialisation
@@ -1655,7 +1662,8 @@ Valeurs possibles :
 |00|Non renseigné|
 |10|Aucun|
 |20|Commercialisable|
-
+|99|Autre|
+|ZZ|Non concerné|
 ---
 
 `[m_amenagement].[lt_amt_stadecomm2]` : Liste des valeurs permettant de décrire la valeur du stade de commercialisation spécifique ARC
@@ -1679,7 +1687,7 @@ Valeurs possibles :
 |31|Réservé (par une délibération du Conseil d'Agglomération)|
 |32|Réservé (option)|
 |99|Non commercialisé par un acteur public|
-
+|ZZ|Non concerné|
 
 ### Classes d'objets attributaire gérant les associations (ou relation d'appartenance des objets entre eux)
 
