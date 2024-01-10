@@ -2368,48 +2368,77 @@ COMMENT ON VIEW m_activite_eco.xopendata_geo_eco_site_cnig IS 'Vue de la couche 
 
 -- ##################################################### xopendata_geo_eco_terrain_cnig #####################################################################
 
--- m_activite_eco.xopendata_geo_eco_site_cnig
-drop view if exists m_activite_eco.xopendata_geo_eco_terrain_cnig;
+-- m_activite_eco.xopendata_geo_eco_terrain_cnig source
+
 CREATE OR REPLACE VIEW m_activite_eco.xopendata_geo_eco_terrain_cnig
-as
-
-select 
-    f.insee || '_' || 'TERRAIN-ECO' || '_' || f.idgeolf as terr_id,
+AS SELECT (((f.insee::text || '_'::text) || 'TERRAIN-ECO'::text) || '_'::text) || f.idgeolf AS terr_id,
     s.site_id,
-    null::varchar as terr_refcad,
-    case when f.surf is null or f.surf = 0 then round(f.sup_m2::numeric/10000,2) else round(f.surf::numeric/10000,2) end as terr_surf_brute,
-    'oui'::varchar(3) as terr_utile,
-    f.date_sai::varchar(10) as terr_identif_date,
-    l.date_maj::varchar(10) as terr_actu_date,
-    null::varchar as terr_maitrise_fonc,
-    case 
-    	when sa.l_amng2 = '10' then 'viabilisé et aménagé'
-    	when sa.l_amng2 = '20' then 'non aménagé, non viabilisé'
-    	when sa.l_amng2 = '30' then 'non aménagé, non viabilisé'
-    	else ''
-    end::varchar as terr_stade_amngt,
-    case
-    	when sa.l_comm2 = '11' then 'en vente'
-    	when sa.l_comm2 = '12' then 'en vente avec contraintes'
-    	when sa.l_comm2 = '20' then 'vendu, commercialisation achevée'
-    	when sa.l_comm2 = '32' then 'réservé par option de réservation'
-    	when sa.l_comm2 = '99' then 'non commercialisé'
-    	when sa.l_comm2 = '31' then 'réservé par une délibération de l''EPCI'
-    end::varchar as terr_stade_comm,
-    null::varchar as terr_etat_occup,
-    null::varchar as terr_usage,
-    st_asGeojson(f.geom) as terr_geomsurf,
-    null::text as terr_cle_en_main,
-    null::varchar as terr_acquereur,
-    null::varchar(10) as terr_cession_date,
-    null::integer as terr_vente_montant,
-    null::integer as terr_m2_prix
-from
-	r_objet.geo_objet_fon_lot f 
-	join m_activite_eco.an_eco_lot l on f.idgeolf = l.idgeolf
-	join m_amenagement.lk_amt_lot_site a on a.idgeolf = l.idgeolf 
-	join m_activite_eco.geo_eco_site s on s.idsite = a.idsite
-	join m_amenagement.an_amt_lot_stade sa on sa.idgeolf = f.idgeolf ;
-
+    NULL::character varying AS terr_refcad,
+        CASE
+            WHEN f.surf IS NULL OR f.surf = 0 THEN round(f.sup_m2::numeric / 10000::numeric, 2)
+            ELSE round(f.surf::numeric / 10000::numeric, 2)
+        END AS terr_surf_brute,
+    'oui'::character varying(3) AS terr_utile,
+    f.date_sai::character varying(10) AS terr_identif_date,
+    l.date_maj::character varying(10) AS terr_actu_date,
+        CASE
+            WHEN mf.valeur::text = 'Non renseignée'::text THEN 'inconnu'::character varying
+            WHEN mf.valeur::text = 'Autre'::text THEN 'autre'::character varying
+            WHEN mf.valeur::text = 'Non concernée'::text THEN 'sans objet'::character varying
+            ELSE mf.valeur
+        END AS terr_maitrise_fonc,
+        CASE
+            WHEN sa.l_amng2::text = '10'::text THEN 'viabilisé et aménagé'::text
+            WHEN sa.l_amng2::text = '20'::text THEN 'non aménagé, non viabilisé'::text
+            WHEN sa.l_amng2::text = '30'::text THEN 'non aménagé, non viabilisé'::text
+            WHEN sa.l_amng2::text = 'ZZ'::text THEN 'sans objet'::text
+            WHEN sa.l_amng2::text = '00'::text THEN 'inconnu'::text
+            WHEN sa.l_amng2::text = '99'::text THEN 'autre'::text
+            ELSE ''::text
+        END::character varying AS terr_stade_amngt,
+        CASE
+            WHEN sa.l_comm2::text = '11'::text THEN 'en vente'::text
+            WHEN sa.l_comm2::text = '12'::text THEN 'en vente avec contraintes'::text
+            WHEN sa.l_comm2::text = '20'::text THEN 'vendu, commercialisation achevée'::text
+            WHEN sa.l_comm2::text = '32'::text THEN 'réservé par option de réservation'::text
+            WHEN sa.l_comm2::text = '31'::text THEN 'réservé par une délibération de l''EPCI'::text
+            WHEN sa.l_comm2::text = 'ZZ'::text THEN 'sans objet'::text
+            WHEN sa.l_comm2::text = '00'::text THEN 'inconnu'::text
+            WHEN sa.l_comm2::text = '99'::text THEN 'autre'::text
+            ELSE NULL::text
+        END::character varying AS terr_stade_comm,
+        CASE
+            WHEN eo.valeur::text = 'Non renseigné'::text THEN 'inconnu'::character varying
+            WHEN eo.valeur::text = 'Autre'::text THEN 'autre'::character varying
+            WHEN eo.valeur::text = 'Non concerné'::text THEN 'sans objet'::character varying
+            ELSE eo.valeur
+        END AS terr_etat_occup,
+        CASE
+            WHEN tu.valeur::text = 'Non renseigné'::text THEN 'inconnu'::character varying
+            WHEN tu.valeur::text = 'Autre'::text THEN 'autre'::character varying
+            WHEN tu.valeur::text = 'Non concerné'::text THEN 'sans objet'::character varying
+            ELSE tu.valeur END AS terr_usage,
+    st_asgeojson(f.geom) AS terr_geomsurf,
+    NULL::text AS terr_cle_en_main,
+    NULL::character varying AS terr_acquereur,
+    NULL::character varying(10) AS terr_cession_date,
+    NULL::integer AS terr_vente_montant,
+    NULL::integer AS terr_m2_prix
+   FROM r_objet.geo_objet_fon_lot f
+     JOIN m_activite_eco.an_eco_lot l ON f.idgeolf = l.idgeolf
+     JOIN m_amenagement.lk_amt_lot_site a ON a.idgeolf = l.idgeolf
+     JOIN m_activite_eco.geo_eco_site s ON s.idsite::text = a.idsite::text
+     JOIN m_amenagement.an_amt_lot_stade sa ON sa.idgeolf = f.idgeolf
+     JOIN m_amenagement.lt_amt_maifon mf ON mf.code::text = sa.maifon::text
+     JOIN m_amenagement.lt_amt_etatoccup eo ON eo.code::text = sa.etat_occup::text
+     JOIN m_amenagement.lt_amt_terrusage tu ON tu.code::text = sa.usage::text;
 
 COMMENT ON VIEW m_activite_eco.xopendata_geo_eco_terrain_cnig IS 'Vue de la couche terrain d''activité du standard CNIG 2023';
+
+-- Permissions
+
+ALTER TABLE m_activite_eco.xopendata_geo_eco_terrain_cnig OWNER TO create_sig;
+GRANT ALL ON TABLE m_activite_eco.xopendata_geo_eco_terrain_cnig TO create_sig;
+GRANT SELECT ON TABLE m_activite_eco.xopendata_geo_eco_terrain_cnig TO sig_read;
+GRANT ALL ON TABLE m_activite_eco.xopendata_geo_eco_terrain_cnig TO sig_create;
+GRANT DELETE, INSERT, SELECT, UPDATE ON TABLE m_activite_eco.xopendata_geo_eco_terrain_cnig TO sig_edit;
