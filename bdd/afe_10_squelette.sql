@@ -5041,7 +5041,9 @@ CREATE TABLE m_activite_eco.geo_eco_site
     site_id varchar(20),	
     moa_type varcahr(2),
     l_url varchar,
-    z_pmm_n varchar(50),	
+    z_pmm_n varchar(50),
+    promotion boolean DEFAULT false,
+    promo_comment varchar(1000),	
     CONSTRAINT geo_eco_site_pkey PRIMARY KEY (idsite),
     CONSTRAINT geo_eco_site_dest_fkey FOREIGN KEY (dest)
         REFERENCES m_activite_eco.lt_eco_dest (code) MATCH SIMPLE
@@ -5305,6 +5307,12 @@ COMMENT ON COLUMN m_activite_eco.geo_eco_site.l_url
 
 COMMENT ON COLUMN m_activite_eco.geo_eco_site.z_pmm_n
     IS 'Nom de la plate-forme multi modale (au moins route et fluvial)';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.promotion
+    IS 'Accord pour promouvoir l'offre foncière disponible d'un site';
+
+COMMENT ON COLUMN m_activite_eco.geo_eco_site.promo_comment
+    IS 'Commentaire libre pour échange avec les équipes de Geo2France';
 
 -- Index: geo_eco_site_geom_idx
 -- DROP INDEX m_activite_eco.geo_eco_site_geom_idx;
