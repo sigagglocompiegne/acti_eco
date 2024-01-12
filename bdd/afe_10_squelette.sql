@@ -1432,6 +1432,7 @@ BEGIN
 IF (TG_OP = 'INSERT') THEN
 
 NEW.surf_brt := round(st_area(new.geom)::numeric,0);
+new.site_id := (select c.insee from r_osm.geo_vm_osm_commune_grdc c where st_intersects(c.geom,(st_pointonsurface(new.geom))) is true)  || '_SITE-ECO_' || new.idsite ;
 
 NEW.epci :=
 (SELECT
