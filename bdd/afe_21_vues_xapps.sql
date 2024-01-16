@@ -2247,8 +2247,8 @@ AS WITH req_etab_indus AS (
  SELECT DISTINCT s.site_id::text AS site_id,
     NULL::text AS pole_id,
     s.site_nom,
-        case
-	        WHEN s.typsite::text = '00'::text THEN 'inconnu'::text
+        CASE
+            WHEN s.typsite::text = '00'::text THEN 'inconnu'::text
             WHEN s.typsite::text = '10'::text THEN 'zone d''activité économique'::text
             WHEN s.typsite::text = '20'::text THEN 'site économique historique hors ZAE'::text
             WHEN s.typsite::text = '21'::text THEN 'établissement économique isolé'::text
@@ -2264,7 +2264,7 @@ AS WITH req_etab_indus AS (
         END::character varying AS site_vocadomi,
         CASE
             WHEN s.site_etat::text = '00'::text THEN 'inconnu'::text
-	        WHEN s.site_etat::text = '10'::text THEN 'existant et actif'::text
+            WHEN s.site_etat::text = '10'::text THEN 'existant et actif'::text
             WHEN s.site_etat::text = '20'::text OR s.site_etat::text = '21'::text THEN 'en projet'::text
             WHEN s.site_etat::text = '30'::text THEN 'création'::text
             WHEN s.site_etat::text = '40'::text THEN 'déclassé'::text
@@ -2308,7 +2308,10 @@ AS WITH req_etab_indus AS (
         END::character varying(9) AS site_epci_siren,
     c.commune AS site_comm_nom,
     "left"(s.site_id::text, 5)::character varying(5) AS site_comm_insee,
-    mt.valeur AS site_moa_type,
+        CASE
+            WHEN mt.valeur::text = 'Non renseignée'::text THEN 'inconnu'::character varying
+            ELSE mt.valeur
+        END AS site_moa_type,
     s.z_mai_ouvr AS site_moa_nom,
     s.z_amng AS site_moa_amngt,
     s.z_comm AS site_moa_comm,
@@ -2375,7 +2378,7 @@ AS WITH req_etab_indus AS (
             WHEN s.res_fibre IS TRUE THEN 'oui'::text
             ELSE 'non'::text
         END::character varying(3) AS reseau_fibre_optique,
-   		CASE
+        CASE
             WHEN s.z_ite IS TRUE THEN 'oui'::text
             ELSE 'non'::text
         END::character varying(3) AS reseau_fret_ferroviaire,
@@ -2492,8 +2495,8 @@ COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.port_dist IS 'dista
 COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.promotion IS 'Accord pour promouvoir l''offre foncière disponible d''un site';
 COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.commentaire IS 'Commentaire libre pour échange avec les équipes de Geo2France';
 COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.source_zonage IS 'Source de la délimitation du site';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.geom IS 'géométrie de l''objet';
 COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.epci IS 'EPCI compétente';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.geom IS 'géométrie de l''objet';
 
 
 
