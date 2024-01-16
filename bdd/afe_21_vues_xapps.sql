@@ -2193,6 +2193,8 @@ COMMENT ON MATERIALIZED VIEW m_urbanisme_reg.xapps_geo_vmr_proc_zac
 
 -- m_activite_eco.xopendata_geo_eco_site_cnig source
 
+-- m_activite_eco.xopendata_geo_eco_site_cnig source
+
 CREATE OR REPLACE VIEW m_activite_eco.xopendata_geo_eco_site_cnig
 AS WITH req_etab_indus AS (
          SELECT DISTINCT s_1.idsite,
@@ -2401,6 +2403,7 @@ AS WITH req_etab_indus AS (
             WHEN s.typsite::text = '40'::text THEN 'Documents d''urbanisme'::text
             ELSE 'Observatoire des sites d''activités du GéoCompiégnois'::text
         END AS source_zonage,
+    s.epci,
     s.geom
    FROM m_activite_eco.geo_eco_site s
      LEFT JOIN m_activite_eco.xapps_an_v_synt_site_act_api ss ON ss."Identifiant du site"::text = s.idsite::text
@@ -2486,14 +2489,9 @@ COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.promotion IS 'Accor
 COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.commentaire IS 'Commentaire libre pour échange avec les équipes de Geo2France';
 COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.source_zonage IS 'Source de la délimitation du site';
 COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.geom IS 'géométrie de l''objet';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.epci IS 'EPCI compétente';
 
--- Permissions
 
-ALTER TABLE m_activite_eco.xopendata_geo_eco_site_cnig OWNER TO create_sig;
-GRANT ALL ON TABLE m_activite_eco.xopendata_geo_eco_site_cnig TO create_sig;
-GRANT SELECT ON TABLE m_activite_eco.xopendata_geo_eco_site_cnig TO sig_read;
-GRANT ALL ON TABLE m_activite_eco.xopendata_geo_eco_site_cnig TO sig_create;
-GRANT INSERT, UPDATE, SELECT, DELETE ON TABLE m_activite_eco.xopendata_geo_eco_site_cnig TO sig_edit;
 
 -- ##################################################### xopendata_geo_eco_terrain_cnig #####################################################################
 
