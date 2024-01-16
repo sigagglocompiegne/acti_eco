@@ -2193,7 +2193,6 @@ COMMENT ON MATERIALIZED VIEW m_urbanisme_reg.xapps_geo_vmr_proc_zac
 
 -- m_activite_eco.xopendata_geo_eco_site_cnig source
 
--- m_activite_eco.xopendata_geo_eco_site_cnig source
 
 CREATE OR REPLACE VIEW m_activite_eco.xopendata_geo_eco_site_cnig
 AS WITH req_etab_indus AS (
@@ -2249,10 +2248,12 @@ AS WITH req_etab_indus AS (
  SELECT DISTINCT s.site_id::text AS site_id,
     NULL::text AS pole_id,
     s.site_nom,
-        CASE
+        case
+	        WHEN s.typsite::text = '00'::text THEN 'inconnu'::text
             WHEN s.typsite::text = '10'::text THEN 'zone d''activité économique'::text
             WHEN s.typsite::text = '20'::text THEN 'site économique historique hors ZAE'::text
             WHEN s.typsite::text = '21'::text THEN 'établissement économique isolé'::text
+            WHEN s.typsite::text = '40'::text THEN 'zone 2AU à vocation économique'::text
             ELSE NULL::text
         END::character varying AS site_type,
         CASE
@@ -2260,10 +2261,11 @@ AS WITH req_etab_indus AS (
             WHEN s.site_voca::text = '20'::text THEN 'artisanale'::text
             WHEN s.site_voca::text = '30'::text THEN 'commerciale'::text
             WHEN s.site_voca::text = '40'::text THEN 'mixte'::text
-            ELSE 'artisanale'::text
+            ELSE 'inconnu'::text
         END::character varying AS site_vocadomi,
         CASE
-            WHEN s.site_etat::text = '10'::text THEN 'existant et actif'::text
+            WHEN s.site_etat::text = '00'::text THEN 'inconnu'::text
+	        WHEN s.site_etat::text = '10'::text THEN 'existant et actif'::text
             WHEN s.site_etat::text = '20'::text OR s.site_etat::text = '21'::text THEN 'en projet'::text
             WHEN s.site_etat::text = '30'::text THEN 'création'::text
             WHEN s.site_etat::text = '40'::text THEN 'déclassé'::text
