@@ -7412,7 +7412,7 @@ Sans objet
   
 ## Export Open Data
 
- * `ACTIVITE_ECONOMIQUE_modele_geopicardie.fmw` : traitement FME permettant d'exporter les données de l'activité économique au modèle régional
+ * `ACTIVITE_ECONOMIQUE_modele_geopicardie.fmw` : traitement FME permettant d'exporter les données de l'activité économique au modèle régional (en cours de basculement pour un export modèle CNIG)
 
 
 ---
