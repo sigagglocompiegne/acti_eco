@@ -2193,7 +2193,6 @@ COMMENT ON MATERIALIZED VIEW m_urbanisme_reg.xapps_geo_vmr_proc_zac
 
 -- m_activite_eco.xopendata_geo_eco_site_cnig source
 
-
 CREATE OR REPLACE VIEW m_activite_eco.xopendata_geo_eco_site_cnig
 AS WITH req_etab_indus AS (
          SELECT DISTINCT s_1.idsite,
@@ -2289,7 +2288,7 @@ AS WITH req_etab_indus AS (
     NULL::character varying AS site_quali_territoire,
         CASE
             WHEN tc.valeur::text <> 'Non renseigné'::text THEN lower(tc.valeur::text)
-            ELSE ''::text
+            ELSE 'inconnu'::text
         END::character varying AS site_evol_urba,
     s.l_url::text AS site_url,
         CASE
@@ -2376,7 +2375,10 @@ AS WITH req_etab_indus AS (
             WHEN s.res_fibre IS TRUE THEN 'oui'::text
             ELSE 'non'::text
         END::character varying(3) AS reseau_fibre_optique,
-    NULL::character varying(3) AS reseau_fret_ferroviaire,
+   		CASE
+            WHEN s.z_ite IS TRUE THEN 'oui'::text
+            ELSE 'non'::text
+        END::character varying(3) AS reseau_fret_ferroviaire,
         CASE
             WHEN s.z_pmm IS TRUE THEN 'oui'::text
             ELSE 'non'::text
@@ -2492,6 +2494,7 @@ COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.commentaire IS 'Com
 COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.source_zonage IS 'Source de la délimitation du site';
 COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.geom IS 'géométrie de l''objet';
 COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.epci IS 'EPCI compétente';
+
 
 
 
