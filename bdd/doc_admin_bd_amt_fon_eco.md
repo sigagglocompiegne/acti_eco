@@ -593,6 +593,8 @@ Particularité(s) à noter :
 |idobjet|Clé temporaire pour la relation direct dans GEO en attendant la correction sur les relations N..M|character varying(15)| |
 |idevenmt|Identifiant unique non signifiant de l''évènement (en attente résolution pb relation N..M dans Geo|integer| |
 |source|Source de la mise à jour du contact|character varying(100)| |
+|typcontact_aut|Autre type de contact (à remplir si typcontact = 'Autre'|character varying(50)| |
+|source_maj|Date de la dernière mise à joru de la source|timestamp without time zone| |
 
 
 Particularité(s) à noter :
@@ -781,6 +783,7 @@ Particularité(s) à noter :
 |date_maj|Date de mise à jour du local|timestamp without time zone| |
 |op_sai|Opérateur de saisie|character varying(20)| |
 |op_maj|Opérateur de mise à jour|character varying(20)| |
+|source_maj|Date de la dernière mise à joru de la source|timestamp without time zone| |
 
 Particularité(s) à noter :
 * Une clé primaire existe sur le champ `id` l'attribution automatique de la référence unique s'effectue via une séquence. 
@@ -1060,6 +1063,7 @@ Valeurs possibles :
 |13|DRH|
 |20|Propriétaire|
 |30|Commercialisateur|
+|40|Agence immobilière|
 
 ---
 
