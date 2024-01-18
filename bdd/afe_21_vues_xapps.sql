@@ -2853,7 +2853,7 @@ UNION ALL
             WHEN sa.l_amng2::text = '30'::text THEN 'non aménagé, non viabilisé'::text
             WHEN sa.l_amng2::text = 'ZZ'::text THEN 'sans objet'::text
             WHEN sa.l_amng2::text = '00'::text THEN 'inconnu'::text
-            WHEN sa.l_amng2::text = '99'::text THEN 'autre'::text
+            WHEN sa.l_amng2::text = '99'::text THEN 'inconnu'::text
             ELSE 'inconnu'::text
         END::character varying AS terr_stade_amngt,
         CASE
@@ -2864,7 +2864,7 @@ UNION ALL
             WHEN sa.l_comm2::text = '31'::text THEN 'réservé par une délibération de l''EPCI'::text
             WHEN sa.l_comm2::text = 'ZZ'::text THEN 'sans objet'::text
             WHEN sa.l_comm2::text = '00'::text THEN 'inconnu'::text
-            WHEN sa.l_comm2::text = '99'::text THEN 'autre'::text
+            WHEN sa.l_comm2::text = '99'::text THEN 'inconnu'::text
             ELSE 'inconnu'::text
         END::character varying AS terr_stade_comm,
         CASE
