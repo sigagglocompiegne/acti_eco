@@ -2232,7 +2232,8 @@ INSERT INTO m_activite_eco.lt_eco_typcontact(
     ('12','Assistante'),
     ('13','DRH'),
     ('20','Propriétaire'),
-    ('30','Commercialisateur');
+    ('30','Commercialisateur'),
+    ('40','Agence immobilière');
 
 -- ################################################################# Domaine valeur - lt_eco_typevenmt  ###############################################
 
@@ -3210,6 +3211,8 @@ CREATE TABLE m_activite_eco.an_eco_contact
     idobjet character varying(15) COLLATE pg_catalog."default",
     idevenmt integer,
     source character varying(100) COLLATE pg_catalog."default",
+    typcontact_aut character varying(50) COLLATE pg_catalog."default",
+    source_maj timestamp without time zone,
     CONSTRAINT an_eco_contact_pkey PRIMARY KEY (idcontact),
     CONSTRAINT lt_eco_typcontact_fkey FOREIGN KEY (typcontact)
         REFERENCES m_activite_eco.lt_eco_typcontact (code) MATCH SIMPLE
@@ -3268,7 +3271,13 @@ COMMENT ON COLUMN m_activite_eco.an_eco_contact.idevenmt
 
 COMMENT ON COLUMN m_activite_eco.an_eco_contact.source
     IS 'Source de la mise à jour du contact';
-    
+
+COMMENT ON COLUMN m_activite_eco.an_eco_contact.typcontact_aut
+    IS 'Autre type de contact (à remplir si typcontact = autre)';
+
+COMMENT ON COLUMN m_activite_eco.an_eco_contact.source_maj
+    IS 'Date de la dernière mise à joru de la source';
+
 -- Index: an_eco_contact_idcontact_idx
 -- DROP INDEX m_activite_eco.an_eco_contact_idcontact_idx;
 
@@ -3907,7 +3916,8 @@ CREATE TABLE m_activite_eco.an_eco_loc_act
     date_sai timestamp without time zone,
     date_maj timestamp without time zone,
     op_sai character varying(20) COLLATE pg_catalog."default",
-    op_maj character varying(20) COLLATE pg_catalog."default",
+    op_maj character varying(20) COLLATE pg_catalog."default"
+    sourceloc_maj timestamp without time zone,
     CONSTRAINT an_eco_loc_act_pkey PRIMARY KEY (id),
     CONSTRAINT geo_eco_loc_act_occup_fkey FOREIGN KEY (occup)
         REFERENCES m_activite_eco.lt_eco_occuploc (code) MATCH SIMPLE
@@ -3982,7 +3992,11 @@ COMMENT ON COLUMN m_activite_eco.an_eco_loc_act.op_sai
 
 COMMENT ON COLUMN m_activite_eco.an_eco_loc_act.op_maj
     IS 'Opérateur de mise à jour';
-    
+
+
+COMMENT ON COLUMN m_activite_eco.an_eco_loc_act.sourceloc_maj
+    IS 'Date de mise à jour des informations du local';
+
 -- Index: an_eco_loc_act_id_idloc_idx
 -- DROP INDEX m_activite_eco.an_eco_loc_act_id_idloc_idx;
 
