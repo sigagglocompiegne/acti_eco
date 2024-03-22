@@ -546,6 +546,29 @@ Table en cours de refonte sera sans doute remplacée par une table contenant une
 
 ---
 
+### Classes d'objets attributaire :
+
+`[m_activite_eco].[an_eco_uf]` : Table alphanumérique contenant les informations relatives aux unités foncières demandées par le standard CNIG et réalisé à partir d'inventaire
+   
+|Nom attribut | Définition | Type | Valeurs par défaut |
+|:---|:---|:---|:---|
+|gid|Identifiant unique interne|integer|nextval('m_activite_eco.an_eco_uf_seq'::regclass)|
+|idsite|Identifiant du site|character varying(7)| |
+|site_uf_nbre|nombre d'unités foncières du site économique |integer| |
+|site_uf_vacant_nbre|nombre d'unités foncières vacantes du site économique |integer| |
+|site_taux_vacance|taux de vacance de la ZAE suivant article L318-8-2 CU (pourcentage)|double precision| |
+|site_uf_bati_nbre|nombre d'unités foncières bâties|integer| |
+|url|Lien vers l'inventaire|text| |
+|source_d|Organisme qui a réalisé l'inventaire|text| |
+|dbinsert|Date de saisie|timestamp without time zone| |
+|dbupdate|Date de mise à jour|timestamp without time zone| |
+|op_sai|Opérateur de saisie|character varying(80)| |
+|op_maj|Opérateur de mise à jour|character varying(80)| |
+|annnee_d|Annnée de l'inventaire|integer| |
+
+
+---
+
 `[m_activite_eco].[an_eco_bati_loc_media]` : table alphanumérique contenant l'ensemble des médias des bâtiments d'activité
    
 |Nom attribut | Définition | Type | Valeurs par défaut |
