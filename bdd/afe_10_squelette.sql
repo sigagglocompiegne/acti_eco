@@ -6047,7 +6047,7 @@ CREATE TABLE m_activite_eco.an_eco_uf (
 	CONSTRAINT an_eco_uf_pkey PRIMARY KEY (gid)
 );
 CREATE INDEX idx_5349_idsite ON m_activite_eco.an_eco_uf USING btree (idsite);
-COMMENT ON TABLE m_activite_eco.an_eco_uf IS 'Table alphanumérique contenant le suivi des DIA pour les lots à vocation économique (la gestion des DIA est géré par un outil d''OPERIS mais sans pouvoir récupérer les données brutes pour le moment)';
+COMMENT ON TABLE m_activite_eco.an_eco_uf IS 'Table alphanumérique contenant les informations relatives aux unités foncières demandées par le standard CNIG et réalisé à partir d'inventaire';
 
 -- Column comments
 
