@@ -423,6 +423,17 @@ CREATE SEQUENCE m_activite_eco.lk_eco_proc_seq
     MAXVALUE 9223372036854775807
     CACHE 1;
 
+-- ################################################# an_eco_uf_seq ##################################
+-- m_activite_eco.an_eco_uf_seq definition
+
+-- DROP SEQUENCE m_activite_eco.an_eco_uf_seq;
+
+CREATE SEQUENCE m_activite_eco.an_eco_uf_seq
+	INCREMENT BY 1
+	MINVALUE 1
+	MAXVALUE 9223372036854775807
+	START 1
+	NO CYCLE;
 
 -- ##########################################################################################################
 -- ################################################# SCHEMA M_AMENAGEMENT ##################################
@@ -437,6 +448,10 @@ CREATE SEQUENCE m_amenagement.lk_amt_lot_site_seq
     MINVALUE 1
     MAXVALUE 9223372036854775807
     CACHE 1;
+
+
+
+
 
 -- ##########################################################################################################
 -- ################################################# SCHEMA M_URBANISME_REG ##################################
@@ -6004,6 +6019,52 @@ CREATE TRIGGER t_t100_log
     ON m_activite_eco.lk_eco_proc
     FOR EACH ROW
     EXECUTE PROCEDURE m_activite_eco.ft_m_an_eco_log();
+
+
+
+-- ################################################# Classe des objets des établissements spécifiques : an_eco_uf ##################################
+
+-- m_activite_eco.an_eco_uf definition
+
+-- Drop table
+
+-- DROP TABLE m_activite_eco.an_eco_uf;
+
+CREATE TABLE m_activite_eco.an_eco_uf (
+	gid int4 DEFAULT nextval('m_activite_eco.an_eco_uf_seq'::regclass) NOT NULL, -- Identifiant unique interne
+	idsite varchar(7) NOT NULL, -- Identifiant du site
+	site_uf_nbre int4 NULL, -- nombre d'unités foncières du site économique 
+	site_uf_vacant_nbre int4 NULL, -- nombre d'unités foncières vacantes du site économique 
+	site_taux_vacance float8 NULL, -- taux de vacance de la ZAE suivant article L318-8-2 CU (pourcentage)
+	site_uf_bati_nbre int4 NULL, -- nombre d'unités foncières bâties
+	url text NULL, -- Lien vers l'inventaire
+	source_d text NULL, -- Organisme qui a réalisé l'inventaire
+	dbinsert timestamp NULL, -- Date de saisie
+	dbupdate timestamp NULL, -- Date de mise à jour
+	op_sai varchar(80) NULL, -- Opérateur de saisie
+	op_maj varchar(80) NULL, -- Opérateur de mise à jour
+	annnee_d int4 NULL, -- Annnée de l'inventaire
+	CONSTRAINT an_eco_uf_pkey PRIMARY KEY (gid)
+);
+CREATE INDEX idx_5349_idsite ON m_activite_eco.an_eco_uf USING btree (idsite);
+COMMENT ON TABLE m_activite_eco.an_eco_uf IS 'Table alphanumérique contenant le suivi des DIA pour les lots à vocation économique (la gestion des DIA est géré par un outil d''OPERIS mais sans pouvoir récupérer les données brutes pour le moment)';
+
+-- Column comments
+
+COMMENT ON COLUMN m_activite_eco.an_eco_uf.gid IS 'Identifiant unique interne';
+COMMENT ON COLUMN m_activite_eco.an_eco_uf.idsite IS 'Identifiant du site';
+COMMENT ON COLUMN m_activite_eco.an_eco_uf.site_uf_nbre IS 'nombre d''unités foncières du site économique ';
+COMMENT ON COLUMN m_activite_eco.an_eco_uf.site_uf_vacant_nbre IS 'nombre d''unités foncières vacantes du site économique ';
+COMMENT ON COLUMN m_activite_eco.an_eco_uf.site_taux_vacance IS 'taux de vacance de la ZAE suivant article L318-8-2 CU (pourcentage)';
+COMMENT ON COLUMN m_activite_eco.an_eco_uf.site_uf_bati_nbre IS 'nombre d''unités foncières bâties';
+COMMENT ON COLUMN m_activite_eco.an_eco_uf.url IS 'Lien vers l''inventaire';
+COMMENT ON COLUMN m_activite_eco.an_eco_uf.source_d IS 'Organisme qui a réalisé l''inventaire';
+COMMENT ON COLUMN m_activite_eco.an_eco_uf.dbinsert IS 'Date de saisie';
+COMMENT ON COLUMN m_activite_eco.an_eco_uf.dbupdate IS 'Date de mise à jour';
+COMMENT ON COLUMN m_activite_eco.an_eco_uf.op_sai IS 'Opérateur de saisie';
+COMMENT ON COLUMN m_activite_eco.an_eco_uf.op_maj IS 'Opérateur de mise à jour';
+COMMENT ON COLUMN m_activite_eco.an_eco_uf.annnee_d IS 'Annnée de l''inventaire';
+
 
 
 -- ##########################################################################################################
