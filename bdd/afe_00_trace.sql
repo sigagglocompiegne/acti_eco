@@ -28,4 +28,5 @@
 -- 2022-04-02 : GB / rédaction de la documentation
 -- 2023-03-16 : GB / ajout des contacts dans l'export des établissements
 -- 2024-01-04 : GB / Adaptation nouveau standard CNIG
+-- 2024-03-22 : GB / intégration données des inventaires des ZA(E)
 */
