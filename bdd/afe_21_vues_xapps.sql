@@ -2192,9 +2192,19 @@ COMMENT ON MATERIALIZED VIEW m_urbanisme_reg.xapps_geo_vmr_proc_zac
 -- ##################################################### xopendata_geo_eco_site_cnig #####################################################################
 
 -- m_activite_eco.xopendata_geo_eco_site_cnig source
+-- m_activite_eco.xopendata_geo_eco_site_cnig source
 
 CREATE OR REPLACE VIEW m_activite_eco.xopendata_geo_eco_site_cnig
-AS WITH req_etab_indus AS (
+AS WITH req_ter_vente AS (
+         SELECT s_1.idsite,
+            count(*) AS nb_terrain
+           FROM m_activite_eco.geo_eco_site s_1,
+            r_objet.geo_objet_fon_lot l,
+            m_amenagement.lk_amt_lot_site amt,
+            m_amenagement.an_amt_lot_stade st
+          WHERE (st.l_comm2::text = ANY (ARRAY['11'::character varying::text, '12'::character varying::text])) AND l.l_voca::text = '20'::text AND st.idgeolf = l.idgeolf AND s_1.idsite::text = amt.idsite::text AND amt.idgeolf = l.idgeolf
+          GROUP BY s_1.idsite
+        ), req_etab_indus AS (
          SELECT DISTINCT s_1.idsite,
             'oui'::text AS voca_indus
            FROM m_activite_eco.geo_eco_site s_1
@@ -2402,8 +2412,16 @@ AS WITH req_etab_indus AS (
     s.z_pmm_n AS port_nom,
     s.z_dst_pmm AS port_dist,
         CASE
-            WHEN s.promotion = true THEN 'oui'::text
-            ELSE 'non'::text
+            WHEN s.z_mai_ouvr::text = 'Agglomération de la Région de Compiègne et de la Basse Automne'::text THEN
+            CASE
+                WHEN vt.nb_terrain > 0 THEN 'régional et national'::text
+                ELSE 'non'::text
+            END::character varying
+            ELSE
+            CASE
+                WHEN pro.code::text = ANY (ARRAY['00'::character varying, '10'::character varying]::text[]) THEN 'non'::character varying
+                ELSE pro.valeur
+            END
         END AS promotion,
     s.promo_comment AS commentaire,
         CASE
@@ -2426,6 +2444,8 @@ AS WITH req_etab_indus AS (
      LEFT JOIN req_etab_tert eter ON eter.idsite::text = s.idsite::text
      LEFT JOIN req_etab_port epo ON epo.idsite::text = s.idsite::text
      LEFT JOIN req_etab_aport eapo ON eapo.idsite::text = s.idsite::text
+     LEFT JOIN req_ter_vente vt ON vt.idsite::text = s.idsite::text
+     LEFT JOIN m_activite_eco.lt_eco_promot pro ON pro.code::text = s.promot::text
   WHERE s.typsite::text <> '30'::text;
 
 COMMENT ON VIEW m_activite_eco.xopendata_geo_eco_site_cnig IS 'Vue de la couche site d''activité du standard CNIG 2023';
@@ -2497,7 +2517,6 @@ COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.commentaire IS 'Com
 COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.source_zonage IS 'Source de la délimitation du site';
 COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.epci IS 'EPCI compétente';
 COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.geom IS 'géométrie de l''objet';
-
 
 
 
