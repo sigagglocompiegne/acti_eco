@@ -1610,6 +1610,34 @@ $BODY$;
 COMMENT ON FUNCTION m_amenagement.ft_m_lot_insert()
     IS 'Fonction gérant l''intégration des informations des lots en fonction de leur vocation à la saisie des objets';
 
+-- ################################################################# ft_m_promotion_update  ###############################################
+
+-- DROP FUNCTION m_amenagement.ft_m_promotion_update();
+
+CREATE OR REPLACE FUNCTION m_amenagement.ft_m_promotion_update()
+ RETURNS trigger
+ LANGUAGE plpgsql
+AS $function$
+
+BEGIN
+
+-- mise à jour des codes promotions depuis la vue opendata après la mise à jour des stades d'aménagements
+update m_activite_eco.geo_eco_site 
+set promot = p.code from m_activite_eco.xopendata_geo_eco_site_cnig c, m_activite_eco.lt_eco_promot p 
+where c.promotion = p.valeur
+and geo_eco_site.epci = 'arc' and c.site_id = geo_eco_site.site_id;
+
+     return new ;
+
+END;
+
+$function$
+;
+
+COMMENT ON FUNCTION m_amenagement.ft_m_promotion_update() IS 'Fonction gérant l''automatisation de la promotion pour l''ARC lorsqu''un terrain est disponible et en vente';
+
+
+
 -- ##########################################################################################################
 -- ################################################# SCHEMA M_URBANISME_REG ##################################
 -- ##########################################################################################################
