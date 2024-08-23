@@ -7434,12 +7434,13 @@ Sans objet
 
 ## Traitement automatisé mis en place (Workflow de l'ETL FME)
 
- * `00_SIRENE_API_miseàjour_V2.fmw` : traitement FME permettant de préparer la mise à jour de SIRENE trimestriellement
- * `bloc\10_SIRENE_API_miseàjour_V2.fmw` : traitement FME appelé depuis le précédent pour l'intégration des nouveaux établissements ou la mise à jour des existants
+ * `eco_00_sirene_miseàjour_V311.fmw` : traitement FME permettant de préparer la mise à jour de SIRENE trimestriellement
+ * `bloc\eco_01_sirene_miseàjour_V311.fmw` : traitement FME appelé depuis le précédent pour l'intégration des nouveaux établissements ou la mise à jour des existants
   
 ## Export Open Data
 
- * `ACTIVITE_ECONOMIQUE_modele_geopicardie.fmw` : traitement FME permettant d'exporter les données de l'activité économique au modèle régional (en cours de basculement pour un export modèle CNIG)
+ * `open-data_activite_economique_geopicardie.fmw` : traitement FME permettant d'exporter les données de l'activité économique au modèle régional (en cours de basculement pour un export modèle CNIG)
 
+** ATTENTION : nouveau standard CNIG. De nouveaux exports sont en préparation. **
 
 ---
