@@ -1449,12 +1449,11 @@ CREATE INDEX xapps_geo_vmr_etab_api_gid_idx
 -- ##################################################### xapps_geo_vmr_etab_api_export_site #####################################################################
 -- m_activite_eco.xapps_geo_vmr_etab_api_export_site source
 
--- drop MATERIALIZED VIEW m_activite_eco.xapps_geo_vmr_etab_api_export_site;
+--drop MATERIALIZED VIEW m_activite_eco.xapps_geo_vmr_etab_api_export_site;
 CREATE MATERIALIZED VIEW m_activite_eco.xapps_geo_vmr_etab_api_export_site
 TABLESPACE pg_default
-AS 
-
-WITH req_tot AS (
+AS
+ WITH req_tot AS (
          WITH req_e AS (
                  SELECT DISTINCT e.idsiret,
                     e.l_nom,
@@ -1548,11 +1547,15 @@ WITH req_tot AS (
                     s.codepostaletablissement AS code_postal,
                     s.denominationusuelleetablissement,
                     s.enseigne1etablissement,
+                    s.enseigne2etablissement,
+                    s.enseigne3etablissement,                    
                     s.datecreationetablissement,
                     s.etatadministratifetablissement,
                     s.datederniertraitementetablissement,
                     ul.denominationunitelegale,
                     ul.denominationusuelle1unitelegale,
+					ul.denominationusuelle2unitelegale,                    
+					ul.denominationusuelle3unitelegale,                    					
                     ul.nomunitelegale,
                     (ul.nomusageunitelegale::text || ' '::text) || ul.prenom1unitelegale::text AS personnephysique,
                     s.nomenclatureactiviteprincipaleetablissement AS nomen_acti_princ,
@@ -1590,10 +1593,14 @@ WITH req_tot AS (
                   WHERE s.etatadministratifetablissement::text = 'A'::text
                 )
          SELECT DISTINCT e.idsiret,
-            si.denominationusuelleetablissement,
+	        si.denominationusuelleetablissement,
             si.enseigne1etablissement,
+            si.enseigne2etablissement,
+            si.enseigne3etablissement,
             si.denominationunitelegale,
             si.denominationusuelle1unitelegale,
+            si.denominationusuelle2unitelegale,
+            si.denominationusuelle3unitelegale,
             si.nomunitelegale,
             si.personnephysique,
             e.l_nom,
@@ -1759,8 +1766,12 @@ WITH req_tot AS (
          SELECT sp.idsiret,
             'non renseignée'::character varying AS denominationusuelleetablissement,
             'non renseignée'::character varying AS enseigne1etablissement,
+            'non renseignée'::character varying AS enseigne2etablissement,
+            'non renseignée'::character varying AS enseigne3etablissement,
             'non renseignée'::character varying AS denominationunitelegale,
             'non renseignée'::character varying AS denominationusuelle1unitelegale,
+            'non renseignée'::character varying AS denominationusuelle2unitelegale,
+            'non renseignée'::character varying AS denominationusuelle3unitelegale,
             'non renseignée'::character varying AS nomunitelegale,
             'non renseignée'::character varying AS personnephysique,
             sp.nom AS l_nom,
@@ -1834,10 +1845,30 @@ WITH req_tot AS (
         )
  SELECT row_number() OVER () AS gid,
     req_tot.idsiret,
+    -- sélection du nom de l'entrepruse pour l'export (synthèse des noms détaillées)
+    case 
+    	when (req_tot.l_nom is not null and req_tot.l_nom <> '' and req_tot.l_nom <> '[ND]') then req_tot.l_nom
+    	when (req_tot.denominationusuelleetablissement is not null and req_tot.denominationusuelleetablissement <> '' and req_tot.denominationusuelleetablissement <> '[ND]') then req_tot.denominationusuelleetablissement
+    	when (req_tot.enseigne1etablissement is not null and req_tot.enseigne1etablissement <> '' and req_tot.enseigne1etablissement <> '[ND]') then req_tot.enseigne1etablissement
+    	when (req_tot.enseigne2etablissement is not null and req_tot.enseigne2etablissement <> '' and req_tot.enseigne2etablissement <> '[ND]') then req_tot.enseigne2etablissement
+    	when (req_tot.enseigne3etablissement is not null and req_tot.enseigne3etablissement <> '' and req_tot.enseigne3etablissement <> '[ND]') then req_tot.enseigne3etablissement
+    	when (req_tot.denominationunitelegale is not null and req_tot.denominationunitelegale <> '' and req_tot.denominationunitelegale <> '[ND]') then req_tot.denominationunitelegale
+    	when (req_tot.denominationusuelle1unitelegale is not null and req_tot.denominationunitelegale <> '' and req_tot.denominationunitelegale <> '[ND]') then req_tot.denominationusuelle1unitelegale
+    	when (req_tot.denominationusuelle2unitelegale is not null and req_tot.denominationusuelle2unitelegale <> '' and req_tot.denominationusuelle2unitelegale <> '[ND]') then req_tot.denominationusuelle2unitelegale
+    	when (req_tot.denominationusuelle3unitelegale is not null and req_tot.denominationusuelle3unitelegale <> '' and req_tot.denominationusuelle3unitelegale <> '[ND]') then req_tot.denominationusuelle3unitelegale
+    	when (req_tot.nomunitelegale is not null and req_tot.nomunitelegale <> '' and req_tot.nomunitelegale <> '[ND]') then req_tot.nomunitelegale
+    	when (req_tot.personnephysique is not null and req_tot.personnephysique <> '' and req_tot.personnephysique <> '[ND] [ND]') then req_tot.personnephysique
+    else 'Non communicable'
+    end
+    as libelle_entreprise,
     req_tot.denominationusuelleetablissement,
     req_tot.enseigne1etablissement,
+    req_tot.enseigne2etablissement,
+    req_tot.enseigne3etablissement,
     req_tot.denominationunitelegale,
     req_tot.denominationusuelle1unitelegale,
+    req_tot.denominationusuelle2unitelegale,
+    req_tot.denominationusuelle3unitelegale,
     req_tot.nomunitelegale,
     req_tot.personnephysique,
     req_tot.l_nom,
@@ -1863,9 +1894,112 @@ WITH req_tot AS (
     req_tot.epci,
     req_tot.site,
     req_tot.idsite,
-    case when req_tot.adresse_loc is null then 'Etablissement localisé sur une adresse sans numéro (non conforme)' else req_tot.adresse_loc end as adresse_loc ,
+        CASE
+            WHEN req_tot.adresse_loc IS NULL THEN 'Etablissement localisé sur une adresse sans numéro (non conforme)'::text
+            ELSE req_tot.adresse_loc
+        END AS adresse_loc,
     req_tot.x_l93,
     req_tot.y_l93,
+    ((((
+        CASE
+            WHEN req_tot.typcontact1::text = 'Directeur - Responsable'::text THEN req_tot.nom1
+            ELSE ''::character varying
+        END::text ||
+        CASE
+            WHEN req_tot.typcontact2::text = 'Directeur - Responsable'::text THEN req_tot.nom2
+            ELSE ''::character varying
+        END::text) ||
+        CASE
+            WHEN req_tot.typcontact3::text = 'Directeur - Responsable'::text THEN req_tot.nom3
+            ELSE ''::character varying
+        END::text) ||
+        CASE
+            WHEN req_tot.typcontact4::text = 'Directeur - Responsable'::text THEN req_tot.nom4
+            ELSE ''::character varying
+        END::text) ||
+        CASE
+            WHEN req_tot.typcontact5::text = 'Directeur - Responsable'::text THEN req_tot.nom5
+            ELSE ''::character varying
+        END::text) ||
+        CASE
+            WHEN req_tot.typcontact6::text = 'Directeur - Responsable'::text THEN req_tot.nom6
+            ELSE ''::character varying
+        END::text AS directeur_nom,
+    ((((
+        CASE
+            WHEN req_tot.typcontact1::text = 'Directeur - Responsable'::text THEN req_tot.tel1
+            ELSE ''::character varying
+        END::text ||
+        CASE
+            WHEN req_tot.typcontact2::text = 'Directeur - Responsable'::text THEN req_tot.tel2
+            ELSE ''::character varying
+        END::text) ||
+        CASE
+            WHEN req_tot.typcontact3::text = 'Directeur - Responsable'::text THEN req_tot.tel3
+            ELSE ''::character varying
+        END::text) ||
+        CASE
+            WHEN req_tot.typcontact4::text = 'Directeur - Responsable'::text THEN req_tot.tel4
+            ELSE ''::character varying
+        END::text) ||
+        CASE
+            WHEN req_tot.typcontact5::text = 'Directeur - Responsable'::text THEN req_tot.tel5
+            ELSE ''::character varying
+        END::text) ||
+        CASE
+            WHEN req_tot.typcontact6::text = 'Directeur - Responsable'::text THEN req_tot.tel6
+            ELSE ''::character varying
+        END::text AS directeur_tel,
+    ((((
+        CASE
+            WHEN req_tot.typcontact1::text = 'Directeur - Responsable'::text THEN req_tot.portable1
+            ELSE ''::character varying
+        END::text ||
+        CASE
+            WHEN req_tot.typcontact2::text = 'Directeur - Responsable'::text THEN req_tot.portable2
+            ELSE ''::character varying
+        END::text) ||
+        CASE
+            WHEN req_tot.typcontact3::text = 'Directeur - Responsable'::text THEN req_tot.portable3
+            ELSE ''::character varying
+        END::text) ||
+        CASE
+            WHEN req_tot.typcontact4::text = 'Directeur - Responsable'::text THEN req_tot.portable4
+            ELSE ''::character varying
+        END::text) ||
+        CASE
+            WHEN req_tot.typcontact5::text = 'Directeur - Responsable'::text THEN req_tot.portable5
+            ELSE ''::character varying
+        END::text) ||
+        CASE
+            WHEN req_tot.typcontact6::text = 'Directeur - Responsable'::text THEN req_tot.portable6
+            ELSE ''::character varying
+        END::text AS directeur_port,
+    ((((
+        CASE
+            WHEN req_tot.typcontact1::text = 'Directeur - Responsable'::text THEN req_tot.email1
+            ELSE ''::character varying
+        END::text ||
+        CASE
+            WHEN req_tot.typcontact2::text = 'Directeur - Responsable'::text THEN req_tot.email2
+            ELSE ''::character varying
+        END::text) ||
+        CASE
+            WHEN req_tot.typcontact3::text = 'Directeur - Responsable'::text THEN req_tot.email3
+            ELSE ''::character varying
+        END::text) ||
+        CASE
+            WHEN req_tot.typcontact4::text = 'Directeur - Responsable'::text THEN req_tot.email4
+            ELSE ''::character varying
+        END::text) ||
+        CASE
+            WHEN req_tot.typcontact5::text = 'Directeur - Responsable'::text THEN req_tot.email5
+            ELSE ''::character varying
+        END::text) ||
+        CASE
+            WHEN req_tot.typcontact6::text = 'Directeur - Responsable'::text THEN req_tot.email6
+            ELSE ''::character varying
+        END::text AS directeur_email,
     req_tot.nom1,
     req_tot.typcontact1,
     req_tot.tel1,
@@ -1904,7 +2038,7 @@ WITH DATA;
 COMMENT ON MATERIALIZED VIEW m_activite_eco.xapps_geo_vmr_etab_api_export_site IS 'Vue géographique matérialisée (rafraichie ttes les nuits) composée des éléments sur les établissements actifs (API Sirene) permettant de gérer des exports de listes par site dans GEO';
 
 
-   
+
 
 
 
