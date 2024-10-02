@@ -2326,10 +2326,32 @@ COMMENT ON MATERIALIZED VIEW m_urbanisme_reg.xapps_geo_vmr_proc_zac
 -- ##################################################### xopendata_geo_eco_site_cnig #####################################################################
 
 -- m_activite_eco.xopendata_geo_eco_site_cnig source
--- m_activite_eco.xopendata_geo_eco_site_cnig source
 
+--drop view if exists m_activite_eco.xopendata_geo_eco_site_cnig;
 CREATE OR REPLACE VIEW m_activite_eco.xopendata_geo_eco_site_cnig
-AS WITH req_ter_vente AS (
+AS  WITH 
+		req_ter_vente_min as (
+			 SELECT s_1.idsite,
+            case when count(*) = 1 then 0 else round(min(l.sup_m2/10000)::numeric,2) end AS surf_min
+           FROM m_activite_eco.geo_eco_site s_1,
+            r_objet.geo_objet_fon_lot l,
+            m_amenagement.lk_amt_lot_site amt,
+            m_amenagement.an_amt_lot_stade st
+          WHERE (st.l_comm2::text = ANY (ARRAY['11'::character varying::text, '12'::character varying::text])) AND l.l_voca::text = '20'::text AND st.idgeolf = l.idgeolf 
+          AND s_1.idsite::text = amt.idsite::text AND amt.idgeolf = l.idgeolf
+          GROUP BY s_1.idsite
+		), 
+		req_ter_vente_max as (
+			 SELECT s_1.idsite,
+            round(max(l.sup_m2/10000)::numeric,2) AS surf_max
+           FROM m_activite_eco.geo_eco_site s_1,
+            r_objet.geo_objet_fon_lot l,
+            m_amenagement.lk_amt_lot_site amt,
+            m_amenagement.an_amt_lot_stade st
+          WHERE (st.l_comm2::text = ANY (ARRAY['11'::character varying::text, '12'::character varying::text])) AND l.l_voca::text = '20'::text AND st.idgeolf = l.idgeolf 
+          AND s_1.idsite::text = amt.idsite::text AND amt.idgeolf = l.idgeolf 
+          GROUP BY s_1.idsite
+		), req_ter_vente AS (
          SELECT s_1.idsite,
             count(*) AS nb_terrain
            FROM m_activite_eco.geo_eco_site s_1,
@@ -2562,6 +2584,18 @@ AS WITH req_ter_vente AS (
             WHEN s.typsite::text = '40'::text THEN 'Documents d''urbanisme'::text
             ELSE 'Observatoire des sites d''activités du GéoCompiégnois'::text
         END AS source_zonage,
+    s.comm_majeure_nfi as site_comm_majeure_nfi,
+    s.surf_comm_date_nfi as site_surf_comm_date_nfi,
+    vmin.surf_min as site_surf_comm_min_nfi,
+    vmax.surf_max as site_surf_comm_max_nfi,
+    s.aeroport_dist_duree_nfi,
+    s.aeroport_nom2_nfi,
+    s.aeroport_dist_duree_2_nfi,
+    case when s.seveso_nfi = 'nr' then null else s.seveso_nfi end as site_seveso_nfi,
+    case when s.afr_nfi = 'nr' then null else s.afr_nfi end as site_afr_nfi,
+    string_agg(le.nom,',') as site_entreprises_princ_nfi,
+    s.infos_compl_nfi as site_infos_compl_nfi,
+    case when s.aides_publiques_nfi = 'nr' then null else s.aides_publiques_nfi end as site_aides_publiques_nfi,
     s.epci,
     s.geom
    FROM m_activite_eco.geo_eco_site s
@@ -2580,8 +2614,27 @@ AS WITH req_ter_vente AS (
      LEFT JOIN req_etab_aport eapo ON eapo.idsite::text = s.idsite::text
      LEFT JOIN req_ter_vente vt ON vt.idsite::text = s.idsite::text
      LEFT JOIN m_activite_eco.lt_eco_promot pro ON pro.code::text = s.promot::text
-  WHERE s.typsite::text <> '30'::text;
+     left join m_activite_eco.xapps_an_vmr_site_act_10 le on le.idsite = s.idsite
+     left join req_ter_vente_min vmin on vmin.idsite = s.idsite
+     left join req_ter_vente_max vmax on vmax.idsite = s.idsite
+  WHERE s.typsite::text <> '30'::text
+  group by s.idsite,ss."Surface du site", ss.surf_utile,tc.valeur,c.commune,mt.valeur,ss.nb_etab,ss.eff_etab,ss.surf_vente,ss.surf_projet,ei.voca_indus,ec.voca_comm,
+  eter.voca_tert,ea.voca_arti,eto.voca_touri,epo.voca_port,eapo.voca_aport,vt.nb_terrain,pro.code,vmin.surf_min, vmax.surf_max
+  ;
 
+ 
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_comm_majeure_nfi IS 'Nom de la commune majeure proche du site économique (attribut NFI)';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_surf_comm_date_nfi IS 'Date de disponibilité, en fonction du phasage d''aménagement de la zone (attribut NFI)';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_surf_comm_min_nfi IS 'Surface minimale disponible pour un terrain en hectare';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_surf_comm_max_nfi IS 'Surface maximale disponible pour un terrain en hectare';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.aeroport_dist_duree_nfi IS 'Distance en minutes de l''aéroport le plus proche, par le moyen le plus rapide (attribut NFI)';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.aeroport_nom2_nfi IS 'Nom du second aéroport le plus proche';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.aeroport_dist_duree_2_nfi IS 'Distance en minutes du second aéroport le plus proche, par le moyen de transport le plus rapide (attribut NFI)';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_seveso_nfi IS 'Possibilité d''implantation SEVESO (attribut NFI)';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_afr_nfi IS 'Zonage AFR sur le site (zonage à vérifier pour chaque terrain en cas de cession) (attribut NFI)';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_entreprises_princ_nfi IS 'Entreprises voisines / sur la zone';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_infos_compl_nfi IS 'Commentaires (attribut NFI)';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_aides_publiques_nfi IS 'Site éligible aux aides publiques (attribut NFI)';
 COMMENT ON VIEW m_activite_eco.xopendata_geo_eco_site_cnig IS 'Vue de la couche site d''activité du standard CNIG 2023';
 COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_id IS 'identifiant du site économique';
 COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.pole_id IS 'identifiant du pôle où se situe le site économique';
@@ -2651,6 +2704,7 @@ COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.commentaire IS 'Com
 COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.source_zonage IS 'Source de la délimitation du site';
 COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.epci IS 'EPCI compétente';
 COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.geom IS 'géométrie de l''objet';
+
 
 
 
