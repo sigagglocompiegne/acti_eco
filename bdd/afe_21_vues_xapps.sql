@@ -2323,35 +2323,33 @@ COMMENT ON MATERIALIZED VIEW m_urbanisme_reg.xapps_geo_vmr_proc_zac
 -- ########################################################### SCHEMA m_activite_eco ################################################################
 
 
--- ##################################################### xopendata_geo_eco_site_cnig #####################################################################
+-- ##################################################### xopendata_geo_vmr_eco_site_cnig #####################################################################
+-- m_activite_eco.xopendata_geo_vmr_eco_site_cnig source
 
--- m_activite_eco.xopendata_geo_eco_site_cnig source
-
---drop view if exists m_activite_eco.xopendata_geo_eco_site_cnig;
-CREATE OR REPLACE VIEW m_activite_eco.xopendata_geo_eco_site_cnig
-AS  WITH 
-		req_ter_vente_min as (
-			 SELECT s_1.idsite,
-            case when count(*) = 1 then 0 else round(min(l.sup_m2/10000)::numeric,2) end AS surf_min
+CREATE MATERIALIZED VIEW m_activite_eco.xopendata_geo_vmr_eco_site_cnig
+TABLESPACE pg_default
+AS WITH req_ter_vente_min AS (
+         SELECT s_1.idsite,
+                CASE
+                    WHEN count(*) = 1 THEN 0::numeric
+                    ELSE round(min(l.sup_m2 / 10000::double precision)::numeric, 2)
+                END AS surf_min
            FROM m_activite_eco.geo_eco_site s_1,
             r_objet.geo_objet_fon_lot l,
             m_amenagement.lk_amt_lot_site amt,
             m_amenagement.an_amt_lot_stade st
-          WHERE (st.l_comm2::text = ANY (ARRAY['11'::character varying::text, '12'::character varying::text])) AND l.l_voca::text = '20'::text AND st.idgeolf = l.idgeolf 
-          AND s_1.idsite::text = amt.idsite::text AND amt.idgeolf = l.idgeolf
+          WHERE (st.l_comm2::text = ANY (ARRAY['11'::character varying::text, '12'::character varying::text])) AND l.l_voca::text = '20'::text AND st.idgeolf = l.idgeolf AND s_1.idsite::text = amt.idsite::text AND amt.idgeolf = l.idgeolf
           GROUP BY s_1.idsite
-		), 
-		req_ter_vente_max as (
-			 SELECT s_1.idsite,
-            round(max(l.sup_m2/10000)::numeric,2) AS surf_max
+        ), req_ter_vente_max AS (
+         SELECT s_1.idsite,
+            round(max(l.sup_m2 / 10000::double precision)::numeric, 2) AS surf_max
            FROM m_activite_eco.geo_eco_site s_1,
             r_objet.geo_objet_fon_lot l,
             m_amenagement.lk_amt_lot_site amt,
             m_amenagement.an_amt_lot_stade st
-          WHERE (st.l_comm2::text = ANY (ARRAY['11'::character varying::text, '12'::character varying::text])) AND l.l_voca::text = '20'::text AND st.idgeolf = l.idgeolf 
-          AND s_1.idsite::text = amt.idsite::text AND amt.idgeolf = l.idgeolf 
+          WHERE (st.l_comm2::text = ANY (ARRAY['11'::character varying::text, '12'::character varying::text])) AND l.l_voca::text = '20'::text AND st.idgeolf = l.idgeolf AND s_1.idsite::text = amt.idsite::text AND amt.idgeolf = l.idgeolf
           GROUP BY s_1.idsite
-		), req_ter_vente AS (
+        ), req_ter_vente AS (
          SELECT s_1.idsite,
             count(*) AS nb_terrain
            FROM m_activite_eco.geo_eco_site s_1,
@@ -2575,7 +2573,7 @@ AS  WITH
             END::character varying
             ELSE
             CASE
-                WHEN pro.code::text = ANY (ARRAY['00'::character varying, '10'::character varying]::text[]) THEN 'non'::character varying
+                WHEN pro.code::text = ANY (ARRAY['00'::character varying::text, '10'::character varying::text]) THEN 'non'::character varying
                 ELSE pro.valeur
             END
         END AS promotion,
@@ -2584,18 +2582,27 @@ AS  WITH
             WHEN s.typsite::text = '40'::text THEN 'Documents d''urbanisme'::text
             ELSE 'Observatoire des sites d''activités du GéoCompiégnois'::text
         END AS source_zonage,
-    s.comm_majeure_nfi as site_comm_majeure_nfi,
-    s.surf_comm_date_nfi as site_surf_comm_date_nfi,
-    vmin.surf_min as site_surf_comm_min_nfi,
-    vmax.surf_max as site_surf_comm_max_nfi,
+    s.comm_majeure_nfi AS site_comm_majeure_nfi,
+    s.surf_comm_date_nfi AS site_surf_comm_date_nfi,
+    vmin.surf_min AS site_surf_comm_min_nfi,
+    vmax.surf_max AS site_surf_comm_max_nfi,
     s.aeroport_dist_duree_nfi,
     s.aeroport_nom2_nfi,
     s.aeroport_dist_duree_2_nfi,
-    case when s.seveso_nfi = 'nr' then null else s.seveso_nfi end as site_seveso_nfi,
-    case when s.afr_nfi = 'nr' then null else s.afr_nfi end as site_afr_nfi,
-    string_agg(le.nom,',') as site_entreprises_princ_nfi,
-    s.infos_compl_nfi as site_infos_compl_nfi,
-    case when s.aides_publiques_nfi = 'nr' then null else s.aides_publiques_nfi end as site_aides_publiques_nfi,
+        CASE
+            WHEN s.seveso_nfi::text = 'nr'::text THEN NULL::character varying
+            ELSE s.seveso_nfi
+        END AS site_seveso_nfi,
+        CASE
+            WHEN s.afr_nfi::text = 'nr'::text THEN NULL::character varying
+            ELSE s.afr_nfi
+        END AS site_afr_nfi,
+    string_agg(le.nom, ','::text) AS site_entreprises_princ_nfi,
+    s.infos_compl_nfi AS site_infos_compl_nfi,
+        CASE
+            WHEN s.aides_publiques_nfi::text = 'nr'::text THEN NULL::character varying
+            ELSE s.aides_publiques_nfi
+        END AS site_aides_publiques_nfi,
     s.epci,
     s.geom
    FROM m_activite_eco.geo_eco_site s
@@ -2614,105 +2621,148 @@ AS  WITH
      LEFT JOIN req_etab_aport eapo ON eapo.idsite::text = s.idsite::text
      LEFT JOIN req_ter_vente vt ON vt.idsite::text = s.idsite::text
      LEFT JOIN m_activite_eco.lt_eco_promot pro ON pro.code::text = s.promot::text
-     left join m_activite_eco.xapps_an_vmr_site_act_10 le on le.idsite = s.idsite
-     left join req_ter_vente_min vmin on vmin.idsite = s.idsite
-     left join req_ter_vente_max vmax on vmax.idsite = s.idsite
+     LEFT JOIN m_activite_eco.xapps_an_vmr_site_act_10 le ON le.idsite::text = s.idsite::text
+     LEFT JOIN req_ter_vente_min vmin ON vmin.idsite::text = s.idsite::text
+     LEFT JOIN req_ter_vente_max vmax ON vmax.idsite::text = s.idsite::text
   WHERE s.typsite::text <> '30'::text
-  group by s.idsite,ss."Surface du site", ss.surf_utile,tc.valeur,c.commune,mt.valeur,ss.nb_etab,ss.eff_etab,ss.surf_vente,ss.surf_projet,ei.voca_indus,ec.voca_comm,
-  eter.voca_tert,ea.voca_arti,eto.voca_touri,epo.voca_port,eapo.voca_aport,vt.nb_terrain,pro.code,vmin.surf_min, vmax.surf_max
-  ;
+  GROUP BY s.idsite, ss."Surface du site", ss.surf_utile, tc.valeur, c.commune, mt.valeur, ss.nb_etab, ss.eff_etab, ss.surf_vente, ss.surf_projet, ei.voca_indus, ec.voca_comm, eter.voca_tert, ea.voca_arti, eto.voca_touri, epo.voca_port, eapo.voca_aport, vt.nb_terrain, pro.code, vmin.surf_min, vmax.surf_max
+WITH DATA;
 
- 
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_comm_majeure_nfi IS 'Nom de la commune majeure proche du site économique (attribut NFI)';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_surf_comm_date_nfi IS 'Date de disponibilité, en fonction du phasage d''aménagement de la zone (attribut NFI)';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_surf_comm_min_nfi IS 'Surface minimale disponible pour un terrain en hectare';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_surf_comm_max_nfi IS 'Surface maximale disponible pour un terrain en hectare';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.aeroport_dist_duree_nfi IS 'Distance en minutes de l''aéroport le plus proche, par le moyen le plus rapide (attribut NFI)';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.aeroport_nom2_nfi IS 'Nom du second aéroport le plus proche';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.aeroport_dist_duree_2_nfi IS 'Distance en minutes du second aéroport le plus proche, par le moyen de transport le plus rapide (attribut NFI)';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_seveso_nfi IS 'Possibilité d''implantation SEVESO (attribut NFI)';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_afr_nfi IS 'Zonage AFR sur le site (zonage à vérifier pour chaque terrain en cas de cession) (attribut NFI)';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_entreprises_princ_nfi IS 'Entreprises voisines / sur la zone';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_infos_compl_nfi IS 'Commentaires (attribut NFI)';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_aides_publiques_nfi IS 'Site éligible aux aides publiques (attribut NFI)';
-COMMENT ON VIEW m_activite_eco.xopendata_geo_eco_site_cnig IS 'Vue de la couche site d''activité du standard CNIG 2023';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_id IS 'identifiant du site économique';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.pole_id IS 'identifiant du pôle où se situe le site économique';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_nom IS 'nom du site économique';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_type IS 'type de site économique';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_vocadomi IS 'vocation dominante constatée du site économique';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_etat IS 'état du site économique (en projet, création, etc.)';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_surf_brute IS 'superficie totale du site économique en hectare';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_surf_utile IS 'Surface (en hectare) destinée à accueillir les implantations d''activités, calculée comme la somme des valeurs « terr_surf_brute » des terrains économiques du site dont la valeur de l’attribut  terr_utile est « oui ».
-La différence entre surface brute et surface utile résulte de l''emprise des équipements publics (voirie, etc.) les délaissés et les éventuelles surfaces réservées à d''autres destinations (logements, loisirs, etc).';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_creation_date IS 'année de création du site économique. Exemple : 2015';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_identif_date IS 'date d''identification du site économique. Exemple : 2016-03-26';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_actu_date IS 'date de dernière actualisation des informations sur le site économique.';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_description IS 'commentaire libre contenant des infos descriptives du site économique';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.source_producteur IS 'identification du producteur de la donnée. Exemples : Région Occitanie ; DDT des Ardennes ; Agence d''urbanisme de ..., etc.';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_quali_territoire IS 'qualification ou labellisation territoriale ou régionale';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_evol_urba IS 'type d''urbanisation (extension, renouvellement urbain)';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_url IS 'URL de la page web descriptive du site économique';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_epci_nom IS 'nom de l''EPCI autorité compétente de la ZAE';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_epci_siren IS 'code SIREN de l''EPCI autorité compétente de la ZAE';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_comm_nom IS 'nom de la commune dont le site éco. occupe la plus grande superficie';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_comm_insee IS 'code INSEE de la commune principale dâ€™implantation du site Ã©conomique';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_moa_type IS 'type de maîtrise d''ouvrage';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_moa_nom IS 'nom de la maîtrise d''ouvrage et/ou gestionnaire du site économique';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_moa_amngt IS 'nom de la maîtrise d''ouvrage en charge de l''aménagement';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_moa_comm IS 'nom de la maîtrise d''ouvrage en charge la commercialisation';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_uf_nbre IS 'nombre d''unités foncières du site économique';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_uf_vacant_nbre IS 'nombre d''unités foncières vacantes du site économique';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_taux_vacance IS 'taux de vacance de la ZAE suivant article L318-8-2 CU (pourcentage)';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_uf_bati_nbre IS 'nombre d''unités foncières bâties';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_nb_etab IS 'nombre d''établissements économique (hors SCI) dans le site éco.';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_nb_emploi IS 'estimation du nombre d''emplois du site Ã©conomique';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_geomsurf IS 'multi géométries surfaciques du périmètre du site économique au format GeoJSON';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_geompoint IS 'coordonnées géo. du centroïde du site économique au format GeoJSON';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_media IS 'URL pointant vers un (des) média(s) : photo, vidéo, etc. du site éco.';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_surf_comm_dispo IS 'surface disponible à la commercialisation, en hectare';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_surf_projet IS 'surface réservée pour des projets en cours, en hectare';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_voca_industrielle IS 'le site comprend (oui / non) au moins une activité industrielle';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_voca_commerciale IS 'le site comprend (oui / non) au moins une activité commerciale';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_voca_tertiaire IS 'le site comprend (oui / non) au moins une activité tertiaire';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_voca_artisanale IS 'le site comprend (oui / non) au moins une activité artisanale';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_voca_touristique IS 'le site comprend (oui / non) au moins une activité touristique';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_voca_portuaire IS 'le site comprend (oui / non) au moins une activité portuaire';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.site_voca_aeroportuaire IS 'le site comprend (oui / non) au moins une activité aéroportuaire';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.reseau_eau_pluviale IS 'le site est équipé (oui / non) d''un réseau d''eau pluviale';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.reseau_eau_potable IS 'le site est équipé (oui / non) d''un réseau d''eau potable';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.reseau_assainissement IS 'le site est équipé (oui / non) d''un réseau d''assainissement';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.reseau_gaz IS 'le site est équipé (oui / non) d''un réseau de gaz';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.reseau_electrique IS 'le site est équipé (oui / non) d''un réseau électrique';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.reseau_fibre_optique IS 'le site est équipé (oui / non) d''un réseau de fibre optique';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.reseau_fret_ferroviaire IS 'présence (oui / non) d''une Installation Terminale Embranchée (ITE)';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.reseau_fluvial IS 'présence (oui / non) d''un quai fluvial';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.desserte_tc IS 'présence (oui / non) d''une desserte en transport en commun';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.desserte_route_nom IS 'libellé de la desserte routière principale';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.autoroute_nom IS 'libellé de l''autoroute la plus proche';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.autoroute_echang_dist IS 'distance de l''échangeur autoroutier le plus proche';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.gare_nom IS 'nom de la gare de voyageurs la plus proche';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.gare_dist IS 'distance (en km) de la gare de voyageurs la plus proche, par la route';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.gare_fret_nom IS 'nom de la gare de fret la plus proche';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.gare_fret_dist IS 'distance (en km) de la gare de fret la plus proche, par la route';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.aeroport_nom IS 'nom de l''aéroport le plus proche';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.aeroport_dist IS 'distance (en km) de l''aéroport le plus proche, par la route';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.port_nom IS 'nom du port maritime ou fluvial le plus proche';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.port_dist IS 'distance (en km) du port maritime ou fluvial le plus proche, par la route';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.promotion IS 'Accord pour promouvoir l''offre foncière disponible d''un site';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.commentaire IS 'Commentaire libre pour échange avec les équipes de Geo2France';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.source_zonage IS 'Source de la délimitation du site';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.epci IS 'EPCI compétente';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_site_cnig.geom IS 'géométrie de l''objet';
+-- ##################################################### xopendata_geo_vmr_eco_etab_cnig #####################################################################
+-- m_activite_eco.xopendata_geo_vmr_eco_etab_cnig source
+
+CREATE MATERIALIZED VIEW m_activite_eco.xopendata_geo_vmr_eco_etab_cnig
+TABLESPACE pg_default
+AS SELECT si.siret,
+    si.siren,
+    (((f.insee::text || '_'::text) || 'TERRAIN-ECO'::text) || '_'::text) || f.idgeolf AS terr_id,
+        CASE
+            WHEN esi.geom IS NOT NULL THEN bal.id_ban_adresse
+            ELSE NULL::text
+        END AS ban_id,
+    NULL::unknown AS bat_id,
+        CASE
+            WHEN bal.id_ban_adresse IS NULL THEN ((((((
+            CASE
+                WHEN si.numerovoieetablissement IS NOT NULL AND si.numerovoieetablissement::text <> '[ND]'::text THEN si.numerovoieetablissement
+                ELSE ''::character varying
+            END::text ||
+            CASE
+                WHEN si.indicerepetitionetablissement IS NOT NULL AND si.indicerepetitionetablissement::text <> '[ND]'::text THEN si.indicerepetitionetablissement
+                ELSE ''::character varying
+            END::text) || ' '::text) ||
+            CASE
+                WHEN si.libellevoieetablissement IS NOT NULL AND si.libellevoieetablissement::text <> '[ND]'::text THEN si.libellevoieetablissement
+                ELSE ''::character varying
+            END::text) || ' '::text) ||
+            CASE
+                WHEN si.codepostaletablissement IS NOT NULL AND si.codepostaletablissement::text <> '[ND]'::text THEN si.codepostaletablissement
+                ELSE ''::character varying
+            END::text) || ' '::text) ||
+            CASE
+                WHEN si.libellecommuneetablissement IS NOT NULL AND si.libellecommuneetablissement::text <> '[ND]'::text THEN si.libellecommuneetablissement
+                ELSE ''::character varying
+            END::text
+            ELSE NULL::text
+        END AS etab_adresse,
+        CASE
+            WHEN ul.denominationunitelegale IS NOT NULL THEN ul.denominationunitelegale
+            ELSE ul.nomunitelegale
+        END AS etab_raison_sociale,
+    ul.categoriejuridiqueunitelegale AS etab_nat_juridique,
+    esi.libelle_entreprise AS etab_nom,
+    g.lib_epci AS epci_nom,
+    g.epci AS epci_siren,
+    g.libgeo AS comm_nom,
+    e.insee AS comm_insee,
+        CASE
+            WHEN si.etablissementsiege IS TRUE THEN 'oui'::text
+            ELSE 'non'::text
+        END AS etab_siege,
+    to_char(si.datecreationetablissement, 'YYYY-MM-DD'::text) AS etab_creation_date,
+    to_char(si.datederniertraitementetablissement, 'YYYY-MM-DD'::text) AS etab_actu_date,
+        CASE
+            WHEN e.etatadministratifetablissement::text = 'A'::text THEN 'oui'::text
+            ELSE 'non'::text
+        END AS etab_actif,
+    NULL::unknown AS etab_fermeture_date,
+    NULL::unknown AS etab_description,
+    si.activiteprincipaleetablissement AS etab_activite_code,
+    e.libapet AS etab_activite_libelle,
+    si.trancheeffectifsetablissement AS etab_effectif_code,
+    teff.valeur AS etab_effectif_libelle,
+    si.anneeeffectifsetablissement AS etab_effectif_annee,
+    NULL::unknown AS etab_source_info,
+        CASE
+            WHEN esi.geom IS NOT NULL THEN 'localisation à la plaque adresse'::text
+            ELSE 'localisation à la commune'::text
+        END AS geocodage_qualite,
+        CASE
+            WHEN st_asgeojson(st_makepoint(esi.x_l93, esi.y_l93)) IS NOT NULL THEN st_asgeojson(st_makepoint(esi.x_l93, esi.y_l93))
+            ELSE st_asgeojson(st_pointonsurface(sa.geom))
+        END AS etab_geom_point,
+    NULL::unknown AS etab_contact_mail,
+    NULL::unknown AS etab_contact_tel,
+        CASE
+            WHEN st_makepoint(esi.x_l93, esi.y_l93) IS NOT NULL THEN st_setsrid(st_makepoint(esi.x_l93, esi.y_l93), 2154)
+            ELSE st_setsrid(st_pointonsurface(sa.geom), 2154)
+        END AS geom
+   FROM m_activite_eco.an_eco_etab e
+     LEFT JOIN m_activite_eco.lk_adresseetablissement a ON a.siret::text = e.idsiret::text
+     LEFT JOIN m_activite_eco.lk_eco_etab_site s ON s.siret::text = e.idsiret::text
+     LEFT JOIN s_sirene.an_etablissement_api si ON si.siret::text = e.idsiret::text
+     LEFT JOIN r_adresse.geo_v_adresse ad ON ad.id_adresse = a.idadresse
+     LEFT JOIN x_opendata.xopendata_an_v_bal_14 bal ON bal.id_adresse = ad.id_adresse
+     LEFT JOIN m_activite_eco.xapps_geo_vmr_etab_api_export_site esi ON esi.idsiret::text = e.idsiret::text
+     LEFT JOIN s_sirene.an_unitelegale_api ul ON ul.siren::text = si.siren::text
+     LEFT JOIN r_administratif.an_geo g ON g.insee::text = e.insee::text
+     LEFT JOIN s_sirene.lt_trancheeff teff ON teff.code::text = si.trancheeffectifsetablissement::text
+     LEFT JOIN m_activite_eco.geo_eco_site sa ON sa.idsite::text = s.idsite::text
+     LEFT JOIN r_objet.geo_objet_fon_lot f ON st_intersects(f.geom, st_setsrid(st_pointonsurface(sa.geom), 2154))
+  WHERE e.l_compte IS TRUE AND s.idsite IS NOT NULL AND sa.typo::text <> '30'::text
+WITH DATA;
+
+COMMENT ON MATERIALIZED VIEW m_activite_eco.xopendata_geo_vmr_eco_etab_cnig IS 'Vue de la couche établissement du standard CNIG 2023';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_vmr_eco_etab_cnig.siret IS 'Numéro siret de l''établissement';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_vmr_eco_etab_cnig.siren IS 'Numéro siren de l''établissement';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_vmr_eco_etab_cnig.terr_id IS 'Liste des identifiants de TERRAIN-ECO où se situe l''établissement';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_vmr_eco_etab_cnig.ban_id IS 'référence à l''adresse principale de l''établissement';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_vmr_eco_etab_cnig.bat_id IS 'Liste des identifiants de bâtiments';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_vmr_eco_etab_cnig.etab_adresse IS 'adresse principale de l''établissement';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_vmr_eco_etab_cnig.etab_raison_sociale IS 'raison sociale (nom juridique) de l''entreprise';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_vmr_eco_etab_cnig.etab_nat_juridique IS 'code de la catégorie juridique de l''entreprise en se référant au 3ème niveau
+de la nomenclature des catégories juridiques de l''INSEE';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_vmr_eco_etab_cnig.etab_nom IS 'nom ou appellation usuelle ou sigle de l''établissement';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_vmr_eco_etab_cnig.epci_nom IS 'nom de l''EPCI où se situe l''établissement';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_vmr_eco_etab_cnig.epci_siren IS 'code SIREN de l''EPCI où se situe l''établissement';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_vmr_eco_etab_cnig.comm_nom IS 'nom de la commune où se situe l''établissement';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_vmr_eco_etab_cnig.comm_insee IS 'code INSEE de la commune où se situe l''établissement';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_vmr_eco_etab_cnig.etab_siege IS 'qualité de siège de l''établissement';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_vmr_eco_etab_cnig.etab_creation_date IS 'date de création de l''établissement';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_vmr_eco_etab_cnig.etab_actu_date IS 'date de dernière actualisation des informations';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_vmr_eco_etab_cnig.etab_actif IS 'établissement en activité';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_vmr_eco_etab_cnig.etab_fermeture_date IS 'date ou année de fermeture de l''établissement.';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_vmr_eco_etab_cnig.etab_description IS 'commentaire libre avec des informations descriptives de l''établissement.';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_vmr_eco_etab_cnig.etab_activite_code IS 'code NAF de l''activité principale de l''établissement.';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_vmr_eco_etab_cnig.etab_activite_libelle IS 'libellé NAF de l''activité principale de l''établissement.';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_vmr_eco_etab_cnig.etab_effectif_code IS 'code et libellé de la tranche d''effectif salarié de l''établissement, fournis
+par la base SIRENE de l''INSEE.';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_vmr_eco_etab_cnig.etab_effectif_annee IS 'millésime de la tranche d''effectif salarié de l''établissement';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_vmr_eco_etab_cnig.etab_source_info IS 'indication de la (des) source(s) d''information sur l''établissement';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_vmr_eco_etab_cnig.geocodage_qualite IS 'qualité de positionnement de l''établissement';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_vmr_eco_etab_cnig.etab_geom_point IS 'multi localisations ponctuelles de l''établissement au format GeoJSON';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_vmr_eco_etab_cnig.etab_contact_mail IS 'mail de contact de l''établissement';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_vmr_eco_etab_cnig.etab_contact_tel IS 'numéro du téléphone de contact de l''établissement';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_vmr_eco_etab_cnig.geom IS 'Géométrie de l''objet';
 
 
 
 
--- ##################################################### xopendata_geo_eco_terrain_cnig #####################################################################
+-- ##################################################### xopendata_geo_vmr_eco_terrain_cnig #####################################################################
+-- m_activite_eco.xopendata_geo_vmr_eco_terrain_cnig source
 
--- m_activite_eco.xopendata_geo_eco_terrain_cnig source
-
-CREATE OR REPLACE VIEW m_activite_eco.xopendata_geo_eco_terrain_cnig
+CREATE MATERIALIZED VIEW m_activite_eco.xopendata_geo_vmr_eco_terrain_cnig
+TABLESPACE pg_default
 AS SELECT (((f.insee::text || '_'::text) || 'TERRAIN-ECO'::text) || '_'::text) || f.idgeolf AS terr_id,
     s.site_id,
     NULL::character varying AS terr_refcad,
@@ -2721,7 +2771,7 @@ AS SELECT (((f.insee::text || '_'::text) || 'TERRAIN-ECO'::text) || '_'::text) |
             ELSE round(f.surf::numeric / 10000::numeric, 2)
         END AS terr_surf_brute,
     'oui'::character varying(3) AS terr_utile,
-    f.date_sai::character varying(10) AS terr_identif_date,
+    l.date_sai::character varying(10) AS terr_identif_date,
     l.date_maj::character varying(10) AS terr_actu_date,
         CASE
             WHEN mf.valeur::text = 'Non renseignée'::text THEN 'inconnu'::character varying
@@ -2735,7 +2785,7 @@ AS SELECT (((f.insee::text || '_'::text) || 'TERRAIN-ECO'::text) || '_'::text) |
             WHEN sa.l_amng2::text = '30'::text THEN 'non aménagé, non viabilisé'::text
             WHEN sa.l_amng2::text = 'ZZ'::text THEN 'sans objet'::text
             WHEN sa.l_amng2::text = '00'::text THEN 'inconnu'::text
-            WHEN sa.l_amng2::text = '99'::text THEN 'autre'::text
+            WHEN sa.l_amng2::text = '99'::text THEN 'inconnu'::text
             ELSE ''::text
         END::character varying AS terr_stade_amngt,
         CASE
@@ -2746,7 +2796,7 @@ AS SELECT (((f.insee::text || '_'::text) || 'TERRAIN-ECO'::text) || '_'::text) |
             WHEN sa.l_comm2::text = '31'::text THEN 'réservé par une délibération de l''EPCI'::text
             WHEN sa.l_comm2::text = 'ZZ'::text THEN 'sans objet'::text
             WHEN sa.l_comm2::text = '00'::text THEN 'inconnu'::text
-            WHEN sa.l_comm2::text = '99'::text THEN 'autre'::text
+            WHEN sa.l_comm2::text = '99'::text THEN 'inconnu'::text
             ELSE NULL::text
         END::character varying AS terr_stade_comm,
         CASE
@@ -3060,7 +3110,7 @@ UNION ALL
             WHEN sa.l_amng2::text = '30'::text THEN 'non aménagé, non viabilisé'::text
             WHEN sa.l_amng2::text = 'ZZ'::text THEN 'sans objet'::text
             WHEN sa.l_amng2::text = '00'::text THEN 'inconnu'::text
-            WHEN sa.l_amng2::text = '99'::text THEN 'inconnu'::text
+            WHEN sa.l_amng2::text = '99'::text THEN 'autre'::text
             ELSE 'inconnu'::text
         END::character varying AS terr_stade_amngt,
         CASE
@@ -3071,7 +3121,7 @@ UNION ALL
             WHEN sa.l_comm2::text = '31'::text THEN 'réservé par une délibération de l''EPCI'::text
             WHEN sa.l_comm2::text = 'ZZ'::text THEN 'sans objet'::text
             WHEN sa.l_comm2::text = '00'::text THEN 'inconnu'::text
-            WHEN sa.l_comm2::text = '99'::text THEN 'inconnu'::text
+            WHEN sa.l_comm2::text = '99'::text THEN 'autre'::text
             ELSE 'inconnu'::text
         END::character varying AS terr_stade_comm,
         CASE
@@ -3101,25 +3151,26 @@ UNION ALL
      JOIN m_amenagement.lt_amt_maifon mf ON mf.code::text = sa.maifon::text
      JOIN m_amenagement.lt_amt_etatoccup eo ON eo.code::text = sa.etat_occup::text
      JOIN m_amenagement.lt_amt_terrusage tu ON tu.code::text = sa.usage::text
-  WHERE s.typsite::text <> '30'::text;
+  WHERE s.typsite::text <> '30'::text
+WITH DATA;
 
-COMMENT ON VIEW m_activite_eco.xopendata_geo_eco_terrain_cnig IS 'Vue de la couche terrain d''activité du standard CNIG 2023';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_terrain_cnig.terr_id IS 'identifiant du terrain à vocation économique';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_terrain_cnig.site_id IS 'identifiant du site où se situe le terrain économique';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_terrain_cnig.terr_refcad IS 'liste des identifiants de parcelles cadastrales intersectés par le terrain économique';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_terrain_cnig.terr_surf_brute IS 'superficie brute du terrain économique en hectare';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_terrain_cnig.terr_utile IS 'superficie à prendre en compte (oui / non) dans le calcul de la surface utile du site';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_terrain_cnig.terr_identif_date IS 'date d''identification du terrain économique. Exemple : 2016-03-26';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_terrain_cnig.terr_actu_date IS 'date de dernière actu. des informations du terrain éco. Ex: 2023-04-30';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_terrain_cnig.terr_maitrise_fonc IS 'maîtrise foncière majoritaire du terrain économique. La typologie reprend la colonne "observation" de la variable catpropro2 dans la table pnb10_parcelle des fichiers fonciers';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_terrain_cnig.terr_stade_amngt IS 'stade d’aménagement du terrain économique';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_terrain_cnig.terr_stade_comm IS 'stade de commercialisation du terrain économique';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_terrain_cnig.terr_etat_occup IS 'état d''occupation du terrain économique';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_terrain_cnig.terr_usage IS 'usage du terrain économique';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_terrain_cnig.terr_geomsurf IS 'géométrie surfacique du terrain économique au format GeoJSON';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_terrain_cnig.terr_cle_en_main IS 'terrain purgé (oui / non) de tout recours et directement prêt à l''implantation d''activité';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_terrain_cnig.terr_acquereur IS 'nom de l''acquéreur du terrain à vocation économique';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_terrain_cnig.terr_cession_date IS 'date de la cession';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_terrain_cnig.terr_vente_montant IS 'montant de la vente';
-COMMENT ON COLUMN m_activite_eco.xopendata_geo_eco_terrain_cnig.terr_m2_prix IS 'prix au m²';
+COMMENT ON MATERIALIZED VIEW m_activite_eco.xopendata_geo_vmr_eco_terrain_cnig IS 'Vue de la couche terrain d''activité du standard CNIG 2023';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_vmr_eco_terrain_cnig.terr_id IS 'identifiant du terrain à vocation économique';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_vmr_eco_terrain_cnig.site_id IS 'identifiant du site où se situe le terrain économique';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_vmr_eco_terrain_cnig.terr_refcad IS 'liste des identifiants de parcelles cadastrales intersectés par le terrain économique';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_vmr_eco_terrain_cnig.terr_surf_brute IS 'superficie brute du terrain économique en hectare';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_vmr_eco_terrain_cnig.terr_utile IS 'superficie à prendre en compte (oui / non) dans le calcul de la surface utile du site';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_vmr_eco_terrain_cnig.terr_identif_date IS 'date d''identification du terrain économique. Exemple : 2016-03-26';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_vmr_eco_terrain_cnig.terr_actu_date IS 'date de dernière actu. des informations du terrain éco. Ex: 2023-04-30';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_vmr_eco_terrain_cnig.terr_maitrise_fonc IS 'maîtrise foncière majoritaire du terrain économique. La typologie reprend la colonne "observation" de la variable catpropro2 dans la table pnb10_parcelle des fichiers fonciers';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_vmr_eco_terrain_cnig.terr_stade_amngt IS 'stade d’aménagement du terrain économique';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_vmr_eco_terrain_cnig.terr_stade_comm IS 'stade de commercialisation du terrain économique';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_vmr_eco_terrain_cnig.terr_etat_occup IS 'état d''occupation du terrain économique';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_vmr_eco_terrain_cnig.terr_usage IS 'usage du terrain économique';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_vmr_eco_terrain_cnig.terr_geomsurf IS 'géométrie surfacique du terrain économique au format GeoJSON';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_vmr_eco_terrain_cnig.terr_cle_en_main IS 'terrain purgé (oui / non) de tout recours et directement prêt à l''implantation d''activité';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_vmr_eco_terrain_cnig.terr_acquereur IS 'nom de l''acquéreur du terrain à vocation économique';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_vmr_eco_terrain_cnig.terr_cession_date IS 'date de la cession';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_vmr_eco_terrain_cnig.terr_vente_montant IS 'montant de la vente';
+COMMENT ON COLUMN m_activite_eco.xopendata_geo_vmr_eco_terrain_cnig.terr_m2_prix IS 'prix au m²';
 
