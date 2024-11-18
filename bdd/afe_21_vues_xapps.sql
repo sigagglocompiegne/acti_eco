@@ -1449,11 +1449,9 @@ CREATE INDEX xapps_geo_vmr_etab_api_gid_idx
 -- ##################################################### xapps_geo_vmr_etab_api_export_site #####################################################################
 -- m_activite_eco.xapps_geo_vmr_etab_api_export_site source
 
---drop MATERIALIZED VIEW m_activite_eco.xapps_geo_vmr_etab_api_export_site;
 CREATE MATERIALIZED VIEW m_activite_eco.xapps_geo_vmr_etab_api_export_site
 TABLESPACE pg_default
-AS
- WITH req_tot AS (
+AS WITH req_tot AS (
          WITH req_e AS (
                  SELECT DISTINCT e.idsiret,
                     e.l_nom,
@@ -1542,20 +1540,21 @@ AS
                             ELSE ''::character varying
                         END::text || ' '::text) || s.libellevoieetablissement::text AS libvoie,
                     s.codecommuneetablissement,
+                    s.libellecommuneetablissement AS lib_commune,
                     s.complementadresseetablissement AS complementadresse,
                     s.distributionspecialeetablissement AS boite_postale,
                     s.codepostaletablissement AS code_postal,
                     s.denominationusuelleetablissement,
                     s.enseigne1etablissement,
                     s.enseigne2etablissement,
-                    s.enseigne3etablissement,                    
+                    s.enseigne3etablissement,
                     s.datecreationetablissement,
                     s.etatadministratifetablissement,
                     s.datederniertraitementetablissement,
                     ul.denominationunitelegale,
                     ul.denominationusuelle1unitelegale,
-					ul.denominationusuelle2unitelegale,                    
-					ul.denominationusuelle3unitelegale,                    					
+                    ul.denominationusuelle2unitelegale,
+                    ul.denominationusuelle3unitelegale,
                     ul.nomunitelegale,
                     (ul.nomusageunitelegale::text || ' '::text) || ul.prenom1unitelegale::text AS personnephysique,
                     s.nomenclatureactiviteprincipaleetablissement AS nomen_acti_princ,
@@ -1593,7 +1592,7 @@ AS
                   WHERE s.etatadministratifetablissement::text = 'A'::text
                 )
          SELECT DISTINCT e.idsiret,
-	        si.denominationusuelleetablissement,
+            si.denominationusuelleetablissement,
             si.enseigne1etablissement,
             si.enseigne2etablissement,
             si.enseigne3etablissement,
@@ -1656,6 +1655,14 @@ AS
                     WHEN e.idadresse IS NULL OR e.idadresse::text = ''::text THEN 'Etablissement non localisé à l''adresse'::character varying::text
                     ELSE (((((a.etiquette::text || ' '::text) || a.libvoie_c::text) || ' '::text) || a.codepostal::text) || ' '::text) || a.commune::text
                 END AS adresse_loc,
+                CASE
+                    WHEN e.idadresse IS NULL OR e.idadresse::text = ''::text THEN si.libvoie
+                    ELSE (a.etiquette::text || ' '::text) || a.libvoie_c::text
+                END AS adresse_numvoie,
+                CASE
+                    WHEN e.idadresse IS NULL OR e.idadresse::text = ''::text THEN (si.code_postal::text || ' '::text) || si.lib_commune::text
+                    ELSE (a.codepostal::text || ' '::text) || a.commune::text
+                END AS adresse_commune,
                 CASE
                     WHEN a.x_l93 IS NOT NULL THEN a.x_l93
                     ELSE ( SELECT round(st_x(c_1.geom1)::numeric, 2) AS round
@@ -1804,6 +1811,8 @@ AS
                     WHEN sp.adresse IS NOT NULL THEN sp.adresse
                     ELSE 'Non renseignée'::character varying
                 END AS adresse_loc,
+            NULL::text AS adresse_numvoie,
+            NULL::text AS adresse_commune,
             st_x(sp.geom) AS x_l93,
             st_y(sp.geom) AS y_l93,
             c.nom1,
@@ -1845,22 +1854,20 @@ AS
         )
  SELECT row_number() OVER () AS gid,
     req_tot.idsiret,
-    -- sélection du nom de l'entrepruse pour l'export (synthèse des noms détaillées)
-    case 
-    	when (req_tot.l_nom is not null and req_tot.l_nom <> '' and req_tot.l_nom <> '[ND]') then req_tot.l_nom
-    	when (req_tot.denominationusuelleetablissement is not null and req_tot.denominationusuelleetablissement <> '' and req_tot.denominationusuelleetablissement <> '[ND]') then req_tot.denominationusuelleetablissement
-    	when (req_tot.enseigne1etablissement is not null and req_tot.enseigne1etablissement <> '' and req_tot.enseigne1etablissement <> '[ND]') then req_tot.enseigne1etablissement
-    	when (req_tot.enseigne2etablissement is not null and req_tot.enseigne2etablissement <> '' and req_tot.enseigne2etablissement <> '[ND]') then req_tot.enseigne2etablissement
-    	when (req_tot.enseigne3etablissement is not null and req_tot.enseigne3etablissement <> '' and req_tot.enseigne3etablissement <> '[ND]') then req_tot.enseigne3etablissement
-    	when (req_tot.denominationunitelegale is not null and req_tot.denominationunitelegale <> '' and req_tot.denominationunitelegale <> '[ND]') then req_tot.denominationunitelegale
-    	when (req_tot.denominationusuelle1unitelegale is not null and req_tot.denominationunitelegale <> '' and req_tot.denominationunitelegale <> '[ND]') then req_tot.denominationusuelle1unitelegale
-    	when (req_tot.denominationusuelle2unitelegale is not null and req_tot.denominationusuelle2unitelegale <> '' and req_tot.denominationusuelle2unitelegale <> '[ND]') then req_tot.denominationusuelle2unitelegale
-    	when (req_tot.denominationusuelle3unitelegale is not null and req_tot.denominationusuelle3unitelegale <> '' and req_tot.denominationusuelle3unitelegale <> '[ND]') then req_tot.denominationusuelle3unitelegale
-    	when (req_tot.nomunitelegale is not null and req_tot.nomunitelegale <> '' and req_tot.nomunitelegale <> '[ND]') then req_tot.nomunitelegale
-    	when (req_tot.personnephysique is not null and req_tot.personnephysique <> '' and req_tot.personnephysique <> '[ND] [ND]') then req_tot.personnephysique
-    else 'Non communicable'
-    end
-    as libelle_entreprise,
+        CASE
+            WHEN req_tot.l_nom IS NOT NULL AND req_tot.l_nom::text <> ''::text AND req_tot.l_nom::text <> '[ND]'::text THEN req_tot.l_nom
+            WHEN req_tot.denominationusuelleetablissement IS NOT NULL AND req_tot.denominationusuelleetablissement::text <> ''::text AND req_tot.denominationusuelleetablissement::text <> '[ND]'::text THEN req_tot.denominationusuelleetablissement
+            WHEN req_tot.enseigne1etablissement IS NOT NULL AND req_tot.enseigne1etablissement::text <> ''::text AND req_tot.enseigne1etablissement::text <> '[ND]'::text THEN req_tot.enseigne1etablissement
+            WHEN req_tot.enseigne2etablissement IS NOT NULL AND req_tot.enseigne2etablissement::text <> ''::text AND req_tot.enseigne2etablissement::text <> '[ND]'::text THEN req_tot.enseigne2etablissement
+            WHEN req_tot.enseigne3etablissement IS NOT NULL AND req_tot.enseigne3etablissement::text <> ''::text AND req_tot.enseigne3etablissement::text <> '[ND]'::text THEN req_tot.enseigne3etablissement
+            WHEN req_tot.denominationunitelegale IS NOT NULL AND req_tot.denominationunitelegale::text <> ''::text AND req_tot.denominationunitelegale::text <> '[ND]'::text THEN req_tot.denominationunitelegale
+            WHEN req_tot.denominationusuelle1unitelegale IS NOT NULL AND req_tot.denominationunitelegale::text <> ''::text AND req_tot.denominationunitelegale::text <> '[ND]'::text THEN req_tot.denominationusuelle1unitelegale
+            WHEN req_tot.denominationusuelle2unitelegale IS NOT NULL AND req_tot.denominationusuelle2unitelegale::text <> ''::text AND req_tot.denominationusuelle2unitelegale::text <> '[ND]'::text THEN req_tot.denominationusuelle2unitelegale
+            WHEN req_tot.denominationusuelle3unitelegale IS NOT NULL AND req_tot.denominationusuelle3unitelegale::text <> ''::text AND req_tot.denominationusuelle3unitelegale::text <> '[ND]'::text THEN req_tot.denominationusuelle3unitelegale
+            WHEN req_tot.nomunitelegale IS NOT NULL AND req_tot.nomunitelegale::text <> ''::text AND req_tot.nomunitelegale::text <> '[ND]'::text THEN req_tot.nomunitelegale
+            WHEN req_tot.personnephysique IS NOT NULL AND req_tot.personnephysique <> ''::text AND req_tot.personnephysique <> '[ND] [ND]'::text THEN req_tot.personnephysique::character varying
+            ELSE 'Non communicable'::character varying
+        END AS libelle_entreprise,
     req_tot.denominationusuelleetablissement,
     req_tot.enseigne1etablissement,
     req_tot.enseigne2etablissement,
@@ -1898,6 +1905,8 @@ AS
             WHEN req_tot.adresse_loc IS NULL THEN 'Etablissement localisé sur une adresse sans numéro (non conforme)'::text
             ELSE req_tot.adresse_loc
         END AS adresse_loc,
+    req_tot.adresse_numvoie,
+    req_tot.adresse_commune,
     req_tot.x_l93,
     req_tot.y_l93,
     ((((
@@ -2032,15 +2041,18 @@ AS
     req_tot.email6,
     req_tot.geom
    FROM req_tot
-   
 WITH DATA;
 
 COMMENT ON MATERIALIZED VIEW m_activite_eco.xapps_geo_vmr_etab_api_export_site IS 'Vue géographique matérialisée (rafraichie ttes les nuits) composée des éléments sur les établissements actifs (API Sirene) permettant de gérer des exports de listes par site dans GEO';
 
+-- Permissions
 
-
-
-
+ALTER TABLE m_activite_eco.xapps_geo_vmr_etab_api_export_site OWNER TO create_sig;
+GRANT ALL ON TABLE m_activite_eco.xapps_geo_vmr_etab_api_export_site TO create_sig;
+GRANT ALL ON TABLE m_activite_eco.xapps_geo_vmr_etab_api_export_site TO sig_create;
+GRANT SELECT, DELETE, INSERT, UPDATE ON TABLE m_activite_eco.xapps_geo_vmr_etab_api_export_site TO sig_edit;
+GRANT ALL ON TABLE m_activite_eco.xapps_geo_vmr_etab_api_export_site TO sig_stage;
+GRANT SELECT ON TABLE m_activite_eco.xapps_geo_vmr_etab_api_export_site TO sig_read;
 
 -- ########################################################### SCHEMA m_activite_eco ################################################################
 
