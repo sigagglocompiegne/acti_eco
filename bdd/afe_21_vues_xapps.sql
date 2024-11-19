@@ -1447,6 +1447,7 @@ CREATE INDEX xapps_geo_vmr_etab_api_gid_idx
 -- ########################################################### SCHEMA m_activite_eco ################################################################
 
 -- ##################################################### xapps_geo_vmr_etab_api_export_site #####################################################################
+
 -- m_activite_eco.xapps_geo_vmr_etab_api_export_site source
 
 CREATE MATERIALIZED VIEW m_activite_eco.xapps_geo_vmr_etab_api_export_site
@@ -1811,8 +1812,8 @@ AS WITH req_tot AS (
                     WHEN sp.adresse IS NOT NULL THEN sp.adresse
                     ELSE 'Non renseignée'::character varying
                 END AS adresse_loc,
-            NULL::text AS adresse_numvoie,
-            NULL::text AS adresse_commune,
+            sp.adresse AS adresse_numvoie,
+            sp.commune_cd AS adresse_commune,
             st_x(sp.geom) AS x_l93,
             st_y(sp.geom) AS y_l93,
             c.nom1,
@@ -2045,14 +2046,6 @@ WITH DATA;
 
 COMMENT ON MATERIALIZED VIEW m_activite_eco.xapps_geo_vmr_etab_api_export_site IS 'Vue géographique matérialisée (rafraichie ttes les nuits) composée des éléments sur les établissements actifs (API Sirene) permettant de gérer des exports de listes par site dans GEO';
 
--- Permissions
-
-ALTER TABLE m_activite_eco.xapps_geo_vmr_etab_api_export_site OWNER TO create_sig;
-GRANT ALL ON TABLE m_activite_eco.xapps_geo_vmr_etab_api_export_site TO create_sig;
-GRANT ALL ON TABLE m_activite_eco.xapps_geo_vmr_etab_api_export_site TO sig_create;
-GRANT SELECT, DELETE, INSERT, UPDATE ON TABLE m_activite_eco.xapps_geo_vmr_etab_api_export_site TO sig_edit;
-GRANT ALL ON TABLE m_activite_eco.xapps_geo_vmr_etab_api_export_site TO sig_stage;
-GRANT SELECT ON TABLE m_activite_eco.xapps_geo_vmr_etab_api_export_site TO sig_read;
 
 -- ########################################################### SCHEMA m_activite_eco ################################################################
 
