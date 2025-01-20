@@ -2330,14 +2330,14 @@ COMMENT ON MATERIALIZED VIEW m_urbanisme_reg.xapps_geo_vmr_proc_zac
 
 -- ##################################################### xopendata_geo_vmr_eco_site_cnig #####################################################################
 -- m_activite_eco.xopendata_geo_vmr_eco_site_cnig source
-
+drop MATERIALIZED VIEW if exists m_activite_eco.xopendata_geo_vmr_eco_site_cnig;
 CREATE MATERIALIZED VIEW m_activite_eco.xopendata_geo_vmr_eco_site_cnig
 TABLESPACE pg_default
 AS WITH req_ter_vente_min AS (
          SELECT s_1.idsite,
                 CASE
                     WHEN count(*) = 1 THEN 0::numeric
-                    ELSE round(min(l.sup_m2 / 10000::double precision)::numeric, 2)
+                    ELSE round(min(l.sup_m2 / 10000::decimal)::numeric, 2)
                 END AS surf_min
            FROM m_activite_eco.geo_eco_site s_1,
             r_objet.geo_objet_fon_lot l,
@@ -2412,7 +2412,14 @@ AS WITH req_ter_vente_min AS (
              LEFT JOIN m_activite_eco.lk_eco_etab_site lk ON lk.idsite::text = s_1.idsite::text
              LEFT JOIN m_activite_eco.an_eco_etab e ON e.idsiret::text = lk.siret::text
           WHERE "left"(e.apet700::text, 2) = '51'::text AND e.l_compte IS TRUE
-        )
+        ), req_uf as (
+     		with req_annee as 
+        		(
+	        	select idsite || '_' || max(annee_d) as idsite from m_activite_eco.an_eco_uf group by idsite
+    	    	)
+         	select uf.idsite , uf.site_uf_nbre, uf.site_uf_vacant_nbre, uf.site_taux_vacance, uf.site_uf_bati_nbre
+         	from m_activite_eco.an_eco_uf uf join req_annee a on uf.idsite || '_' || annee_d = a.idsite
+        	)
  SELECT DISTINCT s.site_id::text AS site_id,
     NULL::text AS pole_id,
     s.site_nom,
@@ -2421,7 +2428,7 @@ AS WITH req_ter_vente_min AS (
             WHEN s.typsite::text = '10'::text THEN 'zone d''activité économique'::text
             WHEN s.typsite::text = '20'::text THEN 'site économique historique hors ZAE'::text
             WHEN s.typsite::text = '21'::text THEN 'établissement économique isolé'::text
-            WHEN s.typsite::text = '40'::text THEN 'zone 2AU à vocation économique'::text
+            WHEN s.typsite::text = '40'::text THEN 'Zone AU à vocation économique'::text
             ELSE NULL::text
         END::character varying AS site_type,
         CASE
@@ -2438,7 +2445,6 @@ AS WITH req_ter_vente_min AS (
             WHEN s.site_etat::text = '30'::text THEN 'création'::text
             WHEN s.site_etat::text = '40'::text THEN 'déclassé'::text
             WHEN s.site_etat::text = '50'::text THEN 'projet de déclassement'::text
-            WHEN s.site_etat::text = '60'::text THEN 'annulé'::text
             ELSE NULL::text
         END::character varying AS site_etat,
     ss."Surface du site"::double precision AS site_surf_brute,
@@ -2484,10 +2490,10 @@ AS WITH req_ter_vente_min AS (
     s.z_mai_ouvr AS site_moa_nom,
     s.z_amng AS site_moa_amngt,
     s.z_comm AS site_moa_comm,
-    NULL::integer AS site_uf_nbre,
-    NULL::integer AS site_uf_vacant_nbre,
-    NULL::integer AS site_taux_vacance,
-    NULL::integer AS site_uf_bati_nbre,
+    uf.site_uf_nbre,
+    uf.site_uf_vacant_nbre,
+    uf.site_taux_vacance,
+    uf.site_uf_bati_nbre,
     ss.nb_etab::integer AS site_nb_etab,
     ss.eff_etab::integer AS site_nb_emploi,
     st_asgeojson(s.geom) AS site_geomsurf,
@@ -2629,9 +2635,14 @@ AS WITH req_ter_vente_min AS (
      LEFT JOIN m_activite_eco.xapps_an_vmr_site_act_10 le ON le.idsite::text = s.idsite::text
      LEFT JOIN req_ter_vente_min vmin ON vmin.idsite::text = s.idsite::text
      LEFT JOIN req_ter_vente_max vmax ON vmax.idsite::text = s.idsite::text
+     left join req_uf uf on uf.idsite = s.idsite
   WHERE s.typsite::text <> '30'::text
-  GROUP BY s.idsite, ss."Surface du site", ss.surf_utile, tc.valeur, c.commune, mt.valeur, ss.nb_etab, ss.eff_etab, ss.surf_vente, ss.surf_projet, ei.voca_indus, ec.voca_comm, eter.voca_tert, ea.voca_arti, eto.voca_touri, epo.voca_port, eapo.voca_aport, vt.nb_terrain, pro.code, vmin.surf_min, vmax.surf_max
+  GROUP BY s.idsite, ss."Surface du site", ss.surf_utile, tc.valeur, c.commune, mt.valeur, ss.nb_etab, ss.eff_etab, ss.surf_vente, ss.surf_projet, ei.voca_indus, ec.voca_comm, 
+  eter.voca_tert, ea.voca_arti, eto.voca_touri, epo.voca_port, eapo.voca_aport, vt.nb_terrain, pro.code, vmin.surf_min, vmax.surf_max,
+  uf.site_uf_nbre,uf.site_uf_vacant_nbre,uf.site_taux_vacance,uf.site_uf_bati_nbre
 WITH DATA;
+
+  
 
 -- ##################################################### xopendata_geo_vmr_eco_etab_cnig #####################################################################
 -- m_activite_eco.xopendata_geo_vmr_eco_etab_cnig source
