@@ -6075,7 +6075,7 @@ CREATE TABLE m_activite_eco.an_eco_uf (
 	CONSTRAINT an_eco_uf_pkey PRIMARY KEY (gid)
 );
 CREATE INDEX idx_5349_idsite ON m_activite_eco.an_eco_uf USING btree (idsite);
-COMMENT ON TABLE m_activite_eco.an_eco_uf IS 'Table alphanumérique contenant les informations relatives aux unités foncières demandées par le standard CNIG et réalisé à partir d'inventaire';
+COMMENT ON TABLE m_activite_eco.an_eco_uf IS 'Table alphanumérique contenant les informations relatives aux unités foncières demandées par le standard CNIG et réalisé à partir d''inventaire';
 
 -- Column comments
 
@@ -6093,7 +6093,15 @@ COMMENT ON COLUMN m_activite_eco.an_eco_uf.op_sai IS 'Opérateur de saisie';
 COMMENT ON COLUMN m_activite_eco.an_eco_uf.op_maj IS 'Opérateur de mise à jour';
 COMMENT ON COLUMN m_activite_eco.an_eco_uf.annnee_d IS 'Annnée de l''inventaire';
 
+create trigger t_t1_dbinsert before
+insert
+    on
+    m_activite_eco.an_eco_uf for each row execute procedure ft_r_timestamp_dbinsert();
 
+create trigger t_t2_dbupdate before
+update
+    on
+    m_activite_eco.an_eco_uf for each row execute procedure ft_r_timestamp_dbupdate();
 
 -- ##########################################################################################################
 -- ################################################# SCHEMA M_AMENAGAMENT ##################################
@@ -7096,6 +7104,7 @@ COMMENT ON COLUMN r_objet.geo_objet_fon_lot.surf_l
     IS 'Surface littérale occupée du lot en m² (surface saisie par l''utilisateur si différente de la surface SIG)';
 
 
+
 -- Index: geo_objet_fon_lot_idgeolf_idx
 -- DROP INDEX r_objet.geo_objet_fon_lot_idgeolf_idx;
 
@@ -7219,4 +7228,7 @@ CREATE TRIGGER t_t9_autorite_competente
     ON r_objet.geo_objet_fon_lot
     FOR EACH ROW
     EXECUTE PROCEDURE public.ft_r_autorite_competente();
+
+
+
 
